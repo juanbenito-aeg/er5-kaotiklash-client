@@ -10,8 +10,12 @@
   font-family: MedievalSharp;
 }
 
+body {
+    min-height: 100vh;
+}
+
 #start-game-screen {
-  min-height: 100vh;
+min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -20,4 +24,13 @@
 #start-game-btn {
   padding: 0.5em 1.25em;
   font-size: 1.25rem;
+}
+
+#game-screen {
+    min-height: 100vh;
+    display: none;
+    background-image: url("../image/Board.jpeg");
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
