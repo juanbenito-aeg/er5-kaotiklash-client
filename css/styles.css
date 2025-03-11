@@ -30,7 +30,7 @@ min-height: 100vh;
     min-height: 100vh;
     display: none;
     background-image: url("../image/Board.jpeg");
-    background-size: 100% 100%;
+    background-size: 100% 100%;                                                
     background-position: center;
     background-repeat: no-repeat;
 }
