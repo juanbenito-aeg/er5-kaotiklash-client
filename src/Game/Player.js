@@ -1,9 +1,9 @@
 export default class Player{
-    constructor(name){
-        this.name = name;
-    }
-
-    getName(name){
-        this.name = name;
+    #name;
+    #totalHP;
+    
+    constructor(name, totalHP){
+        this.#name = name;
+        this.#totalHP = totalHP;
     }
 }

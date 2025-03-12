@@ -1,23 +1,28 @@
 export default class Card{
 
-    constructor(id, type, nameEN, nameBQ, descriptionEN, descriptionBQ){
+    #nameEN;
+    #nameBQ;
+    #descriptionEn;
+    #descriptionBQ;
 
+    constructor(id, category){
         this.id = id;
-        this.type = type;
-        this.nameEN = nameEN;                   //Name in English
-        this.nameBQ = nameBQ;                   //Name in Basque
-        this.descriptionEN = descriptionEN;     //Description in English
-        this.descriptionBQ = descriptionBQ;     //Description in Basque
-
+        this.category = category;
     }
 
      getID(){}
 
-     getNameEN(){}
+     getCategory(){}
+
+     getNameEN(){
+        return this.#nameEN;
+     }
 
      //getNameBQ(){} *
      
-     getDescriptionEN(){}
+     getDescriptionEN(){
+        return this.#descriptionEn;
+     }
 
      //getDescriptionBQ(){} *
 

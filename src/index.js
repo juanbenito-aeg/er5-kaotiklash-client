@@ -1,21 +1,27 @@
 import Game from "./Game/Game.js";
 
-window.onload = init;
+// INITIALIZATION OF GLOBAL VARIABLES
+const globals = {
+    game: {},
+};
 
-function showImage() {
-    
+function initGame() {
     const startGameScreen = document.getElementById("start-game-screen");
-    const gameScreen = document.getElementById("game-screen");
-   
     startGameScreen.style.display = "none";
+    
+    const gameScreen = document.getElementById("game-screen");
     gameScreen.style.display = "block";
-
+    
+    globals.game = Game.create();
 }
 
-function init() {
-  
+window.onload = initEssentials;
+
+function initEssentials() {
     const btn = document.getElementById("start-game-btn");
-
-    btn.addEventListener("click", showImage); 
-
+    btn.addEventListener("click", initGame);
 }
+
+export {
+    globals,
+};

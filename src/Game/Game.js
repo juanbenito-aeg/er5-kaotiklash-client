@@ -1,18 +1,27 @@
 import Player from "./Player.js";
+
 export default class Game {
-    
-    constructor(board, mouseInput){
-        this.players = [];
-        this.decks = []; 
-        this.board = board;
-        this.turn = [];
-        this.mouseInput = mouseInput;
+    #players;
+    #currentPlayer;
+    #deckContainer;
+    #board;
+    #turns;
+    #mouseInput;
+
+    constructor(players, currentPlayer, deckContainer, board, turns, mouseInput) {
+        this.#players = players;
+        this.#currentPlayer = currentPlayer;
+        this.#deckContainer = deckContainer;
+        this.#board = board;
+        this.#turns = turns;
+        this.#mouseInput = mouseInput;
     }
 
-    create(){
+    static create() {
+        const player1 = new Player("Player 1");
+        const player2 = new Player("Player 2");
+        players = [player1, player2];
 
-       const player1 = Player.getName("Player 1");
-       const player2 = Player.getName("Player 2");
-
+        const game = new Game();
     }
 }
