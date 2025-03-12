@@ -11,11 +11,11 @@
 }
 
 body {
-    min-height: 100vh;
+  min-height: 100vh;
 }
 
 #start-game-screen {
-min-height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -27,10 +27,5 @@ min-height: 100vh;
 }
 
 #game-screen {
-    min-height: 100vh;
-    display: none;
-    background-image: url("../image/Board.jpg");
-    background-size: 100% 100%;
-    background-position: center;
-    background-repeat: no-repeat;
+  display: none;
 }
