@@ -1,31 +1,17 @@
-export default class Card{
+export default class Card {
+  #id;
+  #category;
+  #nameENG;
+  #nameEUS;
+  #descriptionENG;
+  #descriptionEUS;
 
-    #nameEN;
-    #nameBQ;
-    #descriptionEn;
-    #descriptionBQ;
-
-    constructor(id, category){
-        this.id = id;
-        this.category = category;
-    }
-
-     getID(){}
-
-     getCategory(){}
-
-     getNameEN(){
-        return this.#nameEN;
-     }
-
-     //getNameBQ(){} *
-     
-     getDescriptionEN(){
-        return this.#descriptionEn;
-     }
-
-     //getDescriptionBQ(){} *
-
-     // * Not now
-
+  constructor(id, category, nameENG, nameEUS, descriptionENG, descriptionEUS) {
+    this.#id = id;
+    this.#category = category;
+    this.#nameENG = nameENG;
+    this.#nameEUS = nameEUS;
+    this.#descriptionENG = descriptionENG;
+    this.#descriptionEUS = descriptionEUS;
+  }
 }

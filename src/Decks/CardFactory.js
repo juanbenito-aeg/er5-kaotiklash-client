@@ -1,16 +1,15 @@
 import Card from "./Card.js";
 
-export default class CardFactory{
+export default class CardFactory {
+  #cardsData;
 
-    #cardsData;
+  constructor(cardsData) {
+    this.#cardsData = cardsData;
+  }
 
-    constructor(category, dbEntryID){
-        this.category = category;
-        this.dbEntryID = dbEntryID;
-    }
-
-    createCard(category, dbEntryID){
-        const card = new Card(dbEntryID, category);
-        return card;
-    }
+  createCard(cardId) {
+    this.#cardsData[cardId];
+    const cardData = new Card(cardData.cardId, cardData.category);
+    return cardData;
+  }
 }

@@ -1,11 +1,11 @@
+export default class DeckContainer {
+  #decks;
 
-export default class DeckContainer{
+  constructor(decks) {
+    this.#decks = decks;
+  }
 
-    constructor(){
-        this.decks = [];
-    }
-
-    getDecks(){
-        return this.decks;
-    }
+  getDecks() {
+    return this.#decks;
+  }
 }
