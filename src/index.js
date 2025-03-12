@@ -1,5 +1,6 @@
-window.onload = init;
+import Game from "./Game/Game.js";
 
+window.onload = init;
 
 function showImage() {
     

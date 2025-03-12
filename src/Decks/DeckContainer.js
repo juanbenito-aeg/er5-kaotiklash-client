@@ -1,10 +1,11 @@
-import Deck from "./Deck.js";
 
 export default class DeckContainer{
 
+    constructor(){
+        this.decks = [];
+    }
+
     getDecks(){
-        const decks = new Deck();
-        decks.getDeck();
-        return decks;
+        return this.decks;
     }
 }

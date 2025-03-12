@@ -1,10 +1,15 @@
 export default class Deck{
     
-    constructor(){
-        this.cards = [];    
+    constructor(deckType){
+        this.cards = [];  
+        this.deckType = deckType;  
     }
 
-    getDeck(){
+    getCards(){
         return this.cards;
     }
-}
+
+    getDeckType(){
+        return this.deckType;
+    }
+}   

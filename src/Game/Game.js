@@ -1,5 +1,5 @@
 import Player from "./Player.js";
-class Game {
+export default class Game {
     
     constructor(board, mouseInput){
         this.players = [];
