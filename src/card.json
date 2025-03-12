@@ -1,0 +1,78 @@
+[
+    {
+        "name_eng": "Lucretia",
+        "name_eus": "Lucretia",
+        "description_eng": "Abandoned at five in hostile lands, Lucretia mastered survival. A rejuvenating elixir warped her mind, honing her deception and unseen nighttime plundering.",
+        "description_eus": "Bost urterekin lurralde gogorretan abandonatua, Lucretiak biziraupena menperatu zuen. Elixir gaztetzaile batek bere burua aldarazi zuen, iruzurra eta gaueko lapurreta ikusezina zorrozten.",
+        "special_skill_eng": "Turns enemy minions into melee-only deer. A potion card appears in the enemy's event area (2-round prep) to undo the effect but poisons them for 2 rounds. If the area is full, it replaces a random card.",
+        "special_skill_eus": "Etsaiaren morroiak orein bihurtzen ditu, hurbileko erasora mugatuta. Eragina kentzeko, baina pozoia emanez, etsaiaren eremuan edabe bat agertzen da. Beteta badago, karta bat ordezkatzen du.",
+        "image": null
+    },
+    {
+        "name_eng": "Angelo Di Mortis",
+        "name_eus": "Angelo Di Mortis",
+        "description_eng": "Angelo, a wealthy young man, burned his mansion and reveled in the chaos. After prison, he created Ethazium, a lethal potion that lured Kaotika’s darkest beings.",
+        "description_eus": "Angelo, gazte aberatsa, bere jauregia erre eta kaosaz gozatu zuen. Kartzelatik irtenda, Ethazium sortu zuen, Kaotikako izaki ilunenak erakartzen zituen edabe hilgarria.",
+        "special_skill_eng": "The inn's light shatters at turn's end, darkening the board. Angelo's lamp lets the user see through a circle around the mouse, while the enemy sees only card outlines.",
+        "special_skill_eus": "Aterpeko argia apurtzen da, taula ilunduz. Angeloren lanparak erabiltzaileari zirkulu baten bidez ikusteko aukera ematen dio, etsaiak kartetako ertzak bakarrik ikusten ditu.",
+        "image": null
+    },
+    {
+        "name_eng": "The Erudite XG",
+        "name_eus": "XG Eruditua",
+        "description_eng": "XG, son of goldsmith magicians, struggles with anger. His Arcane Glasses control mental chaos at the cost of extreme hydration. He must master his impulses to be a worthy heir.",
+        "description_eus": "XG, urregile magoen semea da, haserre arazoak dituena. Betaurreko arkanoak kaos mentala kontrolatzen dute eta aldi beran gehiegizko hidratazioa ematen dute. Impulsoak menperatu behar ditu oinordeko duin bat izateko.",
+        "special_skill_eng": "XG loses his glasses, causing him to become furious. As a result, his minions receive a super boost of x1.75 on their “Madness” and “Strength” attributes.",
+        "special_skill_eus": "XG-k betaurrekoak galtzen ditu eta amorratzen da. Ondorioz, bere minion-ek sekulako hobekuntza (x1.75) jasotzen dute bere “Erotasuna” eta “Indarra” atributuetan.",
+        "image": null
+    },
+    {
+        "name_eng": "The Decrepit Throne",
+        "name_eus": "Tronu Zaharra",
+        "description_eng": "The Decrepit Throne, forged in the First Era, symbolized nobility. Its last heir, Joseph, obsessed by goblins, fused with the throne, trapped in eternal torment.",
+        "description_eus": "Tronu Zaharra, Lehen Aroan forjatua izan zen, nobleziaren ikurra izanda. Honen azken oinordekoa, Joseph, goblinengatik obsesionatuta dagoena, tronuarekin fusionatu zen, betiko torturan arrapatuz.",
+        "special_skill_eng": "The throne attracts the foe minions to the front combat area, as if it were a curse, and nullifies any type of action of the enemy during their next turn.",
+        "special_skill_eus": "Tronuak aurreko borroka-eremura erakartzen ditu etsaiaren minion-ak, madarikazio bat balitz bezala, eta etsaiaren edozein ekintza bertan behera uzten du hurrengo txandan.",
+        "image": null
+    },
+    {
+        "name_eng": "Joseph",
+        "name_eus": "Joseph",
+        "description_eng": "Joseph, the last heir of the decrepit throne, became one with his rotting chair, lost in madness. Each night, he raves about goblins destroying it, blind to his own decaying fate.",
+        "description_eus": "Joseph, tronu zaharkituaren azken oinordekoa, bat bihurtu zen bere aulki ustelarekin, eromenean galduta. Gauero, bera suntsitzen duten iratxoen gainean egiten du eldarnioa, bere patu dekadenteari itsututa.",
+        "special_skill_eng": null,
+        "special_skill_eus": null,
+        "image": null
+    },
+
+
+
+    {
+        "name_eng": "Lightning Storm",
+        "name_eus": "Tximista-Ekaitza",
+        "description_eng": "Each turn, lightning bolts strike all the minions located in the movement grid, inflicting different quantities of damage (ranging from 5 to 35 hit points) on each of them, which are determined making use of the Math.random() static method.",
+        "description_eus": "Txanda bakoitzean, tximistek mugimendu-lauki-sarean dauden mendeko guztiak jotzen dituzte, eta Math.random() metodo estatikoa erabiliz, kalte kantitate desberdinak eragiten dizkiete (5 eta 35 kolpe-puntu artekoak).",
+        "main_character_id": 5
+    },
+    {
+        "name_eng": "Sandstorm",
+        "name_eus": "Harea-Ekaitza",
+        "description_eng": "All minions randomly change positions at the end of each turn.",
+        "description_eus": "Mendeko guztiek ausaz aldatzen dute posizioa txanda bakoitzaren amaieran.",
+        "main_character_id": 5
+    },
+    {
+        "name_eng": "Minion Rebellion",
+        "name_eus": "Mendekoen Matxinada",
+        "description_eng": "Some minions switch control and attack their own team. It considerably increases the probability of a botch, in this case the botch will not only affect the attacking minion but its allies as well.",
+        "description_eus": "Mendeko batzuek kontrola aldatzen dute eta euren taldeari eraso egiten diote. Trakets bat izateko probabilitatea nabarmen handitzen du, kasu honetan akatsak erasotzaileari ez ezik bere aliatuei ere eragingo die.",
+        "main_character_id": 5
+    },
+    {
+        "name_eng": "Constant Swap",
+        "name_eus": "Etengabeko Trukea",
+        "description_eng": "After finishing each round, all minions located in the combat arena are exchanged between players.",
+        "description_eus": "Txanda bakoitza amaitu ondoren, borroka-esparruan kokatutako mendeko guztiak trukatzen dira jokalarien artean.",
+        "main_character_id": 5
+    }
+]
