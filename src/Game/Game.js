@@ -4,6 +4,7 @@ import DeckCreator from "../Decks/DeckCreator.js";
 import mainDeckConfig from "../mainDeck.json";
 import Board from "../Board/Board.js";
 import Turn from "../Turns/Turn.js";
+import MouseInput from "./MouseInput.js";
 
 export default class Game {
   #players;
@@ -31,16 +32,23 @@ export default class Game {
     // DECKS CREATION
     // cardsData = JSON.parse(cardsData);
     mainDeckConfig = JSON.parse(mainDeckConfig);
-    const deckCreator = new DeckCreator();
+    const deckCreator = new DeckCreator(cardsData, mainDeckConfig);
     const deckContainer = deckCreator.createMainDeck();
 
-    //BOARD CREATION 
+    // TODO: CREATE "CardView" OBJECTS
+
+    // BOARD CREATION
     const board = new Board();
     board.create();
 
-    //TURN CREATION
-    //PHASES MUST BE HERE???
-    const turn = new Turn();
+    // TURNS CREATION
+    const turnPlayer1 = new Turn();
+    const turnPlayer2 = new Turn();
+    
+
+    // MOUSE CREATION
+    const mouseInput = new MouseInput();
+    mouseInput.mouseEventListener();
 
     const game = new Game(players);
     return game;
