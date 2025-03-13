@@ -1,11 +1,12 @@
+import { globals } from "../index.js";
 export default class Turn{
     #phases;
     #numOfExceccutePhase;
     #deckContainer;
     #board;
     #mouseInput;
-    #player; 
-    #isTurnChange;
+   
+    
 
     constructor(phases, deckContainer, board, mouseInput, player) {
         this.#phases = phases;
@@ -13,8 +14,12 @@ export default class Turn{
         this.#deckContainer = deckContainer;
         this.#board = board;
         this.#mouseInput = mouseInput;
-        this.#player = player;
-        this.#isTurnChange = false;
+        this.player = player;
+   
+    }
+
+    create() {
+        
     }
 
     execute() {
@@ -27,16 +32,16 @@ export default class Turn{
         this.#numOfExceccutePhase++;
 
         if(this.#numOfExceccutePhase === this.#phases.length){
-            this.#isTurnChange = true;
+            globals.isFinished= true;
+            this.changeTurn(this.player);
         }
     }
 
-    changeTurn() {
-        if (this.#isTurnChange){
-            this.#isTurnChange = false;
+    changeTurn(player) {
+        if (globals.isFinished){
+            globals.isFinished = false;
             return true;
         }
-
         return false;
     }
 }
