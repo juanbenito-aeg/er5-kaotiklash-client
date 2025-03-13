@@ -1,5 +1,3 @@
-import Card from "./Card.js";
-
 export default class CardFactory {
   #cardsData;
 
@@ -7,9 +5,11 @@ export default class CardFactory {
     this.#cardsData = cardsData;
   }
 
-  createCard(cardId) {
-    this.#cardsData[cardId];
-    const cardData = new Card(cardData.cardId, cardData.category);
-    return cardData;
+  createCard(cardID, cardCategory) {
+    switch (cardCategory) {
+      case "main_characters":
+        let card = this.#cardsData.main_characters[cardID];        
+        break;
+    }
   }
 }
