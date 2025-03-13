@@ -2,6 +2,8 @@ import Player from "./Player.js";
 import DeckCreator from "../Decks/DeckCreator.js";
 // import cardsData from "../cardsData.json";
 import mainDeckConfig from "../mainDeck.json";
+import Board from "../Board/Board.js";
+import Turn from "../Turns/Turn.js";
 
 export default class Game {
   #players;
@@ -31,6 +33,14 @@ export default class Game {
     mainDeckConfig = JSON.parse(mainDeckConfig);
     const deckCreator = new DeckCreator();
     const deckContainer = deckCreator.createMainDeck();
+
+    //BOARD CREATION 
+    const board = new Board();
+    board.create();
+
+    //TURN CREATION
+    //PHASES MUST BE HERE???
+    const turn = new Turn();
 
     const game = new Game(players);
     return game;
