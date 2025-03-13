@@ -19,6 +19,11 @@
       "card_id": 3,
       "name": "The Decrepit Throne",
       "quantity": 1
+    },
+    {
+      "card_id": 4,
+      "name": "Joseph",
+      "quantity": 1
     }
   ],
   "minions": [
@@ -207,11 +212,6 @@
       "card_id": 8,
       "name": "Potion of the Eternal Night",
       "quantity": 0
-    },
-    {
-      "card_id": 9,
-      "name": "Joseph",
-      "quantity": 1
     }
   ],
   "rare": [

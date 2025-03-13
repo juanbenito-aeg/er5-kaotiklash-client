@@ -1,6 +1,6 @@
 import Player from "./Player.js";
 import DeckCreator from "../Decks/DeckCreator.js";
-// import cardsData from "../cardsData.json";
+import cardsData from "../cardsData.json";
 import mainDeckConfig from "../mainDeck.json";
 import Board from "../Board/Board.js";
 import Turn from "../Turns/Turn.js";
@@ -30,7 +30,7 @@ export default class Game {
     const players = [player1, player2];
 
     // DECKS CREATION
-    // cardsData = JSON.parse(cardsData);
+    cardsData = JSON.parse(cardsData);
     mainDeckConfig = JSON.parse(mainDeckConfig);
     const deckCreator = new DeckCreator(cardsData, mainDeckConfig);
     const deckContainer = deckCreator.createMainDeck();
@@ -44,7 +44,6 @@ export default class Game {
     // TURNS CREATION
     const turnPlayer1 = new Turn();
     const turnPlayer2 = new Turn();
-    
 
     // MOUSE CREATION
     const mouseInput = new MouseInput();
