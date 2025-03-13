@@ -13,15 +13,25 @@ export default class DeckCreator {
 
   createMainDeck() {
     const mainDeck = [];
+
     const cardFactory = new CardFactory(this.#cardsData);
 
-    for (let i = 0; i < this.#mainDeckConfig.length; i++) {
-      const cardId = this.#mainDeckConfig[i];
-      cardFactory.createCard(cardId);
-      mainDeck.push(cardFactory);
+    for (const cardCategory in this.#mainDeckConfig) {
+      const currentCategoryCards = this.#mainDeckConfig[cardCategory];
+      
+      for (let i = 0; i < currentCategoryCards.length; i++) {
+        const currentCardID = currentCategoryCards[i].card_id;
+        const currentCardQuantity = currentCategoryCards[i].quantity;
+
+        for (let j = 0; j < currentCardQuantity; j++) {
+          const currentCard = cardFactory.createCard(currentCardID, cardCategory);
+          mainDeck.push(currentCard);
+        }
+      }
     }
 
-    return new DeckContainer(mainDeck);
+    const deckContainer = new DeckContainer([mainDeck]);
+    return deckContainer;
   }
 
   createAllDecks(mainDeck) {
