@@ -1,15 +1,11 @@
 export default class Card {
   #id;
-  #nameENG;
-  #nameEUS;
-  #descriptionENG;
-  #descriptionEUS;
+  #name;
+  #description;
 
-  constructor(id, nameENG, nameEUS, descriptionENG, descriptionEUS) {
+  constructor(id, name, description) {
     this.#id = id;
-    this.#nameENG = nameENG;
-    this.#nameEUS = nameEUS;
-    this.#descriptionENG = descriptionENG;
-    this.#descriptionEUS = descriptionEUS;
+    this.#name = name;
+    this.#description = description;
   }
 }

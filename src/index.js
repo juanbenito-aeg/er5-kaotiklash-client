@@ -1,11 +1,12 @@
 import Game from "./Game/Game.js";
 
 // GLOBAL VARIABLES INITIALIZATION
- export const globals = {
+const globals = {
   canvas: {},
   ctx: {},
+  language: 0,
   game: {},
-  isFinished: false
+  isFinished: false,
 };
 
 function initGameScreen() {
