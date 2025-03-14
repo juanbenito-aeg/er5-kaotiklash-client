@@ -1,4 +1,10 @@
 import { globals } from "../index.js";
+import PrepareEventPhase from "./PrepareEventPhase.js";
+import PerformEventPhase from "./PerformEventPhase.js";
+import MovePhase from "./MovePhase.js";
+import DrawCardPhase from "./DrawCardPhase.js";
+import DiscardCardPhase from "./DiscardCardPhase.js";
+import AttackPhase from "./AttackPhase.js";
 
 export default class Turn {
   #phases;
@@ -17,9 +23,21 @@ export default class Turn {
   }
 
   create() {
-    if (this.#phases.length > 0) {
-      this.execute();
-    }
+    const prepareEvent = new PrepareEventPhase();
+    const performEvent = new PerformEventPhase();
+    const movePhase = new MovePhase();
+    const drawCardPhase = new DrawCardPhase();
+    const discardCard = new DiscardCardPhase();
+    const attack = new AttackPhase();
+
+    this.#phases = [
+      drawCardPhase,
+      prepareEvent,
+      performEvent,
+      movePhase,
+      attack,
+      discardCard,
+    ];
   }
 
   execute() {
@@ -31,7 +49,7 @@ export default class Turn {
 
     this.#numOfExceccutePhase++;
 
-    if (this.#numOfExceccutePhase === this.#phases.length) {
+    if (this.#numOfExceccutePhase === 5) {
       globals.isFinished = true;
       this.changeTurn(this.player);
     }
