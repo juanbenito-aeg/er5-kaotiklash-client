@@ -25,4 +25,45 @@ const ChaoticEventID = {
   CONSTANT_SWAP: 3,
 };
 
-export { Language, Category, MainCharacterID, ChaoticEventID };
+const PhaseState = {
+  INIT:               0,
+  SELECT_HAND_CARD:   1,
+  SELECT_TARGET_GRID: 2,
+  MOVE_CARD:          3,
+  END:                4,
+  DRAW_CARD:          5
+};
+
+const CardState = {
+  NOT_SELECTED:    0,
+  MOVING:          1,
+  PLACED:          2,
+  SELECTED:        3,
+  HOVERED:         4,
+  DISCARDED:       5
+};
+
+const BoxState = {
+  EMPTY:        0,
+  AVARIABLE:    1,
+  HOVERED:      2,
+  SELECTED:     3,
+  OCCUPIED:     4
+};
+
+const DiscardCardState = {
+  INIT:                   0,
+  SELECT_CARD_TO_DISCARD: 1,
+  END:                    2
+}
+
+const MovePhaseState = {
+  INIT: 0,
+  SELECT_CARD: 1,
+  SELECT_TARGET: 2,
+  MOVE_CARD: 3,
+  END: 4
+};
+
+
+export { Language, Category, MainCharacterID, ChaoticEventID, PhaseState, CardState, BoxState, DiscardCardState, MovePhaseState };
