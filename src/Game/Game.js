@@ -7,6 +7,7 @@ import Turn from "../Turns/Turn.js";
 import MouseInput from "./MouseInput.js";
 import CardView from "../Decks/CardView.js";
 import ImageSet from "./ImageSet.js";
+import { CardCategory, MinionType, ArmorType } from "./constants.js";
 
 export default class Game {
   #players;
@@ -38,17 +39,198 @@ export default class Game {
     let deckContainer = deckCreator.createMainDeck();
     deckContainer = deckCreator.createAllDecks(deckContainer.getDecks()[0]);
 
-    // TODO: CREATE "CardView" OBJECTS
-    const cardView = [];
-    const cards = deckContainer.getDecks()[0];
+    // APPLICATION OF THE "CardView" DECORATOR TO ALL THE CARDS
+    for (let i = 0; i < deckContainer.getDecks().length; i++) {
+      const currentDeck = deckContainer.getDecks()[i];
 
-    for(let i = 0; i < cards.length; i++){
-      const x = i * 0;
-      const y = 0;
-      const imageSet = new ImageSet();
-      cardViewCreate = new CardView(x, y, imageSet);
-      cardView.push(cardViewCreate);
+      for (let j = 0; j < currentDeck.getCards().length; j++) {
+        let currentCard = currentDeck.getCards()[j];
+
+        const bigVersionReverse = new Image();
+        bigVersionReverse.src = "../../images/version_big_reverse.png";
+        const bigVersionReverseImageSet = new ImageSet(
+          bigVersionReverse,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        );
+
+        const smallVersionReverse = new Image();
+        smallVersionReverse.src = "../../images/version_small_reverse.png";
+        const smallVersionReverseImageSet = new ImageSet(
+          smallVersionReverse,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        );
+
+        const bigVersion = new Image();
+        const smallVersion = new Image();
+        const bigVersionTemplate = new Image();
+        const smallVersionTemplate = new Image();
+        const icons = [];
+        const iconsImageSets = [];
+
+        switch (currentCard.getCategory()) {
+          case CardCategory.MAIN_CHARACTER:
+            bigVersion.src =
+              cardsData.main_characters[
+                currentCard.getID()
+              ].big_version_img_src;
+
+            smallVersion.src =
+              cardsData.main_characters[
+                currentCard.getID()
+              ].small_version_img_src;
+
+            bigVersionTemplate.src = "¿?"; // NEW COMMON TEMPLATE FOR MCs NEEDED
+
+            smallVersionTemplate.src = "¿?"; // NEW COMMON TEMPLATE FOR MCs NEEDED
+
+            break;
+
+          case CardCategory.MINION:
+            bigVersion.src =
+              cardsData.minions[currentCard.getID()].big_version_img_src;
+
+            smallVersion.src =
+              cardsData.minions[currentCard.getID()].small_version_img_src;
+
+            if (currentCard.getMinionType() === MinionType.SPECIAL) {
+              bigVersionTemplate.src =
+                "../../images/minions/special/templates/version_big.png";
+            } else if (currentCard.getMinionType() === MinionType.WARRIOR) {
+              bigVersionTemplate.src =
+                "../../images/minions/warriors/templates/version_big.png";
+            } else {
+              bigVersionTemplate.src =
+                "../../images/minions/wizards/templates/version_big.png";
+            }
+
+            smallVersionTemplate.src =
+              "../../images/common_templates/version_small_minion.png";
+
+            break;
+
+          case CardCategory.ARMOR:
+            bigVersion.src =
+              cardsData.armor[currentCard.getID()].big_version_img_src;
+
+            smallVersion.src =
+              cardsData.armor[currentCard.getID()].small_version_img_src;
+
+            if (
+              currentCard.getArmorType() === ArmorType.LIGHT ||
+              currentCard.getArmorType() === ArmorType.HEAVY
+            ) {
+              bigVersionTemplate.src =
+                "../../images/armor/templates/types_light_heavy.png";
+            } else {
+              bigVersionTemplate.src =
+                "../../images/armor/templates/type_medium.png";
+            }
+
+            smallVersionTemplate.src =
+              "../../images/common_templates/version_small_event.png";
+
+            break;
+
+          case CardCategory.WEAPON:
+            bigVersion.src =
+              cardsData.weapons[currentCard.getID()].big_version_img_src;
+
+            smallVersion.src =
+              cardsData.weapons[currentCard.getID()].small_version_img_src;
+
+            bigVersionTemplate.src = "../images/weapons/version_big.png";
+
+            smallVersionTemplate.src =
+              "../images/common_templates/version_small_event.png";
+
+            break;
+
+          case CardCategory.SPECIAL:
+            bigVersion.src =
+              cardsData.special[currentCard.getID()].big_version_img_src;
+
+            smallVersion.src =
+              cardsData.special[currentCard.getID()].small_version_img_src;
+
+            bigVersionTemplate.src = "../../images/special/version_big.png";
+
+            smallVersionTemplate.src =
+              "../images/common_templates/version_small_event.png.png";
+
+            break;
+
+          case CardCategory.RARE:
+            bigVersion.src =
+              cardsData.rare[currentCard.getID()].big_version_img_src;
+
+            smallVersion.src =
+              cardsData.rare[currentCard.getID()].small_version_img_src;
+
+            bigVersionTemplate.src = "../../images/rare/version_big.png";
+
+            smallVersionTemplate.src =
+              "../images/common_templates/version_small_event.png.png";
+
+            break;
+        }
+
+        const bigVersionImageSet = new ImageSet(bigVersion, 0, 0, 0, 0, 0, 0);
+
+        const smallVersionImageSet = new ImageSet(
+          smallVersion,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        );
+
+        const bigVersionTemplateImageSet = new ImageSet(
+          bigVersionTemplate,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        );
+
+        const smallVersionTemplateImageSet = new ImageSet(
+          smallVersionTemplate,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        );
+
+        currentCard = new CardView(
+          currentCard,
+          0,
+          0,
+          bigVersionReverseImageSet,
+          smallVersionReverseImageSet,
+          bigVersionImageSet,
+          smallVersionImageSet,
+          bigVersionTemplateImageSet,
+          smallVersionTemplateImageSet,
+          iconsImageSets
+        );
+      }
     }
+
     // BOARD CREATION
     const board = new Board();
     board.create();

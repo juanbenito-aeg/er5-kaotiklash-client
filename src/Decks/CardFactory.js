@@ -70,21 +70,17 @@ export default class CardFactory {
   #createMinion(rawCard) {
     let rawCardName = rawCard.name_eng;
     let rawCardDescription = rawCard.description_eng;
-    let rawCardMinionType =
-      this.#cardsData.minion_categories[rawCard.category_id - 1].name_eng;
 
     if (globals.language === Language.BASQUE) {
       rawCardName = rawCard.name_eus;
       rawCardDescription = rawCard.description_eus;
-      rawCardMinionType =
-        this.#cardsData.minion_categories[rawCard.category_id - 1].name_eus;
     }
 
     const processedCard = new Minion(
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
-      rawCardMinionType,
+      rawCard.category_id - 1,
       rawCard.hp,
       rawCard.madness,
       rawCard.strength,
@@ -125,15 +121,11 @@ export default class CardFactory {
   #createArmor(rawCard) {
     let rawCardName = rawCard.name_eng;
     let rawCardDescription = rawCard.description_eng;
-    let rawCardArmorType =
-      this.#cardsData.armor_types[rawCard.type_id - 1].name_eng;
     let rawCardSpecialEffect = rawCard.special_effect_eng;
 
     if (globals.language === Language.BASQUE) {
       rawCardName = rawCard.name_eus;
       rawCardDescription = rawCard.description_eus;
-      rawCardArmorType =
-        this.#cardsData.armor_types[rawCard.type_id - 1].name_eus;
       rawCardSpecialEffect = rawCard.special_effect_eus;
     }
 
@@ -141,7 +133,7 @@ export default class CardFactory {
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
-      rawCardArmorType,
+      rawCard.type_id,
       rawCardSpecialEffect,
       rawCard.durability,
       rawCard.prep_time_in_rounds

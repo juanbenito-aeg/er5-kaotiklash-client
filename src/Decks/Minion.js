@@ -33,4 +33,8 @@ export default class Minion extends Card {
     this.#constitution = constitution;
     this.#defense = defense;
   }
+
+  getMinionType() {
+    return this.#minionType;
+  }
 }
