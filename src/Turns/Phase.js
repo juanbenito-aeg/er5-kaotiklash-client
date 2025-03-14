@@ -1,9 +1,3 @@
-export default class Phase{
-    create() {
-
-    }
-
-    execute() {
-        
-    }
+export default class Phase {
+  execute() {}
 }
