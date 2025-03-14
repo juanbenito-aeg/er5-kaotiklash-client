@@ -36,29 +36,22 @@ export default class DiscardCardPhase extends Phase{
                     let cardToDiscard = null;
                     for (let j = 0; j < this.#cardsInHandDeck.length; j++) {
                         if (this.#cardsInHandDeck[j].box === box) {
-                            cardToDiscard = this.#cardsInHandDeck[j]; 
-                            return;
+                            cardToDiscard = this.#cardsInHandDeck[j];
                         }
                     }
 
                     if (cardToDiscard) {
-                        cardToDiscard.state = CardState.NOT_SELECTED;
-
-                        // Mover la carta al mazo de eventos
+                        cardToDiscard.state = CardState.DISCARDED;
                         this.#eventsDeck.push(cardToDiscard);
-
-                        // Limpiar la caja y cambiar el estado
                         box.state = BoxState.EMPTY;
-
-                        // Eliminar la carta del mazo de cartas en mano (usando un for)
                         for (let k = 0; k < this.#cardsInHandDeck.length; k++) {
                             if (this.#cardsInHandDeck[k] === cardToDiscard) {
-                                this.#cardsInHandDeck.splice(k, 1); // Eliminar la carta del mazo de cartas en mano
-                                break;
+                                this.#cardsInHandDeck.splice(k, 1); 
+                                return;
                             }
                         }
 
-                        this.#state = PhaseState.END; // Finalizar la fase de descarte
+                        this.#state = DiscardCardState.END; 
                     }
                 }
             }

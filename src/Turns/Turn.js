@@ -19,7 +19,9 @@ export default class Turn{
     }
 
     create() {
-        
+        if(this.#phases.length > 0){
+            this.execute();
+        }
     }
 
     execute() {
@@ -27,7 +29,7 @@ export default class Turn{
             const currentPhase = this.#phases[this.#numOfExceccutePhase];
         }
 
-        //PHASE'S LOGIC
+        currentPhase.execute();
 
         this.#numOfExceccutePhase++;
 
@@ -40,6 +42,7 @@ export default class Turn{
     changeTurn(player) {
         if (globals.isFinished){
             globals.isFinished = false;
+            this.#numOfExceccutePhase = 0;
             return true;
         }
         return false;
