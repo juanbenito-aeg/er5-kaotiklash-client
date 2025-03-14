@@ -33,7 +33,8 @@ export default class Game {
     cardsData = JSON.parse(cardsData);
     mainDeckConfig = JSON.parse(mainDeckConfig);
     const deckCreator = new DeckCreator(cardsData, mainDeckConfig);
-    const deckContainer = deckCreator.createMainDeck();
+    let deckContainer = deckCreator.createMainDeck();
+    deckContainer = deckCreator.createAllDecks(deckContainer.getDecks()[0]);
 
     // TODO: CREATE "CardView" OBJECTS
 

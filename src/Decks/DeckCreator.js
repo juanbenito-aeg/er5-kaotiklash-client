@@ -1,6 +1,7 @@
 import CardFactory from "./CardFactory.js";
+import Deck from "./Deck.js";
 import DeckContainer from "./DeckContainer.js";
-import { Category } from "../Game/constants.js";
+import { CardCategory, DeckType } from "../Game/constants.js";
 
 export default class DeckCreator {
   #cardsData;
@@ -12,20 +13,23 @@ export default class DeckCreator {
   }
 
   createMainDeck() {
-    const mainDeck = [];
+    const mainDeck = new Deck(DeckType.MAIN, []);
 
     const cardFactory = new CardFactory(this.#cardsData);
 
     for (const cardCategory in this.#mainDeckConfig) {
       const currentCategoryCards = this.#mainDeckConfig[cardCategory];
-      
+
       for (let i = 0; i < currentCategoryCards.length; i++) {
         const currentCardID = currentCategoryCards[i].card_id;
         const currentCardQuantity = currentCategoryCards[i].quantity;
 
         for (let j = 0; j < currentCardQuantity; j++) {
-          const currentCard = cardFactory.createCard(currentCardID, cardCategory);
-          mainDeck.push(currentCard);
+          const currentCard = cardFactory.createCard(
+            currentCardID,
+            cardCategory
+          );
+          mainDeck.insertCard(currentCard);
         }
       }
     }
@@ -35,58 +39,101 @@ export default class DeckCreator {
   }
 
   createAllDecks(mainDeck) {
-    const player1Decks = {
-      handDeck: [],
-      minionsInPlayDeck: [],
-      minionsDeck: [],
-      mainCharacterDeck: [],
-      preparationEventsDeck: []
-    };
+    // CREATION OF DECKS THAT DO NOT BELONG TO ANY PARTICULAR PLAYER
+    const events = new Deck(DeckType.EVENTS, []);
+    const joseph = new Deck(DeckType.JOSEPH, []);
 
-    const player2Decks = {
-      handDeck: [],
-      minionsInPlayDeck: [],
-      minionsDeck: [],
-      mainCharacterDeck: [],
-      preparationEventsDeck: []
-    };
+    // CREATION OF PLAYER 1'S DECKS
+    const player1MainCharacter = new Deck(DeckType.PLAYER_1_MAIN_CHARACTER, []);
+    const player1CardsInHand = new Deck(DeckType.PLAYER_1_CARDS_IN_HAND, []);
+    const player1Minions = new Deck(DeckType.PLAYER_1_MINIONS, []);
+    const player1MinionsInPlay = new Deck(
+      DeckType.PLAYER_1_MINIONS_IN_PLAY,
+      []
+    );
+    const player1EventsInPreparation = new Deck(
+      DeckType.PLAYER_1_EVENTS_IN_PREPARATION,
+      []
+    );
+    const player1ActiveEvents = new Deck(DeckType.PLAYER_1_ACTIVE_EVENTS, []);
 
-    const eventsDeck = [];
+    // CREATION OF PLAYER 2'S DECKS
+    const player2MainCharacter = new Deck(DeckType.PLAYER_2_MAIN_CHARACTER, []);
+    const player2CardsInHand = new Deck(DeckType.PLAYER_2_CARDS_IN_HAND, []);
+    const player2Minions = new Deck(DeckType.PLAYER_2_MINIONS, []);
+    const player2MinionsInPlay = new Deck(
+      DeckType.PLAYER_2_MINIONS_IN_PLAY,
+      []
+    );
+    const player2EventsInPreparation = new Deck(
+      DeckType.PLAYER_2_EVENTS_IN_PREPARATION,
+      []
+    );
+    const player2ActiveEvents = new Deck(DeckType.PLAYER_2_ACTIVE_EVENTS, []);
 
-    for (let i = 0; i < mainDeck.cardFactory.length; i++){
-        const card = mainDeck.cardFactory[i];
-        
-        switch(card.Category){
-            case Category.MAIN_CHARACTERS:
-                    player1Decks.mainCharacterDeck.push(card);
-                    player2Decks.mainCharacterDeck.push(card);
-                break;
-            case Category.MINIONS:
-                    player1Decks.minionsDeck.push(card);
-                    player2Decks.minionsDeck.push(card);
-                break;
-            case Category.EVENTS:
-                eventsDeck.push(card);
-                break;
-            case Category.PREPARATION_EVENTS:
-                player1Decks.preparationEventsDeck.push(card);
-                player2Decks.preparationEventsDeck.push(card);
-                break;
-            default:
-                    player1Decks.handDeck.push(card);
-                    player2Decks.handDeck.push(card);
-                    break;
-        }
+    // DETERMINE WHICH MAIN CHARACTERS WILL BE DEALT TO THE PLAYERS
+    const randomMainCharacterIDs = [-1, -1];
+    randomMainCharacterIDs[0] = Math.floor(Math.random() * 4);
+    randomMainCharacterIDs[1] = Math.floor(Math.random() * 4);
+    while (randomMainCharacterIDs[0] === randomMainCharacterIDs[1]) {
+      randomMainCharacterIDs[1] = Math.floor(Math.random() * 4);
     }
 
-    const allDecks = [
-        eventsDeck, player1Decks.preparationEventsDeck, player1Decks.handDeck, 
-        player1Decks.mainCharacterDeck, player1Decks.minionsDeck, 
-        player1Decks.minionsInPlayDeck, player2Decks.preparationEventsDeck,
-        player2Decks.handDeck, player2Decks.mainCharacterDeck, 
-        player2Decks.minionsDeck, player2Decks.minionsInPlayDeck
-    ];
-     
-    return new DeckContainer(allDecks);
+    let numOfDealtMainCharacters = 0;
+    let numOfDealtMinions = 0;
+
+    for (let i = 0; i < mainDeck.getCards().length; i++) {
+      const card = mainDeck.getCards()[i];
+
+      switch (card.getCategory()) {
+        case CardCategory.MAIN_CHARACTER:
+          if (
+            numOfDealtMainCharacters === 0 &&
+            (card.getID() === randomMainCharacterIDs[0] ||
+              card.getID() === randomMainCharacterIDs[1])
+          ) {
+            player1MainCharacter.insertCard(card);
+            numOfDealtMainCharacters++;
+          } else if (
+            numOfDealtMainCharacters === 1 &&
+            (card.getID() === randomMainCharacterIDs[0] ||
+              card.getID() === randomMainCharacterIDs[1])
+          ) {
+            player2MainCharacter.insertCard(card);
+          }
+          break;
+
+        case CardCategory.MINION:
+          if (numOfDealtMinions % 2 === 0) {
+            player1Minions.insertCard(card);
+          } else {
+            player2Minions.insertCard(card);
+          }
+          numOfDealtMinions++;
+          break;
+
+        case CardCategory.EVENT:
+          events.insertCard(card);
+          break;
+      }
+    }
+
+    const deckContainer = new DeckContainer([
+      events,
+      joseph,
+      player1MainCharacter,
+      player1CardsInHand,
+      player1Minions,
+      player1MinionsInPlay,
+      player1EventsInPreparation,
+      player1ActiveEvents,
+      player2MainCharacter,
+      player2CardsInHand,
+      player2Minions,
+      player2MinionsInPlay,
+      player2EventsInPreparation,
+      player2ActiveEvents,
+    ]);
+    return deckContainer;
   }
 }

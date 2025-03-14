@@ -1,6 +1,8 @@
 import Card from "./Card.js";
+import { CardCategory } from "../Game/constants.js";
 
 export default class Joseph extends Card {
+  #category = CardCategory.EVENT;
   #chaoticEventID;
   #chaoticEventName;
   #chaoticEventDescription;

@@ -14,4 +14,8 @@ export default class Deck {
   getCards() {
     return this.#cards;
   }
+
+  insertCard(card) {
+    this.#cards.push(card);
+  }
 }
