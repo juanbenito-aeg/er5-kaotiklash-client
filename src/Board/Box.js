@@ -7,7 +7,8 @@ export default class Box {
     #isDangerous;
     #stateMachine;
     #state;
-  
+    #isClicked;
+    
     constructor(xCoordinate, yCoordinate, width, height, isAdvantageous, isDangerous, stateMachine, state) {
       this.#xCoordinate = xCoordinate;
       this.#yCoordinate = yCoordinate;
@@ -17,6 +18,7 @@ export default class Box {
       this.#isDangerous = isDangerous;
       this.#stateMachine = stateMachine;
       this.#state = state;
+      this.#isClicked = false;
     }
   
     get xCoordinate() {
