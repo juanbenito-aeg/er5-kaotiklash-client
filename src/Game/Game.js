@@ -5,6 +5,8 @@ import mainDeckConfig from "../mainDeck.json";
 import Board from "../Board/Board.js";
 import Turn from "../Turns/Turn.js";
 import MouseInput from "./MouseInput.js";
+import CardView from "../Decks/CardView.js";
+import ImageSet from "./ImageSet.js";
 
 export default class Game {
   #players;
@@ -37,7 +39,16 @@ export default class Game {
     deckContainer = deckCreator.createAllDecks(deckContainer.getDecks()[0]);
 
     // TODO: CREATE "CardView" OBJECTS
+    const cardView = [];
+    const cards = deckContainer.getDecks()[0];
 
+    for(let i = 0; i < cards.length; i++){
+      const x = i * 0;
+      const y = 0;
+      const imageSet = new ImageSet();
+      cardViewCreate = new CardView(x, y, imageSet);
+      cardView.push(cardViewCreate);
+    }
     // BOARD CREATION
     const board = new Board();
     board.create();
