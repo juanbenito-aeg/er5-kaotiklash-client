@@ -8,7 +8,8 @@
       "description_eus": "Bost urterekin lurralde gogorretan abandonatua, Lucretiak biziraupena menperatu zuen. Elixir gaztetzaile batek bere burua aldarazi zuen, iruzurra eta gaueko lapurreta ikusezina zorrozten.",
       "special_skill_eng": "Turns enemy minions into melee-only deer. A potion card appears in the enemy's event area (2-round prep) to undo the effect but poisons them for 2 rounds. If the area is full, it replaces a random card.",
       "special_skill_eus": "Etsaiaren morroiak orein bihurtzen ditu, hurbileko erasora mugatuta. Eragina kentzeko, baina pozoia emanez, etsaiaren eremuan edabe bat agertzen da. Beteta badago, karta bat ordezkatzen du.",
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 2,
@@ -18,7 +19,8 @@
       "description_eus": "Angelo, gazte aberatsa, bere jauregia erre eta kaosaz gozatu zuen. Kartzelatik irtenda, Ethazium sortu zuen, Kaotikako izaki ilunenak erakartzen zituen edabe hilgarria.",
       "special_skill_eng": "The inn's light shatters at turn's end, darkening the board. Angelo's lamp lets the user see through a circle around the mouse, while the enemy sees only card outlines.",
       "special_skill_eus": "Aterpeko argia apurtzen da, taula ilunduz. Angeloren lanparak erabiltzaileari zirkulu baten bidez ikusteko aukera ematen dio, etsaiak kartetako ertzak bakarrik ikusten ditu.",
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 3,
@@ -28,7 +30,8 @@
       "description_eus": "XG, urregile magoen semea da, haserre arazoak dituena. Betaurreko arkanoak kaos mentala kontrolatzen dute eta aldi beran gehiegizko hidratazioa ematen dute. Impulsoak menperatu behar ditu oinordeko duin bat izateko.",
       "special_skill_eng": "XG loses his glasses, causing him to become furious. As a result, his minions receive a super boost of x1.75 on their “Madness” and “Strength” attributes.",
       "special_skill_eus": "XG-k betaurrekoak galtzen ditu eta amorratzen da. Ondorioz, bere minion-ek sekulako hobekuntza (x1.75) jasotzen dute bere “Erotasuna” eta “Indarra” atributuetan.",
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 4,
@@ -38,7 +41,8 @@
       "description_eus": "Tronu Zaharra, Lehen Aroan forjatua izan zen, nobleziaren ikurra izanda. Honen azken oinordekoa, Joseph, goblinengatik obsesionatuta dagoena, tronuarekin fusionatu zen, betiko torturan arrapatuz.",
       "special_skill_eng": "The throne attracts the foe minions to the front combat area, as if it were a curse, and nullifies any type of action of the enemy during their next turn.",
       "special_skill_eus": "Tronuak aurreko borroka-eremura erakartzen ditu etsaiaren minion-ak, madarikazio bat balitz bezala, eta etsaiaren edozein ekintza bertan behera uzten du hurrengo txandan.",
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 5,
@@ -48,7 +52,8 @@
       "description_eus": "Joseph, tronu zaharkituaren azken oinordekoa, bat bihurtu zen bere aulki ustelarekin, eromenean galduta. Gauero, bera suntsitzen duten iratxoen gainean egiten du eldarnioa, bere patu dekadenteari itsututa.",
       "special_skill_eng": null,
       "special_skill_eus": null,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     }
   ],
   "joseph_chaotic_events": [
@@ -99,7 +104,8 @@
       "attack": 10,
       "constitution": 10,
       "defense": 5,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 2,
@@ -114,7 +120,8 @@
       "attack": 28,
       "constitution": 45,
       "defense": 38,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 3,
@@ -129,7 +136,8 @@
       "attack": 38,
       "constitution": 35,
       "defense": 23,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 4,
@@ -144,7 +152,8 @@
       "attack": 35,
       "constitution": 40,
       "defense": 25,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 5,
@@ -159,7 +168,8 @@
       "attack": 20,
       "constitution": 25,
       "defense": 20,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 6,
@@ -174,7 +184,8 @@
       "attack": 40,
       "constitution": 30,
       "defense": 10,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 7,
@@ -189,7 +200,8 @@
       "attack": 23,
       "constitution": 20,
       "defense": 15,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 8,
@@ -204,7 +216,8 @@
       "attack": 23,
       "constitution": 20,
       "defense": 13,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 9,
@@ -219,7 +232,8 @@
       "attack": 25,
       "constitution": 25,
       "defense": 18,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 10,
@@ -234,7 +248,8 @@
       "attack": 38,
       "constitution": 30,
       "defense": 15,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 11,
@@ -249,7 +264,8 @@
       "attack": 18,
       "constitution": 15,
       "defense": 10,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     }
   ],
   "minion_categories": [
@@ -281,7 +297,8 @@
       "special_effect_eng": "If an enemy attacks, the damage is reflected back onto them.",
       "durability": 50,
       "prep_time_in_rounds": 3,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 2,
@@ -294,7 +311,8 @@
       "special_effect_eng": "Once, allows the user to dodge a melee attack.",
       "durability": 10,
       "prep_time_in_rounds": 1,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 3,
@@ -307,7 +325,8 @@
       "special_effect_eng": "Every time the wearer takes an attack, their next attack gains +10 damage.",
       "durability": 30,
       "prep_time_in_rounds": 2,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 4,
@@ -320,7 +339,8 @@
       "special_effect_eng": "After blocking an attack, the wearer’s next attack gains +15 damage.",
       "durability": 20,
       "prep_time_in_rounds": 1,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 5,
@@ -333,7 +353,8 @@
       "special_effect_eng": "null",
       "durability": 40,
       "prep_time_in_rounds": 4,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 6,
@@ -346,7 +367,8 @@
       "special_effect_eng": "If the wearer blocks an attack, the attacker receives a counterattack dealing 20 damage.",
       "durability": 20,
       "prep_time_in_rounds": 2,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 7,
@@ -359,7 +381,8 @@
       "special_effect_eng": "Once, allows the wearer to ignore a critical attack.",
       "durability": 15,
       "prep_time_in_rounds": 1,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 8,
@@ -372,7 +395,8 @@
       "special_effect_eng": "null",
       "durability": 25,
       "prep_time_in_rounds": 2,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     }
   ],
   "armor_types": [
@@ -403,7 +427,8 @@
       "damage": 20,
       "durability": 20,
       "prep_time_in_rounds_in_rounds": 2,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 2,
@@ -415,7 +440,8 @@
       "damage": 25,
       "durability": 40,
       "prep_time_in_rounds_in_rounds": 3,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 3,
@@ -427,7 +453,8 @@
       "damage": 35,
       "durability": 20,
       "prep_time_in_rounds_in_rounds": 3,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 4,
@@ -439,7 +466,8 @@
       "damage": 10,
       "durability": 15,
       "prep_time_in_rounds_in_rounds": 1,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 5,
@@ -451,7 +479,8 @@
       "damage": 20,
       "durability": 10,
       "prep_time_in_rounds_in_rounds": 2,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 6,
@@ -463,7 +492,8 @@
       "damage": 25,
       "durability": 15,
       "prep_time_in_rounds_in_rounds": 2,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 7,
@@ -475,7 +505,8 @@
       "damage": 15,
       "durability": 10,
       "prep_time_in_rounds_in_rounds": 1,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 8,
@@ -487,7 +518,8 @@
       "damage": 45,
       "durability": 1,
       "prep_time_in_rounds_in_rounds": 4,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     }
   ],
   "weapon_types": [
@@ -517,7 +549,8 @@
       "effect_eng": "Steal two extra cards, but you must discard one from your current hand.",
       "effect_eus": "Bi karta gehigarri lapurtzen dituzu, baina zure esku egungo batean bat baztertu behar duzu.",
       "duration_in_rounds": 0,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 2,
@@ -528,7 +561,8 @@
       "effect_eng": "Steal a random card from the enemy and exchange it for one of yours.",
       "effect_eus": "Etsaiari ausazko txartel bat lapurtu eta zureetako batengatik trukatu.",
       "duration_in_rounds": 0,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 3,
@@ -539,7 +573,8 @@
       "effect_eng": "Steal an enemy's event in preparation, but you'll have to wait two turns to use it.",
       "effect_eus": "Prestakuntzan dagoen etsaiaren ekitaldi bat lapurtzen duzu, baina bi txanda itxaron beharko dituzu hau erabiltzeko.",
       "duration_in_rounds": 0,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 4,
@@ -550,7 +585,8 @@
       "effect_eng": "Adds protection for each minion in play.",
       "effect_eus": "Jokoan dauden minion guztientzat babesa gehitzen du.",
       "duration_in_rounds": 2,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 5,
@@ -561,7 +597,8 @@
       "effect_eng": "If your HP is below 50%, all your minions gain +4 attack.",
       "effect_eus": "Zure HP %50 baino gutxiago baldin bada, zure minion guztiek +4 eraso irabazten dute.",
       "duration_in_rounds": 3,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 6,
@@ -572,7 +609,8 @@
       "effect_eng": "The opponent and their minions cannot self-heal at the end of their turn.",
       "effect_eus": "Aurkariak eta bere minionek ezin dute beren burua sendatu txandaren amaieran.",
       "duration_in_rounds": 2,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     }
   ],
   "special": [
@@ -586,7 +624,8 @@
       "effect_eus": "Pertsonaia nagusia deitu.",
       "duration_in_rounds": 3,
       "prep_time_in_rounds_in_rounds": 0,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 2,
@@ -598,7 +637,8 @@
       "effect_eus": "Aste honetan ez du inongo eraso egiteko aukera izango.",
       "duration_in_rounds": 0,
       "prep_time_in_rounds_in_rounds": 1,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 3,
@@ -610,7 +650,8 @@
       "effect_eus": "Amezuloen armaduran, erresistentziaren erdiari uko egiten du.",
       "duration_in_rounds": 0,
       "prep_time_in_rounds_in_rounds": 0,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 4,
@@ -622,7 +663,8 @@
       "effect_eus": "Etsaiak 5 osasun puntu galtzen ditu txanda bakoitzean iraupena bukatu bitartean. Efektu hau bitartean ezin da sendatu.",
       "duration_in_rounds": 3,
       "prep_time_in_rounds_in_rounds": 2,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 5,
@@ -634,7 +676,8 @@
       "effect_eus": "Iraupen honetan, etsaiak 3 kalte gutxiago egiten du bere erasotan.",
       "duration_in_rounds": 3,
       "prep_time_in_rounds_in_rounds": 1,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 6,
@@ -646,7 +689,8 @@
       "effect_eus": "Eraso eta defentsa puntu 7 puntu handitzen ditu minio guztientzat.",
       "duration_in_rounds": 2,
       "prep_time_in_rounds_in_rounds": 2,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 7,
@@ -658,7 +702,8 @@
       "effect_eus": "Erabiltzailearen eraso indarra bikoizten du efektuaren iraupenean.",
       "duration_in_rounds": 2,
       "prep_time_in_rounds_in_rounds": 1,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 8,
@@ -670,7 +715,8 @@
       "effect_eus": "Aliatu bati 10 osasun berreskuratzen dizkio",
       "duration_in_rounds": 0,
       "prep_time_in_rounds_in_rounds": 2,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     },
     {
       "id": 9,
@@ -682,7 +728,8 @@
       "effect_eus": "Lucretia-ren madarikazioa ezabatzen du eta orein bihurtzeko prozesua leheneratzen du. Gainera, erabiltzailearen minion-ak txanda bakoitzean 5 kolpe-puntuko kaltea eraginez pozoitzen ditu.",
       "duration_in_rounds": 2,
       "prep_time_in_rounds_in_rounds": 2,
-      "image_source": null
+      "big_version_img_src": "../images/main_characters/xg.png",
+      "small_version_img_src": "../images/main_characters/xg.png"
     }
   ]
 }
