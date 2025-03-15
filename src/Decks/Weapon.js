@@ -1,14 +1,13 @@
 import Card from "./Card.js";
-import { CardCategory } from "../Game/constants.js";
 
 export default class Weapon extends Card {
-  #category = CardCategory.WEAPON;
   #weaponType;
   #damage;
   #durability;
   #prepTimeInRounds;
 
   constructor(
+    category,
     id,
     name,
     description,
@@ -17,7 +16,7 @@ export default class Weapon extends Card {
     durability,
     prepTimeInRounds
   ) {
-    super(id, name, description);
+    super(category, id, name, description);
 
     this.#weaponType = weaponType;
     this.#damage = damage;

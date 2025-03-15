@@ -6,7 +6,7 @@ import Armor from "./Armor.js";
 import Special from "./Special.js";
 import Rare from "./Rare.js";
 import { globals } from "../index.js";
-import { Language, MainCharacterID } from "../Game/constants.js";
+import { Language, CardCategory, MainCharacterID } from "../Game/constants.js";
 
 export default class CardFactory {
   #cardsData;
@@ -27,6 +27,7 @@ export default class CardFactory {
     }
 
     const processedCard = new MainCharacter(
+      CardCategory.MAIN_CHARACTER,
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
@@ -56,6 +57,7 @@ export default class CardFactory {
     }
 
     const processedCard = new Joseph(
+      CardCategory.SPECIAL,
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
@@ -77,6 +79,7 @@ export default class CardFactory {
     }
 
     const processedCard = new Minion(
+      CardCategory.MINION,
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
@@ -106,6 +109,7 @@ export default class CardFactory {
     }
 
     const processedCard = new Weapon(
+      CardCategory.WEAPON,
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
@@ -130,6 +134,7 @@ export default class CardFactory {
     }
 
     const processedCard = new Armor(
+      CardCategory.ARMOR,
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
@@ -154,6 +159,7 @@ export default class CardFactory {
     }
 
     const processedCard = new Special(
+      CardCategory.SPECIAL,
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
@@ -177,6 +183,7 @@ export default class CardFactory {
     }
 
     const processedCard = new Rare(
+      CardCategory.RARE,
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
