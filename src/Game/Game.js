@@ -1,7 +1,5 @@
 import Player from "./Player.js";
 import DeckCreator from "../Decks/DeckCreator.js";
-import cardsData from "../cardsData.json";
-import mainDeckConfig from "../mainDeck.json";
 import Board from "../Board/Board.js";
 import Turn from "../Turns/Turn.js";
 import MouseInput from "./MouseInput.js";
@@ -32,9 +30,12 @@ export default class Game {
     const player2 = new Player("Player 2");
     const players = [player1, player2];
 
+    // MAIN DECK CONFIGURATION FILE LOAD
+    const url = "./src/mainDeck.json";
+    const response = await fetch(url);
+    const mainDeckConfig = response.json();
+
     // DECKS CREATION
-    cardsData = JSON.parse(cardsData);
-    mainDeckConfig = JSON.parse(mainDeckConfig);
     const deckCreator = new DeckCreator(cardsData, mainDeckConfig);
     let deckContainer = deckCreator.createMainDeck();
     deckContainer = deckCreator.createAllDecks(deckContainer.getDecks()[0]);

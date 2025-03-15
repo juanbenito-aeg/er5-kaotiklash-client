@@ -1,3 +1,11 @@
+const GameState = {
+  INVALID: -1,
+  FAKE_CARDS_DISPLAY: 0,
+};
+
+// FPS (FRAMES PER SECOND)
+const FPS = 30;
+
 const Language = {
   ENGLISH: 0,
   BASQUE: 1,
@@ -102,6 +110,8 @@ const DrawCardState = {
 };
 
 export {
+  GameState,
+  FPS,
   Language,
   CardCategory,
   MinionType,
