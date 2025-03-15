@@ -2,7 +2,7 @@ import Card from "./Card.js";
 import { CardCategory } from "../Game/constants.js";
 
 export default class Weapon extends Card {
-  #category = CardCategory.EVENT;
+  #category = CardCategory.WEAPON;
   #weaponType;
   #damage;
   #durability;

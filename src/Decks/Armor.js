@@ -2,7 +2,7 @@ import Card from "./Card.js";
 import { CardCategory } from "../Game/constants.js";
 
 export default class Armor extends Card {
-  #category = CardCategory.EVENT;
+  #category = CardCategory.ARMOR;
   #armorType;
   #specialEffect;
   #durability;
@@ -23,5 +23,9 @@ export default class Armor extends Card {
     this.#specialEffect = specialEffect;
     this.#durability = durability;
     this.#prepTimeInRounds = prepTimeInRounds;
+  }
+
+  getArmorType() {
+    return this.#armorType;
   }
 }

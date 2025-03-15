@@ -2,7 +2,7 @@ import Card from "./Card.js";
 import { CardCategory } from "../Game/constants.js";
 
 export default class Special extends Card {
-  #category = CardCategory.EVENT;
+  #category = CardCategory.SPECIAL;
   #effect;
   #durationInRounds;
   #prepTimeInRounds;
