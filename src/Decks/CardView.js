@@ -1,12 +1,37 @@
 export default class CardView {
+  #card;
   #xCoordinate;
   #yCoordinate;
-  #imageSets;
+  #bigVersionReverseImageSet;
+  #smallVersionReverseImageSet;
+  #bigVersionImageSet;
+  #smallVersionImageSet;
+  #bigVersionTemplateImageSet;
+  #smallVersionTemplateImageSet;
+  #iconsImageSets;
 
-  constructor(xCoordinate, yCoordinate, imageSets) {
+  constructor(
+    card,
+    xCoordinate,
+    yCoordinate,
+    bigVersionReverseImageSet,
+    smallVersionReverseImageSet,
+    bigVersionImageSet,
+    smallVersionImageSet,
+    bigVersionTemplateImageSet,
+    smallVersionTemplateImageSet,
+    iconsImageSets
+  ) {
+    this.#card = card;
     this.#xCoordinate = xCoordinate;
     this.#yCoordinate = yCoordinate;
-    this.#imageSets = imageSets;
+    this.#bigVersionReverseImageSet = bigVersionReverseImageSet;
+    this.#smallVersionReverseImageSet = smallVersionReverseImageSet;
+    this.#bigVersionImageSet = bigVersionImageSet;
+    this.#smallVersionImageSet = smallVersionImageSet;
+    this.#bigVersionTemplateImageSet = bigVersionTemplateImageSet;
+    this.#smallVersionTemplateImageSet = smallVersionTemplateImageSet;
+    this.#iconsImageSets = iconsImageSets;
   }
 
   getXCoordinate() {
@@ -19,15 +44,9 @@ export default class CardView {
 
   setXCoordinate(newXCoordinate) {
     this.#xCoordinate = newXCoordinate;
-    return this.#xCoordinate;
   }
 
   setYCoordinate(newYCoordinate) {
     this.#yCoordinate = newYCoordinate;
-    return this.#yCoordinate;
-  }
-
-  getImageSets() {
-    return this.#imageSets;
   }
 }

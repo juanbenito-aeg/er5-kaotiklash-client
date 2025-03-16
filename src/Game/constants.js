@@ -6,7 +6,22 @@ const Language = {
 const CardCategory = {
   MAIN_CHARACTER: 0,
   MINION: 1,
-  EVENT: 2,
+  ARMOR: 2,
+  WEAPON: 3,
+  SPECIAL: 4,
+  RARE: 5,
+};
+
+const MinionType = {
+  SPECIAL: 0,
+  WARRIOR: 1,
+  WIZARD: 2,
+};
+
+const ArmorType = {
+  LIGHT: 0,
+  MEDIUM: 1,
+  HEAVY: 2,
 };
 
 const DeckType = {
@@ -89,6 +104,8 @@ const DrawCardState = {
 export {
   Language,
   CardCategory,
+  MinionType,
+  ArmorType,
   DeckType,
   MainCharacterID,
   ChaoticEventID,

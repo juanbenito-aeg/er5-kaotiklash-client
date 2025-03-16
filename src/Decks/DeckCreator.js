@@ -112,7 +112,8 @@ export default class DeckCreator {
           numOfDealtMinions++;
           break;
 
-        case CardCategory.EVENT:
+        // CARD CATEGORY -> EVENT
+        default:
           events.insertCard(card);
           break;
       }
