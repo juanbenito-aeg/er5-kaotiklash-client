@@ -4,7 +4,8 @@ export default class Card {
   #name;
   #description;
 
-  constructor(id, name, description) {
+  constructor(category, id, name, description) {
+    this.#category = category;
     this.#id = id;
     this.#name = name;
     this.#description = description;

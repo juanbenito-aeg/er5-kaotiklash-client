@@ -1,6 +1,40 @@
+const GameState = {
+  INVALID: -1,
+  FAKE_CARDS_DISPLAY: 0,
+};
+
+// FPS (FRAMES PER SECOND)
+const FPS = 30;
+
 const Language = {
   ENGLISH: 0,
   BASQUE: 1,
+};
+
+const TemplateID = {
+  MAIN_CHARACTERS_SMALL: 0,
+  MINIONS_AND_EVENTS_SMALL: 1,
+};
+
+const IconID = {
+  ATTACK_DAMAGE_DIAMOND: 0,
+  DEFENSE_DURABILITY_DIAMOND: 1,
+  MINION_SPECIAL_TYPE: 2,
+  MINION_WARRIOR_TYPE: 3,
+  MINION_WIZARD_TYPE: 4,
+  MINION_HP_DIAMOND: 5,
+  EVENT_TYPE_CIRCLE: 6,
+  EVENT_PREP_TIME_DIAMOND: 7,
+  EVENT_DURATION_DIAMOND: 8,
+  EVENT_EFFECT_DIAMOND: 9,
+  WEAPON_MELEE_TYPE: 10,
+  WEAPON_MISSILE_TYPE: 11,
+  WEAPON_HYBRID_TYPE: 12,
+  ARMOR_LIGHT_TYPE: 13,
+  ARMOR_MEDIUM_TYPE: 14,
+  ARMOR_HEAVY_TYPE: 15,
+  SPECIAL_TYPE: 16,
+  RARE_TYPE: 17,
 };
 
 const CardCategory = {
@@ -16,6 +50,12 @@ const MinionType = {
   SPECIAL: 0,
   WARRIOR: 1,
   WIZARD: 2,
+};
+
+const WeaponType = {
+  MELEE: 0,
+  MISSILE: 1,
+  HYBRID: 2,
 };
 
 const ArmorType = {
@@ -102,9 +142,14 @@ const DrawCardState = {
 };
 
 export {
+  GameState,
+  FPS,
   Language,
+  TemplateID,
+  IconID,
   CardCategory,
   MinionType,
+  WeaponType,
   ArmorType,
   DeckType,
   MainCharacterID,

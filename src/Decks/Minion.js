@@ -1,8 +1,6 @@
 import Card from "./Card.js";
-import { CardCategory } from "../Game/constants.js";
 
 export default class Minion extends Card {
-  #category = CardCategory.MINION;
   #minionType;
   #hp;
   #madness;
@@ -12,6 +10,7 @@ export default class Minion extends Card {
   #defense;
 
   constructor(
+    category,
     id,
     name,
     description,
@@ -23,7 +22,7 @@ export default class Minion extends Card {
     constitution,
     defense
   ) {
-    super(id, name, description);
+    super(category, id, name, description);
 
     this.#minionType = minionType;
     this.#hp = hp;

@@ -6,15 +6,15 @@ import Armor from "./Armor.js";
 import Special from "./Special.js";
 import Rare from "./Rare.js";
 import { globals } from "../index.js";
-import { Language, MainCharacterID } from "../Game/constants.js";
+import {
+  Language,
+  CardCategory,
+  MainCharacterID,
+  WeaponType,
+  ArmorType,
+} from "../Game/constants.js";
 
 export default class CardFactory {
-  #cardsData;
-
-  constructor(cardsData) {
-    this.#cardsData = cardsData;
-  }
-
   #createMainCharacter(rawCard) {
     let rawCardName = rawCard.name_eng;
     let rawCardDescription = rawCard.description_eng;
@@ -27,6 +27,7 @@ export default class CardFactory {
     }
 
     const processedCard = new MainCharacter(
+      CardCategory.MAIN_CHARACTER,
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
@@ -44,7 +45,7 @@ export default class CardFactory {
 
     const chaoticEventID = Math.floor(Math.random() * 4);
     const gottenChaoticEvent =
-      this.#cardsData.joseph_chaotic_events[chaoticEventID];
+      globals.cardsData.joseph_chaotic_events[chaoticEventID];
     let chaoticEventName = gottenChaoticEvent.name_eng;
     let chaoticEventDescription = gottenChaoticEvent.description_eng;
 
@@ -56,6 +57,7 @@ export default class CardFactory {
     }
 
     const processedCard = new Joseph(
+      CardCategory.MAIN_CHARACTER,
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
@@ -77,6 +79,7 @@ export default class CardFactory {
     }
 
     const processedCard = new Minion(
+      CardCategory.MINION,
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
@@ -95,21 +98,27 @@ export default class CardFactory {
   #createWeapon(rawCard) {
     let rawCardName = rawCard.name_eng;
     let rawCardDescription = rawCard.description_eng;
-    let rawCardWeaponType =
-      this.#cardsData.weapon_types[rawCard.type_id - 1].name_eng;
 
     if (globals.language === Language.BASQUE) {
       rawCardName = rawCard.name_eus;
       rawCardDescription = rawCard.description_eus;
-      rawCardWeaponType =
-        this.#cardsData.weapon_types[rawCard.type_id - 1].name_eus;
+    }
+
+    let weaponType;
+    if (rawCard.type_id === 1) {
+      weaponType = WeaponType.MELEE;
+    } else if (rawCard.type_id === 2) {
+      weaponType = WeaponType.MISSILE;
+    } else {
+      weaponType = WeaponType.HYBRID;
     }
 
     const processedCard = new Weapon(
+      CardCategory.WEAPON,
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
-      rawCardWeaponType,
+      weaponType,
       rawCard.damage,
       rawCard.durability,
       rawCard.prep_time_in_rounds
@@ -129,11 +138,21 @@ export default class CardFactory {
       rawCardSpecialEffect = rawCard.special_effect_eus;
     }
 
+    let armorType;
+    if (rawCard.type_id === 1) {
+      armorType = ArmorType.LIGHT;
+    } else if (rawCard.type_id === 2) {
+      armorType = ArmorType.MEDIUM;
+    } else {
+      armorType = ArmorType.HEAVY;
+    }
+
     const processedCard = new Armor(
+      CardCategory.ARMOR,
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
-      rawCard.type_id,
+      armorType,
       rawCardSpecialEffect,
       rawCard.durability,
       rawCard.prep_time_in_rounds
@@ -154,6 +173,7 @@ export default class CardFactory {
     }
 
     const processedCard = new Special(
+      CardCategory.SPECIAL,
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
@@ -177,6 +197,7 @@ export default class CardFactory {
     }
 
     const processedCard = new Rare(
+      CardCategory.RARE,
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
@@ -193,7 +214,7 @@ export default class CardFactory {
 
     switch (cardCategory) {
       case "main_characters":
-        rawCard = this.#cardsData.main_characters[cardID];
+        rawCard = globals.cardsData.main_characters[cardID];
         if (cardID !== MainCharacterID.JOSEPH) {
           processedCard = this.#createMainCharacter(rawCard);
         } else {
@@ -202,27 +223,27 @@ export default class CardFactory {
         break;
 
       case "minions":
-        rawCard = this.#cardsData.minions[cardID];
+        rawCard = globals.cardsData.minions[cardID];
         processedCard = this.#createMinion(rawCard);
         break;
 
       case "weapons":
-        rawCard = this.#cardsData.weapons[cardID];
+        rawCard = globals.cardsData.weapons[cardID];
         processedCard = this.#createWeapon(rawCard);
         break;
 
       case "armor":
-        rawCard = this.#cardsData.armor[cardID];
+        rawCard = globals.cardsData.armor[cardID];
         processedCard = this.#createArmor(rawCard);
         break;
 
       case "special":
-        rawCard = this.#cardsData.special[cardID];
+        rawCard = globals.cardsData.special[cardID];
         processedCard = this.#createSpecial(rawCard);
         break;
 
       case "rare":
-        rawCard = this.#cardsData.rare[cardID];
+        rawCard = globals.cardsData.rare[cardID];
         processedCard = this.#createRare(rawCard);
         break;
     }

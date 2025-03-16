@@ -1,14 +1,13 @@
 import Card from "./Card.js";
-import { CardCategory } from "../Game/constants.js";
 
 export default class Armor extends Card {
-  #category = CardCategory.ARMOR;
   #armorType;
   #specialEffect;
   #durability;
   #prepTimeInRounds;
 
   constructor(
+    category,
     id,
     name,
     description,
@@ -17,7 +16,7 @@ export default class Armor extends Card {
     durability,
     prepTimeInRounds
   ) {
-    super(id, name, description);
+    super(category, id, name, description);
 
     this.#armorType = armorType;
     this.#specialEffect = specialEffect;

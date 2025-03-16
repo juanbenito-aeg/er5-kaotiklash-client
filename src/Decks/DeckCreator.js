@@ -1,21 +1,19 @@
 import CardFactory from "./CardFactory.js";
 import Deck from "./Deck.js";
 import DeckContainer from "./DeckContainer.js";
-import { CardCategory, DeckType } from "../Game/constants.js";
+import { CardCategory, DeckType, MainCharacterID } from "../Game/constants.js";
 
 export default class DeckCreator {
-  #cardsData;
   #mainDeckConfig;
 
-  constructor(cardsData, mainDeckConfig) {
-    this.#cardsData = cardsData;
+  constructor(mainDeckConfig) {
     this.#mainDeckConfig = mainDeckConfig;
   }
 
   createMainDeck() {
     const mainDeck = new Deck(DeckType.MAIN, []);
 
-    const cardFactory = new CardFactory(this.#cardsData);
+    const cardFactory = new CardFactory();
 
     for (const cardCategory in this.#mainDeckConfig) {
       const currentCategoryCards = this.#mainDeckConfig[cardCategory];
@@ -85,37 +83,34 @@ export default class DeckCreator {
     for (let i = 0; i < mainDeck.getCards().length; i++) {
       const card = mainDeck.getCards()[i];
 
-      switch (card.getCategory()) {
-        case CardCategory.MAIN_CHARACTER:
-          if (
-            numOfDealtMainCharacters === 0 &&
-            (card.getID() === randomMainCharacterIDs[0] ||
-              card.getID() === randomMainCharacterIDs[1])
-          ) {
-            player1MainCharacter.insertCard(card);
-            numOfDealtMainCharacters++;
-          } else if (
-            numOfDealtMainCharacters === 1 &&
-            (card.getID() === randomMainCharacterIDs[0] ||
-              card.getID() === randomMainCharacterIDs[1])
-          ) {
-            player2MainCharacter.insertCard(card);
-          }
-          break;
-
-        case CardCategory.MINION:
-          if (numOfDealtMinions % 2 === 0) {
-            player1Minions.insertCard(card);
-          } else {
-            player2Minions.insertCard(card);
-          }
-          numOfDealtMinions++;
-          break;
-
+      if (
+        card.getCategory() === CardCategory.MAIN_CHARACTER &&
+        card.getID() !== MainCharacterID.JOSEPH
+      ) {
+        if (
+          numOfDealtMainCharacters === 0 &&
+          (card.getID() === randomMainCharacterIDs[0] ||
+            card.getID() === randomMainCharacterIDs[1])
+        ) {
+          player1MainCharacter.insertCard(card);
+          numOfDealtMainCharacters++;
+        } else if (
+          numOfDealtMainCharacters === 1 &&
+          (card.getID() === randomMainCharacterIDs[0] ||
+            card.getID() === randomMainCharacterIDs[1])
+        ) {
+          player2MainCharacter.insertCard(card);
+        }
+      } else if (card.getCategory() === CardCategory.MINION) {
+        if (numOfDealtMinions % 2 === 0) {
+          player1Minions.insertCard(card);
+        } else {
+          player2Minions.insertCard(card);
+        }
+        numOfDealtMinions++;
+      } else {
         // CARD CATEGORY -> EVENT
-        default:
-          events.insertCard(card);
-          break;
+        events.insertCard(card);
       }
     }
 
