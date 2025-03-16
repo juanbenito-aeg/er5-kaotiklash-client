@@ -9,12 +9,6 @@ import { globals } from "../index.js";
 import { Language, CardCategory, MainCharacterID } from "../Game/constants.js";
 
 export default class CardFactory {
-  #cardsData;
-
-  constructor(cardsData) {
-    this.#cardsData = cardsData;
-  }
-
   #createMainCharacter(rawCard) {
     let rawCardName = rawCard.name_eng;
     let rawCardDescription = rawCard.description_eng;
@@ -45,7 +39,7 @@ export default class CardFactory {
 
     const chaoticEventID = Math.floor(Math.random() * 4);
     const gottenChaoticEvent =
-      this.#cardsData.joseph_chaotic_events[chaoticEventID];
+      globals.cardsData.joseph_chaotic_events[chaoticEventID];
     let chaoticEventName = gottenChaoticEvent.name_eng;
     let chaoticEventDescription = gottenChaoticEvent.description_eng;
 
@@ -200,7 +194,7 @@ export default class CardFactory {
 
     switch (cardCategory) {
       case "main_characters":
-        rawCard = this.#cardsData.main_characters[cardID];
+        rawCard = globals.cardsData.main_characters[cardID];
         if (cardID !== MainCharacterID.JOSEPH) {
           processedCard = this.#createMainCharacter(rawCard);
         } else {
@@ -209,27 +203,27 @@ export default class CardFactory {
         break;
 
       case "minions":
-        rawCard = this.#cardsData.minions[cardID];
+        rawCard = globals.cardsData.minions[cardID];
         processedCard = this.#createMinion(rawCard);
         break;
 
       case "weapons":
-        rawCard = this.#cardsData.weapons[cardID];
+        rawCard = globals.cardsData.weapons[cardID];
         processedCard = this.#createWeapon(rawCard);
         break;
 
       case "armor":
-        rawCard = this.#cardsData.armor[cardID];
+        rawCard = globals.cardsData.armor[cardID];
         processedCard = this.#createArmor(rawCard);
         break;
 
       case "special":
-        rawCard = this.#cardsData.special[cardID];
+        rawCard = globals.cardsData.special[cardID];
         processedCard = this.#createSpecial(rawCard);
         break;
 
       case "rare":
-        rawCard = this.#cardsData.rare[cardID];
+        rawCard = globals.cardsData.rare[cardID];
         processedCard = this.#createRare(rawCard);
         break;
     }

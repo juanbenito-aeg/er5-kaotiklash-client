@@ -9,21 +9,36 @@ const globals = {
   cycleRealTime: 0,
   canvas: {},
   ctx: {},
+  cardsData: {},
+  cardsReverseImgs: [],
+  cardsImgs: {
+    mainCharacters: [],
+    minions: [],
+    weapons: [],
+    armor: [],
+    special: [],
+    rare: [],
+  },
+  cardsTemplatesImgs: [],
+  cardsIconsImgs: [],
+  assetsToLoad: [], // HOLDS THE ELEMENTS TO LOAD
+  assetsLoaded: 0, // INDICATES THE NUMBER OF ELEMENTS THAT HAVE BEEN LOADED SO FAR
   gameState: GameState.INVALID,
   game: {},
   language: 0,
   isFinished: false,
 };
 
-async function loadDBCardsData() {
+async function loadDBCardsDataAndAssets() {
   // RELATIVE PATH TO THE FILE CONTAINING THE CARDS DATA
   const url = "./src/cardsData.json";
 
   const response = await fetch(url);
 
   if (response.ok) {
-    const responseJSON = await response.json();
-    return responseJSON;
+    globals.cardsData = await response.json();
+
+    loadAssets();
   } else {
     alert(`Communication error: ${response.statusText}`);
   }
@@ -31,7 +46,7 @@ async function loadDBCardsData() {
 
 function executeGameLoop(timeStamp) {
   // KEEP REQUESTING ANIMATION FRAMES
-  window.requestAnimationFrame(gameLoop, globals.canvas);
+  window.requestAnimationFrame(executeGameLoop, globals.canvas);
 
   // ACTUAL EXECUTION CYCLE TIME
   const elapsedCycleSeconds =
@@ -58,8 +73,6 @@ async function initGameScreen() {
   const startGameScreen = document.getElementById("start-game-screen");
   startGameScreen.style.display = "none";
 
-  globals.gameState = GameState.FAKE_CARDS_DISPLAY;
-
   // INITIALIZE TIME MANAGEMENT VARIABLES
   globals.previousCycleMilliseconds = 0;
   globals.deltaTime = 0;
@@ -70,13 +83,119 @@ async function initGameScreen() {
   globals.canvas.style.display = "block";
   globals.ctx = globals.canvas.getContext("2d");
 
-  // LOAD DB CARDS DATA
-  const cardsData = loadDBCardsData();
+  // LOAD DB CARDS DATA AND ASSETS
+  loadDBCardsDataAndAssets();
+}
 
-  globals.game = await Game.create(cardsData);
+function loadAssets() {
+  // TODO: LOAD CARDS REVERSE IMAGES
 
-  // FIRST FRAME REQUEST
-  window.requestAnimationFrame(executeGameLoop);
+  // LOAD CARDS IMAGES
+  for (const cardCategory in globals.cardsData) {
+    if (
+      cardCategory === "main_characters" ||
+      cardCategory === "minions" ||
+      cardCategory === "weapons" ||
+      cardCategory === "armor" ||
+      cardCategory === "special" ||
+      cardCategory === "rare"
+    ) {
+      for (let i = 0; i < globals.cardsData[cardCategory].length; i++) {
+        const currentImage = new Image();
+        currentImage.addEventListener("load", loadHandler, false);
+        currentImage.src =
+          globals.cardsData[cardCategory][i].big_version_img_src;
+
+        switch (cardCategory) {
+          case "main_characters":
+            globals.cardsImgs.mainCharacters.push(currentImage);
+            break;
+
+          case "minions":
+            globals.cardsImgs.minions.push(currentImage);
+            break;
+
+          case "weapons":
+            globals.cardsImgs.weapons.push(currentImage);
+            break;
+
+          case "armor":
+            globals.cardsImgs.armor.push(currentImage);
+            break;
+
+          case "special":
+            globals.cardsImgs.special.push(currentImage);
+            break;
+
+          case "rare":
+            globals.cardsImgs.rare.push(currentImage);
+            break;
+        }
+
+        globals.assetsToLoad.push(currentImage);
+      }
+    }
+  }
+
+  // LOAD CARDS TEMPLATES
+
+  const templates = {
+    mainCharactersSmall:
+      "../images/main_characters/templates/version_small.png",
+    // josephSmall: "../images/main_characters/templates/version_small_joseph.png",
+    minionsAndEventsSmall:
+      "../images/common_templates/version_small_minion_event.png",
+  };
+
+  for (const template in templates) {
+    const templateToLoad = new Image();
+    templateToLoad.addEventListener("load", loadHandler, false);
+    templateToLoad.src = templates[template];
+    globals.cardsTemplatesImgs.push(templateToLoad);
+    globals.assetsToLoad.push(templateToLoad);
+  }
+
+  // LOAD CARDS ICONS
+
+  const icons = {
+    minionsSpecialType: "../images/minions/special/icons/type.png",
+    minionsWarriorType: "../images/minions/warriors/icons/type.png",
+    minionsWizardType: "../images/minions/wizards/icons/type.png",
+    minionsHPDiamond: "../images/common_icons/minion_hp_diamond.png",
+    attackDmgDiamond: "../images/common_icons/attack_dmg_diamond.png",
+    defenseDurabilityDiamond:
+      "../images/common_icons/defense_durability_diamond.png",
+    eventsTypeCircle: "../images/common_icons/event_type_circle.png",
+    eventsPrepTimeDiamond: "../images/common_icons/event_prep_time_diamond.png",
+    eventsDurationDiamond: "../images/common_icons/event_duration_diamond.png",
+    eventsEffectDiamond: "../images/common_icons/event_effect_diamond.png",
+    weaponsMeleeType: "../images/weapons/icons/type_melee.png",
+    armorHeavyType: "../images/armor/icons/type_heavy.png",
+    specialType: "../images/special/icons/type.png",
+    rareType: "../images/rare/icons/type.png",
+  };
+
+  for (const icon in icons) {
+    const iconToLoad = new Image();
+    iconToLoad.addEventListener("load", loadHandler, false);
+    iconToLoad.src = icons[icon];
+    globals.cardsIconsImgs.push(iconToLoad);
+    globals.assetsToLoad.push(iconToLoad);
+  }
+}
+
+// CODE BLOCK TO CALL EACH TIME AN ASSET IS LOADED
+async function loadHandler() {
+  globals.assetsLoaded++;
+
+  if (globals.assetsLoaded === globals.assetsToLoad.length) {
+    globals.gameState = GameState.FAKE_CARDS_DISPLAY;
+
+    globals.game = await Game.create();
+
+    // FIRST FRAME REQUEST
+    window.requestAnimationFrame(executeGameLoop);
+  }
 }
 
 window.onload = initStartGameScreen;

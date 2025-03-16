@@ -4,18 +4,16 @@ import DeckContainer from "./DeckContainer.js";
 import { CardCategory, DeckType } from "../Game/constants.js";
 
 export default class DeckCreator {
-  #cardsData;
   #mainDeckConfig;
 
-  constructor(cardsData, mainDeckConfig) {
-    this.#cardsData = cardsData;
+  constructor(mainDeckConfig) {
     this.#mainDeckConfig = mainDeckConfig;
   }
 
   createMainDeck() {
     const mainDeck = new Deck(DeckType.MAIN, []);
 
-    const cardFactory = new CardFactory(this.#cardsData);
+    const cardFactory = new CardFactory();
 
     for (const cardCategory in this.#mainDeckConfig) {
       const currentCategoryCards = this.#mainDeckConfig[cardCategory];
