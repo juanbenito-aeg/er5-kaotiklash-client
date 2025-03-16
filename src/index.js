@@ -10,7 +10,7 @@ const globals = {
   canvas: {},
   ctx: {},
   cardsData: {},
-  cardsReverseImgs: [],
+  cardsReverseImg: {},
   cardsImgs: {
     mainCharacters: [],
     minions: [],
@@ -88,7 +88,11 @@ async function initGameScreen() {
 }
 
 function loadAssets() {
-  // TODO: LOAD CARDS REVERSE IMAGES
+  // LOAD CARDS REVERSE
+  globals.cardsReverseImg = new Image();
+  globals.cardsReverseImg.addEventListener("load", loadHandler, false);
+  globals.cardsReverseImg.src = "../images/reverse.png";
+  globals.assetsToLoad.push(globals.cardsReverseImg);
 
   // LOAD CARDS IMAGES
   for (const cardCategory in globals.cardsData) {
@@ -103,8 +107,7 @@ function loadAssets() {
       for (let i = 0; i < globals.cardsData[cardCategory].length; i++) {
         const currentImage = new Image();
         currentImage.addEventListener("load", loadHandler, false);
-        currentImage.src =
-          globals.cardsData[cardCategory][i].big_version_img_src;
+        currentImage.src = globals.cardsData[cardCategory][i].image_src;
 
         switch (cardCategory) {
           case "main_characters":
@@ -142,7 +145,6 @@ function loadAssets() {
   const templates = {
     mainCharactersSmall:
       "../images/main_characters/templates/version_small.png",
-    // josephSmall: "../images/main_characters/templates/version_small_joseph.png",
     minionsAndEventsSmall:
       "../images/common_templates/version_small_minion_event.png",
   };
@@ -158,18 +160,22 @@ function loadAssets() {
   // LOAD CARDS ICONS
 
   const icons = {
+    attackDmgDiamond: "../images/common_icons/attack_dmg_diamond.png",
+    defenseDurabilityDiamond:
+      "../images/common_icons/defense_durability_diamond.png",
     minionsSpecialType: "../images/minions/special/icons/type.png",
     minionsWarriorType: "../images/minions/warriors/icons/type.png",
     minionsWizardType: "../images/minions/wizards/icons/type.png",
     minionsHPDiamond: "../images/common_icons/minion_hp_diamond.png",
-    attackDmgDiamond: "../images/common_icons/attack_dmg_diamond.png",
-    defenseDurabilityDiamond:
-      "../images/common_icons/defense_durability_diamond.png",
     eventsTypeCircle: "../images/common_icons/event_type_circle.png",
     eventsPrepTimeDiamond: "../images/common_icons/event_prep_time_diamond.png",
     eventsDurationDiamond: "../images/common_icons/event_duration_diamond.png",
     eventsEffectDiamond: "../images/common_icons/event_effect_diamond.png",
     weaponsMeleeType: "../images/weapons/icons/type_melee.png",
+    weaponsMissileType: "../images/weapons/icons/type_missile.png",
+    weaponsHybridType: "../images/weapons/icons/type_hybrid.png",
+    armorLightType: "../images/armor/icons/type_light.png",
+    armorMediumType: "../images/armor/icons/type_medium.png",
     armorHeavyType: "../images/armor/icons/type_heavy.png",
     specialType: "../images/special/icons/type.png",
     rareType: "../images/rare/icons/type.png",

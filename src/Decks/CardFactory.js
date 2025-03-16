@@ -57,7 +57,7 @@ export default class CardFactory {
     }
 
     const processedCard = new Joseph(
-      CardCategory.SPECIAL,
+      CardCategory.MAIN_CHARACTER,
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,

@@ -5,7 +5,15 @@ import DeckCreator from "../Decks/DeckCreator.js";
 import Board from "../Board/Board.js";
 import Turn from "../Turns/Turn.js";
 import MouseInput from "./MouseInput.js";
-import { GameState, CardCategory, WeaponType, ArmorType } from "./constants.js";
+import {
+  GameState,
+  CardCategory,
+  WeaponType,
+  ArmorType,
+  MinionType,
+  IconID,
+  TemplateID,
+} from "./constants.js";
 import { globals } from "../index.js";
 
 export default class Game {
@@ -92,7 +100,7 @@ export default class Game {
 
   #renderSmallVersionCards() {
     let xCoordinate = 180;
-    let yCoordinate = 165;
+    let yCoordinate = 95;
     let numOfCardsRenderedInSameRow = 0;
     let numOfRenderedRows = 0;
 
@@ -109,7 +117,7 @@ export default class Game {
         if (numOfCardsRenderedInSameRow === 15) {
           numOfRenderedRows++;
 
-          if (numOfRenderedRows === 6) {
+          if (numOfRenderedRows === 7) {
             return;
           }
 
@@ -142,7 +150,7 @@ export default class Game {
 
     // TEMPLATE IMAGE
     renderData.push({
-      image: globals.cardsTemplatesImgs[1],
+      image: globals.cardsTemplatesImgs[TemplateID.MINIONS_AND_EVENTS_SMALL],
       sx: 0,
       sy: 0,
       sWidth: 633,
@@ -157,7 +165,8 @@ export default class Game {
       case CardCategory.MAIN_CHARACTER:
         renderData[0].image = globals.cardsImgs.mainCharacters[card.getID()];
 
-        renderData[1].image = globals.cardsTemplatesImgs[0];
+        renderData[1].image =
+          globals.cardsTemplatesImgs[TemplateID.MAIN_CHARACTERS_SMALL];
         renderData[1].sWidth = 575;
         renderData[1].sHeight = 809;
 
@@ -166,9 +175,22 @@ export default class Game {
       case CardCategory.MINION:
         renderData[0].image = globals.cardsImgs.minions[card.getID()];
 
+        let minionTypeImage;
+
+        if (card.getMinionType() === MinionType.SPECIAL) {
+          // SPECIAL TYPE IMAGE DATA
+          minionTypeImage = globals.cardsIconsImgs[IconID.MINION_SPECIAL_TYPE];
+        } else if (card.getMinionType() === MinionType.WARRIOR) {
+          // WARRIOR TYPE IMAGE DATA
+          minionTypeImage = globals.cardsIconsImgs[IconID.MINION_WARRIOR_TYPE];
+        } else {
+          // WIZARD TYPE IMAGE DATA
+          minionTypeImage = globals.cardsIconsImgs[IconID.MINION_WIZARD_TYPE];
+        }
+
         // TYPE IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[card.getMinionType()],
+          image: minionTypeImage,
           sx: 0,
           sy: 0,
           sWidth: 1024,
@@ -181,7 +203,7 @@ export default class Game {
 
         // ATTACK IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[4],
+          image: globals.cardsIconsImgs[IconID.ATTACK_DAMAGE_DIAMOND],
           text: globals.cardsData.minions[card.getID()].attack + "",
           sx: 0,
           sy: 0,
@@ -195,7 +217,7 @@ export default class Game {
 
         // HP IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[3],
+          image: globals.cardsIconsImgs[IconID.MINION_HP_DIAMOND],
           text: globals.cardsData.minions[card.getID()].hp + "",
           sx: 0,
           sy: 0,
@@ -209,7 +231,7 @@ export default class Game {
 
         // DEFENSE IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[5],
+          image: globals.cardsIconsImgs[IconID.DEFENSE_DURABILITY_DIAMOND],
           text: globals.cardsData.minions[card.getID()].defense + "",
           sx: 0,
           sy: 0,
@@ -228,7 +250,7 @@ export default class Game {
 
         // TYPE CIRCLE IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[6],
+          image: globals.cardsIconsImgs[IconID.EVENT_TYPE_CIRCLE],
           sx: 0,
           sy: 0,
           sWidth: 150,
@@ -240,24 +262,20 @@ export default class Game {
         });
 
         let weaponTypeImage;
-        let weaponTypeSWidth;
-        let weaponTypeSHeight;
+        let weaponTypeSWidth = 512;
+        let weaponTypeSHeight = 512;
 
         if (card.getWeaponType() === WeaponType.MELEE) {
           // MELEE TYPE IMAGE DATA
-          weaponTypeImage = globals.cardsIconsImgs[10];
-          weaponTypeSWidth = 512;
-          weaponTypeSHeight = 512;
+          weaponTypeImage = globals.cardsIconsImgs[IconID.WEAPON_MELEE_TYPE];
         } else if (card.getWeaponType() === WeaponType.MISSILE) {
           // MISSILE TYPE IMAGE DATA
-          weaponTypeImage = globals.cardsIconsImgs[0 /* TO BE UPDATED */];
-          weaponTypeSWidth = 0; /* TO BE UPDATED */
-          weaponTypeSHeight = 0; /* TO BE UPDATED */
+          weaponTypeImage = globals.cardsIconsImgs[IconID.WEAPON_MISSILE_TYPE];
         } else {
           // HYBRID TYPE IMAGE DATA
-          weaponTypeImage = globals.cardsIconsImgs[0 /* TO BE UPDATED */];
-          weaponTypeSWidth = 0; /* TO BE UPDATED */
-          weaponTypeSHeight = 0; /* TO BE UPDATED */
+          weaponTypeImage = globals.cardsIconsImgs[IconID.WEAPON_HYBRID_TYPE];
+          weaponTypeSWidth = 500;
+          weaponTypeSHeight = 500;
         }
 
         // TYPE IMAGE
@@ -275,7 +293,7 @@ export default class Game {
 
         // DAMAGE IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[4],
+          image: globals.cardsIconsImgs[IconID.ATTACK_DAMAGE_DIAMOND],
           text: globals.cardsData.weapons[card.getID()].damage + "",
           sx: 0,
           sy: 0,
@@ -289,7 +307,7 @@ export default class Game {
 
         // PREPARATION TIME IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[7],
+          image: globals.cardsIconsImgs[IconID.EVENT_PREP_TIME_DIAMOND],
           text:
             globals.cardsData.weapons[card.getID()].prep_time_in_rounds + "",
           sx: 0,
@@ -304,7 +322,7 @@ export default class Game {
 
         // DURABILITY IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[5],
+          image: globals.cardsIconsImgs[IconID.DEFENSE_DURABILITY_DIAMOND],
           text: globals.cardsData.weapons[card.getID()].durability + "",
           sx: 0,
           sy: 0,
@@ -323,7 +341,7 @@ export default class Game {
 
         // TYPE CIRCLE IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[6],
+          image: globals.cardsIconsImgs[IconID.EVENT_TYPE_CIRCLE],
           sx: 0,
           sy: 0,
           sWidth: 150,
@@ -335,22 +353,18 @@ export default class Game {
         });
 
         let armorTypeImage;
-        let armorTypeSWidth;
-        let armorTypeSHeight;
+        let armorTypeSWidth = 512;
+        let armorTypeSHeight = 512;
 
         if (card.getArmorType() === ArmorType.LIGHT) {
           // LIGHT TYPE IMAGE DATA
-          armorTypeImage = globals.cardsIconsImgs[0 /* TO BE UPDATED */];
-          armorTypeSWidth = 0; /* TO BE UPDATED */
-          armorTypeSHeight = 0; /* TO BE UPDATED */
+          armorTypeImage = globals.cardsIconsImgs[IconID.ARMOR_LIGHT_TYPE];
         } else if (card.getArmorType() === ArmorType.MEDIUM) {
           // MEDIUM TYPE IMAGE DATA
-          armorTypeImage = globals.cardsIconsImgs[0 /* TO BE UPDATED */];
-          armorTypeSWidth = 0; /* TO BE UPDATED */
-          armorTypeSHeight = 0; /* TO BE UPDATED */
+          armorTypeImage = globals.cardsIconsImgs[IconID.ARMOR_MEDIUM_TYPE];
         } else {
           // HEAVY TYPE IMAGE DATA
-          armorTypeImage = globals.cardsIconsImgs[11];
+          armorTypeImage = globals.cardsIconsImgs[IconID.ARMOR_HEAVY_TYPE];
           armorTypeSWidth = 200;
           armorTypeSHeight = 200;
         }
@@ -370,7 +384,7 @@ export default class Game {
 
         // (SPECIAL) EFFECT IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[9],
+          image: globals.cardsIconsImgs[IconID.EVENT_EFFECT_DIAMOND],
           text: "SE",
           sx: 0,
           sy: 0,
@@ -384,7 +398,7 @@ export default class Game {
 
         // PREPARATION TIME IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[7],
+          image: globals.cardsIconsImgs[IconID.EVENT_PREP_TIME_DIAMOND],
           text: globals.cardsData.armor[card.getID()].prep_time_in_rounds + "",
           sx: 0,
           sy: 0,
@@ -398,7 +412,7 @@ export default class Game {
 
         // DURABILITY IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[5],
+          image: globals.cardsIconsImgs[IconID.DEFENSE_DURABILITY_DIAMOND],
           text: globals.cardsData.armor[card.getID()].durability + "",
           sx: 0,
           sy: 0,
@@ -417,7 +431,7 @@ export default class Game {
 
         // TYPE CIRCLE IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[6],
+          image: globals.cardsIconsImgs[IconID.EVENT_TYPE_CIRCLE],
           sx: 0,
           sy: 0,
           sWidth: 150,
@@ -430,7 +444,7 @@ export default class Game {
 
         // TYPE IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[12],
+          image: globals.cardsIconsImgs[IconID.SPECIAL_TYPE],
           sx: 0,
           sy: 0,
           sWidth: 1080,
@@ -443,7 +457,7 @@ export default class Game {
 
         // EFFECT IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[9],
+          image: globals.cardsIconsImgs[IconID.EVENT_EFFECT_DIAMOND],
           text: "EF",
           sx: 0,
           sy: 0,
@@ -457,7 +471,7 @@ export default class Game {
 
         // PREPARATION TIME IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[7],
+          image: globals.cardsIconsImgs[IconID.EVENT_PREP_TIME_DIAMOND],
           text:
             globals.cardsData.special[card.getID()].prep_time_in_rounds + "",
           sx: 0,
@@ -472,7 +486,7 @@ export default class Game {
 
         // DURATION IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[8],
+          image: globals.cardsIconsImgs[IconID.EVENT_DURATION_DIAMOND],
           text: globals.cardsData.special[card.getID()].duration_in_rounds + "",
           sx: 0,
           sy: 0,
@@ -491,7 +505,7 @@ export default class Game {
 
         // TYPE CIRCLE IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[6],
+          image: globals.cardsIconsImgs[IconID.EVENT_TYPE_CIRCLE],
           sx: 0,
           sy: 0,
           sWidth: 150,
@@ -504,7 +518,7 @@ export default class Game {
 
         // TYPE IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[13],
+          image: globals.cardsIconsImgs[IconID.RARE_TYPE],
           sx: 0,
           sy: 0,
           sWidth: 611,
@@ -517,7 +531,7 @@ export default class Game {
 
         // EFFECT IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[9],
+          image: globals.cardsIconsImgs[IconID.EVENT_EFFECT_DIAMOND],
           text: "EF",
           sx: 0,
           sy: 0,
@@ -531,7 +545,7 @@ export default class Game {
 
         // PREPARATION TIME IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[7],
+          image: globals.cardsIconsImgs[IconID.EVENT_PREP_TIME_DIAMOND],
           text: "0",
           sx: 0,
           sy: 0,
@@ -545,7 +559,7 @@ export default class Game {
 
         // DURATION IMAGE
         renderData.push({
-          image: globals.cardsIconsImgs[8],
+          image: globals.cardsIconsImgs[IconID.EVENT_DURATION_DIAMOND],
           text: globals.cardsData.rare[card.getID()].duration_in_rounds + "",
           sx: 0,
           sy: 0,
