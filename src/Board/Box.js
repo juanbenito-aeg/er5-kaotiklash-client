@@ -1,56 +1,62 @@
 export default class Box {
-    #xCoordinate;
-    #yCoordinate;
-    #width;
-    #height;
-    #isAdvantageous;
-    #isDangerous;
-    #stateMachine;
-    #state;
-    #isClicked;
-    
-    constructor(xCoordinate, yCoordinate, width, height, isAdvantageous, isDangerous, stateMachine, state) {
-      this.#xCoordinate = xCoordinate;
-      this.#yCoordinate = yCoordinate;
-      this.#width = width;
-      this.#height = height;
-      this.#isAdvantageous = isAdvantageous;
-      this.#isDangerous = isDangerous;
-      this.#stateMachine = stateMachine;
-      this.#state = state;
-      this.#isClicked = false;
-    }
-  
-    get xCoordinate() {
-      return this.#xCoordinate;
-    }
-  
-    get yCoordinate() {
-      return this.#yCoordinate;
-    }
-  
-    get width() {
-      return this.#width;
-    }
-  
-    get height() {
-      return this.#height;
-    }
-  
-    get isAdvantageous() {
-      return this.#isAdvantageous;
-    }
-  
-    get isDangerous() {
-      return this.#isDangerous;
-    }
-  
-    get stateMachine() {
-      return this.#stateMachine;
-    }
-  
-    get state() {
-      return this.#state;
-    }
+  #xCoordinate;
+  #yCoordinate;
+  #width;
+  #height;
+  #isAdvantageous;
+  #isDangerous;
+  #state;
+  #battlefieldAreaItBelongsTo;
+
+  constructor(
+    xCoordinate,
+    yCoordinate,
+    width,
+    height,
+    isAdvantageous,
+    isDangerous,
+    state,
+    battlefieldAreaItBelongsTo
+  ) {
+    this.#xCoordinate = xCoordinate;
+    this.#yCoordinate = yCoordinate;
+    this.#width = width;
+    this.#height = height;
+    this.#isAdvantageous = isAdvantageous;
+    this.#isDangerous = isDangerous;
+    this.#state = state;
+    this.#battlefieldAreaItBelongsTo = battlefieldAreaItBelongsTo;
   }
-  
+
+  getXCoordinate() {
+    return this.#xCoordinate;
+  }
+
+  getYCoordinate() {
+    return this.#yCoordinate;
+  }
+
+  getWidth() {
+    return this.#width;
+  }
+
+  getHeight() {
+    return this.#height;
+  }
+
+  isAdvantageous() {
+    return this.#isAdvantageous;
+  }
+
+  isDangerous() {
+    return this.#isDangerous;
+  }
+
+  getState() {
+    return this.#state;
+  }
+
+  getBattlefieldAreaItBelongsTo() {
+    return this.#battlefieldAreaItBelongsTo;
+  }
+}

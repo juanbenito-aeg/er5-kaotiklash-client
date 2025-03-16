@@ -2,7 +2,7 @@ import Player from "./Player.js";
 import CardView from "../Decks/CardView.js";
 import Deck from "../Decks/Deck.js";
 import DeckCreator from "../Decks/DeckCreator.js";
-import Board from "../Board/Board.js";
+import GridCreator from "../Board/GridCreator.js";
 import Turn from "../Turns/Turn.js";
 import MouseInput from "./MouseInput.js";
 import {
@@ -51,9 +51,10 @@ export default class Game {
     // APPLICATION OF THE "CardView" DECORATOR TO ALL CARDS
     game.#applyCardViewToAllCards();
 
-    // BOARD CREATION
-    game.#board = new Board();
-    game.#board.create();
+    // GRIDS (BOARD) CREATION
+    const gridCreator = new GridCreator();
+    game.#board = gridCreator.createAllGrids();
+    game.#board.setImage(globals.boardImg);
 
     // TURNS CREATION
     const turnPlayer1 = new Turn();
@@ -80,6 +81,10 @@ export default class Game {
     switch (globals.gameState) {
       case GameState.FAKE_CARDS_DISPLAY:
         this.#renderSmallVersionCards();
+        break;
+
+      case GameState.GRIDS_DRAWING:
+        this.#renderGrids();
         break;
     }
   }
@@ -598,6 +603,41 @@ export default class Game {
           renderData[i].text,
           renderData[i].dx + dxPlus,
           renderData[i].dy + 23
+        );
+      }
+    }
+  }
+
+  #renderGrids() {
+    const colors = [
+      "white",
+      "red",
+      "green",
+      "blue",
+      "yellow",
+      "orange",
+      "pink",
+      "black",
+      "purple",
+      "cyan",
+      "gold",
+      "grey",
+      "bisque",
+      "brown",
+    ];
+
+    for (let i = 0; i < this.#board.getGrids().length; i++) {
+      const currentGrid = this.#board.getGrids()[i];
+
+      for (let j = 0; j < currentGrid.getBoxes().length; j++) {
+        const currentBox = currentGrid.getBoxes()[j];
+
+        globals.ctx.strokeStyle = colors[i];
+        globals.ctx.strokeRect(
+          currentBox.getXCoordinate(),
+          currentBox.getYCoordinate(),
+          currentBox.getWidth(),
+          currentBox.getHeight()
         );
       }
     }
