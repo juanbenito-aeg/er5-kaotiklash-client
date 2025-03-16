@@ -233,28 +233,24 @@ export default class Game {
       }
     }
 
-    // BOARD CREATION
-    const board = new Board();
-    board.create();
+  #applyCardViewToAllCards() {
+    const updatedDecks = [];
 
-    // TURNS CREATION
-    const turnPlayer1 = new Turn();
-    const turnPlayer2 = new Turn();
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+      const currentDeck = this.#deckContainer.getDecks()[i];
 
-    // MOUSE CREATION
-    const mouseInput = new MouseInput();
-    mouseInput.mouseEventListener();
+      const updatedDeck = new Deck(i + 1, []);
+      updatedDecks.push(updatedDeck);
 
-    const game = new Game(players);
-    return game;
+      for (let j = 0; j < currentDeck.getCards().length; j++) {
+        let currentCard = currentDeck.getCards()[j];
+
+        currentCard = new CardView(currentCard, 0, 0);
+
+        updatedDeck.insertCard(currentCard);
+      }
+    }
+
+    this.#deckContainer.setDecks(updatedDecks);
   }
-
-  execute() {
-    this.#update();
-    this.#render();
-  }
-
-  #update() {}
-
-  #render() {}
 }

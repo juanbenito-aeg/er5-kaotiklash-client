@@ -8,4 +8,8 @@ export default class DeckContainer {
   getDecks() {
     return this.#decks;
   }
+
+  setDecks(newDecks) {
+    this.#decks = newDecks;
+  }
 }

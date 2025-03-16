@@ -2,36 +2,39 @@ export default class CardView {
   #card;
   #xCoordinate;
   #yCoordinate;
-  #bigVersionReverseImageSet;
-  #smallVersionReverseImageSet;
-  #bigVersionImageSet;
-  #smallVersionImageSet;
-  #bigVersionTemplateImageSet;
-  #smallVersionTemplateImageSet;
-  #iconsImageSets;
 
-  constructor(
-    card,
-    xCoordinate,
-    yCoordinate,
-    bigVersionReverseImageSet,
-    smallVersionReverseImageSet,
-    bigVersionImageSet,
-    smallVersionImageSet,
-    bigVersionTemplateImageSet,
-    smallVersionTemplateImageSet,
-    iconsImageSets
-  ) {
+  constructor(card, xCoordinate, yCoordinate) {
     this.#card = card;
     this.#xCoordinate = xCoordinate;
     this.#yCoordinate = yCoordinate;
-    this.#bigVersionReverseImageSet = bigVersionReverseImageSet;
-    this.#smallVersionReverseImageSet = smallVersionReverseImageSet;
-    this.#bigVersionImageSet = bigVersionImageSet;
-    this.#smallVersionImageSet = smallVersionImageSet;
-    this.#bigVersionTemplateImageSet = bigVersionTemplateImageSet;
-    this.#smallVersionTemplateImageSet = smallVersionTemplateImageSet;
-    this.#iconsImageSets = iconsImageSets;
+  }
+
+  getCategory() {
+    return this.#card.getCategory();
+  }
+
+  getID() {
+    return this.#card.getID();
+  }
+
+  getName() {
+    return this.#card.getName();
+  }
+
+  getDescription() {
+    return this.#card.getDescription();
+  }
+
+  getMinionType() {
+    return this.#card.getMinionType();
+  }
+
+  getWeaponType() {
+    return this.#card.getWeaponType();
+  }
+
+  getArmorType() {
+    return this.#card.getArmorType();
   }
 
   getXCoordinate() {
