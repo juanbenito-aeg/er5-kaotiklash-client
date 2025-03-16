@@ -9,6 +9,7 @@ const globals = {
   cycleRealTime: 0,
   canvas: {},
   ctx: {},
+  boardImg: {},
   cardsData: {},
   cardsReverseImg: {},
   cardsImgs: {
@@ -88,6 +89,12 @@ async function initGameScreen() {
 }
 
 function loadAssets() {
+  // LOAD BOARD IMAGE
+  globals.boardImg = new Image();
+  globals.boardImg.addEventListener("load", loadHandler, false);
+  globals.boardImg.src = "../images/board.jpg";
+  globals.assetsToLoad.push(globals.boardImg);
+
   // LOAD CARDS REVERSE
   globals.cardsReverseImg = new Image();
   globals.cardsReverseImg.addEventListener("load", loadHandler, false);
@@ -195,7 +202,7 @@ async function loadHandler() {
   globals.assetsLoaded++;
 
   if (globals.assetsLoaded === globals.assetsToLoad.length) {
-    globals.gameState = GameState.FAKE_CARDS_DISPLAY;
+    globals.gameState = GameState.GRIDS_DRAWING;
 
     globals.game = await Game.create();
 
