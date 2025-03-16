@@ -26,6 +26,12 @@ const MinionType = {
   WIZARD: 2,
 };
 
+const WeaponType = {
+  MELEE: 0,
+  MISSILE: 1,
+  HYBRID: 2,
+};
+
 const ArmorType = {
   LIGHT: 0,
   MEDIUM: 1,
@@ -115,6 +121,7 @@ export {
   Language,
   CardCategory,
   MinionType,
+  WeaponType,
   ArmorType,
   DeckType,
   MainCharacterID,

@@ -6,7 +6,13 @@ import Armor from "./Armor.js";
 import Special from "./Special.js";
 import Rare from "./Rare.js";
 import { globals } from "../index.js";
-import { Language, CardCategory, MainCharacterID } from "../Game/constants.js";
+import {
+  Language,
+  CardCategory,
+  MainCharacterID,
+  WeaponType,
+  ArmorType,
+} from "../Game/constants.js";
 
 export default class CardFactory {
   #createMainCharacter(rawCard) {
@@ -92,14 +98,19 @@ export default class CardFactory {
   #createWeapon(rawCard) {
     let rawCardName = rawCard.name_eng;
     let rawCardDescription = rawCard.description_eng;
-    let rawCardWeaponType =
-      this.#cardsData.weapon_types[rawCard.type_id - 1].name_eng;
 
     if (globals.language === Language.BASQUE) {
       rawCardName = rawCard.name_eus;
       rawCardDescription = rawCard.description_eus;
-      rawCardWeaponType =
-        this.#cardsData.weapon_types[rawCard.type_id - 1].name_eus;
+    }
+
+    let weaponType;
+    if (rawCard.type_id === 1) {
+      weaponType = WeaponType.MELEE;
+    } else if (rawCard.type_id === 2) {
+      weaponType = WeaponType.MISSILE;
+    } else {
+      weaponType = WeaponType.HYBRID;
     }
 
     const processedCard = new Weapon(
@@ -107,7 +118,7 @@ export default class CardFactory {
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
-      rawCardWeaponType,
+      weaponType,
       rawCard.damage,
       rawCard.durability,
       rawCard.prep_time_in_rounds
@@ -127,12 +138,21 @@ export default class CardFactory {
       rawCardSpecialEffect = rawCard.special_effect_eus;
     }
 
+    let armorType;
+    if (rawCard.type_id === 1) {
+      armorType = ArmorType.LIGHT;
+    } else if (rawCard.type_id === 2) {
+      armorType = ArmorType.MEDIUM;
+    } else {
+      armorType = ArmorType.HEAVY;
+    }
+
     const processedCard = new Armor(
       CardCategory.ARMOR,
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
-      rawCard.type_id,
+      armorType,
       rawCardSpecialEffect,
       rawCard.durability,
       rawCard.prep_time_in_rounds
