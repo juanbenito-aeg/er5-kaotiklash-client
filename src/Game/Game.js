@@ -13,6 +13,7 @@ import {
   MinionType,
   IconID,
   TemplateID,
+  PlayerID,
 } from "./constants.js";
 import { globals } from "../index.js";
 
@@ -29,8 +30,16 @@ export default class Game {
     const game = new Game();
 
     // PLAYERS CREATION
-    const player1 = new Player("Player 1");
-    const player2 = new Player("Player 2");
+    const player1 = new Player(
+      PlayerID.PLAYER_1,
+      "Player 1",
+      100 /* TO BE CHANGED, THIS IS "FAKE" DATA */
+    );
+    const player2 = new Player(
+      PlayerID.PLAYER_2,
+      "Player 2",
+      100 /* TO BE CHANGED, THIS IS "FAKE" DATA */
+    );
     game.#players = [player1, player2];
 
     // RANDOMLY ASSIGN PLAYER THAT STARTS PLAYING

@@ -11,6 +11,11 @@ const Language = {
   BASQUE: 1,
 };
 
+const PlayerID = {
+  PLAYER_1: 0,
+  PLAYER_2: 1,
+};
+
 const TemplateID = {
   MAIN_CHARACTERS_SMALL: 0,
   MINIONS_AND_EVENTS_SMALL: 1,
@@ -145,6 +150,7 @@ export {
   GameState,
   FPS,
   Language,
+  PlayerID,
   TemplateID,
   IconID,
   CardCategory,
