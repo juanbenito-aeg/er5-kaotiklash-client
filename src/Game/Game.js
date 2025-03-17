@@ -64,14 +64,26 @@ export default class Game {
     game.#board = new Board();
     game.#board.create();
 
-    // TURNS CREATION
-    const turnPlayer1 = new Turn();
-    const turnPlayer2 = new Turn();
-    game.#turns = [turnPlayer1, turnPlayer2];
-
     // MOUSEINPUT CREATION
     game.#mouseInput = new MouseInput();
-    game.#mouseInput.mouseEventListener();
+    game.#mouseInput.addMouseEventListeners();
+
+    // TURNS CREATION
+    const turnPlayer1 = new Turn(
+      game.#deckContainer,
+      game.#board,
+      game.#mouseInput,
+      game.#players[PlayerID.PLAYER_1]
+    );
+    turnPlayer1.fillPhases();
+    const turnPlayer2 = new Turn(
+      game.#deckContainer,
+      game.#board,
+      game.#mouseInput,
+      game.#players[PlayerID.PLAYER_2]
+    );
+    turnPlayer2.fillPhases();
+    game.#turns = [turnPlayer1, turnPlayer2];
 
     return game;
   }
@@ -81,7 +93,17 @@ export default class Game {
     this.#render();
   }
 
-  #update() {}
+  #update() {
+    if (globals.isCurrentTurnFinished) {
+      globals.isCurrentTurnFinished = false;
+
+      this.#currentPlayer = this.#turns[this.#currentPlayer].changeTurn(
+        this.#currentPlayer
+      );
+    }
+
+    this.#turns[this.#currentPlayer].execute();
+  }
 
   #render() {
     this.#renderBoard();

@@ -26,7 +26,7 @@ const globals = {
   gameState: GameState.INVALID,
   game: {},
   language: 0,
-  isFinished: false,
+  isCurrentTurnFinished: false,
 };
 
 async function loadDBCardsDataAndAssets() {

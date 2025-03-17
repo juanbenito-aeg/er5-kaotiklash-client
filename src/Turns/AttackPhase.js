@@ -1,21 +1,28 @@
 import Phase from "./Phase.js";
 
 export default class AttackPhase extends Phase {
-  #enemyMovementGridDeck;
-  #currentPlayerMovementGridDeck;
-  #enemyMovementGrid;
-  #currentPlayerMovementGrid;
+  // #enemyMovementGridDeck;
+  // #currentPlayerMovementGridDeck;
+  // #enemyMovementGrid;
+  // #currentPlayerMovementGrid;
 
   constructor(
-    enemyMovementGridDeck,
+    /* enemyMovementGridDeck,
     currentPLayerMovementGridDeck,
     enemyMovementGrid,
-    currentPlayerMovementGrid
+    currentPlayerMovementGrid */
+
+    state,
+    deckContainer,
+    board,
+    mouseInput
   ) {
-    this.#enemyMovementGridDeck = enemyMovementGridDeck;
-    this.#currentPlayerMovementGridDeck = currentPLayerMovementGridDeck;
-    this.#enemyMovementGrid = enemyMovementGrid;
-    this.#currentPlayerMovementGrid = currentPlayerMovementGrid;
+    // this.#enemyMovementGridDeck = enemyMovementGridDeck;
+    // this.#currentPlayerMovementGridDeck = currentPLayerMovementGridDeck;
+    // this.#enemyMovementGrid = enemyMovementGrid;
+    // this.#currentPlayerMovementGrid = currentPlayerMovementGrid;
+
+    super(state, deckContainer, board, mouseInput);
   }
 
   execute() {
