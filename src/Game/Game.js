@@ -617,13 +617,14 @@ export default class Game {
       "yellow",
       "orange",
       "pink",
-      "black",
-      "purple",
+      "darkcyan",
+      "magenta",
       "cyan",
       "gold",
       "grey",
       "bisque",
-      "brown",
+      "black",
+      "blueviolet"
     ];
 
     for (let i = 0; i < this.#board.getGrids().length; i++) {

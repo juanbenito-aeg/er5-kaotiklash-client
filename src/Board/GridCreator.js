@@ -9,8 +9,8 @@ export default class GridCreator {
 
     // EVENTS DECK GRID
     const eventsDeckBox = new Box(
-      0,
-      0,
+      1890,
+      550,
       200,
       200,
       false,
@@ -22,10 +22,10 @@ export default class GridCreator {
 
     // ACTIVE EVENTS GRID
     const activeEventsBox = new Box(
-      0,
-      0,
+      1790,
+      210,
       400,
-      400,
+      300,
       false,
       false,
       BoxState.INACTIVE,
@@ -37,10 +37,10 @@ export default class GridCreator {
 
     // PHASE BUTTONS GRID
     const phaseButtonsBoxes = [];
-    let phaseButtonBoxYCoordinate = 200;
+    let phaseButtonBoxYCoordinate = 700;
     for (let i = 0; i < 5; i++) {
       const currentPhaseButtonsBox = new Box(
-        200,
+        400,
         phaseButtonBoxYCoordinate,
         200,
         50,
@@ -61,10 +61,10 @@ export default class GridCreator {
 
     // JOSEPH (CARD) GRID
     const josephBox = new Box(
-      0,
-      85,
-      40,
-      90,
+      400,
+      400,
+      200,
+      200,
       false,
       false,
       BoxState.INACTIVE,
@@ -74,10 +74,10 @@ export default class GridCreator {
 
     // MESSAGES GRID
     const messagesBox = new Box(
-      0,
-      210,
-      85,
-      95,
+      1790,
+      10,
+      420,
+      185,
       false,
       false,
       BoxState.INACTIVE,
@@ -89,10 +89,10 @@ export default class GridCreator {
 
     // PLAYER 1 MAIN CHARACTER BOX AND GRID
     const player1MainCharacterBox = new Box(
-      0,
-      0,
-      50,
-      50,
+      2020,
+      840,
+      200,
+      200,
       false,
       false,
       BoxState.INACTIVE,
@@ -105,10 +105,10 @@ export default class GridCreator {
 
     // PLAYER 1 MINIONS DECK BOX AND GRID
     const player1MinionsDeckBox = new Box(
-      0,
-      20,
-      50,
-      50,
+      1800,
+      840,
+      200,
+      200,
       false,
       false,
       BoxState.INACTIVE,
@@ -120,13 +120,13 @@ export default class GridCreator {
 
     // PLAYER 1 CARDS IN HAND BOXES AND GRID
     const player1CardsInHandBoxes = [];
-    let player1CardsInHandBoxXCoordinate = 120;
+    let player1CardsInHandBoxXCoordinate = 680;
     for (let i = 0; i < 6; i++) {
       const player1CardsInHandBox = new Box(
         player1CardsInHandBoxXCoordinate,
-        200,
-        100,
-        70,
+        987,
+        110,
+        110,
         false,
         false,
         BoxState.AVAILABLE,
@@ -135,7 +135,7 @@ export default class GridCreator {
 
       player1CardsInHandBoxes.push(player1CardsInHandBox);
 
-      player1CardsInHandBoxXCoordinate += 10;
+      player1CardsInHandBoxXCoordinate += 135;
     }
     const player1CardsInHandGrid = new Grid(
       GridType.PLAYER_1_CARDS_IN_HAND,
@@ -144,10 +144,10 @@ export default class GridCreator {
 
     // PLAYER 1 BATTLEFIELD BOXES AND GRID
     const player1BattlefieldBoxes = [];
-    let player1BattlefieldBoxXCoordinate = 225;
-    let player1BattlefieldBoxYCoordinate = 250;
+    let player1BattlefieldBoxXCoordinate = 540;
+    let player1BattlefieldBoxYCoordinate = 850;
     for (let i = 0; i < 18; i++) {
-      player1BattlefieldBoxXCoordinate += 25;
+      player1BattlefieldBoxXCoordinate += 135;
 
       let battlefieldArea;
 
@@ -155,15 +155,15 @@ export default class GridCreator {
         battlefieldArea = BattlefieldArea.FRONT;
       } else if (i < 12) {
         if (i === 6) {
-          player1BattlefieldBoxXCoordinate = 225;
-          player1BattlefieldBoxYCoordinate += 25;
+          player1BattlefieldBoxXCoordinate = 675;
+          player1BattlefieldBoxYCoordinate = 710;
         }
 
         battlefieldArea = BattlefieldArea.MIDDLE;
       } else {
         if (i === 12) {
-          player1BattlefieldBoxXCoordinate = 225;
-          player1BattlefieldBoxYCoordinate += 25;
+          player1BattlefieldBoxXCoordinate = 675;
+          player1BattlefieldBoxYCoordinate = 570;
         }
 
         battlefieldArea = BattlefieldArea.REAR;
@@ -172,8 +172,8 @@ export default class GridCreator {
       const player1BattlefieldBox = new Box(
         player1BattlefieldBoxXCoordinate,
         player1BattlefieldBoxYCoordinate,
-        50,
-        70,
+        110,
+        110,
         false,
         false,
         BoxState.INACTIVE,
@@ -189,13 +189,13 @@ export default class GridCreator {
 
     // PLAYER 1 PREPARE EVENT BOXES AND GRID
     const prepareEventBoxes = [];
-    let prepareEventBoxYCoordinate = 100;
+    let prepareEventBoxYCoordinate = 579;
     for (let i = 0; i < 3; i++) {
       const prepareEventBox = new Box(
-        130,
+        1530,
         prepareEventBoxYCoordinate,
-        50,
-        85,
+        110,
+        110,
         false,
         false,
         BoxState.INACTIVE,
@@ -204,7 +204,7 @@ export default class GridCreator {
 
       prepareEventBoxes.push(prepareEventBox);
 
-      prepareEventBoxYCoordinate += 5;
+      prepareEventBoxYCoordinate += 135;
     }
     const player1PrepareEventGrid = new Grid(
       GridType.PLAYER_1_PREPARE_EVENT,
@@ -215,10 +215,10 @@ export default class GridCreator {
 
     // PLAYER 2 MAIN CHARACTER BOX AND GRID
     const player2MainCharacterBox = new Box(
-      110,
       200,
-      50,
-      70,
+      60,
+      200,
+      200,
       false,
       false,
       BoxState.INACTIVE,
@@ -231,10 +231,10 @@ export default class GridCreator {
 
     // PLAYER 2 MINION DECK BOX AND GRID
     const player2MinionsDeckBox = new Box(
-      5,
-      0,
+      420,
+      60,
       200,
-      70,
+      200,
       false,
       false,
       BoxState.INACTIVE,
@@ -246,13 +246,13 @@ export default class GridCreator {
 
     // PLAYER 2 CARDS IN HANDS BOXES AND GRID
     const player2CardsInHandBoxes = [];
-    let player2CardsInHandBoxXCoordinate = 120;
+    let player2CardsInHandBoxXCoordinate = 680;
     for (let i = 0; i < 6; i++) {
       const player2CardsInHandBox = new Box(
         player2CardsInHandBoxXCoordinate,
-        200,
-        100,
-        70,
+        25,
+        110,
+        110,
         false,
         false,
         BoxState.INACTIVE,
@@ -261,7 +261,7 @@ export default class GridCreator {
 
       player2CardsInHandBoxes.push(player2CardsInHandBox);
 
-      player2CardsInHandBoxXCoordinate += 10;
+      player2CardsInHandBoxXCoordinate += 135;
     }
     const player2CardsInHandGrid = new Grid(
       GridType.PLAYER_2_CARDS_IN_HAND,
@@ -270,10 +270,10 @@ export default class GridCreator {
 
     // PLAYER 2 BATTLEFIELD BOXES
     const player2BattlefieldBoxes = [];
-    let player2BattlefieldBoxXCoordinate = 225;
-    let player2BattlefieldBoxYCoordinate = 250;
+    let player2BattlefieldBoxXCoordinate = 713;
+    let player2BattlefieldBoxYCoordinate = 165;
     for (let i = 0; i < 18; i++) {
-      player2BattlefieldBoxXCoordinate += 25;
+      player2BattlefieldBoxXCoordinate += 135;
 
       let battlefieldArea;
 
@@ -281,15 +281,15 @@ export default class GridCreator {
         battlefieldArea = BattlefieldArea.FRONT;
       } else if (i < 12) {
         if (i === 6) {
-          player2BattlefieldBoxXCoordinate = 225;
-          player2BattlefieldBoxYCoordinate += 25;
+          player2BattlefieldBoxXCoordinate = 849;
+          player2BattlefieldBoxYCoordinate = 308;
         }
 
         battlefieldArea = BattlefieldArea.MIDDLE;
       } else {
         if (i === 12) {
-          player2BattlefieldBoxXCoordinate = 225;
-          player2BattlefieldBoxYCoordinate += 25;
+          player2BattlefieldBoxXCoordinate = 849;
+          player2BattlefieldBoxYCoordinate = 448;
         }
 
         battlefieldArea = BattlefieldArea.REAR;
@@ -298,8 +298,8 @@ export default class GridCreator {
       const player2BattlefieldBox = new Box(
         player2BattlefieldBoxXCoordinate,
         player2BattlefieldBoxYCoordinate,
-        50,
-        70,
+        110,
+        110,
         false,
         false,
         BoxState.INACTIVE,
@@ -315,13 +315,13 @@ export default class GridCreator {
 
     // PLAYER 2 PREPARE EVENT BOXES AND GRID
     const player2PrepareEventBoxes = [];
-    let player2PrepareEventBoxYCoordinate = 100;
+    let player2PrepareEventBoxYCoordinate = 170;
     for (let i = 0; i < 3; i++) {
       const player2PrepareEventBox = new Box(
-        130,
+        700,
         player2PrepareEventBoxYCoordinate,
-        50,
-        85,
+        110,
+        110,
         false,
         false,
         BoxState.INACTIVE,
@@ -330,7 +330,7 @@ export default class GridCreator {
 
       player2PrepareEventBoxes.push(player2PrepareEventBox);
 
-      player2PrepareEventBoxYCoordinate += 5;
+      player2PrepareEventBoxYCoordinate += 135;
     }
     const player2PrepareEventGrid = new Grid(
       GridType.PLAYER_2_PREPARE_EVENT,
@@ -342,6 +342,7 @@ export default class GridCreator {
       activeEventsGrid,
       josephGrid,
       messagesGrid,
+      phaseButtonsGrid,
       player1MainCharacterGrid,
       player1MinionsDeckGrid,
       player1CardsInHandGrid,
