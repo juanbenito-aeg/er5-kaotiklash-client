@@ -109,6 +109,7 @@ const CardState = {
   SELECTED: 3,
   HOVERED: 4,
   DISCARDED: 5,
+  SHOWING_DETAILS: 6,
 };
 
 const BoxState = {

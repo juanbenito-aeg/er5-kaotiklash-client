@@ -175,8 +175,8 @@ export default class Game {
       sHeight: 1024,
       dx: xCoordinate,
       dy: yCoordinate,
-      dWidth: 110,
-      dHeight: 110,
+      dWidth: card.getCurrentWidth(),
+      dHeight: card.getCurrentHeight(),
     });
 
     // TEMPLATE IMAGE
@@ -640,13 +640,23 @@ export default class Game {
     for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
       const currentDeck = this.#deckContainer.getDecks()[i];
 
-      const updatedDeck = new Deck(i + 1, []);
+      const updatedDeck = new Deck(i, []);
       updatedDecks.push(updatedDeck);
 
       for (let j = 0; j < currentDeck.getCards().length; j++) {
         let currentCard = currentDeck.getCards()[j];
 
-        currentCard = new CardView(currentCard, 0, 0);
+        currentCard = new CardView(
+          currentCard,
+          0,
+          0,
+          300,
+          500,
+          110,
+          110,
+          110,
+          110
+        );
 
         updatedDeck.insertCard(currentCard);
       }

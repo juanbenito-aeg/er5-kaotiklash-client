@@ -31,6 +31,7 @@ export default class PerformEventPhase extends Phase {
   }
 
   execute() {
-    // TODO
+    this.applyCardMovementToAllCards();
+    this.handleRightClickOnCard();
   }
 }

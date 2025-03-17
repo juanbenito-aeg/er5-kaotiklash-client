@@ -2,11 +2,33 @@ export default class CardView {
   #card;
   #xCoordinate;
   #yCoordinate;
+  #bigVersionWidth;
+  #bigVersionHeight;
+  #smallVersionWidth;
+  #smallVersionHeight;
+  #currentWidth;
+  #currentHeight;
 
-  constructor(card, xCoordinate, yCoordinate) {
+  constructor(
+    card,
+    xCoordinate,
+    yCoordinate,
+    bigVersionWidth,
+    bigVersionHeight,
+    smallVersionWidth,
+    smallVersionHeight,
+    currentWidth,
+    currentHeight
+  ) {
     this.#card = card;
     this.#xCoordinate = xCoordinate;
     this.#yCoordinate = yCoordinate;
+    this.#bigVersionWidth = bigVersionWidth;
+    this.#bigVersionHeight = bigVersionHeight;
+    this.#smallVersionWidth = smallVersionWidth;
+    this.#smallVersionHeight = smallVersionHeight;
+    this.#currentWidth = currentWidth;
+    this.#currentHeight = currentHeight;
   }
 
   getCategory() {
@@ -45,11 +67,43 @@ export default class CardView {
     return this.#yCoordinate;
   }
 
+  getBigVersionWidth() {
+    return this.#bigVersionWidth;
+  }
+
+  getBigVersionHeight() {
+    return this.#bigVersionHeight;
+  }
+
+  getSmallVersionWidth() {
+    return this.#smallVersionWidth;
+  }
+
+  getSmallVersionHeight() {
+    return this.#smallVersionHeight;
+  }
+
+  getCurrentWidth() {
+    return this.#currentWidth;
+  }
+
+  getCurrentHeight() {
+    return this.#currentHeight;
+  }
+
   setXCoordinate(newXCoordinate) {
     this.#xCoordinate = newXCoordinate;
   }
 
   setYCoordinate(newYCoordinate) {
     this.#yCoordinate = newYCoordinate;
+  }
+
+  setCurrentWidth(newCurrentWidth) {
+    this.#currentWidth = newCurrentWidth;
+  }
+
+  setCurrentHeight(newCurrentHeight) {
+    this.#currentHeight = newCurrentHeight;
   }
 }
