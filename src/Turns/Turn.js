@@ -6,6 +6,7 @@ import DrawCardPhase from "./DrawCardPhase.js";
 import DiscardCardPhase from "./DiscardCardPhase.js";
 import AttackPhase from "./AttackPhase.js";
 import InitialPhase from "./InitialPhase.js";
+import { GameState } from "../Game/constants.js";
 
 export default class Turn {
   #phases;
@@ -30,8 +31,11 @@ export default class Turn {
     const drawCardPhase = new DrawCardPhase();
     const discardCard = new DiscardCardPhase();
     const attack = new AttackPhase(); */
+    console.log("banana")
     const initialPhase = new InitialPhase(this.#deckContainer);
+    globals.gameState = GameState.DEAL_CARDS;
     initialPhase.execute();
+  
     
     /* this.#phases = [
       drawCardPhase,

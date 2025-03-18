@@ -1,13 +1,23 @@
-import { CardCategory, DeckType } from "../Game/constants.js";
+import { CardCategory, DeckType, GameState } from "../Game/constants.js";
+import { globals } from "../index.js";
 
 export default class InitialPhase {
     constructor(deckContainer) {
         this.deckContainer = deckContainer;
     }
 
+    static create() {
+        
+    }
     execute() {
-        this.#dealMinions();
-        this.#dealEventCards();
+       switch(globals.gameState) {
+        case GameState.DEAL_CARDS:
+            this.#dealMinions();
+            break;
+        default: 
+        
+       }
+       /*  this.#dealEventCards(); */
     }
 
     #dealMinions() {
@@ -15,12 +25,14 @@ export default class InitialPhase {
         const player2MinionsInPlay = this.deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
         const player1Minions = this.deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS];
         const player2Minions = this.deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
-       
+       console.log(player1Minions)
         this.#shuffleDeck(player1Minions);
         this.#shuffleDeck(player2Minions);
 
+        
         this.#selectAndInsertCards(player1Minions, player1MinionsInPlay, 3);
         this.#selectAndInsertCards(player2Minions, player2MinionsInPlay, 3);
+       return globals.gameState = GameState.INVALID;
     }
 
     #shuffleDeck(deck) {

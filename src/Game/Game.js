@@ -61,7 +61,8 @@ export default class Game {
     const turnPlayer2 = new Turn(0, game.#deckContainer, game.#board, null, game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
   
-
+    turnPlayer1.create();
+    turnPlayer2.create();
     // MOUSEINPUT CREATION
     game.#mouseInput = new MouseInput();
     game.#mouseInput.mouseEventListener();
@@ -70,7 +71,6 @@ export default class Game {
   }
 
   execute() {
-    this.#turns[this.#currentPlayer].create();
     this.#update();
     this.#render();
   }
