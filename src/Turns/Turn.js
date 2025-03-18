@@ -5,6 +5,7 @@ import MovePhase from "./MovePhase.js";
 import DrawCardPhase from "./DrawCardPhase.js";
 import DiscardCardPhase from "./DiscardCardPhase.js";
 import AttackPhase from "./AttackPhase.js";
+import InitialPhase from "./InitialPhase.js";
 
 export default class Turn {
   #phases;
@@ -23,26 +24,33 @@ export default class Turn {
   }
 
   create() {
-    const prepareEvent = new PrepareEventPhase();
+ /*    const prepareEvent = new PrepareEventPhase();
     const performEvent = new PerformEventPhase();
     const movePhase = new MovePhase();
     const drawCardPhase = new DrawCardPhase();
     const discardCard = new DiscardCardPhase();
-    const attack = new AttackPhase();
-
-    this.#phases = [
+    const attack = new AttackPhase(); */
+    const initialPhase = new InitialPhase(this.#deckContainer);
+    initialPhase.execute();
+    
+    /* this.#phases = [
       drawCardPhase,
       prepareEvent,
       performEvent,
       movePhase,
       attack,
       discardCard,
-    ];
+    ]; */
   }
-
+  
   execute() {
-    if (this.#numOfExceccutePhase < this.#phases.length) {
-      const currentPhase = this.#phases[this.#numOfExceccutePhase];
+    
+
+
+
+   /*  const currentPhase = -1;
+    if (this.#numOfExceccutePhase < this.#phases) {
+      currentPhase = this.#phases[this.#numOfExceccutePhase];
     }
 
     currentPhase.execute();
@@ -61,6 +69,6 @@ export default class Turn {
       this.#numOfExceccutePhase = 0;
       return true;
     }
-    return false;
+    return false; */
   }
 }
