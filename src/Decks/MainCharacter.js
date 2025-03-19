@@ -8,4 +8,8 @@ export default class MainCharacter extends Card {
 
     this.#specialSkill = specialSkill;
   }
+
+  getSpecialSkill() {
+    return this.#specialSkill;
+  }
 }

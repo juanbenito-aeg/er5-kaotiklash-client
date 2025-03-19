@@ -23,16 +23,8 @@ export default class CardMovement {
     return this.#card.getDescription();
   }
 
-  getMinionType() {
-    return this.#card.getMinionType();
-  }
-
-  getWeaponType() {
-    return this.#card.getWeaponType();
-  }
-
-  getArmorType() {
-    return this.#card.getArmorType();
+  getSpecialSkill() {
+    return this.#card.getSpecialSkill();
   }
 
   getXCoordinate() {
@@ -43,31 +35,15 @@ export default class CardMovement {
     return this.#card.getYCoordinate();
   }
 
-  getBigVersionWidth() {
-    return this.#card.getBigVersionWidth();
-  }
-
-  getBigVersionHeight() {
-    return this.#card.getBigVersionHeight();
-  }
-
-  getCurrentWidth() {
-    return this.#card.getCurrentWidth();
-  }
-
-  getCurrentHeight() {
-    return this.#card.getCurrentHeight();
+  getImageSet() {
+    return this.#card.getImageSet();
   }
 
   getState() {
     return this.#state;
   }
 
-  setCurrentWidth(newCurrentWidth) {
-    this.#card.setCurrentWidth(newCurrentWidth);
-  }
-
-  setCurrentHeight(newCurrentHeight) {
-    this.#card.setCurrentHeight(newCurrentHeight);
+  setState(newState) {
+    this.#state = newState;
   }
 }

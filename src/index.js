@@ -271,7 +271,7 @@ async function loadHandler() {
   globals.assetsLoaded++;
 
   if (globals.assetsLoaded === globals.assetsToLoad.length) {
-    globals.gameState = GameState.GRIDS_DRAWING;
+    globals.gameState = GameState.PLAYING;
 
     globals.game = await Game.create();
 

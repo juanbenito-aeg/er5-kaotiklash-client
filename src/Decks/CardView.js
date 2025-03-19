@@ -19,6 +19,18 @@ export default class CardView {
     return this.#card.getID();
   }
 
+  getName() {
+    return this.#card.getName();
+  }
+
+  getDescription() {
+    return this.#card.getDescription();
+  }
+
+  getSpecialSkill() {
+    return this.#card.getSpecialSkill();
+  }
+
   getImageSet() {
     return this.#imageSet;
   }

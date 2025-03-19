@@ -14,6 +14,7 @@ import {
   IconID,
   TemplateID,
   PlayerID,
+  CardState,
 } from "./constants.js";
 import { globals } from "../index.js";
 import ImageSet from "./ImageSet.js";
@@ -108,11 +109,18 @@ export default class Game {
   }
 
   #render() {
+    // CLEAR SCREEN
+    globals.ctx.clearRect(0, 0, globals.canvas.width, globals.canvas.height);
+
     this.#renderBoard();
 
     switch (globals.gameState) {
       case GameState.GRIDS_DRAWING:
         this.#renderGrids();
+        break;
+
+      case GameState.PLAYING:
+        this.#renderGame();
         break;
     }
   }
@@ -165,6 +173,107 @@ export default class Game {
         );
       }
     }
+  }
+
+  #renderGame() {
+    this.#renderCards();
+  }
+
+  #renderCards() {
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+      const currentDeck = this.#deckContainer.getDecks()[i];
+
+      for (let j = 0; j < currentDeck.getCards().length; j++) {
+        const currentCard = currentDeck.getCards()[j];
+
+        this.#renderCard(currentCard);
+      }
+    }
+  }
+
+  #renderCard(card) {
+    switch (card.getCategory()) {
+      case CardCategory.MAIN_CHARACTER:
+        if (card.getState() === CardState.EXPANDED) {
+          this.#renderExpandedMainCharacter(card);
+        } else {
+          this.#renderMainCharacter(card);
+        }
+        break;
+    }
+  }
+
+  #renderExpandedMainCharacter(card) {
+    // DARKEN THE BACKGROUND TO PUT THE FOCUS ON THE EXPANDED CARD
+    globals.ctx.globalAlpha = 0.5;
+    globals.ctx.fillStyle = "black";
+    globals.ctx.fillRect(0, 0, globals.canvas.width, globals.canvas.height);
+    globals.ctx.globalAlpha = 1;
+
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+    const canvasHeightDividedBy2 = globals.canvas.height / 2;
+    globals.ctx.textAlign = "center";
+
+    // RENDER THE CARD IMAGE
+    globals.ctx.drawImage(
+      card.getImageSet().getCard(),
+      0,
+      0,
+      1024,
+      1024,
+      canvasWidthDividedBy2 - 425 / 2,
+      canvasHeightDividedBy2 - 501 / 2,
+      425,
+      501
+    );
+
+    // RENDER THE CARD TEMPLATE
+    globals.ctx.drawImage(
+      card.getImageSet().getBigVersionTemplate(),
+      0,
+      0,
+      625,
+      801,
+      canvasWidthDividedBy2 - 425 / 2,
+      canvasHeightDividedBy2 - 501 / 2,
+      425,
+      501
+    );
+
+    globals.ctx.font = "24px MedievalSharp";
+    globals.ctx.fillStyle = "white";
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 365);
+    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 540);
+    globals.ctx.fillText("Special Skill", canvasWidthDividedBy2, 620);
+    globals.ctx.fillText(card.getSpecialSkill(), canvasWidthDividedBy2, 640);
+  }
+
+  #renderMainCharacter(card) {
+    // RENDER THE CARD IMAGE
+    globals.ctx.drawImage(
+      card.getImageSet().getCard(),
+      0,
+      0,
+      1024,
+      1024,
+      card.getXCoordinate(),
+      card.getYCoordinate(),
+      110,
+      110
+    );
+
+    // RENDER THE CARD TEMPLATE
+    globals.ctx.drawImage(
+      card.getImageSet().getSmallVersionTemplate(),
+      0,
+      0,
+      625,
+      801,
+      card.getXCoordinate(),
+      card.getYCoordinate(),
+      110,
+      110
+    );
   }
 
   #applyCardViewToAllCards() {
