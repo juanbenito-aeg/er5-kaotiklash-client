@@ -1,21 +1,21 @@
 export default class Board {
   #grids;
-  #imageInfo;
+  #image;
 
-  constructor(grids, imageInfo) {
+  constructor(grids, image) {
     this.#grids = grids;
-    this.#imageInfo = imageInfo;
+    this.#image = image;
   }
 
   getGrids() {
     return this.#grids;
   }
 
-  getImageInfo() {
-    return this.#imageInfo;
+  getImage() {
+    return this.#image;
   }
 
-  setImageInfo(newImageInfo) {
-    this.#imageInfo = newImageInfo;
+  setImage(newImage) {
+    this.#image = newImage;
   }
 }

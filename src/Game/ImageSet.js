@@ -13,8 +13,20 @@ export default class ImageSet {
     this.#icons = icons;
   }
 
+  getReverse() {
+    return this.#reverse;
+  }
+
   getCard() {
     return this.#card;
+  }
+
+  getSmallVersionTemplate() {
+    return this.#smallVersionTemplate;
+  }
+
+  getBigVersionTemplate() {
+    return this.#bigVersionTemplate;
   }
 
   getIcons() {

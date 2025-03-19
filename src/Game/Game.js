@@ -55,7 +55,7 @@ export default class Game {
     // GRIDS (BOARD) CREATION
     const gridCreator = new GridCreator();
     game.#board = gridCreator.createAllGrids();
-    game.#board.setImageInfo(globals.boardImgInfo);
+    game.#board.setImage(globals.boardImage);
 
     // TURNS CREATION
     const turnPlayer1 = new Turn();
@@ -80,10 +80,6 @@ export default class Game {
     this.#renderBoard();
 
     switch (globals.gameState) {
-      case GameState.FAKE_CARDS_DISPLAY:
-        this.#renderSmallVersionCards();
-        break;
-
       case GameState.GRIDS_DRAWING:
         this.#renderGrids();
         break;
@@ -92,54 +88,16 @@ export default class Game {
 
   #renderBoard() {
     globals.ctx.drawImage(
-      this.#board.getImageInfo().getImageObj(),
-      this.#board.getImageInfo().getSourceX(),
-      this.#board.getImageInfo().getSourceY(),
-      this.#board.getImageInfo().getSourceWidth(),
-      this.#board.getImageInfo().getSourceHeight(),
-      this.#board.getImageInfo().getDestinationX(),
-      this.#board.getImageInfo().getDestinationY(),
-      this.#board.getImageInfo().getSmallVerDestinationWidth(),
-      this.#board.getImageInfo().getSmallVerDestinationHeight()
+      globals.boardImage,
+      0,
+      0,
+      3584,
+      2048,
+      0,
+      0,
+      globals.canvas.width,
+      globals.canvas.height
     );
-  }
-
-  #renderSmallVersionCards() {
-    this.#renderSmallVersionCard(
-      this.#deckContainer.getDecks()[0].getCards()[1]
-    );
-  }
-
-  #renderSmallVersionCard(card) {
-    globals.ctx.drawImage(
-      card.getImageSet().getCard().getImageObj(),
-      card.getImageSet().getCard().getSourceX(),
-      card.getImageSet().getCard().getSourceY(),
-      card.getImageSet().getCard().getSourceWidth(),
-      card.getImageSet().getCard().getSourceHeight(),
-      card.getImageSet().getCard().getDestinationX(),
-      card.getImageSet().getCard().getDestinationY(),
-      card.getImageSet().getCard().getSmallVerDestinationWidth(),
-      card.getImageSet().getCard().getSmallVerDestinationHeight()
-    );
-
-    for (let i = 0; i < card.getImageSet().getIcons().length; i++) {
-      const currentIcon = card.getImageSet().getIcons()[i];
-
-      globals.ctx.drawImage(
-        currentIcon.getImageObj(),
-        currentIcon.getSourceX(),
-        currentIcon.getSourceY(),
-        currentIcon.getSourceWidth(),
-        currentIcon.getSourceHeight(),
-        currentIcon.getDestinationX() +
-          card.getImageSet().getCard().getDestinationX(),
-        currentIcon.getDestinationY() +
-          card.getImageSet().getCard().getDestinationY(),
-        currentIcon.getSmallVerDestinationWidth(),
-        currentIcon.getSmallVerDestinationHeight()
-      );
-    }
   }
 
   #renderGrids() {
@@ -192,135 +150,129 @@ export default class Game {
 
         // CREATION OF OBJECTS FOR THE CURRENT CARD'S IMAGESET
 
-        let cardImageInfo;
-
-        let smallVersionTemplateImageInfo;
-
-        let bigVersionTemplateImageInfo;
-
-        let iconsImagesInfo = [
-          globals.cardsIconsImgsInfo[IconID.EVENT_EFFECT_DIAMOND],
-          globals.cardsIconsImgsInfo[IconID.EVENT_PREP_TIME_DIAMOND],
-          globals.cardsIconsImgsInfo[IconID.EVENT_DURATION_DIAMOND],
+        let cardImage;
+        let smallVersionTemplateImage;
+        let bigVersionTemplateImage;
+        let iconsImages = [
+          globals.cardsIconsImages[IconID.EVENT_EFFECT_DIAMOND],
+          globals.cardsIconsImages[IconID.EVENT_PREP_TIME_DIAMOND],
+          globals.cardsIconsImages[IconID.EVENT_DURATION_DIAMOND],
         ];
 
         if (currentCard.getCategory() === CardCategory.MAIN_CHARACTER) {
-          cardImageInfo =
-            globals.cardsImgsInfo.mainCharacters[currentCard.getID()];
+          cardImage = globals.cardsImages.main_characters[currentCard.getID()];
 
-          smallVersionTemplateImageInfo =
-            globals.cardsTemplatesImgsInfo[TemplateID.MAIN_CHARACTERS_SMALL];
+          smallVersionTemplateImage =
+            globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_SMALL];
 
-          bigVersionTemplateImageInfo =
-            globals.cardsTemplatesImgsInfo[TemplateID.MAIN_CHARACTERS_BIG];
+          bigVersionTemplateImage =
+            globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_BIG];
 
-          iconsImagesInfo = [];
+          iconsImages = [];
         } else {
-          smallVersionTemplateImageInfo =
-            globals.cardsTemplatesImgsInfo[TemplateID.MINIONS_AND_EVENTS_SMALL];
+          smallVersionTemplateImage =
+            globals.cardsTemplatesImages[TemplateID.MINIONS_AND_EVENTS_SMALL];
 
           if (currentCard.getCategory() === CardCategory.MINION) {
-            cardImageInfo = globals.cardsImgsInfo.minions[currentCard.getID()];
+            cardImage = globals.cardsImages.minions[currentCard.getID()];
 
-            iconsImagesInfo = [
-              globals.cardsIconsImgsInfo[IconID.ATTACK_DAMAGE_DIAMOND],
-              globals.cardsIconsImgsInfo[IconID.MINION_HP_DIAMOND],
-              globals.cardsIconsImgsInfo[IconID.DEFENSE_DURABILITY_DIAMOND],
+            iconsImages = [
+              globals.cardsIconsImages[IconID.ATTACK_DAMAGE_DIAMOND],
+              globals.cardsIconsImages[IconID.MINION_HP_DIAMOND],
+              globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
             ];
 
             if (currentCard.getMinionType() === MinionType.SPECIAL) {
-              bigVersionTemplateImageInfo =
-                globals.cardsTemplatesImgsInfo[TemplateID.MINIONS_SPECIAL_BIG];
+              bigVersionTemplateImage =
+                globals.cardsTemplatesImages[TemplateID.MINIONS_SPECIAL_BIG];
 
-              iconsImagesInfo.push(
-                globals.cardsIconsImgsInfo[IconID.MINION_SPECIAL_TYPE]
+              iconsImages.push(
+                globals.cardsIconsImages[IconID.MINION_SPECIAL_TYPE]
               );
             } else if (currentCard.getMinionType() === MinionType.WARRIOR) {
-              bigVersionTemplateImageInfo =
-                globals.cardsTemplatesImgsInfo[TemplateID.MINIONS_WARRIORS_BIG];
+              bigVersionTemplateImage =
+                globals.cardsTemplatesImages[TemplateID.MINIONS_WARRIORS_BIG];
 
-              iconsImagesInfo.push(
-                globals.cardsIconsImgsInfo[IconID.MINION_WARRIOR_TYPE]
+              iconsImages.push(
+                globals.cardsIconsImages[IconID.MINION_WARRIOR_TYPE]
               );
             } else {
-              bigVersionTemplateImageInfo =
-                globals.cardsTemplatesImgsInfo[TemplateID.MINIONS_WIZARDS_BIG];
+              bigVersionTemplateImage =
+                globals.cardsTemplatesImages[TemplateID.MINIONS_WIZARDS_BIG];
 
-              iconsImagesInfo.push(
-                globals.cardsIconsImgsInfo[IconID.MINION_WIZARD_TYPE]
+              iconsImages.push(
+                globals.cardsIconsImages[IconID.MINION_WIZARD_TYPE]
               );
             }
           } else if (currentCard.getCategory() === CardCategory.WEAPON) {
-            cardImageInfo = globals.cardsImgsInfo.weapons[currentCard.getID()];
+            cardImage = globals.cardsImages.weapons[currentCard.getID()];
 
-            bigVersionTemplateImageInfo =
-              globals.cardsTemplatesImgsInfo[TemplateID.WEAPONS_BIG];
+            bigVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.WEAPONS_BIG];
 
-            iconsImagesInfo = [
-              globals.cardsIconsImgsInfo[IconID.ATTACK_DAMAGE_DIAMOND],
-              globals.cardsIconsImgsInfo[IconID.EVENT_PREP_TIME_DIAMOND],
-              globals.cardsIconsImgsInfo[IconID.DEFENSE_DURABILITY_DIAMOND],
+            iconsImages = [
+              globals.cardsIconsImages[IconID.ATTACK_DAMAGE_DIAMOND],
+              globals.cardsIconsImages[IconID.EVENT_PREP_TIME_DIAMOND],
+              globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
             ];
 
             if (currentCard.getWeaponType() === WeaponType.MELEE) {
-              iconsImagesInfo.push(
-                globals.cardsIconsImgsInfo[IconID.WEAPON_MELEE_TYPE]
+              iconsImages.push(
+                globals.cardsIconsImages[IconID.WEAPON_MELEE_TYPE]
               );
             } else if (currentCard.getWeaponType() === WeaponType.MISSILE) {
-              iconsImagesInfo.push(
-                globals.cardsIconsImgsInfo[IconID.WEAPON_MISSILE_TYPE]
+              iconsImages.push(
+                globals.cardsIconsImages[IconID.WEAPON_MISSILE_TYPE]
               );
             } else {
-              iconsImagesInfo.push(
-                globals.cardsIconsImgsInfo[IconID.WEAPON_HYBRID_TYPE]
+              iconsImages.push(
+                globals.cardsIconsImages[IconID.WEAPON_HYBRID_TYPE]
               );
             }
           } else if (currentCard.getCategory() === CardCategory.ARMOR) {
-            cardImageInfo = globals.cardsImgsInfo.armor[currentCard.getID()];
+            cardImage = globals.cardsImages.armor[currentCard.getID()];
 
-            bigVersionTemplateImageInfo =
-              globals.cardsTemplatesImgsInfo[TemplateID.ARMOR_LIGHT_HEAVY_BIG];
+            bigVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.ARMOR_LIGHT_HEAVY_BIG];
 
             if (currentCard.getArmorType() === ArmorType.LIGHT) {
-              iconsImagesInfo.push(
-                globals.cardsIconsImgsInfo[IconID.ARMOR_LIGHT_TYPE]
+              iconsImages.push(
+                globals.cardsIconsImages[IconID.ARMOR_LIGHT_TYPE]
               );
             } else if (currentCard.getArmorType() === ArmorType.MEDIUM) {
-              bigVersionTemplateImageInfo =
-                globals.cardsTemplatesImgsInfo[
-                  TemplateID.ARMOR_LIGHT_HEAVY_BIG
-                ];
+              bigVersionTemplateImage =
+                globals.cardsTemplatesImages[TemplateID.ARMOR_LIGHT_HEAVY_BIG];
 
-              iconsImagesInfo.push(
-                globals.cardsIconsImgsInfo[IconID.ARMOR_MEDIUM_TYPE]
+              iconsImages.push(
+                globals.cardsIconsImages[IconID.ARMOR_MEDIUM_TYPE]
               );
             } else {
-              iconsImagesInfo.push(
-                globals.cardsIconsImgsInfo[IconID.ARMOR_HEAVY_TYPE]
+              iconsImages.push(
+                globals.cardsIconsImages[IconID.ARMOR_HEAVY_TYPE]
               );
             }
           } else if (currentCard.getCategory() === CardCategory.SPECIAL) {
-            cardImageInfo = globals.cardsImgsInfo.special[currentCard.getID()];
+            cardImage = globals.cardsImages.special[currentCard.getID()];
 
-            bigVersionTemplateImageInfo =
-              globals.cardsTemplatesImgsInfo[TemplateID.SPECIAL_EVENTS_BIG];
+            bigVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.SPECIAL_EVENTS_BIG];
           } else {
-            cardImageInfo = globals.cardsImgsInfo.rare[currentCard.getID()];
+            cardImage = globals.cardsImages.rare[currentCard.getID()];
 
-            bigVersionTemplateImageInfo =
-              globals.cardsTemplatesImgsInfo[TemplateID.RARE_EVENTS_BIG];
+            bigVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.RARE_EVENTS_BIG];
           }
         }
 
         const imageSet = new ImageSet(
-          globals.cardsReverseImgInfo,
-          cardImageInfo,
-          smallVersionTemplateImageInfo,
-          bigVersionTemplateImageInfo,
-          iconsImagesInfo
+          globals.cardsReverseImage,
+          cardImage,
+          smallVersionTemplateImage,
+          bigVersionTemplateImage,
+          iconsImages
         );
 
-        currentCard = new CardView(currentCard, imageSet);
+        currentCard = new CardView(currentCard, 0, 0, imageSet);
 
         updatedDeck.insertCard(currentCard);
       }

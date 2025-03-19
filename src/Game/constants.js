@@ -1,7 +1,6 @@
 const GameState = {
   INVALID: -1,
-  FAKE_CARDS_DISPLAY: 0,
-  GRIDS_DRAWING: 1,
+  GRIDS_DRAWING: 0,
 };
 
 // FPS (FRAMES PER SECOND)
