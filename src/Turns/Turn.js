@@ -6,6 +6,7 @@ import DrawCardPhase from "./DrawCardPhase.js";
 import DiscardCardPhase from "./DiscardCardPhase.js";
 import AttackPhase from "./AttackPhase.js";
 import {
+  CardState,
   DeckType,
   DiscardCardState,
   DrawCardState,
@@ -176,6 +177,68 @@ export default class Turn {
 
     if (this.#numOfExecutedPhases === 5) {
       globals.isCurrentTurnFinished = true;
+    }
+
+    this.#expandCard();
+  }
+
+  #expandCard() {
+    const decksToCheck = [];
+
+    if (this.#player.getID() === PlayerID.PLAYER_1) {
+      decksToCheck.push(
+        DeckType.PLAYER_1_ACTIVE_EVENTS,
+        DeckType.PLAYER_1_CARDS_IN_HAND,
+        DeckType.PLAYER_1_EVENTS_IN_PREPARATION,
+        DeckType.PLAYER_1_MAIN_CHARACTER,
+        DeckType.PLAYER_1_MINIONS_IN_PLAY
+      );
+    } else {
+      decksToCheck.push(
+        DeckType.PLAYER_2_ACTIVE_EVENTS,
+        DeckType.PLAYER_2_CARDS_IN_HAND,
+        DeckType.PLAYER_2_EVENTS_IN_PREPARATION,
+        DeckType.PLAYER_2_MAIN_CHARACTER,
+        DeckType.PLAYER_2_MINIONS_IN_PLAY
+      );
+    }
+
+    this.#checkIfMouseOverAnyCard(decksToCheck);
+    this.#checkIfRightClickWasPressedOnCard(decksToCheck);
+  }
+
+  #checkIfMouseOverAnyCard(decksToCheck) {
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+      for (let j = 0; j < decksToCheck.length; j++) {
+        if (i === decksToCheck[j]) {
+          const currentDeck = this.#deckContainer.getDecks()[i];
+
+          currentDeck.checkIfMouseOverAnyCard(this.#mouseInput);
+        }
+      }
+    }
+  }
+
+  #checkIfRightClickWasPressedOnCard(decksToCheck) {
+    if (this.#mouseInput.isRightButtonPressed()) {
+      for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+        for (let j = 0; j < decksToCheck.length; j++) {
+          if (i === decksToCheck[j]) {
+            const currentDeck = this.#deckContainer.getDecks()[i];
+
+            for (let k = 0; k < currentDeck.getCards().length; k++) {
+              const currentCard = currentDeck.getCards()[k];
+
+              if (
+                currentCard.getState() === CardState.INACTIVE_HOVERED ||
+                currentCard.getState() === CardState.HOVERED
+              ) {
+                currentCard.setState(CardState.EXPANDED);
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

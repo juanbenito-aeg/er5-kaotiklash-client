@@ -1,6 +1,7 @@
 const GameState = {
   INVALID: -1,
   GRIDS_DRAWING: 0,
+  PLAYING: 1,
 };
 
 // FPS (FRAMES PER SECOND)
@@ -113,13 +114,13 @@ const ChaoticEventID = {
 };
 
 const CardState = {
-  NOT_SELECTED: 0,
+  INACTIVE: 0,
   MOVING: 1,
   PLACED: 2,
-  SELECTED: 3,
+  INACTIVE_HOVERED: 3,
   HOVERED: 4,
-  DISCARDED: 5,
-  SHOWING_DETAILS: 6,
+  SELECTED: 5,
+  EXPANDED: 6,
 };
 
 const BoxState = {

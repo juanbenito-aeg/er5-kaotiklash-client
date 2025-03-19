@@ -30,8 +30,5 @@ export default class PerformEventPhase extends Phase {
     super(state, deckContainer, board, mouseInput);
   }
 
-  execute() {
-    this.applyCardMovementToAllCards();
-    this.handleRightClickOnCard();
-  }
+  execute() {}
 }

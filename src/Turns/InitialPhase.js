@@ -1,4 +1,11 @@
-import { CardCategory, DeckType, WeaponType } from "../Game/constants.js";
+import CardMovement from "../Decks/CardMovement.js";
+import Deck from "../Decks/Deck.js";
+import {
+  CardCategory,
+  CardState,
+  DeckType,
+  WeaponType,
+} from "../Game/constants.js";
 
 export default class InitialPhase {
   #deckContainer;
@@ -8,8 +15,30 @@ export default class InitialPhase {
   }
 
   execute() {
-    this.#dealMinions();
-    this.#dealEventCards();
+    this.#applyCardMovementToAllCards();
+    // this.#dealMinions();
+    // this.#dealEventCards();
+  }
+
+  #applyCardMovementToAllCards() {
+    const updatedDecks = [];
+
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+      const currentDeck = this.#deckContainer.getDecks()[i];
+
+      const updatedDeck = new Deck(i, []);
+      updatedDecks.push(updatedDeck);
+
+      for (let j = 0; j < currentDeck.getCards().length; j++) {
+        let currentCard = currentDeck.getCards()[j];
+
+        currentCard = new CardMovement(currentCard, CardState.INACTIVE);
+
+        updatedDeck.insertCard(currentCard);
+      }
+    }
+
+    this.#deckContainer.setDecks(updatedDecks);
   }
 
   #dealMinions() {
@@ -44,7 +73,6 @@ export default class InitialPhase {
       deck[i] = deck[randomIndex];
       deck[randomIndex] = temp;
     }
-    return deck;
   }
 
   #selectAndInsertCards(minionsDeck, minionsInPlayDeck, numCards) {
@@ -75,8 +103,9 @@ export default class InitialPhase {
 
     for (let i = 0; i < eventCards.length; i++) {
       const currentCard = eventCards[i];
-      if (eventCards[i].getCategory() === CardCategory.WEAPON) {
-        if (eventCards[i].getID() !== WeaponType.HYBRID) {
+
+      if (currentCard.getCategory() === CardCategory.WEAPON) {
+        if (currentCard.getID() !== WeaponType.HYBRID) {
           eventWeapon.push(currentCard);
         }
       }
