@@ -22,4 +22,12 @@ export default class CardView {
   getYCoordinate() {
     return this.#yCoordinate;
   }
+  
+  getCategory() {
+    return this.#card.getCategory();
+  }
+
+  getID() {
+    return this.#card.getID();
+  }
 }

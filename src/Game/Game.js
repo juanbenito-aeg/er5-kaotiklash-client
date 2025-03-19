@@ -58,10 +58,12 @@ export default class Game {
     game.#board.setImage(globals.boardImage);
 
     // TURNS CREATION
-    const turnPlayer1 = new Turn();
-    const turnPlayer2 = new Turn();
+    const turnPlayer1 = new Turn(0, game.#deckContainer, game.#board, null, game.#currentPlayer);
+    const turnPlayer2 = new Turn(0, game.#deckContainer, game.#board, null, game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
-
+  
+    game.#turns[game.#currentPlayer].create();
+    
     // MOUSEINPUT CREATION
     game.#mouseInput = new MouseInput();
     game.#mouseInput.mouseEventListener();
@@ -74,7 +76,9 @@ export default class Game {
     this.#render();
   }
 
-  #update() {}
+  #update() {
+
+  }
 
   #render() {
     this.#renderBoard();
@@ -142,7 +146,7 @@ export default class Game {
     for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
       const currentDeck = this.#deckContainer.getDecks()[i];
 
-      const updatedDeck = new Deck(i + 1, []);
+      const updatedDeck = new Deck(i, []);
       updatedDecks.push(updatedDeck);
 
       for (let j = 0; j < currentDeck.getCards().length; j++) {
