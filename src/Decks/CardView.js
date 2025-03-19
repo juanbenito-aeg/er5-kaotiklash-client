@@ -10,4 +10,12 @@ export default class CardView {
   getImageSet() {
     return this.#imageSet;
   }
+
+  getCategory() {
+    return this.#card.getCategory();
+  }
+
+  getID() {
+    return this.#card.getID();
+  }
 }

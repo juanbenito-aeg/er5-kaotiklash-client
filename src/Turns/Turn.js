@@ -5,8 +5,7 @@ import MovePhase from "./MovePhase.js";
 import DrawCardPhase from "./DrawCardPhase.js";
 import DiscardCardPhase from "./DiscardCardPhase.js";
 import AttackPhase from "./AttackPhase.js";
-import InitialPhase from "./InitialPhase.js";
-import { GameState } from "../Game/constants.js";
+import InitialPhase from "./InitialPhase.js"; 
 
 export default class Turn {
   #phases;
@@ -25,34 +24,29 @@ export default class Turn {
   }
 
   create() {
- /*    const prepareEvent = new PrepareEventPhase();
+    const prepareEvent = new PrepareEventPhase();
     const performEvent = new PerformEventPhase();
     const movePhase = new MovePhase();
     const drawCardPhase = new DrawCardPhase();
     const discardCard = new DiscardCardPhase();
-    const attack = new AttackPhase(); */
-    console.log("banana")
+    const attack = new AttackPhase();
     const initialPhase = new InitialPhase(this.#deckContainer);
-    globals.gameState = GameState.DEAL_CARDS;
     initialPhase.execute();
   
     
-    /* this.#phases = [
+    this.#phases = [
       drawCardPhase,
       prepareEvent,
       performEvent,
       movePhase,
       attack,
       discardCard,
-    ]; */
+    ];
   }
   
   execute() {
     
-
-
-
-   /*  const currentPhase = -1;
+    const currentPhase = -1;
     if (this.#numOfExceccutePhase < this.#phases) {
       currentPhase = this.#phases[this.#numOfExceccutePhase];
     }
@@ -73,6 +67,6 @@ export default class Turn {
       this.#numOfExceccutePhase = 0;
       return true;
     }
-    return false; */
+    return false;
   }
 }

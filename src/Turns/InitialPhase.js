@@ -1,23 +1,13 @@
-import { CardCategory, DeckType, GameState } from "../Game/constants.js";
-import { globals } from "../index.js";
+import { CardCategory, DeckType, WeaponType} from "../Game/constants.js";
 
 export default class InitialPhase {
     constructor(deckContainer) {
         this.deckContainer = deckContainer;
     }
 
-    static create() {
-        
-    }
     execute() {
-       switch(globals.gameState) {
-        case GameState.DEAL_CARDS:
-            this.#dealMinions();
-            break;
-        default: 
-        
-       }
-       /*  this.#dealEventCards(); */
+        this.#dealMinions();
+        this.#dealEventCards();
     }
 
     #dealMinions() {
@@ -25,19 +15,17 @@ export default class InitialPhase {
         const player2MinionsInPlay = this.deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
         const player1Minions = this.deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS];
         const player2Minions = this.deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
-       console.log(player1Minions)
-        this.#shuffleDeck(player1Minions);
-        this.#shuffleDeck(player2Minions);
-
+      
+        this.#shuffleDeck(player1Minions.getCards());
+        this.#shuffleDeck(player2Minions.getCards());
         
-        this.#selectAndInsertCards(player1Minions, player1MinionsInPlay, 3);
-        this.#selectAndInsertCards(player2Minions, player2MinionsInPlay, 3);
-       return globals.gameState = GameState.INVALID;
+        this.#selectAndInsertCards(player1Minions.getCards(), player1MinionsInPlay, 3);
+        this.#selectAndInsertCards(player2Minions.getCards(), player2MinionsInPlay, 3);
+
     }
 
     #shuffleDeck(deck) {
         for (let i = 0; i < deck.length; i++) {
-            console.log(deck)
             const randomIndex = Math.floor(Math.random() * deck.length);
             const temp = deck[i];
             deck[i] = deck[randomIndex];
@@ -64,25 +52,25 @@ export default class InitialPhase {
     }
 
     #dealEventCards() {
-        const player1CardsInHand = this.deckContainer.getDecks(DeckType.PLAYER_1_CARDS_IN_HAND);
-        const player2CardsInHand = this.deckContainer.getDecks(DeckType.PLAYER_2_CARDS_IN_HAND);
+        const player1CardsInHand = this.deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
+        const player2CardsInHand = this.deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND];
+        const eventDeck = this.deckContainer.getDecks()[DeckType.EVENTS];
+        const eventCards = eventDeck.getCards();
+        const eventWeapon = [];
         
-        const eventCards = [];
-        for( let i = 0; i < this.deckContainer.getDecks().length; i++) {
-            const currentDecks = this.deckContainer.getDecks()[i];
-
-            for ( let j = 0; j < currentDecks.getCards().length; j++) {
-                const currentCard = currentDecks.getCards()[j];
-                if (currentCard.getCategory() === CardCategory.WEAPON) {
-                    eventCards.push(currentCard[j]);
-                    console.log(eventCards)
-                }
+        for  (let i = 0; i < eventCards.length; i++) {
+            const currentCard = eventCards[i];
+            if(eventCards[i].getCategory() === CardCategory.WEAPON) {
+                if(eventCards[i].getID() !== WeaponType.HYBRID) {
+                    eventWeapon.push(currentCard);
+                }  
             }
         }
-        for (let j = 0; j < eventCards.length; j++) {
-            player1CardsInHand.insertCard(eventCards[j * 2]);
-            player2CardsInHand.insertCard(eventCards[j * 2 + 1]);
-            console.log(player1CardsInHand)
-          }
+
+        this.#shuffleDeck(eventWeapon);
+
+        this.#selectAndInsertCards(eventWeapon, player1CardsInHand, 5);
+        this.#selectAndInsertCards(eventWeapon, player2CardsInHand, 5);     
+
     }
 }
