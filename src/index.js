@@ -1,4 +1,5 @@
 import Game from "./Game/Game.js";
+import ImageInfo from "./Game/ImageInfo.js";
 import { GameState, FPS } from "./Game/constants.js";
 
 // GLOBAL VARIABLES CREATION
@@ -9,10 +10,10 @@ const globals = {
   cycleRealTime: 0,
   canvas: {},
   ctx: {},
-  boardImg: {},
+  boardImgInfo: {},
   cardsData: {},
-  cardsReverseImg: {},
-  cardsImgs: {
+  cardsReverseImgInfo: {},
+  cardsImgsInfo: {
     mainCharacters: [],
     minions: [],
     weapons: [],
@@ -20,8 +21,8 @@ const globals = {
     special: [],
     rare: [],
   },
-  cardsTemplatesImgs: [],
-  cardsIconsImgs: [],
+  cardsTemplatesImgsInfo: [],
+  cardsIconsImgsInfo: [],
   assetsToLoad: [], // HOLDS THE ELEMENTS TO LOAD
   assetsLoaded: 0, // INDICATES THE NUMBER OF ELEMENTS THAT HAVE BEEN LOADED SO FAR
   gameState: GameState.INVALID,
@@ -90,16 +91,46 @@ async function initGameScreen() {
 
 function loadAssets() {
   // LOAD BOARD IMAGE
-  globals.boardImg = new Image();
-  globals.boardImg.addEventListener("load", loadHandler, false);
-  globals.boardImg.src = "../images/board.jpg";
-  globals.assetsToLoad.push(globals.boardImg);
+
+  const boardImage = new Image();
+  boardImage.addEventListener("load", loadHandler, false);
+  boardImage.src = "../images/board.jpg";
+  globals.assetsToLoad.push(boardImage);
+
+  globals.boardImgInfo = new ImageInfo(
+    boardImage,
+    0,
+    0,
+    3584,
+    2048,
+    0,
+    0,
+    globals.canvas.width,
+    globals.canvas.height,
+    globals.canvas.width,
+    globals.canvas.height
+  );
 
   // LOAD CARDS REVERSE
-  globals.cardsReverseImg = new Image();
-  globals.cardsReverseImg.addEventListener("load", loadHandler, false);
-  globals.cardsReverseImg.src = "../images/reverse.png";
-  globals.assetsToLoad.push(globals.cardsReverseImg);
+
+  const cardsReverseImage = new Image();
+  cardsReverseImage.addEventListener("load", loadHandler, false);
+  cardsReverseImage.src = "../images/reverse.png";
+  globals.assetsToLoad.push(cardsReverseImage);
+
+  globals.cardsReverseImgInfo = new ImageInfo(
+    cardsReverseImage,
+    0,
+    0,
+    425,
+    587,
+    0,
+    0,
+    110,
+    110,
+    310,
+    510
+  );
 
   // LOAD CARDS IMAGES
   for (const cardCategory in globals.cardsData) {
@@ -112,88 +143,516 @@ function loadAssets() {
       cardCategory === "rare"
     ) {
       for (let i = 0; i < globals.cardsData[cardCategory].length; i++) {
-        const currentImage = new Image();
-        currentImage.addEventListener("load", loadHandler, false);
-        currentImage.src = globals.cardsData[cardCategory][i].image_src;
+        const currentCardImage = new Image();
+        currentCardImage.addEventListener("load", loadHandler, false);
+        currentCardImage.src = globals.cardsData[cardCategory][i].image_src;
+        globals.assetsToLoad.push(currentCardImage);
+
+        const currentCardImageInfo = new ImageInfo(
+          currentCardImage,
+          0,
+          0,
+          1024,
+          1024,
+          500,
+          500,
+          110,
+          110,
+          310,
+          510
+        );
 
         switch (cardCategory) {
           case "main_characters":
-            globals.cardsImgs.mainCharacters.push(currentImage);
+            globals.cardsImgsInfo.mainCharacters.push(currentCardImageInfo);
             break;
 
           case "minions":
-            globals.cardsImgs.minions.push(currentImage);
+            globals.cardsImgsInfo.minions.push(currentCardImageInfo);
             break;
 
           case "weapons":
-            globals.cardsImgs.weapons.push(currentImage);
+            globals.cardsImgsInfo.weapons.push(currentCardImageInfo);
             break;
 
           case "armor":
-            globals.cardsImgs.armor.push(currentImage);
+            globals.cardsImgsInfo.armor.push(currentCardImageInfo);
             break;
 
           case "special":
-            globals.cardsImgs.special.push(currentImage);
+            globals.cardsImgsInfo.special.push(currentCardImageInfo);
             break;
 
           case "rare":
-            globals.cardsImgs.rare.push(currentImage);
+            globals.cardsImgsInfo.rare.push(currentCardImageInfo);
             break;
         }
-
-        globals.assetsToLoad.push(currentImage);
       }
     }
   }
 
   // LOAD CARDS TEMPLATES
 
-  const templates = {
-    mainCharactersSmall:
-      "../images/main_characters/templates/version_small.png",
-    minionsAndEventsSmall:
-      "../images/common_templates/version_small_minion_event.png",
-  };
+  const templates = [
+    {
+      name: "mainCharactersSmall",
+      src: "../images/main_characters/templates/version_small.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 575,
+      sourceHeight: 809,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 110,
+      smallVerDestinationHeight: 110,
+      bigVerDestinationWidth: 310,
+      bigVerDestinationHeight: 510,
+    },
+    {
+      name: "minion&EventSmall",
+      src: "../images/common_templates/version_small_minion_event.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 633,
+      sourceHeight: 823,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 110,
+      smallVerDestinationHeight: 110,
+      bigVerDestinationWidth: 310,
+      bigVerDestinationHeight: 510,
+    },
+    {
+      name: "rareEventBig",
+      src: "../images/rare/templates/version_big.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 593,
+      sourceHeight: 861,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 110,
+      smallVerDestinationHeight: 110,
+      bigVerDestinationWidth: 310,
+      bigVerDestinationHeight: 510,
+    },
+    {
+      name: "specialEventBig",
+      src: "../images/special/templates/version_big.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 593,
+      sourceHeight: 861,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 110,
+      smallVerDestinationHeight: 110,
+      bigVerDestinationWidth: 310,
+      bigVerDestinationHeight: 510,
+    },
+    {
+      name: "minionWarriorBig",
+      src: "../images/minions/warriors/templates/version_big.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 657,
+      sourceHeight: 920,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 110,
+      smallVerDestinationHeight: 110,
+      bigVerDestinationWidth: 310,
+      bigVerDestinationHeight: 510,
+    },
+    {
+      name: "minionWizardBig",
+      src: "../images/minions/wizards/templates/version_big.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 657,
+      sourceHeight: 920,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 110,
+      smallVerDestinationHeight: 110,
+      bigVerDestinationWidth: 310,
+      bigVerDestinationHeight: 510,
+    },
+    {
+      name: "minionSpecialBig",
+      src: "../images/minions/special/templates/version_big.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 657,
+      sourceHeight: 920,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 110,
+      smallVerDestinationHeight: 110,
+      bigVerDestinationWidth: 310,
+      bigVerDestinationHeight: 510,
+    },
+    {
+      name: "JosephBig",
+      src: "../images/main_characters/templates/version_big_joseph.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 554,
+      sourceHeight: 775,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 110,
+      smallVerDestinationHeight: 110,
+      bigVerDestinationWidth: 310,
+      bigVerDestinationHeight: 510,
+    },
+    {
+      name: "mainCharacterBig",
+      src: "../images/main_characters/templates/version_big.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 595,
+      sourceHeight: 817,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 110,
+      smallVerDestinationHeight: 110,
+      bigVerDestinationWidth: 310,
+      bigVerDestinationHeight: 510,
+    },
+    {
+      name: "armorMediumBig",
+      src: "../images/armor/templates/type_medium.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 665,
+      sourceHeight: 925,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 110,
+      smallVerDestinationHeight: 110,
+      bigVerDestinationWidth: 310,
+      bigVerDestinationHeight: 510,
+    },
+    {
+      name: "armorHeavy&LightBig",
+      src: "../images/armor/templates/types_light_heavy.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 665,
+      sourceHeight: 925,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 110,
+      smallVerDestinationHeight: 110,
+      bigVerDestinationWidth: 310,
+      bigVerDestinationHeight: 510,
+    },
+    {
+      name: "weaponBig",
+      src: "../images/weapons/templates/version_big.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 665,
+      sourceHeight: 925,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 110,
+      smallVerDestinationHeight: 110,
+      bigVerDestinationWidth: 310,
+      bigVerDestinationHeight: 510,
+    },
+  ];
 
-  for (const template in templates) {
-    const templateToLoad = new Image();
-    templateToLoad.addEventListener("load", loadHandler, false);
-    templateToLoad.src = templates[template];
-    globals.cardsTemplatesImgs.push(templateToLoad);
-    globals.assetsToLoad.push(templateToLoad);
-  }
+  createAndStoreImageInfoObjs(templates, globals.cardsTemplatesImgsInfo);
 
   // LOAD CARDS ICONS
 
-  const icons = {
-    attackDmgDiamond: "../images/common_icons/attack_dmg_diamond.png",
-    defenseDurabilityDiamond:
-      "../images/common_icons/defense_durability_diamond.png",
-    minionsSpecialType: "../images/minions/special/icons/type.png",
-    minionsWarriorType: "../images/minions/warriors/icons/type.png",
-    minionsWizardType: "../images/minions/wizards/icons/type.png",
-    minionsHPDiamond: "../images/common_icons/minion_hp_diamond.png",
-    eventsTypeCircle: "../images/common_icons/event_type_circle.png",
-    eventsPrepTimeDiamond: "../images/common_icons/event_prep_time_diamond.png",
-    eventsDurationDiamond: "../images/common_icons/event_duration_diamond.png",
-    eventsEffectDiamond: "../images/common_icons/event_effect_diamond.png",
-    weaponsMeleeType: "../images/weapons/icons/type_melee.png",
-    weaponsMissileType: "../images/weapons/icons/type_missile.png",
-    weaponsHybridType: "../images/weapons/icons/type_hybrid.png",
-    armorLightType: "../images/armor/icons/type_light.png",
-    armorMediumType: "../images/armor/icons/type_medium.png",
-    armorHeavyType: "../images/armor/icons/type_heavy.png",
-    specialType: "../images/special/icons/type.png",
-    rareType: "../images/rare/icons/type.png",
-  };
+  const icons = [
+    {
+      name: "attackDamageDiamond",
+      src: "../images/common_icons/attack_dmg_diamond.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 177,
+      sourceHeight: 187,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 35,
+      smallVerDestinationHeight: 35,
+      bigVerDestinationWidth: 0,
+      bigVerDestinationHeight: 0,
+    },
+    {
+      name: "defenseDurabilityDiamond",
+      src: "../images/common_icons/defense_durability_diamond.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 189,
+      sourceHeight: 201,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 35,
+      smallVerDestinationHeight: 35,
+      bigVerDestinationWidth: 0,
+      bigVerDestinationHeight: 0,
+    },
+    {
+      name: "minionsSpecialType",
+      src: "../images/minions/special/icons/type.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 1080,
+      sourceHeight: 1080,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 35,
+      smallVerDestinationHeight: 35,
+      bigVerDestinationWidth: 50,
+      bigVerDestinationHeight: 50,
+    },
+    {
+      name: "minionsWarriorType",
+      src: "../images/minions/warriors/icons/type.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 1024,
+      sourceHeight: 1024,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 35,
+      smallVerDestinationHeight: 35,
+      bigVerDestinationWidth: 50,
+      bigVerDestinationHeight: 50,
+    },
+    {
+      name: "minionsWizardType",
+      src: "../images/minions/wizards/icons/type.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 1024,
+      sourceHeight: 1024,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 35,
+      smallVerDestinationHeight: 35,
+      bigVerDestinationWidth: 50,
+      bigVerDestinationHeight: 50,
+    },
+    {
+      name: "minionsHPDiamond",
+      src: "../images/common_icons/minion_hp_diamond.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 202,
+      sourceHeight: 204,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 110,
+      smallVerDestinationHeight: 110,
+      bigVerDestinationWidth: 0,
+      bigVerDestinationHeight: 0,
+    },
+    {
+      name: "eventsTypeCircle",
+      src: "../images/common_icons/event_type_circle.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 150,
+      sourceHeight: 147,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 35,
+      smallVerDestinationHeight: 35,
+      bigVerDestinationWidth: 50,
+      bigVerDestinationHeight: 50,
+    },
+    {
+      name: "eventsPrepTimeDiamond",
+      src: "../images/common_icons/event_prep_time_diamond.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 181,
+      sourceHeight: 184,
+      destinationX: 10,
+      destinationY: 70,
+      smallVerDestinationWidth: 35,
+      smallVerDestinationHeight: 35,
+      bigVerDestinationWidth: 0,
+      bigVerDestinationHeight: 0,
+    },
+    {
+      name: "eventsDurationDiamond",
+      src: "../images/common_icons/event_duration_diamond.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 176,
+      sourceHeight: 186,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 110,
+      smallVerDestinationHeight: 110,
+      bigVerDestinationWidth: 0,
+      bigVerDestinationHeight: 0,
+    },
+    {
+      name: "eventsEffectDiamond",
+      src: "../images/common_icons/event_effect_diamond.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 194,
+      sourceHeight: 199,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 110,
+      smallVerDestinationHeight: 110,
+      bigVerDestinationWidth: 0,
+      bigVerDestinationHeight: 0,
+    },
+    {
+      name: "weaponsMeleeType",
+      src: "../images/weapons/icons/type_melee.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 512,
+      sourceHeight: 512,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 20,
+      smallVerDestinationHeight: 20,
+      bigVerDestinationWidth: 35,
+      bigVerDestinationHeight: 35,
+    },
+    {
+      name: "weaponsMissileType",
+      src: "../images/weapons/icons/type_missile.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 512,
+      sourceHeight: 512,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 20,
+      smallVerDestinationHeight: 20,
+      bigVerDestinationWidth: 35,
+      bigVerDestinationHeight: 35,
+    },
+    {
+      name: "weaponsHybridType",
+      src: "../images/weapons/icons/type_hybrid.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 500,
+      sourceHeight: 500,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 20,
+      smallVerDestinationHeight: 20,
+      bigVerDestinationWidth: 35,
+      bigVerDestinationHeight: 35,
+    },
+    {
+      name: "armorLightType",
+      src: "../images/armor/icons/type_light.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 512,
+      sourceHeight: 512,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 35,
+      smallVerDestinationHeight: 35,
+      bigVerDestinationWidth: 50,
+      bigVerDestinationHeight: 50,
+    },
+    {
+      name: "armorMediumType",
+      src: "../images/armor/icons/type_medium.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 512,
+      sourceHeight: 512,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 35,
+      smallVerDestinationHeight: 35,
+      bigVerDestinationWidth: 50,
+      bigVerDestinationHeight: 50,
+    },
+    {
+      name: "armorHeavyType",
+      src: "../images/armor/icons/type_heavy.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 200,
+      sourceHeight: 200,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 35,
+      smallVerDestinationHeight: 35,
+      bigVerDestinationWidth: 50,
+      bigVerDestinationHeight: 50,
+    },
+    {
+      name: "specialType",
+      src: "../images/special/icons/type.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 1080,
+      sourceHeight: 1080,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 35,
+      smallVerDestinationHeight: 35,
+      bigVerDestinationWidth: 50,
+      bigVerDestinationHeight: 50,
+    },
+    {
+      name: "rareType",
+      src: "../images/rare/icons/type.png",
+      sourceX: 0,
+      sourceY: 0,
+      sourceWidth: 611,
+      sourceHeight: 613,
+      destinationX: 0,
+      destinationY: 0,
+      smallVerDestinationWidth: 35,
+      smallVerDestinationHeight: 35,
+      bigVerDestinationWidth: 50,
+      bigVerDestinationHeight: 50,
+    },
+  ];
 
-  for (const icon in icons) {
-    const iconToLoad = new Image();
-    iconToLoad.addEventListener("load", loadHandler, false);
-    iconToLoad.src = icons[icon];
-    globals.cardsIconsImgs.push(iconToLoad);
-    globals.assetsToLoad.push(iconToLoad);
+  createAndStoreImageInfoObjs(icons, globals.cardsIconsImgsInfo);
+}
+
+function createAndStoreImageInfoObjs(
+  arrayOfSameTypeObjs,
+  arrayToPutImageInfoObjsInto
+) {
+  for (let i = 0; i < arrayOfSameTypeObjs.length; i++) {
+    const currentObj = arrayOfSameTypeObjs[i];
+
+    const currentObjImage = new Image();
+    currentObjImage.addEventListener("load", loadHandler, false);
+    currentObjImage.src = currentObj.src;
+    globals.assetsToLoad.push(currentObjImage);
+
+    const currentObjImageInfo = new ImageInfo(
+      currentObjImage,
+      currentObj.sourceX,
+      currentObj.sourceY,
+      currentObj.sourceWidth,
+      currentObj.sourceHeight,
+      currentObj.destinationX,
+      currentObj.destinationY,
+      currentObj.smallVerDestinationWidth,
+      currentObj.smallVerDestinationHeight,
+      currentObj.bigVerDestinationWidth,
+      currentObj.bigVerDestinationHeight
+    );
+
+    arrayToPutImageInfoObjsInto.push(currentObjImageInfo);
   }
 }
 
@@ -202,7 +661,7 @@ async function loadHandler() {
   globals.assetsLoaded++;
 
   if (globals.assetsLoaded === globals.assetsToLoad.length) {
-    globals.gameState = GameState.GRIDS_DRAWING;
+    globals.gameState = GameState.FAKE_CARDS_DISPLAY;
 
     globals.game = await Game.create();
 
