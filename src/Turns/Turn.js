@@ -1,3 +1,4 @@
+import InitialPhase from "./InitialPhase.js";
 import PrepareEventPhase from "./PrepareEventPhase.js";
 import PerformEventPhase from "./PerformEventPhase.js";
 import MovePhase from "./MovePhase.js";
@@ -31,6 +32,11 @@ export default class Turn {
   }
 
   fillPhases() {
+    if (this.#player.getID() === PlayerID.PLAYER_1) {
+      const initialPhase = new InitialPhase(this.#deckContainer);
+      initialPhase.execute();
+    }
+
     const gameDecks = this.#deckContainer.getDecks();
 
     // TODO: FILL ARRAYS

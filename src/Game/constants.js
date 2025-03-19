@@ -1,6 +1,6 @@
 const GameState = {
   INVALID: -1,
-  FAKE_CARDS_DISPLAY: 0,
+  GRIDS_DRAWING: 0,
 };
 
 // FPS (FRAMES PER SECOND)
@@ -19,6 +19,16 @@ const PlayerID = {
 const TemplateID = {
   MAIN_CHARACTERS_SMALL: 0,
   MINIONS_AND_EVENTS_SMALL: 1,
+  RARE_EVENTS_BIG: 2,
+  SPECIAL_EVENTS_BIG: 3,
+  MINIONS_WARRIORS_BIG: 4,
+  MINIONS_WIZARDS_BIG: 5,
+  MINIONS_SPECIAL_BIG: 6,
+  JOSEPH_BIG: 7,
+  MAIN_CHARACTERS_BIG: 8,
+  ARMOR_MEDIUM_BIG: 9,
+  ARMOR_LIGHT_HEAVY_BIG: 10,
+  WEAPONS_BIG: 11,
 };
 
 const IconID = {
@@ -113,8 +123,8 @@ const CardState = {
 };
 
 const BoxState = {
-  EMPTY: 0,
-  AVARIABLE: 1,
+  INACTIVE: 0,
+  AVAILABLE: 1,
   HOVERED: 2,
   SELECTED: 3,
   OCCUPIED: 4,
@@ -147,6 +157,31 @@ const DrawCardState = {
   END: 2,
 };
 
+const GridType = {
+  PLAYER_1_MAIN_CHARACTER: 0,
+  PLAYER_2_MAIN_CHARACTER: 1,
+  PLAYER_1_MINIONS_DECK: 2,
+  PLAYER_2_MINIONS_DECK: 3,
+  EVENTS_DECK: 4,
+  PLAYER_1_CARDS_IN_HAND: 5,
+  PLAYER_2_CARDS_IN_HAND: 6,
+  ACTIVE_EVENTS_TABLE: 7,
+  PHASE_BUTTONS: 8,
+  JOSEPH: 9,
+  MESSAGES: 10,
+  PLAYER_1_BATTLEFIELD: 11,
+  PLAYER_2_BATTLEFIELD: 12,
+  PLAYER_1_PREPARE_EVENT: 13,
+  PLAYER_2_PREPARE_EVENT: 14,
+};
+
+const BattlefieldArea = {
+  NONE: 0,
+  REAR: 1,
+  MIDDLE: 2,
+  FRONT: 3,
+};
+
 export {
   GameState,
   FPS,
@@ -163,6 +198,8 @@ export {
   ChaoticEventID,
   CardState,
   BoxState,
+  GridType,
+  BattlefieldArea,
   DiscardCardState,
   MovePhaseState,
   PrepareEventState,
