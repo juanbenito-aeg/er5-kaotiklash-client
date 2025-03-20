@@ -3,8 +3,10 @@ import Card from "./Card.js";
 export default class Armor extends Card {
   #armorType;
   #specialEffect;
-  #durability;
-  #prepTimeInRounds;
+  #initialDurability;
+  #currentDurability;
+  #initialPrepTimeInRounds;
+  #currentPrepTimeInRounds;
 
   constructor(
     category,
@@ -13,18 +15,27 @@ export default class Armor extends Card {
     description,
     armorType,
     specialEffect,
-    durability,
-    prepTimeInRounds
+    initialDurability,
+    initialPrepTimeInRounds
   ) {
     super(category, id, name, description);
 
     this.#armorType = armorType;
     this.#specialEffect = specialEffect;
-    this.#durability = durability;
-    this.#prepTimeInRounds = prepTimeInRounds;
+    this.#initialDurability = this.#currentDurability = initialDurability;
+    this.#initialPrepTimeInRounds = this.#currentPrepTimeInRounds =
+      initialPrepTimeInRounds;
   }
 
   getArmorType() {
     return this.#armorType;
+  }
+
+  getCurrentDurability() {
+    return this.#currentDurability;
+  }
+
+  getCurrentPrepTimeInRounds() {
+    return this.#currentPrepTimeInRounds;
   }
 }
