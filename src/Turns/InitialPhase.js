@@ -16,8 +16,8 @@ export default class InitialPhase {
 
   execute() {
     this.#applyCardMovementToAllCards();
-    // this.#dealMinions();
-    // this.#dealEventCards();
+    this.#dealMinions();
+    this.#dealEventCards();
   }
 
   #applyCardMovementToAllCards() {
@@ -79,10 +79,7 @@ export default class InitialPhase {
     let selectedMinions = [];
 
     for (let i = 0; i < numCards; i++) {
-      let selectedMinion = minionsDeck[0];
-      for (let j = 0; j < minionsDeck.length; j++) {
-        minionsDeck[j] = minionsDeck[j + 1];
-      }
+      const selectedMinion = minionsDeck.splice(i, 1)[0];
       selectedMinions.push(selectedMinion);
     }
 
@@ -96,8 +93,10 @@ export default class InitialPhase {
       this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
     const player2CardsInHand =
       this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND];
+
     const eventDeck = this.#deckContainer.getDecks()[DeckType.EVENTS];
     const eventCards = eventDeck.getCards();
+
     const eventWeapon = [];
 
     for (let i = 0; i < eventCards.length; i++) {
