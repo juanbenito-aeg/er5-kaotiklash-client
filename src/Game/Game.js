@@ -424,16 +424,16 @@ export default class Game {
   let smallSizeY = 200;
 
   if (globals.currentPlayer === 1) {
-      // Player 1 abajo, Player 2 arriba
+      // Player 1 down, Player 2 up
       player1X = 2020; player1Y = 840;
       player2X = 200; player2Y = 60;
   } else {
-      // Player 1 arriba, Player 2 abajo
+      // Player 1 up, Player 2 down
       player1X = 200; player1Y = 60;
       player2X = 2020; player2Y = 840;
   }
 
-  // Renderizar cartas en sus posiciones respectivas
+  // Render the cards in their respective positions
   this.#renderCard(player1Card, player1X, player1Y, smallSizeX, smallSizeY);
   this.#renderSmallTemplate(player1Card, player1X, player1Y, smallSizeX, smallSizeY);
 
@@ -448,19 +448,17 @@ export default class Game {
   
   for (let j = 0; j < buttonCount; j++) {
       const currentPhase = phaseNumber[j];
-      const x = 400; // Posición fija a la izquierda
-      const y = 705 + j * 50; // Espaciado vertical entre botones
+      const x = 400; 
+      const y = 705 + j * 50;
       const width = 200;
       const height = 40;
       const radius = 10;
 
-      // Sombra
       globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
       globals.ctx.shadowBlur = 10;
       globals.ctx.shadowOffsetX = 4;
       globals.ctx.shadowOffsetY = 4;
 
-      // Dibujar botón
       globals.ctx.fillStyle = 'darkcyan';
       globals.ctx.beginPath();
       globals.ctx.moveTo(x + radius, y);
@@ -475,12 +473,10 @@ export default class Game {
       globals.ctx.closePath();
       globals.ctx.fill();
 
-      // Resetear sombra
       globals.ctx.shadowBlur = 0;
       globals.ctx.shadowOffsetX = 0;
       globals.ctx.shadowOffsetY = 0;
 
-      // Texto del botón
       globals.ctx.fillStyle = 'white';
       globals.ctx.font = '18px MedievalSharp';
       globals.ctx.textAlign = 'center';
@@ -491,33 +487,28 @@ export default class Game {
 
 
 #renderActiveEventsTable() {
-  const tableX = 1790; // Posición fija a la izquierda
+  const tableX = 1790;
   const tableY = 210;
   const tableWidth = 400;
   const tableHeight = 300;
   
-  // Sombra
   globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
   globals.ctx.shadowBlur = 10;
   globals.ctx.shadowOffsetX = 4;
   globals.ctx.shadowOffsetY = 4;
   
-  // Dibujar la tabla
   globals.ctx.fillStyle = 'darkcyan';
   globals.ctx.fillRect(tableX, tableY, tableWidth, tableHeight);
   
-  // Resetear sombra
   globals.ctx.shadowBlur = 0;
   globals.ctx.shadowOffsetX = 0;
   globals.ctx.shadowOffsetY = 0;
 
-  // Bordes de la tabla
   globals.ctx.strokeStyle = "black";
   globals.ctx.lineWidth = 2;
 
   let columnWidth = tableWidth / 3;
 
-  // Dibujar columnas
   for (let i = 1; i <= 2; i++) {
       let columnX = tableX + columnWidth * i;
       globals.ctx.beginPath();
@@ -526,7 +517,6 @@ export default class Game {
       globals.ctx.stroke();
   }
 
-  // Dibujar filas
   for (let i = 1; i < 4; i++) {
       let lineY = tableY + (tableHeight / 4) * i;
       globals.ctx.beginPath();
@@ -535,7 +525,6 @@ export default class Game {
       globals.ctx.stroke();
   }
 
-  // Texto de encabezados
   globals.ctx.fillStyle = 'white';
   globals.ctx.font = '18px MedievalSharp';
   globals.ctx.textAlign = 'center';
@@ -545,7 +534,6 @@ export default class Game {
   globals.ctx.fillText("Event", tableX + columnWidth * 1.5, tableY + tableHeight / 8);
   globals.ctx.fillText("Duration", tableX + columnWidth * 2.5, tableY + tableHeight / 8);
 
-  // Datos de ejemplo
   globals.ctx.fillStyle = 'black';
   globals.ctx.fillText("Player 2", tableX + columnWidth / 2, tableY + tableHeight - 185);
   globals.ctx.fillText("Hand of God", tableX + columnWidth * 1.5, tableY + tableHeight - 185);
@@ -554,16 +542,14 @@ export default class Game {
 
 
 #renderMessages() {
-  const messageBoxX = 1790;  // Posición fija a la izquierda
+  const messageBoxX = 1790; 
   const messageBoxY = 10;
   const messageBoxWidth = 420;
   const messageBoxHeight = 185;
 
-  // Dibujar el cuadro de mensajes
   globals.ctx.fillStyle = 'black';
   globals.ctx.fillRect(messageBoxX, messageBoxY, messageBoxWidth, messageBoxHeight);
 
-  // Texto dentro del cuadro
   globals.ctx.fillStyle = 'white';
   globals.ctx.font = '20px MedievalSharp';
   globals.ctx.textAlign = "center";
@@ -574,15 +560,14 @@ export default class Game {
 #renderPlayer1MinionActiveCards() {
   const player1MinionsInPlayDeck = this.#deckContainer.getDecks()[5].getCards();
 
-// Posiciones fijas de los minions
 let fixedPositions = [];
 if(globals.currentPlayer === 1)
 {
 fixedPositions = [
 
-  { x: 1105, y: 580 },    // (1,3)
-  { x: 970, y: 715 },    // (2,3)
-  { x: 835, y: 850 },    // (3,3)
+  { x: 1105, y: 580 },    // (1,4)
+  { x: 970, y: 715 },     // (2,3)
+  { x: 835, y: 850 },     // (1,2)
 
 ];
 }
@@ -590,16 +575,16 @@ else
 {
 fixedPositions = [
 
-    { x: 1105, y: 170 },    // (1,3)
+    { x: 1105, y: 170 },   // (1,4)
     { x: 970, y: 305 },    // (2,3)
-    { x: 835, y: 170 },    // (3,3)
+    { x: 835, y: 170 },    // (1,2)
     
   ];
 }
 
   for (let i = 0; i < player1MinionsInPlayDeck.length && i < fixedPositions.length; i++) {
     const currentCard = player1MinionsInPlayDeck[i];
-    const { x, y } = fixedPositions[i]; // Obtener coordenadas fijas
+    const { x, y } = fixedPositions[i]; 
 
     let smallSizeX = 110;
     let smallSizeY = 110;
@@ -619,9 +604,9 @@ fixedPositions = [
   {
   fixedPositions = [
   
-      { x: 1105, y: 170 },    // (1,3)
-      { x: 970, y: 305 },    // (2,3)
-      { x: 835, y: 170 },    // (3,3)
+      { x: 1105, y: 170 },    // (1,4)
+      { x: 970, y: 305 },     // (2,3)
+      { x: 835, y: 170 },     // (1,2)
 
   ];
   }
@@ -629,16 +614,16 @@ fixedPositions = [
   {
   fixedPositions = [
   
-      { x: 1105, y: 850 },    // (1,3)
-      { x: 970, y: 715 },    // (2,3)
-      { x: 835, y: 850 },    // (3,3)
+      { x: 1105, y: 850 },    // (1,4)
+      { x: 970, y: 715 },     // (2,3)
+      { x: 835, y: 850 },     // (1,2)
         
     ];
   }
 
   for (let i = 0; i < player2MinionsInPlayDeck.length && i < fixedPositions.length; i++) {
     const currentCard = player2MinionsInPlayDeck[i];
-    const { x, y } = fixedPositions[i]; // Obtener coordenadas fijas
+    const { x, y } = fixedPositions[i]; 
 
     let smallSizeX = 110;
     let smallSizeY = 110;
