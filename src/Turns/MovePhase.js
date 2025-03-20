@@ -9,6 +9,8 @@ export default class MovePhase extends Phase {
   #state;
 
   constructor(currentPlayerMovementGridDeck, currentPlayerMovementGrid) {
+    super();
+    
     this.#currentPlayerMovementGridDeck = currentPlayerMovementGridDeck;
     this.#currentPlayerMovementGrid = currentPlayerMovementGrid;
     this.#selectedCard = null;

@@ -12,6 +12,8 @@ export default class AttackPhase extends Phase {
     enemyMovementGrid,
     currentPlayerMovementGrid
   ) {
+    super();
+    
     this.#enemyMovementGridDeck = enemyMovementGridDeck;
     this.#currentPlayerMovementGridDeck = currentPLayerMovementGridDeck;
     this.#enemyMovementGrid = enemyMovementGrid;

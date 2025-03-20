@@ -28,6 +28,7 @@ const globals = {
   game: {},
   language: 0,
   isFinished: false,
+  currentPlayer: 0, //Fake for turns
 };
 
 async function loadDBCardsDataAndAssets() {

@@ -9,6 +9,8 @@ export default class DrawCardPhase extends Phase {
   #state;
 
   constructor(eventsDeck, eventsDeckGrid, cardsInHandDeck, cardsInHandGrid) {
+    super();
+    
     this.#eventsDeck = eventsDeck;
     this.#eventsDeckGrid = eventsDeckGrid;
     this.#cardsInHandDeck = cardsInHandDeck;

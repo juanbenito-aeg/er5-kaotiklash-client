@@ -36,4 +36,16 @@ export default class Minion extends Card {
   getMinionType() {
     return this.#minionType;
   }
+
+  getHp() {
+    return this.#hp;
+  }
+
+  getAttack() {
+    return this.#attack;
+  }
+
+  getDefense() {
+    return this.#defense;
+  }
 }

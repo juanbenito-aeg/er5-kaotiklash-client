@@ -16,6 +16,8 @@ export default class DiscardCardPhase extends Phase {
     eventDeckGrid,
     skipButtonPressed
   ) {
+    super();
+    
     this.#cardsInHandDeck = cardsInHandDeck;
     this.#cardsInHandGrid = cardsInHandGrid;
     this.#eventsDeck = eventsDeck;

@@ -15,6 +15,8 @@ export default class PrepareEvent extends Phase {
     eventsPreparationDeck,
     eventsPrepationFGrid
   ) {
+    super();
+
     this.#cardsInHandDeck = cardsInHandDeck;
     this.#cardsInHandGrid = cardsInHandGrid;
     this.#eventsPreparationDeck = eventsPreparationDeck;

@@ -27,4 +27,12 @@ export default class Armor extends Card {
   getArmorType() {
     return this.#armorType;
   }
+
+  getDurability() {
+    return this.#durability;
+  }
+
+  getPrepTimeInRounds() {
+    return this.#prepTimeInRounds;
+  }
 }

@@ -27,4 +27,16 @@ export default class Weapon extends Card {
   getWeaponType() {
     return this.#weaponType;
   }
+
+  getDamage() {
+    return this.#damage;
+  }
+
+  getDurability() {
+    return this.#durability;
+  }
+
+  getPrepTimeInRounds() {
+    return this.#prepTimeInRounds;
+  }
 }

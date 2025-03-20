@@ -16,6 +16,7 @@ import {
 } from "./constants.js";
 import { globals } from "../index.js";
 import ImageSet from "./ImageSet.js";
+import InitialPhase from "../Turns/InitialPhase.js";
 
 export default class Game {
   #players;
@@ -86,7 +87,12 @@ export default class Game {
     switch (globals.gameState) {
       case GameState.GRIDS_DRAWING:
         this.#renderGrids();
+        this.#renderElements();
         break;
+
+        case GameState.ELEMENT_RENDER:
+          this.#renderElements();
+          break;
     }
   }
 
@@ -218,6 +224,7 @@ export default class Game {
               globals.cardsIconsImages[IconID.ATTACK_DAMAGE_DIAMOND],
               globals.cardsIconsImages[IconID.EVENT_PREP_TIME_DIAMOND],
               globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
+              globals.cardsIconsImages[IconID.EVENT_TYPE_CIRCLE],
             ];
 
             if (currentCard.getWeaponType() === WeaponType.MELEE) {
@@ -284,4 +291,526 @@ export default class Game {
 
     this.#deckContainer.setDecks(updatedDecks);
   }
+
+  #renderElements() 
+  {
+    globals.currentPlayer = 2;
+    console.log(this.#deckContainer.getDecks()[3]);
+    this.#renderPlayers();
+    this.#renderDeckReverses();
+    this.#renderPhasesButtons();
+    this.#renderActiveEventsTable();
+    this.#renderMessages();
+    this.#renderPlayer1MinionActiveCards();
+    this.#renderPlayer2MinionActiveCards();
+    if(globals.currentPlayer == 1)
+    {
+      this.#renderEventHandPlayer1Cards();
+    }
+    else
+    {
+    this.#renderEventHandPlayer2Cards();
+    }
+  }
+
+  #renderPlayers() {
+    this.#renderMainCharacters();
+    let player1MinionsHp = 0;
+    let player2MinionsHp = 0;
+  
+    // Definir decks de minions para ambos jugadores
+    const player1MinionsDeck = this.#deckContainer.getDecks()[4].getCards();
+    const player1MinionsInPlayDeck = this.#deckContainer.getDecks()[5].getCards();
+  
+    const player2MinionsDeck = this.#deckContainer.getDecks()[4].getCards();
+    const player2MinionsInPlayDeck = this.#deckContainer.getDecks()[5].getCards();
+  
+    // Función para sumar la vida de los minions de un jugador
+    function sumMinionsHp(minionsDeck) {
+      let totalHp = 0;
+      let length = minionsDeck.length - 1;
+      for (let i = 0; i < length; i++) {
+        const card = minionsDeck[i];
+        const hp = card.getCard().getHp();
+        totalHp += hp;
+      }
+      return totalHp;
+    }
+  
+    // Sumar la vida de los minions de ambos jugadores
+    player1MinionsHp = sumMinionsHp(player1MinionsDeck) + sumMinionsHp(player1MinionsInPlayDeck);
+    player2MinionsHp = sumMinionsHp(player2MinionsDeck) + sumMinionsHp(player2MinionsInPlayDeck);
+  
+  // Determinar posiciones en función del jugador actual (invertidos)
+  let player1X, player1Y, player2X, player2Y;
+
+  if (globals.currentPlayer === 1) {
+    player1X = 2120; player1Y = 1065;  // Ahora en la parte inferior
+    player2X = 300; player2Y = 285;    // Ahora en la parte superior
+  } else {
+    player1X = 300; player1Y = 285;    // Ahora en la parte superior
+    player2X = 2120; player2Y = 1065;  // Ahora en la parte inferior
+  }
+
+  // Renderizar la información de los jugadores
+  globals.ctx.font = "20px MedievalSharp";
+  globals.ctx.fillStyle = "yellow";
+  globals.ctx.fillText("Player 1", player1X, player1Y);
+  globals.ctx.fillText("HP: " + player1MinionsHp, player1X, player1Y + 25);
+
+  globals.ctx.font = "20px MedievalSharp";
+  globals.ctx.fillStyle = "yellow";
+  globals.ctx.fillText("Player 2", player2X, player2Y);
+  globals.ctx.fillText("HP: " + player2MinionsHp, player2X, player2Y + 25);
+}
+
+#renderDeckReverses()
+{
+  this.#renderPlayer1MinionsDeck(420, 40);
+
+  this.#renderPlayer2MinionsDeck(1800, 820);
+
+  this.#renderEventsDeck(1890, 530);
+}
+
+#renderPlayer1MinionsDeck(xCoordinate, yCoordinate) {
+  globals.ctx.drawImage(
+    globals.cardsReverseImage,
+    0,
+    0,
+    425,
+    587,
+    xCoordinate,
+    yCoordinate,
+    200,
+    240
+  );
+}
+
+#renderPlayer2MinionsDeck(xCoordinate, yCoordinate) {
+  globals.ctx.drawImage(
+    globals.cardsReverseImage,
+    0,
+    0,
+    425,
+    587,
+    xCoordinate,
+    yCoordinate,
+    200,
+    240
+  );
+}
+
+#renderEventsDeck(xCoordinate, yCoordinate) {
+  globals.ctx.drawImage(
+    globals.cardsReverseImage,
+    0,
+    0,
+    425,
+    587,
+    xCoordinate,
+    yCoordinate,
+    200,
+    240
+  );
+}
+
+#renderMainCharacters() {
+  const player1Card = this.#deckContainer.getDecks()[2].getCards()[0];
+  const player2Card = this.#deckContainer.getDecks()[8].getCards()[0];
+
+  let player1X, player1Y, player2X, player2Y;
+  let smallSizeX = 200;
+  let smallSizeY = 200;
+
+  if (globals.currentPlayer === 1) {
+      // Player 1 abajo, Player 2 arriba
+      player1X = 2020; player1Y = 840;
+      player2X = 200; player2Y = 60;
+  } else {
+      // Player 1 arriba, Player 2 abajo
+      player1X = 200; player1Y = 60;
+      player2X = 2020; player2Y = 840;
+  }
+
+  // Renderizar cartas en sus posiciones respectivas
+  this.#renderCard(player1Card, player1X, player1Y, smallSizeX, smallSizeY);
+  this.#renderSmallTemplate(player1Card, player1X, player1Y, smallSizeX, smallSizeY);
+
+  this.#renderCard(player2Card, player2X, player2Y, smallSizeX, smallSizeY);
+  this.#renderSmallTemplate(player2Card, player2X, player2Y, smallSizeX, smallSizeY);
+}
+
+
+#renderPhasesButtons() {
+  const phaseNumber = ["Skip", "Attack", "Prepare Event", "Move", "Perform Event"];
+  const buttonCount = phaseNumber.length;
+  
+  for (let j = 0; j < buttonCount; j++) {
+      const currentPhase = phaseNumber[j];
+      const x = 400; // Posición fija a la izquierda
+      const y = 705 + j * 50; // Espaciado vertical entre botones
+      const width = 200;
+      const height = 40;
+      const radius = 10;
+
+      // Sombra
+      globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      globals.ctx.shadowBlur = 10;
+      globals.ctx.shadowOffsetX = 4;
+      globals.ctx.shadowOffsetY = 4;
+
+      // Dibujar botón
+      globals.ctx.fillStyle = 'darkcyan';
+      globals.ctx.beginPath();
+      globals.ctx.moveTo(x + radius, y);
+      globals.ctx.lineTo(x + width - radius, y);
+      globals.ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      globals.ctx.lineTo(x + width, y + height - radius);
+      globals.ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      globals.ctx.lineTo(x + radius, y + height);
+      globals.ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      globals.ctx.lineTo(x, y + radius);
+      globals.ctx.quadraticCurveTo(x, y, x + radius, y);
+      globals.ctx.closePath();
+      globals.ctx.fill();
+
+      // Resetear sombra
+      globals.ctx.shadowBlur = 0;
+      globals.ctx.shadowOffsetX = 0;
+      globals.ctx.shadowOffsetY = 0;
+
+      // Texto del botón
+      globals.ctx.fillStyle = 'white';
+      globals.ctx.font = '18px MedievalSharp';
+      globals.ctx.textAlign = 'center';
+      globals.ctx.textBaseline = 'middle';
+      globals.ctx.fillText(currentPhase, x + width / 2, y + height / 2);
+  }
+}
+
+
+#renderActiveEventsTable() {
+  const tableX = 1790; // Posición fija a la izquierda
+  const tableY = 210;
+  const tableWidth = 400;
+  const tableHeight = 300;
+  
+  // Sombra
+  globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+  globals.ctx.shadowBlur = 10;
+  globals.ctx.shadowOffsetX = 4;
+  globals.ctx.shadowOffsetY = 4;
+  
+  // Dibujar la tabla
+  globals.ctx.fillStyle = 'darkcyan';
+  globals.ctx.fillRect(tableX, tableY, tableWidth, tableHeight);
+  
+  // Resetear sombra
+  globals.ctx.shadowBlur = 0;
+  globals.ctx.shadowOffsetX = 0;
+  globals.ctx.shadowOffsetY = 0;
+
+  // Bordes de la tabla
+  globals.ctx.strokeStyle = "black";
+  globals.ctx.lineWidth = 2;
+
+  let columnWidth = tableWidth / 3;
+
+  // Dibujar columnas
+  for (let i = 1; i <= 2; i++) {
+      let columnX = tableX + columnWidth * i;
+      globals.ctx.beginPath();
+      globals.ctx.moveTo(columnX, tableY);
+      globals.ctx.lineTo(columnX, tableY + tableHeight);
+      globals.ctx.stroke();
+  }
+
+  // Dibujar filas
+  for (let i = 1; i < 4; i++) {
+      let lineY = tableY + (tableHeight / 4) * i;
+      globals.ctx.beginPath();
+      globals.ctx.moveTo(tableX, lineY);
+      globals.ctx.lineTo(tableX + tableWidth, lineY);
+      globals.ctx.stroke();
+  }
+
+  // Texto de encabezados
+  globals.ctx.fillStyle = 'white';
+  globals.ctx.font = '18px MedievalSharp';
+  globals.ctx.textAlign = 'center';
+  globals.ctx.textBaseline = 'middle';
+
+  globals.ctx.fillText("Player", tableX + columnWidth / 2, tableY + tableHeight / 8);
+  globals.ctx.fillText("Event", tableX + columnWidth * 1.5, tableY + tableHeight / 8);
+  globals.ctx.fillText("Duration", tableX + columnWidth * 2.5, tableY + tableHeight / 8);
+
+  // Datos de ejemplo
+  globals.ctx.fillStyle = 'black';
+  globals.ctx.fillText("Player 2", tableX + columnWidth / 2, tableY + tableHeight - 185);
+  globals.ctx.fillText("Hand of God", tableX + columnWidth * 1.5, tableY + tableHeight - 185);
+  globals.ctx.fillText("2 rounds", tableX + columnWidth * 2.5, tableY + tableHeight - 185);
+}
+
+
+#renderMessages() {
+  const messageBoxX = 1790;  // Posición fija a la izquierda
+  const messageBoxY = 10;
+  const messageBoxWidth = 420;
+  const messageBoxHeight = 185;
+
+  // Dibujar el cuadro de mensajes
+  globals.ctx.fillStyle = 'black';
+  globals.ctx.fillRect(messageBoxX, messageBoxY, messageBoxWidth, messageBoxHeight);
+
+  // Texto dentro del cuadro
+  globals.ctx.fillStyle = 'white';
+  globals.ctx.font = '20px MedievalSharp';
+  globals.ctx.textAlign = "center";
+  globals.ctx.textBaseline = "middle";
+  globals.ctx.fillText("COMING SOON", messageBoxX + messageBoxWidth / 2, messageBoxY + messageBoxHeight / 2);
+}
+
+#renderPlayer1MinionActiveCards() {
+  const player1MinionsInPlayDeck = this.#deckContainer.getDecks()[5].getCards();
+
+// Posiciones fijas de los minions
+let fixedPositions = [];
+if(globals.currentPlayer === 1)
+{
+fixedPositions = [
+
+  { x: 945, y: 570 },    // (1,3)
+  { x: 945, y: 710 },    // (2,3)
+  { x: 945, y: 850 },    // (3,3)
+
+];
+}
+else
+{
+fixedPositions = [
+
+    { x: 983, y: 166 },    // (1,3)
+    { x: 985, y: 308 },    // (2,3)
+    { x: 985, y: 448 },    // (3,3)
+    
+  ];
+}
+
+  for (let i = 0; i < player1MinionsInPlayDeck.length && i < fixedPositions.length; i++) {
+    const currentCard = player1MinionsInPlayDeck[i];
+    const { x, y } = fixedPositions[i]; // Obtener coordenadas fijas
+
+    let smallSizeX = 110;
+    let smallSizeY = 110;
+
+    this.#renderCard(currentCard, x, y, smallSizeX, smallSizeY);
+    this.#renderSmallTemplate(currentCard, x, y, smallSizeX, smallSizeY);
+    this.#renderIcons(currentCard, x, y);
+    this.#renderAttributesMinions(currentCard, x, y);
+  }
+}
+
+#renderPlayer2MinionActiveCards() {
+  const player2MinionsInPlayDeck = this.#deckContainer.getDecks()[11].getCards();
+
+  let fixedPositions = [];
+  if(globals.currentPlayer === 1)
+  {
+  fixedPositions = [
+  
+      { x: 983, y: 166 },    // (1,3)
+      { x: 985, y: 308 },    // (2,3)
+      { x: 985, y: 448 },    // (3,3)
+
+  ];
+  }
+  else
+  {
+  fixedPositions = [
+  
+      { x: 945, y: 570 },    // (1,3)
+      { x: 945, y: 710 },    // (2,3)
+      { x: 945, y: 850 },    // (3,3)
+        
+    ];
+  }
+
+  for (let i = 0; i < player2MinionsInPlayDeck.length && i < fixedPositions.length; i++) {
+    const currentCard = player2MinionsInPlayDeck[i];
+    const { x, y } = fixedPositions[i]; // Obtener coordenadas fijas
+
+    let smallSizeX = 110;
+    let smallSizeY = 110;
+
+    this.#renderCard(currentCard, x, y, smallSizeX, smallSizeY);
+    this.#renderSmallTemplate(currentCard, x, y, smallSizeX, smallSizeY);
+    this.#renderIcons(currentCard, x, y);
+    this.#renderAttributesMinions(currentCard, x, y);
+  }
+}
+
+#renderEventHandPlayer1Cards() {
+
+    const MinionPlayer1 = this.#deckContainer.getDecks()[3];
+
+    for(let i = 0; i < MinionPlayer1.getCards().length ; i++)
+    {
+      const currentCard = MinionPlayer1.getCards()[i];
+      let xCoordinate = 680 + i * 135;
+      let yCoordinate = 987;
+      let smallSizeX = 110;
+      let smallSizeY = 110;
+      this.#renderCard(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
+      this.#renderSmallTemplate(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
+      this.#renderIcons(currentCard, xCoordinate, yCoordinate);
+      this.#renderAttributesWeaponns(currentCard, xCoordinate, yCoordinate);
+      this.#renderEventHandPlayer2Reverse();
+    }
+
+    globals.ctx.font = "20px MedievalSharp";
+    globals.ctx.fillStyle = "yellow";
+    globals.ctx.fillText("Player 1", 580, 990);
+
+}
+
+#renderEventHandPlayer2Reverse(){
+  const EventPlayer2 = this.#deckContainer.getDecks()[9].getCards();
+  const xCoordinate = 677;
+  const yCoordinate = 23;
+  for( let i = 0; i < EventPlayer2.length; i++)
+  {
+    globals.ctx.drawImage(
+      globals.cardsReverseImage,
+      0,
+      0,
+      425,
+      587,
+      xCoordinate +  i*135,
+      yCoordinate,
+      115,
+      115
+    );
+  }
+
+}
+
+#renderEventHandPlayer2Cards() {
+
+    const EventPlayer1 = this.#deckContainer.getDecks()[9].getCards();
+
+    for(let i = 0; i < EventPlayer1.length ; i++)
+    {
+      const currentCard = EventPlayer1[i];
+      let xCoordinate = 680 + i * 135;
+      let yCoordinate = 987;
+      let smallSizeX = 110;
+      let smallSizeY = 110;
+      this.#renderCard(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
+      this.#renderSmallTemplate(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
+      this.#renderIcons(currentCard, xCoordinate, yCoordinate);
+      this.#renderAttributesWeaponns(currentCard, xCoordinate, yCoordinate);
+      this.#renderEventHandPlayer1Reverse();
+    }
+
+    globals.ctx.font = "20px MedievalSharp";
+    globals.ctx.fillStyle = "yellow";
+    globals.ctx.fillText("Player 2", 580, 990);
+}
+
+#renderEventHandPlayer1Reverse(){
+  const EventPlayer1 = this.#deckContainer.getDecks()[3].getCards();
+  const xCoordinate = 677;
+  const yCoordinate = 23;
+  for( let i = 0; i < EventPlayer1.length; i++)
+  {
+    globals.ctx.drawImage(
+      globals.cardsReverseImage,
+      0,
+      0,
+      425,
+      587,
+      xCoordinate +  i*135,
+      yCoordinate,
+      115,
+      115
+    );
+  }
+
+}
+
+#renderCard(card, xCoordinate, yCoordinate, sizeX, sizeY) {
+  globals.ctx.drawImage(
+    card.getImageSet().getCard(),
+    0,
+    0,
+    1024,
+    1024,
+    xCoordinate,
+    yCoordinate,
+    sizeX,
+    sizeY
+  );
+}
+#renderSmallTemplate(card, xCoordinate, yCoordinate, sizeX, sizeY) {
+  globals.ctx.drawImage(
+    card.getImageSet().getSmallVersionTemplate(),
+    0,
+    0,
+    625,
+    801,
+    xCoordinate,
+    yCoordinate,
+    sizeX,
+    sizeY
+  );
+}
+#renderIcons(card, xCoordinate, yCoordinate) {
+  const icons = card.getImageSet().getIcons();
+  
+  const positions = [
+    { x: xCoordinate - 17, y: yCoordinate + 40, width: 35, height: 35 },  // left
+    { x: xCoordinate + 37, y: yCoordinate + 92, width: 35, height: 35 },  // bottom
+    { x: xCoordinate + 92, y: yCoordinate + 40, width: 35, height: 35 },  // right
+    { x: xCoordinate + 37, y: yCoordinate - 17, width: 35, height: 35 },  // top
+    { x: xCoordinate + 46, y: yCoordinate - 8, width: 17, height: 17 }   // top (smaller size)
+  ];
+
+  for (let i = 0; i < icons.length; i++) {
+    const { x, y, width, height } = positions[i];
+    globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
+  }
+}
+
+#renderAttributesMinions(card, xCoordinate, yCoordinate) {
+  const attack = card.getCard().getAttack();
+  const hp = card.getCard().getHp();
+  const defense = card.getCard().getDefense();
+  
+  globals.ctx.fillStyle = 'black';
+  globals.ctx.font = '14px MedievalSharp';
+  globals.ctx.textAlign = 'center';
+  globals.ctx.textBaseline = 'middle';
+  
+  globals.ctx.fillText(attack, xCoordinate, yCoordinate + 58);
+  globals.ctx.fillText(hp, xCoordinate + 55, yCoordinate + 110);
+  globals.ctx.fillText(defense, xCoordinate + 110, yCoordinate + 58);
+  
+}
+
+#renderAttributesWeaponns(card, xCoordinate, yCoordinate) {
+  const damage = card.getCard().getDamage();
+  const prep_time = card.getCard().getPrepTimeInRounds();
+  const durability = card.getCard().getDurability();
+  
+  globals.ctx.fillStyle = 'black';
+  globals.ctx.font = '14px MedievalSharp';
+  globals.ctx.textAlign = 'center';
+  globals.ctx.textBaseline = 'middle';
+  
+  globals.ctx.fillText(damage, xCoordinate, yCoordinate + 58);
+  globals.ctx.fillText(prep_time, xCoordinate + 55, yCoordinate + 110);
+  globals.ctx.fillText(durability, xCoordinate + 110, yCoordinate + 58);
+  
+}
 }

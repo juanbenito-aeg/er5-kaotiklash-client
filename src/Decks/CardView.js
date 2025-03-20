@@ -30,4 +30,8 @@ export default class CardView {
   getID() {
     return this.#card.getID();
   }
+
+  getCard() {
+    return this.#card;
+  }
 }

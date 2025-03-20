@@ -15,6 +15,8 @@ export default class PerformEventPhase extends Phase {
     currentPlayerMovementGridDeck,
     enemyMovementGridDeck
   ) {
+    super();
+    
     this.#eventsPreparationDeck = eventsPreparationDeck;
     this.#eventsPreparationGrid = eventsPreparationGrid;
     this.#activeEventsDeck = activeEventsDeck;
