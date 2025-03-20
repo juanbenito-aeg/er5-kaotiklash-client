@@ -200,6 +200,46 @@ export default class Game {
           this.#renderMainCharacter(card);
         }
         break;
+
+      // case CardCategory.MINION:
+      //   if (card.getState() === CardState.EXPANDED) {
+      //     this.#renderExpandedMinion(card);
+      //   } else {
+      //     this.#renderMinion(card);
+      //   }
+      //   break;
+
+      // case CardCategory.ARMOR:
+      //   if (card.getState() === CardState.EXPANDED) {
+      //     this.#renderExpandedArmor(card);
+      //   } else {
+      //     this.#renderArmor(card);
+      //   }
+      //   break;
+
+      // case CardCategory.WEAPON:
+      //   if (card.getState() === CardState.EXPANDED) {
+      //     this.#renderExpandedWeapon(card);
+      //   } else {
+      //     this.#renderWeapon(card);
+      //   }
+      //   break;
+
+      // case CardCategory.RARE:
+      //   if (card.getState() === CardState.EXPANDED) {
+      //     this.#renderExpandedRare(card);
+      //   } else {
+      //     this.#renderRare(card);
+      //   }
+      //   break;
+
+      // case CardCategory.SPECIAL:
+      //   if (card.getState() === CardState.EXPANDED) {
+      //     this.#renderExpandedSpecial(card);
+      //   } else {
+      //     this.#renderSpecial(card);
+      //   }
+      //   break;
     }
   }
 
@@ -214,6 +254,11 @@ export default class Game {
     const canvasHeightDividedBy2 = globals.canvas.height / 2;
     globals.ctx.textAlign = "center";
 
+    const cardAndTemplateWidth =
+      globals.imagesDestinationSizes.allCardsBigVersion.width;
+    const cardAndTemplateHeight =
+      globals.imagesDestinationSizes.allCardsBigVersion.height;
+
     // RENDER THE CARD IMAGE
     globals.ctx.drawImage(
       card.getImageSet().getCard(),
@@ -221,10 +266,10 @@ export default class Game {
       0,
       1024,
       1024,
-      canvasWidthDividedBy2 - 425 / 2,
-      canvasHeightDividedBy2 - 501 / 2,
-      425,
-      501
+      canvasWidthDividedBy2 - cardAndTemplateWidth / 2,
+      canvasHeightDividedBy2 - cardAndTemplateHeight / 2,
+      cardAndTemplateWidth,
+      cardAndTemplateHeight
     );
 
     // RENDER THE CARD TEMPLATE
@@ -234,10 +279,10 @@ export default class Game {
       0,
       625,
       801,
-      canvasWidthDividedBy2 - 425 / 2,
-      canvasHeightDividedBy2 - 501 / 2,
-      425,
-      501
+      canvasWidthDividedBy2 - cardAndTemplateWidth / 2,
+      canvasHeightDividedBy2 - cardAndTemplateHeight / 2,
+      cardAndTemplateWidth,
+      cardAndTemplateHeight
     );
 
     globals.ctx.font = "24px MedievalSharp";
@@ -248,7 +293,256 @@ export default class Game {
     globals.ctx.fillText(card.getSpecialSkill(), canvasWidthDividedBy2, 640);
   }
 
+  // #renderExpandedMinion(card) {
+  //   // DARKEN THE BACKGROUND TO PUT THE FOCUS ON THE EXPANDED CARD
+  //   globals.ctx.globalAlpha = 0.5;
+  //   globals.ctx.fillStyle = "black";
+  //   globals.ctx.fillRect(0, 0, globals.canvas.width, globals.canvas.height);
+  //   globals.ctx.globalAlpha = 1;
+
+  //   const canvasWidthDividedBy2 = globals.canvas.width / 2;
+  //   const canvasHeightDividedBy2 = globals.canvas.height / 2;
+  //   globals.ctx.textAlign = "center";
+
+  //   const cardAndTemplateWidth =
+  //     globals.imagesDestinationSizes.allCardsBigVersion.width;
+  //   const cardAndTemplateHeight =
+  //     globals.imagesDestinationSizes.allCardsBigVersion.height;
+
+  //   // RENDER THE CARD IMAGE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getCard(),
+  //     0,
+  //     0,
+  //     1024,
+  //     1024,
+  //     canvasWidthDividedBy2 - cardAndTemplateWidth / 2,
+  //     canvasHeightDividedBy2 - cardAndTemplateHeight / 2,
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   // RENDER THE CARD TEMPLATE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getBigVersionTemplate(),
+  //     0,
+  //     0,
+  //     625,
+  //     801,
+  //     canvasWidthDividedBy2 - cardAndTemplateWidth / 2,
+  //     canvasHeightDividedBy2 - cardAndTemplateHeight / 2,
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   globals.ctx.font = "24px MedievalSharp";
+  //   globals.ctx.fillStyle = "white";
+  //   globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 365);
+  //   globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 540);
+  // }
+
+  // #renderExpandedArmor(card) {
+  //   // DARKEN THE BACKGROUND TO PUT THE FOCUS ON THE EXPANDED CARD
+  //   globals.ctx.globalAlpha = 0.5;
+  //   globals.ctx.fillStyle = "black";
+  //   globals.ctx.fillRect(0, 0, globals.canvas.width, globals.canvas.height);
+  //   globals.ctx.globalAlpha = 1;
+
+  //   const canvasWidthDividedBy2 = globals.canvas.width / 2;
+  //   const canvasHeightDividedBy2 = globals.canvas.height / 2;
+  //   globals.ctx.textAlign = "center";
+
+  //   const cardAndTemplateWidth =
+  //     globals.imagesDestinationSizes.allCardsBigVersion.width;
+  //   const cardAndTemplateHeight =
+  //     globals.imagesDestinationSizes.allCardsBigVersion.height;
+
+  //   // RENDER THE CARD IMAGE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getCard(),
+  //     0,
+  //     0,
+  //     1024,
+  //     1024,
+  //     canvasWidthDividedBy2 - cardAndTemplateWidth / 2,
+  //     canvasHeightDividedBy2 - cardAndTemplateHeight / 2,
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   // RENDER THE CARD TEMPLATE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getBigVersionTemplate(),
+  //     0,
+  //     0,
+  //     625,
+  //     801,
+  //     canvasWidthDividedBy2 - cardAndTemplateWidth / 2,
+  //     canvasHeightDividedBy2 - cardAndTemplateHeight / 2,
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   globals.ctx.font = "24px MedievalSharp";
+  //   globals.ctx.fillStyle = "white";
+  //   globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 365);
+  //   globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 540);
+  //   globals.ctx.fillText(card.getSpecialSkill(), canvasWidthDividedBy2, 600);
+  // }
+
+  // #renderExpandedWeapon(card) {
+  //   // DARKEN THE BACKGROUND TO PUT THE FOCUS ON THE EXPANDED CARD
+  //   globals.ctx.globalAlpha = 0.5;
+  //   globals.ctx.fillStyle = "black";
+  //   globals.ctx.fillRect(0, 0, globals.canvas.width, globals.canvas.height);
+  //   globals.ctx.globalAlpha = 1;
+
+  //   const canvasWidthDividedBy2 = globals.canvas.width / 2;
+  //   const canvasHeightDividedBy2 = globals.canvas.height / 2;
+  //   globals.ctx.textAlign = "center";
+
+  //   const cardAndTemplateWidth =
+  //     globals.imagesDestinationSizes.allCardsBigVersion.width;
+  //   const cardAndTemplateHeight =
+  //     globals.imagesDestinationSizes.allCardsBigVersion.height;
+
+  //   // RENDER THE CARD IMAGE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getCard(),
+  //     0,
+  //     0,
+  //     1024,
+  //     1024,
+  //     canvasWidthDividedBy2 - cardAndTemplateWidth / 2,
+  //     canvasHeightDividedBy2 - cardAndTemplateHeight / 2,
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   // RENDER THE CARD TEMPLATE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getBigVersionTemplate(),
+  //     0,
+  //     0,
+  //     625,
+  //     801,
+  //     canvasWidthDividedBy2 - cardAndTemplateWidth / 2,
+  //     canvasHeightDividedBy2 - cardAndTemplateHeight / 2,
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   globals.ctx.font = "24px MedievalSharp";
+  //   globals.ctx.fillStyle = "white";
+  //   globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 365);
+  //   globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 540);
+  //   // globals.ctx.fillText(card.getSpecialSkill(), canvasWidthDividedBy2, 600);
+  // }
+
+  // #renderExpandedRare(card) {
+  //   // DARKEN THE BACKGROUND TO PUT THE FOCUS ON THE EXPANDED CARD
+  //   globals.ctx.globalAlpha = 0.5;
+  //   globals.ctx.fillStyle = "black";
+  //   globals.ctx.fillRect(0, 0, globals.canvas.width, globals.canvas.height);
+  //   globals.ctx.globalAlpha = 1;
+
+  //   const canvasWidthDividedBy2 = globals.canvas.width / 2;
+  //   const canvasHeightDividedBy2 = globals.canvas.height / 2;
+  //   globals.ctx.textAlign = "center";
+
+  //   const cardAndTemplateWidth =
+  //     globals.imagesDestinationSizes.allCardsBigVersion.width;
+  //   const cardAndTemplateHeight =
+  //     globals.imagesDestinationSizes.allCardsBigVersion.height;
+
+  //   // RENDER THE CARD IMAGE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getCard(),
+  //     0,
+  //     0,
+  //     1024,
+  //     1024,
+  //     canvasWidthDividedBy2 - cardAndTemplateWidth / 2,
+  //     canvasHeightDividedBy2 - cardAndTemplateHeight / 2,
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   // RENDER THE CARD TEMPLATE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getBigVersionTemplate(),
+  //     0,
+  //     0,
+  //     625,
+  //     801,
+  //     canvasWidthDividedBy2 - cardAndTemplateWidth / 2,
+  //     canvasHeightDividedBy2 - cardAndTemplateHeight / 2,
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   globals.ctx.font = "24px MedievalSharp";
+  //   globals.ctx.fillStyle = "white";
+  //   globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 365);
+  //   globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 540);
+  //   // globals.ctx.fillText(card.getSpecialSkill(), canvasWidthDividedBy2, 600);
+  // }
+
+  // #renderExpandedSpecial(card) {
+  //   // DARKEN THE BACKGROUND TO PUT THE FOCUS ON THE EXPANDED CARD
+  //   globals.ctx.globalAlpha = 0.5;
+  //   globals.ctx.fillStyle = "black";
+  //   globals.ctx.fillRect(0, 0, globals.canvas.width, globals.canvas.height);
+  //   globals.ctx.globalAlpha = 1;
+
+  //   const canvasWidthDividedBy2 = globals.canvas.width / 2;
+  //   const canvasHeightDividedBy2 = globals.canvas.height / 2;
+  //   globals.ctx.textAlign = "center";
+
+  //   const cardAndTemplateWidth =
+  //     globals.imagesDestinationSizes.allCardsBigVersion.width;
+  //   const cardAndTemplateHeight =
+  //     globals.imagesDestinationSizes.allCardsBigVersion.height;
+
+  //   // RENDER THE CARD IMAGE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getCard(),
+  //     0,
+  //     0,
+  //     1024,
+  //     1024,
+  //     canvasWidthDividedBy2 - cardAndTemplateWidth / 2,
+  //     canvasHeightDividedBy2 - cardAndTemplateHeight / 2,
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   // RENDER THE CARD TEMPLATE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getBigVersionTemplate(),
+  //     0,
+  //     0,
+  //     625,
+  //     801,
+  //     canvasWidthDividedBy2 - cardAndTemplateWidth / 2,
+  //     canvasHeightDividedBy2 - cardAndTemplateHeight / 2,
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   globals.ctx.font = "24px MedievalSharp";
+  //   globals.ctx.fillStyle = "white";
+  //   globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 365);
+  //   globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 540);
+  //   // globals.ctx.fillText(card.getSpecialSkill(), canvasWidthDividedBy2, 600);
+  // }
+
   #renderMainCharacter(card) {
+    const cardAndTemplateWidth =
+      globals.imagesDestinationSizes.mainCharactersSmallVersion.width;
+    const cardAndTemplateHeight =
+      globals.imagesDestinationSizes.mainCharactersSmallVersion.height;
+
     // RENDER THE CARD IMAGE
     globals.ctx.drawImage(
       card.getImageSet().getCard(),
@@ -258,8 +552,8 @@ export default class Game {
       1024,
       card.getXCoordinate(),
       card.getYCoordinate(),
-      110,
-      110
+      cardAndTemplateWidth,
+      cardAndTemplateHeight
     );
 
     // RENDER THE CARD TEMPLATE
@@ -271,10 +565,303 @@ export default class Game {
       801,
       card.getXCoordinate(),
       card.getYCoordinate(),
-      110,
-      110
+      cardAndTemplateWidth,
+      cardAndTemplateHeight
     );
   }
+
+  // #renderMinion(card) {
+  //   const cardAndTemplateWidth =
+  //     globals.imagesDestinationSizes.mainCharactersSmallVersion.width;
+  //   const cardAndTemplateHeight =
+  //     globals.imagesDestinationSizes.mainCharactersSmallVersion.height;
+
+  //   const xCoordinate = card.getXCoordinate();
+  //   const yCoordinate = card.getXCoordinate();
+
+  //   //RENDER IMAGE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getCard(),
+  //     0,
+  //     0,
+  //     1024,
+  //     1024,
+  //     xCoordinate,
+  //     yCoordinate,
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+  //   // RENDER SMALL TEMPLATE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getSmallVersionTemplate(),
+  //     0,
+  //     0,
+  //     625,
+  //     801,
+  //     xCoordinate,
+  //     yCoordinate,
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+  //   // this.#renderIcons(card);
+
+  //   const icons = card.getImageSet().getIcons();
+
+  //   const positions = [
+  //     { x: xCoordinate - 17, y: yCoordinate + 40, width: 35, height: 35 }, // left
+  //     { x: xCoordinate + 37, y: yCoordinate + 92, width: 35, height: 35 }, // bottom
+  //     { x: xCoordinate + 92, y: yCoordinate + 40, width: 35, height: 35 }, // right
+  //     { x: xCoordinate + 37, y: yCoordinate - 17, width: 35, height: 35 }, // top
+  //     { x: xCoordinate + 46, y: yCoordinate - 8, width: 17, height: 17 }, // top (smaller size)
+  //   ];
+
+  //   for (let i = 0; i < icons.length; i++) {
+  //     const { x, y, width, height } = positions[i];
+  //     globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
+  //   }
+
+  //   // RENDER ATTRIBUTES
+  //   // const attack = card.getCard().getAttack();
+  //   // const hp = card.getCard().getHp();
+  //   // const defense = card.getCard().getDefense();
+
+  //   // globals.ctx.fillStyle = "black";
+  //   // globals.ctx.font = "14px MedievalSharp";
+  //   // globals.ctx.textAlign = "center";
+  //   // globals.ctx.textBaseline = "middle";
+
+  //   // globals.ctx.fillText(attack, xCoordinate, yCoordinate + 58);
+  //   // globals.ctx.fillText(hp, xCoordinate + 55, yCoordinate + 110);
+  //   // globals.ctx.fillText(defense, xCoordinate + 110, yCoordinate + 58);
+  // }
+
+  // #renderArmor(card) {
+  //   // RENDER THE CARD IMAGE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getCard(),
+  //     0,
+  //     0,
+  //     1024,
+  //     1024,
+  //     card.getXCoordinate(),
+  //     card.getYCoordinate(),
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   // RENDER THE CARD TEMPLATE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getSmallVersionTemplate(),
+  //     0,
+  //     0,
+  //     625,
+  //     801,
+  //     card.getXCoordinate(),
+  //     card.getYCoordinate(),
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   //RENDER THE CARD ICONS
+  //   const icons = card.getImageSet().getIcons();
+
+  //   const positions = [
+  //     { x: xCoordinate - 17, y: yCoordinate + 40, width: 35, height: 35 }, // left
+  //     { x: xCoordinate + 37, y: yCoordinate + 92, width: 35, height: 35 }, // bottom
+  //     { x: xCoordinate + 92, y: yCoordinate + 40, width: 35, height: 35 }, // right
+  //     { x: xCoordinate + 37, y: yCoordinate - 17, width: 35, height: 35 }, // top
+  //     { x: xCoordinate + 46, y: yCoordinate - 8, width: 17, height: 17 }, // top (smaller size)
+  //   ];
+
+  //   for (let i = 0; i < icons.length; i++) {
+  //     const { x, y, width, height } = positions[i];
+  //     globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
+  //   }
+  //   // RENDER ATTRIBUTES
+  //   // const damage = card.getCard().getDamage();
+  //   // const prep_time = card.getCard().getPrepTimeInRounds();
+  //   // const durability = card.getCard().getDurability();
+
+  //   // globals.ctx.fillStyle = "black";
+  //   // globals.ctx.font = "14px MedievalSharp";
+  //   // globals.ctx.textAlign = "center";
+  //   // globals.ctx.textBaseline = "middle";
+
+  //   // globals.ctx.fillText(damage, xCoordinate, yCoordinate + 58);
+  //   // globals.ctx.fillText(prep_time, xCoordinate + 55, yCoordinate + 110);
+  //   // globals.ctx.fillText(durability, xCoordinate + 110, yCoordinate + 58);
+  // }
+
+  // #renderWeapon(card) {
+  //   // RENDER THE CARD IMAGE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getCard(),
+  //     0,
+  //     0,
+  //     1024,
+  //     1024,
+  //     card.getXCoordinate(),
+  //     card.getYCoordinate(),
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   // RENDER THE CARD TEMPLATE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getSmallVersionTemplate(),
+  //     0,
+  //     0,
+  //     625,
+  //     801,
+  //     card.getXCoordinate(),
+  //     card.getYCoordinate(),
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   //RENDER THE CARD ICONS
+  //   const icons = card.getImageSet().getIcons();
+
+  //   const positions = [
+  //     { x: xCoordinate - 17, y: yCoordinate + 40, width: 35, height: 35 }, // left
+  //     { x: xCoordinate + 37, y: yCoordinate + 92, width: 35, height: 35 }, // bottom
+  //     { x: xCoordinate + 92, y: yCoordinate + 40, width: 35, height: 35 }, // right
+  //     { x: xCoordinate + 37, y: yCoordinate - 17, width: 35, height: 35 }, // top
+  //     { x: xCoordinate + 46, y: yCoordinate - 8, width: 17, height: 17 }, // top (smaller size)
+  //   ];
+
+  //   for (let i = 0; i < icons.length; i++) {
+  //     const { x, y, width, height } = positions[i];
+  //     globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
+  //   }
+  //   // RENDER ATTRIBUTES
+  //   // const damage = card.getCard().getDamage();
+  //   // const prep_time = card.getCard().getPrepTimeInRounds();
+  //   // const durability = card.getCard().getDurability();
+
+  //   // globals.ctx.fillStyle = "black";
+  //   // globals.ctx.font = "14px MedievalSharp";
+  //   // globals.ctx.textAlign = "center";
+  //   // globals.ctx.textBaseline = "middle";
+
+  //   // globals.ctx.fillText(damage, xCoordinate, yCoordinate + 58);
+  //   // globals.ctx.fillText(prep_time, xCoordinate + 55, yCoordinate + 110);
+  //   // globals.ctx.fillText(durability, xCoordinate + 110, yCoordinate + 58);
+  // }
+
+  // #renderRare(card) {
+  //   // RENDER THE CARD IMAGE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getCard(),
+  //     0,
+  //     0,
+  //     1024,
+  //     1024,
+  //     card.getXCoordinate(),
+  //     card.getYCoordinate(),
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   // RENDER THE CARD TEMPLATE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getSmallVersionTemplate(),
+  //     0,
+  //     0,
+  //     625,
+  //     801,
+  //     card.getXCoordinate(),
+  //     card.getYCoordinate(),
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   //RENDER THE CARD ICONS
+  //   const icons = card.getImageSet().getIcons();
+
+  //   const positions = [
+  //     { x: xCoordinate - 17, y: yCoordinate + 40, width: 35, height: 35 }, // left
+  //     { x: xCoordinate + 37, y: yCoordinate + 92, width: 35, height: 35 }, // bottom
+  //     { x: xCoordinate + 92, y: yCoordinate + 40, width: 35, height: 35 }, // right
+  //     { x: xCoordinate + 37, y: yCoordinate - 17, width: 35, height: 35 }, // top
+  //     { x: xCoordinate + 46, y: yCoordinate - 8, width: 17, height: 17 }, // top (smaller size)
+  //   ];
+
+  //   for (let i = 0; i < icons.length; i++) {
+  //     const { x, y, width, height } = positions[i];
+  //     globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
+  //   }
+  //   // RENDER ATTRIBUTES
+  //   // const damage = card.getCard().getDamage();
+  //   // const prep_time = card.getCard().getPrepTimeInRounds();
+  //   // const durability = card.getCard().getDurability();
+
+  //   // globals.ctx.fillStyle = "black";
+  //   // globals.ctx.font = "14px MedievalSharp";
+  //   // globals.ctx.textAlign = "center";
+  //   // globals.ctx.textBaseline = "middle";
+
+  //   // globals.ctx.fillText(damage, xCoordinate, yCoordinate + 58);
+  //   // globals.ctx.fillText(prep_time, xCoordinate + 55, yCoordinate + 110);
+  //   // globals.ctx.fillText(durability, xCoordinate + 110, yCoordinate + 58);
+  // }
+
+  // #renderSpecial(card) {
+  //   // RENDER THE CARD IMAGE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getCard(),
+  //     0,
+  //     0,
+  //     1024,
+  //     1024,
+  //     card.getXCoordinate(),
+  //     card.getYCoordinate(),
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   // RENDER THE CARD TEMPLATE
+  //   globals.ctx.drawImage(
+  //     card.getImageSet().getSmallVersionTemplate(),
+  //     0,
+  //     0,
+  //     625,
+  //     801,
+  //     card.getXCoordinate(),
+  //     card.getYCoordinate(),
+  //     cardAndTemplateWidth,
+  //     cardAndTemplateHeight
+  //   );
+
+  //   //RENDER THE CARD ICONS
+  //   const icons = card.getImageSet().getIcons();
+
+  //   const positions = [
+  //     { x: xCoordinate - 17, y: yCoordinate + 40, width: 35, height: 35 }, // left
+  //     { x: xCoordinate + 37, y: yCoordinate + 92, width: 35, height: 35 }, // bottom
+  //     { x: xCoordinate + 92, y: yCoordinate + 40, width: 35, height: 35 }, // right
+  //     { x: xCoordinate + 37, y: yCoordinate - 17, width: 35, height: 35 }, // top
+  //     { x: xCoordinate + 46, y: yCoordinate - 8, width: 17, height: 17 }, // top (smaller size)
+  //   ];
+
+  //   for (let i = 0; i < icons.length; i++) {
+  //     const { x, y, width, height } = positions[i];
+  //     globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
+  //   }
+  //   // RENDER ATTRIBUTES
+  //   // const damage = card.getCard().getDamage();
+  //   // const prep_time = card.getCard().getPrepTimeInRounds();
+  //   // const durability = card.getCard().getDurability();
+
+  //   // globals.ctx.fillStyle = "black";
+  //   // globals.ctx.font = "14px MedievalSharp";
+  //   // globals.ctx.textAlign = "center";
+  //   // globals.ctx.textBaseline = "middle";
+
+  //   // globals.ctx.fillText(damage, xCoordinate, yCoordinate + 58);
+  //   // globals.ctx.fillText(prep_time, xCoordinate + 55, yCoordinate + 110);
+  //   // globals.ctx.fillText(durability, xCoordinate + 110, yCoordinate + 58);
+  // }
 
   #applyCardViewToAllCards() {
     const updatedDecks = [];
