@@ -22,6 +22,7 @@ const globals = {
   },
   cardsTemplatesImages: [],
   cardsIconsImages: [],
+  imagesDestinationSizes: {},
   assetsToLoad: [], // HOLDS THE ELEMENTS TO LOAD
   assetsLoaded: 0, // INDICATES THE NUMBER OF ELEMENTS THAT HAVE BEEN LOADED SO FAR
   gameState: GameState.INVALID,
@@ -29,6 +30,50 @@ const globals = {
   language: 0,
   isCurrentTurnFinished: false,
 };
+
+window.onload = initStartGameScreen;
+
+function initStartGameScreen() {
+  const btn = document.getElementById("start-game-btn");
+  btn.addEventListener("click", initGameScreen);
+}
+
+async function initGameScreen() {
+  const startGameScreen = document.getElementById("start-game-screen");
+  startGameScreen.style.display = "none";
+
+  initVars();
+
+  // INITIALIZE CANVAS AND ITS CONTEXT
+  globals.canvas = document.getElementById("game-screen");
+  globals.canvas.style.display = "block";
+  globals.ctx = globals.canvas.getContext("2d");
+
+  // LOAD DB CARDS DATA AND ASSETS
+  loadDBCardsDataAndAssets();
+}
+
+function initVars() {
+  // INITIALIZE TIME MANAGEMENT VARIABLES
+  globals.previousCycleMilliseconds = 0;
+  globals.deltaTime = 0;
+  globals.frameTimeObj = 1 / FPS;
+
+  globals.imagesDestinationSizes = {
+    allCardsBigVersion: {
+      width: 425,
+      height: 501,
+    },
+    mainCharactersSmallVersion: {
+      width: 200,
+      height: 200,
+    },
+    minionsAndEventsSmallVersion: {
+      width: 110,
+      height: 110,
+    },
+  };
+}
 
 async function loadDBCardsDataAndAssets() {
   // RELATIVE PATH TO THE FILE CONTAINING THE CARDS DATA
@@ -43,49 +88,6 @@ async function loadDBCardsDataAndAssets() {
   } else {
     alert(`Communication error: ${response.statusText}`);
   }
-}
-
-function executeGameLoop(timeStamp) {
-  // KEEP REQUESTING ANIMATION FRAMES
-  window.requestAnimationFrame(executeGameLoop, globals.canvas);
-
-  // ACTUAL EXECUTION CYCLE TIME
-  const elapsedCycleSeconds =
-    (timeStamp - globals.previousCycleMilliseconds) / 1000;
-
-  // PREVIOUS EXECUTION CYCLE TIME
-  globals.previousCycleMilliseconds = timeStamp;
-
-  // VARIABLE CORRECTING THE FRAME TIME DUE TO DELAYS WITH RESPECT TO GOAL TIME (frameTimeObj)
-  globals.deltaTime += elapsedCycleSeconds;
-
-  globals.cycleRealTime += elapsedCycleSeconds;
-
-  if (globals.cycleRealTime >= globals.frameTimeObj) {
-    globals.game.execute();
-
-    // CORRECT EXCESS OF TIME
-    globals.cycleRealTime -= globals.frameTimeObj;
-    globals.deltaTime = 0;
-  }
-}
-
-async function initGameScreen() {
-  const startGameScreen = document.getElementById("start-game-screen");
-  startGameScreen.style.display = "none";
-
-  // INITIALIZE TIME MANAGEMENT VARIABLES
-  globals.previousCycleMilliseconds = 0;
-  globals.deltaTime = 0;
-  globals.frameTimeObj = 1 / FPS;
-
-  // INITIALIZE CANVAS AND ITS CONTEXT
-  globals.canvas = document.getElementById("game-screen");
-  globals.canvas.style.display = "block";
-  globals.ctx = globals.canvas.getContext("2d");
-
-  // LOAD DB CARDS DATA AND ASSETS
-  loadDBCardsDataAndAssets();
 }
 
 function loadAssets() {
@@ -253,19 +255,6 @@ function loadAssets() {
   createAndStoreImageObjs(icons, globals.cardsIconsImages);
 }
 
-function createAndStoreImageObjs(arrayOfSameTypeObjs, arrayToPutImageObjsInto) {
-  for (let i = 0; i < arrayOfSameTypeObjs.length; i++) {
-    const currentObj = arrayOfSameTypeObjs[i];
-
-    const currentObjImage = new Image();
-    currentObjImage.addEventListener("load", loadHandler, false);
-    currentObjImage.src = currentObj.image_src;
-    globals.assetsToLoad.push(currentObjImage);
-
-    arrayToPutImageObjsInto.push(currentObjImage);
-  }
-}
-
 // CODE BLOCK TO CALL EACH TIME AN ASSET IS LOADED
 async function loadHandler() {
   globals.assetsLoaded++;
@@ -280,11 +269,42 @@ async function loadHandler() {
   }
 }
 
-window.onload = initStartGameScreen;
+function createAndStoreImageObjs(arrayOfSameTypeObjs, arrayToPutImageObjsInto) {
+  for (let i = 0; i < arrayOfSameTypeObjs.length; i++) {
+    const currentObj = arrayOfSameTypeObjs[i];
 
-function initStartGameScreen() {
-  const btn = document.getElementById("start-game-btn");
-  btn.addEventListener("click", initGameScreen);
+    const currentObjImage = new Image();
+    currentObjImage.addEventListener("load", loadHandler, false);
+    currentObjImage.src = currentObj.image_src;
+    globals.assetsToLoad.push(currentObjImage);
+
+    arrayToPutImageObjsInto.push(currentObjImage);
+  }
+}
+
+function executeGameLoop(timeStamp) {
+  // KEEP REQUESTING ANIMATION FRAMES
+  window.requestAnimationFrame(executeGameLoop, globals.canvas);
+
+  // ACTUAL EXECUTION CYCLE TIME
+  const elapsedCycleSeconds =
+    (timeStamp - globals.previousCycleMilliseconds) / 1000;
+
+  // PREVIOUS EXECUTION CYCLE TIME
+  globals.previousCycleMilliseconds = timeStamp;
+
+  // VARIABLE CORRECTING THE FRAME TIME DUE TO DELAYS WITH RESPECT TO GOAL TIME (frameTimeObj)
+  globals.deltaTime += elapsedCycleSeconds;
+
+  globals.cycleRealTime += elapsedCycleSeconds;
+
+  if (globals.cycleRealTime >= globals.frameTimeObj) {
+    globals.game.execute();
+
+    // CORRECT EXCESS OF TIME
+    globals.cycleRealTime -= globals.frameTimeObj;
+    globals.deltaTime = 0;
+  }
 }
 
 export { globals };
