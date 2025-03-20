@@ -144,7 +144,7 @@ export default class GridCreator {
 
     // PLAYER 1 BATTLEFIELD BOXES AND GRID
     const player1BattlefieldBoxes = [];
-    let player1BattlefieldBoxXCoordinate = 540;
+    let player1BattlefieldBoxXCoordinate = 565;
     let player1BattlefieldBoxYCoordinate = 850;
     for (let i = 0; i < 18; i++) {
       player1BattlefieldBoxXCoordinate += 135;
@@ -155,15 +155,15 @@ export default class GridCreator {
         battlefieldArea = BattlefieldArea.FRONT;
       } else if (i < 12) {
         if (i === 6) {
-          player1BattlefieldBoxXCoordinate = 675;
-          player1BattlefieldBoxYCoordinate = 710;
+          player1BattlefieldBoxXCoordinate = 700;
+          player1BattlefieldBoxYCoordinate = 715;
         }
 
         battlefieldArea = BattlefieldArea.MIDDLE;
       } else {
         if (i === 12) {
-          player1BattlefieldBoxXCoordinate = 675;
-          player1BattlefieldBoxYCoordinate = 570;
+          player1BattlefieldBoxXCoordinate = 700;
+          player1BattlefieldBoxYCoordinate = 580;
         }
 
         battlefieldArea = BattlefieldArea.REAR;
@@ -192,7 +192,7 @@ export default class GridCreator {
     let prepareEventBoxYCoordinate = 579;
     for (let i = 0; i < 3; i++) {
       const prepareEventBox = new Box(
-        1530,
+        1510,
         prepareEventBoxYCoordinate,
         110,
         110,
@@ -270,8 +270,8 @@ export default class GridCreator {
 
     // PLAYER 2 BATTLEFIELD BOXES
     const player2BattlefieldBoxes = [];
-    let player2BattlefieldBoxXCoordinate = 713;
-    let player2BattlefieldBoxYCoordinate = 165;
+    let player2BattlefieldBoxXCoordinate = 565;
+    let player2BattlefieldBoxYCoordinate = 170;
     for (let i = 0; i < 18; i++) {
       player2BattlefieldBoxXCoordinate += 135;
 
@@ -281,15 +281,15 @@ export default class GridCreator {
         battlefieldArea = BattlefieldArea.FRONT;
       } else if (i < 12) {
         if (i === 6) {
-          player2BattlefieldBoxXCoordinate = 849;
-          player2BattlefieldBoxYCoordinate = 308;
+          player2BattlefieldBoxXCoordinate = 700;
+          player2BattlefieldBoxYCoordinate = 305;
         }
 
         battlefieldArea = BattlefieldArea.MIDDLE;
       } else {
         if (i === 12) {
-          player2BattlefieldBoxXCoordinate = 849;
-          player2BattlefieldBoxYCoordinate = 448;
+          player2BattlefieldBoxXCoordinate = 700;
+          player2BattlefieldBoxYCoordinate = 440;
         }
 
         battlefieldArea = BattlefieldArea.REAR;
@@ -318,7 +318,7 @@ export default class GridCreator {
     let player2PrepareEventBoxYCoordinate = 170;
     for (let i = 0; i < 3; i++) {
       const player2PrepareEventBox = new Box(
-        700,
+        1510,
         player2PrepareEventBoxYCoordinate,
         110,
         110,

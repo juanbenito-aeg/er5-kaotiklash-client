@@ -91,7 +91,7 @@ export default class Game {
         break;
 
         case GameState.ELEMENT_RENDER:
-          this.#renderElements();
+          //this.#renderElements();
           break;
     }
   }
@@ -366,11 +366,11 @@ export default class Game {
 
 #renderDeckReverses()
 {
-  this.#renderPlayer1MinionsDeck(420, 40);
+  this.#renderPlayer1MinionsDeck(420, 60);
 
-  this.#renderPlayer2MinionsDeck(1800, 820);
+  this.#renderPlayer2MinionsDeck(1800, 840);
 
-  this.#renderEventsDeck(1890, 530);
+  this.#renderEventsDeck(1890, 550);
 }
 
 #renderPlayer1MinionsDeck(xCoordinate, yCoordinate) {
@@ -383,7 +383,7 @@ export default class Game {
     xCoordinate,
     yCoordinate,
     200,
-    240
+    200
   );
 }
 
@@ -397,7 +397,7 @@ export default class Game {
     xCoordinate,
     yCoordinate,
     200,
-    240
+    200
   );
 }
 
@@ -411,7 +411,7 @@ export default class Game {
     xCoordinate,
     yCoordinate,
     200,
-    240
+    200
   );
 }
 
@@ -580,9 +580,9 @@ if(globals.currentPlayer === 1)
 {
 fixedPositions = [
 
-  { x: 945, y: 570 },    // (1,3)
-  { x: 945, y: 710 },    // (2,3)
-  { x: 945, y: 850 },    // (3,3)
+  { x: 1105, y: 580 },    // (1,3)
+  { x: 970, y: 715 },    // (2,3)
+  { x: 835, y: 850 },    // (3,3)
 
 ];
 }
@@ -590,9 +590,9 @@ else
 {
 fixedPositions = [
 
-    { x: 983, y: 166 },    // (1,3)
-    { x: 985, y: 308 },    // (2,3)
-    { x: 985, y: 448 },    // (3,3)
+    { x: 1105, y: 170 },    // (1,3)
+    { x: 970, y: 305 },    // (2,3)
+    { x: 835, y: 170 },    // (3,3)
     
   ];
 }
@@ -619,9 +619,9 @@ fixedPositions = [
   {
   fixedPositions = [
   
-      { x: 983, y: 166 },    // (1,3)
-      { x: 985, y: 308 },    // (2,3)
-      { x: 985, y: 448 },    // (3,3)
+      { x: 1105, y: 170 },    // (1,3)
+      { x: 970, y: 305 },    // (2,3)
+      { x: 835, y: 170 },    // (3,3)
 
   ];
   }
@@ -629,9 +629,9 @@ fixedPositions = [
   {
   fixedPositions = [
   
-      { x: 945, y: 570 },    // (1,3)
-      { x: 945, y: 710 },    // (2,3)
-      { x: 945, y: 850 },    // (3,3)
+      { x: 1105, y: 850 },    // (1,3)
+      { x: 970, y: 715 },    // (2,3)
+      { x: 835, y: 850 },    // (3,3)
         
     ];
   }
