@@ -191,6 +191,7 @@ export default class Turn {
         DeckType.PLAYER_1_CARDS_IN_HAND,
         DeckType.PLAYER_1_EVENTS_IN_PREPARATION,
         DeckType.PLAYER_1_MAIN_CHARACTER,
+        DeckType.PLAYER_1_MINIONS /* TO REMOVE */,
         DeckType.PLAYER_1_MINIONS_IN_PLAY
       );
     } else {
@@ -199,6 +200,7 @@ export default class Turn {
         DeckType.PLAYER_2_CARDS_IN_HAND,
         DeckType.PLAYER_2_EVENTS_IN_PREPARATION,
         DeckType.PLAYER_2_MAIN_CHARACTER,
+        DeckType.PLAYER_2_MINIONS /* TO REMOVE */,
         DeckType.PLAYER_2_MINIONS_IN_PLAY
       );
     }

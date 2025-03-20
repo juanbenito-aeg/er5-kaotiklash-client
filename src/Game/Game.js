@@ -180,70 +180,506 @@ export default class Game {
   }
 
   #renderCards() {
+    let xCoordinate = 0;
+    let expandedCard;
+
     for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
       const currentDeck = this.#deckContainer.getDecks()[i];
 
       for (let j = 0; j < currentDeck.getCards().length; j++) {
         const currentCard = currentDeck.getCards()[j];
 
-        this.#renderCard(currentCard);
+        if (currentCard.getCategory() === CardCategory.MINION) {
+          currentCard.setXCoordinate(xCoordinate);
+          xCoordinate += 150;
+          this.#renderCard(currentCard);
+
+          if (currentCard.getState() === CardState.EXPANDED) {
+            expandedCard = currentCard;
+          }
+        }
       }
+    }
+
+    if (expandedCard) {
+      this.#renderExpandedCard(expandedCard);
     }
   }
 
   #renderCard(card) {
     switch (card.getCategory()) {
       case CardCategory.MAIN_CHARACTER:
-        if (card.getState() === CardState.EXPANDED) {
-          this.#renderExpandedMainCharacter(card);
-        } else {
-          this.#renderMainCharacter(card);
-        }
+        this.#renderMainCharacter(card);
         break;
 
-      // case CardCategory.MINION:
-      //   if (card.getState() === CardState.EXPANDED) {
-      //     this.#renderExpandedMinion(card);
-      //   } else {
-      //     this.#renderMinion(card);
-      //   }
-      //   break;
+      case CardCategory.MINION:
+        this.#renderMinion(card);
+        break;
+
+      case CardCategory.WEAPON:
+        this.#renderWeapon(card);
+        break;
+
+      case CardCategory.ARMOR:
+        this.#renderArmor(card);
+        break;
+
+      case CardCategory.SPECIAL:
+        this.#renderSpecial(card);
+        break;
+
+      case CardCategory.RARE:
+        this.#renderRare(card);
+        break;
+    }
+  }
+
+  #renderMainCharacter(card) {
+    const cardAndTemplateWidth =
+      globals.imagesDestinationSizes.mainCharactersSmallVersion.width;
+    const cardAndTemplateHeight =
+      globals.imagesDestinationSizes.mainCharactersSmallVersion.height;
+
+    // RENDER THE CARD IMAGE
+    globals.ctx.drawImage(
+      card.getImageSet().getCard(),
+      0,
+      0,
+      1024,
+      1024,
+      card.getXCoordinate(),
+      card.getYCoordinate(),
+      cardAndTemplateWidth,
+      cardAndTemplateHeight
+    );
+
+    // RENDER THE CARD TEMPLATE
+    globals.ctx.drawImage(
+      card.getImageSet().getSmallVersionTemplate(),
+      0,
+      0,
+      625,
+      801,
+      card.getXCoordinate(),
+      card.getYCoordinate(),
+      cardAndTemplateWidth,
+      cardAndTemplateHeight
+    );
+  }
+
+  #renderMinion(card) {
+    const xCoordinate = card.getXCoordinate();
+    const yCoordinate = card.getYCoordinate();
+
+    const cardAndTemplateWidth =
+      globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width;
+    const cardAndTemplateHeight =
+      globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height;
+
+    // RENDER THE CARD IMAGE
+    globals.ctx.drawImage(
+      card.getImageSet().getCard(),
+      0,
+      0,
+      1024,
+      1024,
+      xCoordinate,
+      yCoordinate,
+      cardAndTemplateWidth,
+      cardAndTemplateHeight
+    );
+
+    // RENDER THE CARD TEMPLATE
+    globals.ctx.drawImage(
+      card.getImageSet().getSmallVersionTemplate(),
+      0,
+      0,
+      625,
+      801,
+      xCoordinate,
+      yCoordinate,
+      cardAndTemplateWidth,
+      cardAndTemplateHeight
+    );
+
+    // RENDER ICONS
+    const icons = card.getImageSet().getIcons().smallVersion;
+    const iconsPositions = [
+      {
+        // TYPE
+        x: xCoordinate + 37,
+        y: yCoordinate - 17,
+      },
+      {
+        // ATTACK
+        x: xCoordinate - 17,
+        y: yCoordinate + 40,
+      },
+      {
+        // HP
+        x: xCoordinate + 37,
+        y: yCoordinate + 92,
+      },
+      {
+        // DEFENSE
+        x: xCoordinate + 92,
+        y: yCoordinate + 40,
+      },
+    ];
+    for (let i = 0; i < icons.length; i++) {
+      const { x, y } = iconsPositions[i];
+      globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, 35, 35);
+    }
+
+    // RENDER ATTRIBUTES VALUES
+
+    globals.ctx.textAlign = "center";
+    globals.ctx.textBaseline = "middle";
+    globals.ctx.font = "14px MedievalSharp";
+    globals.ctx.fillStyle = "black";
+
+    globals.ctx.fillText(
+      card.getCurrentAttack(),
+      xCoordinate,
+      yCoordinate + 58
+    );
+    globals.ctx.fillText(
+      card.getCurrentHP(),
+      xCoordinate + 55,
+      yCoordinate + 110
+    );
+    globals.ctx.fillText(
+      card.getCurrentDefense(),
+      xCoordinate + 110,
+      yCoordinate + 58
+    );
+  }
+
+  #renderWeapon(card) {
+    const xCoordinate = card.getXCoordinate();
+    const yCoordinate = card.getYCoordinate();
+
+    const cardAndTemplateWidth =
+      globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width;
+    const cardAndTemplateHeight =
+      globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height;
+
+    // RENDER THE CARD IMAGE
+    globals.ctx.drawImage(
+      card.getImageSet().getCard(),
+      0,
+      0,
+      1024,
+      1024,
+      xCoordinate,
+      yCoordinate,
+      cardAndTemplateWidth,
+      cardAndTemplateHeight
+    );
+
+    // RENDER THE CARD TEMPLATE
+    globals.ctx.drawImage(
+      card.getImageSet().getSmallVersionTemplate(),
+      0,
+      0,
+      625,
+      801,
+      xCoordinate,
+      yCoordinate,
+      cardAndTemplateWidth,
+      cardAndTemplateHeight
+    );
+
+    // RENDER ICONS
+    const icons = card.getImageSet().getIcons().smallVersion;
+    const iconsPositions = [
+      {
+        //DAMAGE
+        x: xCoordinate - 17,
+        y: yCoordinate - 17,
+      },
+      {
+        //DURABILITY
+        x: xCoordinate + 20,
+        y: yCoordinate - 37,
+      },
+      {
+        //PREPARATION TIME
+        x: xCoordinate + 25,
+        y: yCoordinate - 40,
+      },
+    ];
+
+    for (let i = 0; i < icons.length; i++) {
+      const { x, y } = iconsPositions[i];
+      globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, 35, 35);
+    }
+
+    // RENDER ATTRIBUTES VALUES
+
+    globals.ctx.textAlign = "center";
+    globals.ctx.textBaseline = "middle";
+    globals.ctx.font = "14px MedievalSharp";
+    globals.ctx.fillStyle = "black";
+
+    globals.ctx.fillText(
+      card.getCurrentDamage(),
+      xCoordinate + 5,
+      yCoordinate + 58
+    );
+    globals.ctx.fillText(
+      card.getCurrentDurability(),
+      xCoordinate + 55,
+      yCoordinate + 110
+    );
+    globals.ctx.fillText(
+      card.getCurrentPrepTimeInRounds(),
+      xCoordinate + 55,
+      yCoordinate + 110
+    );
+  }
+
+  #renderArmor(card) {
+    const xCoordinate = card.getXCoordinate();
+    const yCoordinate = card.getYCoordinate();
+
+    const cardAndTemplateWidth =
+      globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width;
+    const cardAndTemplateHeight =
+      globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height;
+
+    // RENDER THE CARD IMAGE
+    globals.ctx.drawImage(
+      card.getImageSet().getCard(),
+      0,
+      0,
+      1024,
+      1024,
+      xCoordinate,
+      yCoordinate,
+      cardAndTemplateWidth,
+      cardAndTemplateHeight
+    );
+
+    // RENDER THE CARD TEMPLATE
+    globals.ctx.drawImage(
+      card.getImageSet().getSmallVersionTemplate(),
+      0,
+      0,
+      625,
+      801,
+      xCoordinate,
+      yCoordinate,
+      cardAndTemplateWidth,
+      cardAndTemplateHeight
+    );
+
+    // RENDER ICONS
+    const icons = card.getImageSet().getIcons().smallVersion;
+    const iconsPositions = [
+      {
+        //DURABILITY
+        x: xCoordinate + 25,
+        y: yCoordinate - 37,
+      },
+      {
+        //PREPARATION TIME
+        x: xCoordinate + 25,
+        y: yCoordinate - 45,
+      },
+    ];
+
+    for (let i = 0; i < icons.length; i++) {
+      const { x, y } = iconsPositions[i];
+      globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, 35, 35);
+    }
+
+    // RENDER ATTRIBUTES VALUES
+
+    globals.ctx.textAlign = "center";
+    globals.ctx.textBaseline = "middle";
+    globals.ctx.font = "14px MedievalSharp";
+    globals.ctx.fillStyle = "black";
+
+    globals.ctx.fillText(
+      card.getCurrentArmorDurability(),
+      xCoordinate + 5,
+      yCoordinate + 58
+    );
+    globals.ctx.fillText(
+      card.getCurrentArmorPrepTimeInRounds(),
+      xCoordinate + 55,
+      yCoordinate + 110
+    );
+  }
+
+  #renderSpecial(card) {
+    const xCoordinate = card.getXCoordinate();
+    const yCoordinate = card.getYCoordinate();
+
+    const cardAndTemplateWidth =
+      globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width;
+    const cardAndTemplateHeight =
+      globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height;
+
+    // RENDER THE CARD IMAGE
+    globals.ctx.drawImage(
+      card.getImageSet().getCard(),
+      0,
+      0,
+      1024,
+      1024,
+      xCoordinate,
+      yCoordinate,
+      cardAndTemplateWidth,
+      cardAndTemplateHeight
+    );
+
+    // RENDER THE CARD TEMPLATE
+    globals.ctx.drawImage(
+      card.getImageSet().getSmallVersionTemplate(),
+      0,
+      0,
+      625,
+      801,
+      xCoordinate,
+      yCoordinate,
+      cardAndTemplateWidth,
+      cardAndTemplateHeight
+    );
+
+    // RENDER ICONS
+    const icons = card.getImageSet().getIcons().smallVersion;
+    const iconsPositions = [
+      {
+        //DURATION
+        x: xCoordinate + 25,
+        y: yCoordinate - 37,
+      },
+      {
+        //PREPARATION TIME
+        x: xCoordinate + 25,
+        y: yCoordinate - 45,
+      },
+    ];
+
+    for (let i = 0; i < icons.length; i++) {
+      const { x, y } = iconsPositions[i];
+      globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, 35, 35);
+    }
+
+    // RENDER ATTRIBUTES VALUES
+
+    globals.ctx.textAlign = "center";
+    globals.ctx.textBaseline = "middle";
+    globals.ctx.font = "14px MedievalSharp";
+    globals.ctx.fillStyle = "black";
+
+    globals.ctx.fillText(
+      card.getSpecialCurrentDurationInRounds(),
+      xCoordinate + 5,
+      yCoordinate + 58
+    );
+    globals.ctx.fillText(
+      card.getSpecialCurrentPrepTimeInRounds(),
+      xCoordinate + 55,
+      yCoordinate + 110
+    );
+  }
+
+  #renderRare(card) {
+    const xCoordinate = card.getXCoordinate();
+    const yCoordinate = card.getYCoordinate();
+
+    const cardAndTemplateWidth =
+      globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width;
+    const cardAndTemplateHeight =
+      globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height;
+
+    // RENDER THE CARD IMAGE
+    globals.ctx.drawImage(
+      card.getImageSet().getCard(),
+      0,
+      0,
+      1024,
+      1024,
+      xCoordinate,
+      yCoordinate,
+      cardAndTemplateWidth,
+      cardAndTemplateHeight
+    );
+
+    // RENDER THE CARD TEMPLATE
+    globals.ctx.drawImage(
+      card.getImageSet().getSmallVersionTemplate(),
+      0,
+      0,
+      625,
+      801,
+      xCoordinate,
+      yCoordinate,
+      cardAndTemplateWidth,
+      cardAndTemplateHeight
+    );
+
+    // RENDER ICONS
+    const icons = card.getImageSet().getIcons().smallVersion;
+    const iconsPositions = [
+      {
+        //DURATION
+        x: xCoordinate + 15,
+        y: yCoordinate - 27,
+      },
+    ];
+
+    for (let i = 0; i < icons.length; i++) {
+      const { x, y } = iconsPositions[i];
+      globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, 35, 35);
+    }
+
+    // RENDER ATTRIBUTES VALUES
+
+    globals.ctx.textAlign = "center";
+    globals.ctx.textBaseline = "middle";
+    globals.ctx.font = "14px MedievalSharp";
+    globals.ctx.fillStyle = "black";
+
+    globals.ctx.fillText(
+      card.getRareCurrentDurationInRounds(),
+      xCoordinate + 15,
+      yCoordinate + 20
+    );
+  }
+
+  #renderExpandedCard(expandedCard) {
+    switch (expandedCard.getCategory()) {
+      case CardCategory.MAIN_CHARACTER:
+        this.#renderExpandedMainCharacter(expandedCard);
+        break;
+
+      case CardCategory.MINION:
+        this.#renderExpandedMinion(expandedCard);
+        break;
+
+      case CardCategory.WEAPON:
+        this.#renderExpandedWeapon(expandedCard);
+        break;
 
       // case CardCategory.ARMOR:
-      //   if (card.getState() === CardState.EXPANDED) {
-      //     this.#renderExpandedArmor(card);
-      //   } else {
-      //     this.#renderArmor(card);
-      //   }
-      //   break;
-
-      // case CardCategory.WEAPON:
-      //   if (card.getState() === CardState.EXPANDED) {
-      //     this.#renderExpandedWeapon(card);
-      //   } else {
-      //     this.#renderWeapon(card);
-      //   }
-      //   break;
-
-      // case CardCategory.RARE:
-      //   if (card.getState() === CardState.EXPANDED) {
-      //     this.#renderExpandedRare(card);
-      //   } else {
-      //     this.#renderRare(card);
-      //   }
+      //   this.#renderExpandedArmor(expandedCard);
       //   break;
 
       // case CardCategory.SPECIAL:
-      //   if (card.getState() === CardState.EXPANDED) {
-      //     this.#renderExpandedSpecial(card);
-      //   } else {
-      //     this.#renderSpecial(card);
-      //   }
+      //   this.#renderExpandedSpecial(expandedCard);
+      //   break;
+
+      // case CardCategory.RARE:
+      //   this.#renderExpandedRare(expandedCard);
       //   break;
     }
   }
 
-  #renderExpandedMainCharacter(card) {
+  #renderExpandedCardImageAndTemplate(card) {
     // DARKEN THE BACKGROUND TO PUT THE FOCUS ON THE EXPANDED CARD
     globals.ctx.globalAlpha = 0.5;
     globals.ctx.fillStyle = "black";
@@ -284,16 +720,133 @@ export default class Game {
       cardAndTemplateWidth,
       cardAndTemplateHeight
     );
+  }
 
+  #renderExpandedMainCharacter(card) {
+    this.#renderExpandedCardImageAndTemplate(card);
+
+    // RENDER ATTRIBUTES VALUES
+
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+
+    globals.ctx.textAlign = "center";
     globals.ctx.font = "24px MedievalSharp";
     globals.ctx.fillStyle = "white";
+
     globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 365);
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 540);
     globals.ctx.fillText("Special Skill", canvasWidthDividedBy2, 620);
     globals.ctx.fillText(card.getSpecialSkill(), canvasWidthDividedBy2, 640);
   }
 
-  // #renderExpandedMinion(card) {
+  #renderExpandedMinion(card) {
+    this.#renderExpandedCardImageAndTemplate(card);
+
+    // RENDER ICONS
+    const icons = card.getImageSet().getIcons().bigVersion;
+    const iconsPositions = [
+      {
+        // TYPE
+        x: 1075,
+        y: 327,
+        width: 35,
+        height: 35,
+      },
+      {
+        // HP
+        x: 1060,
+        y: 758,
+        width: 35,
+        height: 35,
+      },
+      {
+        // MADNESS
+        x: 1130,
+        y: 758,
+        width: 35,
+        height: 35,
+      },
+      {
+        // ATTACK
+        x: 1195,
+        y: 758,
+        width: 35,
+        height: 35,
+      },
+      {
+        // DEFENSE
+        x: 1420,
+        y: 758,
+        width: 35,
+        height: 35,
+      },
+    ];
+    for (let i = 0; i < icons.length; i++) {
+      const { x, y, width, height } = iconsPositions[i];
+      globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
+    }
+
+    // RENDER ATTRIBUTES VALUES
+
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+
+    globals.ctx.textAlign = "center";
+    globals.ctx.textBaseline = "middle";
+    globals.ctx.font = "16px MedievalSharp";
+    globals.ctx.fillStyle = "black";
+
+    globals.ctx.fillText(card.getInitialHP(), 1105, 765);
+    globals.ctx.fillText(card.getInitialMadness(), 1175, 765);
+    globals.ctx.fillText(card.getInitialAttack(), 1240, 765);
+    globals.ctx.fillText(card.getInitialDefense(), 1150, 765);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 12, 347);
+    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 540);
+  }
+
+  #renderExpandedWeapon(card) {
+    this.#renderExpandedCardImageAndTemplate(card);
+
+    // RENDER ICONS
+    const icons = card.getImageSet().getIcons().bigVersion;
+    const iconsPositions = [
+      {
+        // DAMAGE
+        x: 1000,
+        y: 327,
+      },
+      {
+        // DURABILITY
+        x: 1060,
+        y: 758,
+      },
+      {
+        // PREPARATION TIME
+        x: 1135,
+        y: 758,
+      },
+    ];
+    for (let i = 0; i < icons.length; i++) {
+      const { x, y } = iconsPositions[i];
+      globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, 30, 30);
+    }
+
+    // RENDER ATTRIBUTES VALUES
+
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+
+    globals.ctx.textAlign = "center";
+    globals.ctx.textBaseline = "middle";
+    globals.ctx.font = "16px MedievalSharp";
+    globals.ctx.fillStyle = "black";
+
+    globals.ctx.fillText(card.getInitialHP(), 1110, 765);
+    globals.ctx.fillText(card.getInitialAttack(), 600, 700);
+    globals.ctx.fillText(card.getInitialDefense(), 600, 700);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 12, 347);
+    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 540);
+  }
+
+  // #renderExpandedWeapon(card) {
   //   // DARKEN THE BACKGROUND TO PUT THE FOCUS ON THE EXPANDED CARD
   //   globals.ctx.globalAlpha = 0.5;
   //   globals.ctx.fillStyle = "black";
@@ -339,6 +892,7 @@ export default class Game {
   //   globals.ctx.fillStyle = "white";
   //   globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 365);
   //   globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 540);
+  //   // globals.ctx.fillText(card.getSpecialSkill(), canvasWidthDividedBy2, 600);
   // }
 
   // #renderExpandedArmor(card) {
@@ -390,7 +944,7 @@ export default class Game {
   //   globals.ctx.fillText(card.getSpecialSkill(), canvasWidthDividedBy2, 600);
   // }
 
-  // #renderExpandedWeapon(card) {
+  // #renderExpandedSpecial(card) {
   //   // DARKEN THE BACKGROUND TO PUT THE FOCUS ON THE EXPANDED CARD
   //   globals.ctx.globalAlpha = 0.5;
   //   globals.ctx.fillStyle = "black";
@@ -486,381 +1040,6 @@ export default class Game {
   //   globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 365);
   //   globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 540);
   //   // globals.ctx.fillText(card.getSpecialSkill(), canvasWidthDividedBy2, 600);
-  // }
-
-  // #renderExpandedSpecial(card) {
-  //   // DARKEN THE BACKGROUND TO PUT THE FOCUS ON THE EXPANDED CARD
-  //   globals.ctx.globalAlpha = 0.5;
-  //   globals.ctx.fillStyle = "black";
-  //   globals.ctx.fillRect(0, 0, globals.canvas.width, globals.canvas.height);
-  //   globals.ctx.globalAlpha = 1;
-
-  //   const canvasWidthDividedBy2 = globals.canvas.width / 2;
-  //   const canvasHeightDividedBy2 = globals.canvas.height / 2;
-  //   globals.ctx.textAlign = "center";
-
-  //   const cardAndTemplateWidth =
-  //     globals.imagesDestinationSizes.allCardsBigVersion.width;
-  //   const cardAndTemplateHeight =
-  //     globals.imagesDestinationSizes.allCardsBigVersion.height;
-
-  //   // RENDER THE CARD IMAGE
-  //   globals.ctx.drawImage(
-  //     card.getImageSet().getCard(),
-  //     0,
-  //     0,
-  //     1024,
-  //     1024,
-  //     canvasWidthDividedBy2 - cardAndTemplateWidth / 2,
-  //     canvasHeightDividedBy2 - cardAndTemplateHeight / 2,
-  //     cardAndTemplateWidth,
-  //     cardAndTemplateHeight
-  //   );
-
-  //   // RENDER THE CARD TEMPLATE
-  //   globals.ctx.drawImage(
-  //     card.getImageSet().getBigVersionTemplate(),
-  //     0,
-  //     0,
-  //     625,
-  //     801,
-  //     canvasWidthDividedBy2 - cardAndTemplateWidth / 2,
-  //     canvasHeightDividedBy2 - cardAndTemplateHeight / 2,
-  //     cardAndTemplateWidth,
-  //     cardAndTemplateHeight
-  //   );
-
-  //   globals.ctx.font = "24px MedievalSharp";
-  //   globals.ctx.fillStyle = "white";
-  //   globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 365);
-  //   globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 540);
-  //   // globals.ctx.fillText(card.getSpecialSkill(), canvasWidthDividedBy2, 600);
-  // }
-
-  #renderMainCharacter(card) {
-    const cardAndTemplateWidth =
-      globals.imagesDestinationSizes.mainCharactersSmallVersion.width;
-    const cardAndTemplateHeight =
-      globals.imagesDestinationSizes.mainCharactersSmallVersion.height;
-
-    // RENDER THE CARD IMAGE
-    globals.ctx.drawImage(
-      card.getImageSet().getCard(),
-      0,
-      0,
-      1024,
-      1024,
-      card.getXCoordinate(),
-      card.getYCoordinate(),
-      cardAndTemplateWidth,
-      cardAndTemplateHeight
-    );
-
-    // RENDER THE CARD TEMPLATE
-    globals.ctx.drawImage(
-      card.getImageSet().getSmallVersionTemplate(),
-      0,
-      0,
-      625,
-      801,
-      card.getXCoordinate(),
-      card.getYCoordinate(),
-      cardAndTemplateWidth,
-      cardAndTemplateHeight
-    );
-  }
-
-  // #renderMinion(card) {
-  //   const cardAndTemplateWidth =
-  //     globals.imagesDestinationSizes.mainCharactersSmallVersion.width;
-  //   const cardAndTemplateHeight =
-  //     globals.imagesDestinationSizes.mainCharactersSmallVersion.height;
-
-  //   const xCoordinate = card.getXCoordinate();
-  //   const yCoordinate = card.getXCoordinate();
-
-  //   //RENDER IMAGE
-  //   globals.ctx.drawImage(
-  //     card.getImageSet().getCard(),
-  //     0,
-  //     0,
-  //     1024,
-  //     1024,
-  //     xCoordinate,
-  //     yCoordinate,
-  //     cardAndTemplateWidth,
-  //     cardAndTemplateHeight
-  //   );
-  //   // RENDER SMALL TEMPLATE
-  //   globals.ctx.drawImage(
-  //     card.getImageSet().getSmallVersionTemplate(),
-  //     0,
-  //     0,
-  //     625,
-  //     801,
-  //     xCoordinate,
-  //     yCoordinate,
-  //     cardAndTemplateWidth,
-  //     cardAndTemplateHeight
-  //   );
-  //   // this.#renderIcons(card);
-
-  //   const icons = card.getImageSet().getIcons();
-
-  //   const positions = [
-  //     { x: xCoordinate - 17, y: yCoordinate + 40, width: 35, height: 35 }, // left
-  //     { x: xCoordinate + 37, y: yCoordinate + 92, width: 35, height: 35 }, // bottom
-  //     { x: xCoordinate + 92, y: yCoordinate + 40, width: 35, height: 35 }, // right
-  //     { x: xCoordinate + 37, y: yCoordinate - 17, width: 35, height: 35 }, // top
-  //     { x: xCoordinate + 46, y: yCoordinate - 8, width: 17, height: 17 }, // top (smaller size)
-  //   ];
-
-  //   for (let i = 0; i < icons.length; i++) {
-  //     const { x, y, width, height } = positions[i];
-  //     globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
-  //   }
-
-  //   // RENDER ATTRIBUTES
-  //   // const attack = card.getCard().getAttack();
-  //   // const hp = card.getCard().getHp();
-  //   // const defense = card.getCard().getDefense();
-
-  //   // globals.ctx.fillStyle = "black";
-  //   // globals.ctx.font = "14px MedievalSharp";
-  //   // globals.ctx.textAlign = "center";
-  //   // globals.ctx.textBaseline = "middle";
-
-  //   // globals.ctx.fillText(attack, xCoordinate, yCoordinate + 58);
-  //   // globals.ctx.fillText(hp, xCoordinate + 55, yCoordinate + 110);
-  //   // globals.ctx.fillText(defense, xCoordinate + 110, yCoordinate + 58);
-  // }
-
-  // #renderArmor(card) {
-  //   // RENDER THE CARD IMAGE
-  //   globals.ctx.drawImage(
-  //     card.getImageSet().getCard(),
-  //     0,
-  //     0,
-  //     1024,
-  //     1024,
-  //     card.getXCoordinate(),
-  //     card.getYCoordinate(),
-  //     cardAndTemplateWidth,
-  //     cardAndTemplateHeight
-  //   );
-
-  //   // RENDER THE CARD TEMPLATE
-  //   globals.ctx.drawImage(
-  //     card.getImageSet().getSmallVersionTemplate(),
-  //     0,
-  //     0,
-  //     625,
-  //     801,
-  //     card.getXCoordinate(),
-  //     card.getYCoordinate(),
-  //     cardAndTemplateWidth,
-  //     cardAndTemplateHeight
-  //   );
-
-  //   //RENDER THE CARD ICONS
-  //   const icons = card.getImageSet().getIcons();
-
-  //   const positions = [
-  //     { x: xCoordinate - 17, y: yCoordinate + 40, width: 35, height: 35 }, // left
-  //     { x: xCoordinate + 37, y: yCoordinate + 92, width: 35, height: 35 }, // bottom
-  //     { x: xCoordinate + 92, y: yCoordinate + 40, width: 35, height: 35 }, // right
-  //     { x: xCoordinate + 37, y: yCoordinate - 17, width: 35, height: 35 }, // top
-  //     { x: xCoordinate + 46, y: yCoordinate - 8, width: 17, height: 17 }, // top (smaller size)
-  //   ];
-
-  //   for (let i = 0; i < icons.length; i++) {
-  //     const { x, y, width, height } = positions[i];
-  //     globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
-  //   }
-  //   // RENDER ATTRIBUTES
-  //   // const damage = card.getCard().getDamage();
-  //   // const prep_time = card.getCard().getPrepTimeInRounds();
-  //   // const durability = card.getCard().getDurability();
-
-  //   // globals.ctx.fillStyle = "black";
-  //   // globals.ctx.font = "14px MedievalSharp";
-  //   // globals.ctx.textAlign = "center";
-  //   // globals.ctx.textBaseline = "middle";
-
-  //   // globals.ctx.fillText(damage, xCoordinate, yCoordinate + 58);
-  //   // globals.ctx.fillText(prep_time, xCoordinate + 55, yCoordinate + 110);
-  //   // globals.ctx.fillText(durability, xCoordinate + 110, yCoordinate + 58);
-  // }
-
-  // #renderWeapon(card) {
-  //   // RENDER THE CARD IMAGE
-  //   globals.ctx.drawImage(
-  //     card.getImageSet().getCard(),
-  //     0,
-  //     0,
-  //     1024,
-  //     1024,
-  //     card.getXCoordinate(),
-  //     card.getYCoordinate(),
-  //     cardAndTemplateWidth,
-  //     cardAndTemplateHeight
-  //   );
-
-  //   // RENDER THE CARD TEMPLATE
-  //   globals.ctx.drawImage(
-  //     card.getImageSet().getSmallVersionTemplate(),
-  //     0,
-  //     0,
-  //     625,
-  //     801,
-  //     card.getXCoordinate(),
-  //     card.getYCoordinate(),
-  //     cardAndTemplateWidth,
-  //     cardAndTemplateHeight
-  //   );
-
-  //   //RENDER THE CARD ICONS
-  //   const icons = card.getImageSet().getIcons();
-
-  //   const positions = [
-  //     { x: xCoordinate - 17, y: yCoordinate + 40, width: 35, height: 35 }, // left
-  //     { x: xCoordinate + 37, y: yCoordinate + 92, width: 35, height: 35 }, // bottom
-  //     { x: xCoordinate + 92, y: yCoordinate + 40, width: 35, height: 35 }, // right
-  //     { x: xCoordinate + 37, y: yCoordinate - 17, width: 35, height: 35 }, // top
-  //     { x: xCoordinate + 46, y: yCoordinate - 8, width: 17, height: 17 }, // top (smaller size)
-  //   ];
-
-  //   for (let i = 0; i < icons.length; i++) {
-  //     const { x, y, width, height } = positions[i];
-  //     globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
-  //   }
-  //   // RENDER ATTRIBUTES
-  //   // const damage = card.getCard().getDamage();
-  //   // const prep_time = card.getCard().getPrepTimeInRounds();
-  //   // const durability = card.getCard().getDurability();
-
-  //   // globals.ctx.fillStyle = "black";
-  //   // globals.ctx.font = "14px MedievalSharp";
-  //   // globals.ctx.textAlign = "center";
-  //   // globals.ctx.textBaseline = "middle";
-
-  //   // globals.ctx.fillText(damage, xCoordinate, yCoordinate + 58);
-  //   // globals.ctx.fillText(prep_time, xCoordinate + 55, yCoordinate + 110);
-  //   // globals.ctx.fillText(durability, xCoordinate + 110, yCoordinate + 58);
-  // }
-
-  // #renderRare(card) {
-  //   // RENDER THE CARD IMAGE
-  //   globals.ctx.drawImage(
-  //     card.getImageSet().getCard(),
-  //     0,
-  //     0,
-  //     1024,
-  //     1024,
-  //     card.getXCoordinate(),
-  //     card.getYCoordinate(),
-  //     cardAndTemplateWidth,
-  //     cardAndTemplateHeight
-  //   );
-
-  //   // RENDER THE CARD TEMPLATE
-  //   globals.ctx.drawImage(
-  //     card.getImageSet().getSmallVersionTemplate(),
-  //     0,
-  //     0,
-  //     625,
-  //     801,
-  //     card.getXCoordinate(),
-  //     card.getYCoordinate(),
-  //     cardAndTemplateWidth,
-  //     cardAndTemplateHeight
-  //   );
-
-  //   //RENDER THE CARD ICONS
-  //   const icons = card.getImageSet().getIcons();
-
-  //   const positions = [
-  //     { x: xCoordinate - 17, y: yCoordinate + 40, width: 35, height: 35 }, // left
-  //     { x: xCoordinate + 37, y: yCoordinate + 92, width: 35, height: 35 }, // bottom
-  //     { x: xCoordinate + 92, y: yCoordinate + 40, width: 35, height: 35 }, // right
-  //     { x: xCoordinate + 37, y: yCoordinate - 17, width: 35, height: 35 }, // top
-  //     { x: xCoordinate + 46, y: yCoordinate - 8, width: 17, height: 17 }, // top (smaller size)
-  //   ];
-
-  //   for (let i = 0; i < icons.length; i++) {
-  //     const { x, y, width, height } = positions[i];
-  //     globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
-  //   }
-  //   // RENDER ATTRIBUTES
-  //   // const damage = card.getCard().getDamage();
-  //   // const prep_time = card.getCard().getPrepTimeInRounds();
-  //   // const durability = card.getCard().getDurability();
-
-  //   // globals.ctx.fillStyle = "black";
-  //   // globals.ctx.font = "14px MedievalSharp";
-  //   // globals.ctx.textAlign = "center";
-  //   // globals.ctx.textBaseline = "middle";
-
-  //   // globals.ctx.fillText(damage, xCoordinate, yCoordinate + 58);
-  //   // globals.ctx.fillText(prep_time, xCoordinate + 55, yCoordinate + 110);
-  //   // globals.ctx.fillText(durability, xCoordinate + 110, yCoordinate + 58);
-  // }
-
-  // #renderSpecial(card) {
-  //   // RENDER THE CARD IMAGE
-  //   globals.ctx.drawImage(
-  //     card.getImageSet().getCard(),
-  //     0,
-  //     0,
-  //     1024,
-  //     1024,
-  //     card.getXCoordinate(),
-  //     card.getYCoordinate(),
-  //     cardAndTemplateWidth,
-  //     cardAndTemplateHeight
-  //   );
-
-  //   // RENDER THE CARD TEMPLATE
-  //   globals.ctx.drawImage(
-  //     card.getImageSet().getSmallVersionTemplate(),
-  //     0,
-  //     0,
-  //     625,
-  //     801,
-  //     card.getXCoordinate(),
-  //     card.getYCoordinate(),
-  //     cardAndTemplateWidth,
-  //     cardAndTemplateHeight
-  //   );
-
-  //   //RENDER THE CARD ICONS
-  //   const icons = card.getImageSet().getIcons();
-
-  //   const positions = [
-  //     { x: xCoordinate - 17, y: yCoordinate + 40, width: 35, height: 35 }, // left
-  //     { x: xCoordinate + 37, y: yCoordinate + 92, width: 35, height: 35 }, // bottom
-  //     { x: xCoordinate + 92, y: yCoordinate + 40, width: 35, height: 35 }, // right
-  //     { x: xCoordinate + 37, y: yCoordinate - 17, width: 35, height: 35 }, // top
-  //     { x: xCoordinate + 46, y: yCoordinate - 8, width: 17, height: 17 }, // top (smaller size)
-  //   ];
-
-  //   for (let i = 0; i < icons.length; i++) {
-  //     const { x, y, width, height } = positions[i];
-  //     globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
-  //   }
-  //   // RENDER ATTRIBUTES
-  //   // const damage = card.getCard().getDamage();
-  //   // const prep_time = card.getCard().getPrepTimeInRounds();
-  //   // const durability = card.getCard().getDurability();
-
-  //   // globals.ctx.fillStyle = "black";
-  //   // globals.ctx.font = "14px MedievalSharp";
-  //   // globals.ctx.textAlign = "center";
-  //   // globals.ctx.textBaseline = "middle";
-
-  //   // globals.ctx.fillText(damage, xCoordinate, yCoordinate + 58);
-  //   // globals.ctx.fillText(prep_time, xCoordinate + 55, yCoordinate + 110);
-  //   // globals.ctx.fillText(durability, xCoordinate + 110, yCoordinate + 58);
   // }
 
   #applyCardViewToAllCards() {
