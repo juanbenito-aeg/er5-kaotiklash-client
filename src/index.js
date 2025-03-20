@@ -250,6 +250,42 @@ function loadAssets() {
       name: "rareType",
       image_src: "../images/rare/icons/type.png",
     },
+    {
+      name: "minionsHP",
+      image_src: "../images/common_icons/minion_hp.png",
+    },
+    {
+      name: "minionsMadness",
+      image_src: "../images/common_icons/minion_madness.png",
+    },
+    {
+      name: "minionsAttack",
+      image_src: "../images/common_icons/minion_attack.png",
+    },
+    {
+      name: "minionsDefense",
+      image_src: "../images/common_icons/minion_defense.png",
+    },
+    {
+      name: "weaponsDamage",
+      image_src: "../images/weapons/icons/attribute_damage.png",
+    },
+    {
+      name: "weaponsArmorDurability",
+      image_src: "../images/common_icons/weapon_armor_durability.png",
+    },
+    {
+      name: "eventsPrepTime",
+      image_src: "../images/common_icons/event_prep_time.png",
+    },
+    {
+      name: "eventsEffect",
+      image_src: "../images/common_icons/event_effect.png",
+    },
+    {
+      name: "eventsDuration",
+      image_src: "../images/common_icons/event_duration.png",
+    },
   ];
 
   createAndStoreImageObjs(icons, globals.cardsIconsImages);

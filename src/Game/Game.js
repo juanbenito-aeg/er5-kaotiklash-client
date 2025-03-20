@@ -880,11 +880,19 @@ export default class Game {
         let cardImage;
         let smallVersionTemplateImage;
         let bigVersionTemplateImage;
-        let iconsImages = [
-          globals.cardsIconsImages[IconID.EVENT_EFFECT_DIAMOND],
-          globals.cardsIconsImages[IconID.EVENT_PREP_TIME_DIAMOND],
-          globals.cardsIconsImages[IconID.EVENT_DURATION_DIAMOND],
-        ];
+        let iconsImages = {
+          smallVersion: [
+            globals.cardsIconsImages[IconID.EVENT_EFFECT_DIAMOND],
+            globals.cardsIconsImages[IconID.EVENT_PREP_TIME_DIAMOND],
+            globals.cardsIconsImages[IconID.EVENT_DURATION_DIAMOND],
+          ],
+          bigVersion: [
+            globals.cardsIconsImages[IconID.EVENT_EFFECT],
+            globals.cardsIconsImages[IconID.EVENT_PREP_TIME],
+            globals.cardsIconsImages[IconID.EVENT_DURATION],
+          ],
+        };
+        let cardTypeIcon;
 
         if (currentCard.getCategory() === CardCategory.MAIN_CHARACTER) {
           cardImage = globals.cardsImages.main_characters[currentCard.getID()];
@@ -895,7 +903,7 @@ export default class Game {
           bigVersionTemplateImage =
             globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_BIG];
 
-          iconsImages = [];
+          iconsImages = {};
         } else {
           smallVersionTemplateImage =
             globals.cardsTemplatesImages[TemplateID.MINIONS_AND_EVENTS_SMALL];
@@ -903,33 +911,38 @@ export default class Game {
           if (currentCard.getCategory() === CardCategory.MINION) {
             cardImage = globals.cardsImages.minions[currentCard.getID()];
 
-            iconsImages = [
-              globals.cardsIconsImages[IconID.ATTACK_DAMAGE_DIAMOND],
-              globals.cardsIconsImages[IconID.MINION_HP_DIAMOND],
-              globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
-            ];
+            iconsImages = {
+              smallVersion: [
+                globals.cardsIconsImages[IconID.ATTACK_DAMAGE_DIAMOND],
+                globals.cardsIconsImages[IconID.MINION_HP_DIAMOND],
+                globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
+              ],
+              bigVersion: [
+                globals.cardsIconsImages[IconID.MINION_HP],
+                globals.cardsIconsImages[IconID.MINION_MADNESS],
+                globals.cardsIconsImages[IconID.MINION_ATTACK],
+                globals.cardsIconsImages[IconID.MINION_DEFENSE],
+              ],
+            };
 
             if (currentCard.getMinionType() === MinionType.SPECIAL) {
               bigVersionTemplateImage =
                 globals.cardsTemplatesImages[TemplateID.MINIONS_SPECIAL_BIG];
 
-              iconsImages.push(
-                globals.cardsIconsImages[IconID.MINION_SPECIAL_TYPE]
-              );
+              cardTypeIcon =
+                globals.cardsIconsImages[IconID.MINION_SPECIAL_TYPE];
             } else if (currentCard.getMinionType() === MinionType.WARRIOR) {
               bigVersionTemplateImage =
                 globals.cardsTemplatesImages[TemplateID.MINIONS_WARRIORS_BIG];
 
-              iconsImages.push(
-                globals.cardsIconsImages[IconID.MINION_WARRIOR_TYPE]
-              );
+              cardTypeIcon =
+                globals.cardsIconsImages[IconID.MINION_WARRIOR_TYPE];
             } else {
               bigVersionTemplateImage =
                 globals.cardsTemplatesImages[TemplateID.MINIONS_WIZARDS_BIG];
 
-              iconsImages.push(
-                globals.cardsIconsImages[IconID.MINION_WIZARD_TYPE]
-              );
+              cardTypeIcon =
+                globals.cardsIconsImages[IconID.MINION_WIZARD_TYPE];
             }
           } else if (currentCard.getCategory() === CardCategory.WEAPON) {
             cardImage = globals.cardsImages.weapons[currentCard.getID()];
@@ -937,24 +950,27 @@ export default class Game {
             bigVersionTemplateImage =
               globals.cardsTemplatesImages[TemplateID.WEAPONS_BIG];
 
-            iconsImages = [
-              globals.cardsIconsImages[IconID.ATTACK_DAMAGE_DIAMOND],
-              globals.cardsIconsImages[IconID.EVENT_PREP_TIME_DIAMOND],
-              globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
-            ];
+            iconsImages = {
+              smallVersion: [
+                globals.cardsIconsImages[IconID.ATTACK_DAMAGE_DIAMOND],
+                globals.cardsIconsImages[IconID.EVENT_PREP_TIME_DIAMOND],
+                globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
+              ],
+              bigVersion: [
+                globals.cardsIconsImages[IconID.WEAPON_DAMAGE],
+                globals.cardsIconsImages[IconID.WEAPON_ARMOR_DURABILITY],
+                globals.cardsIconsImages[IconID.EVENT_PREP_TIME],
+              ],
+            };
 
             if (currentCard.getWeaponType() === WeaponType.MELEE) {
-              iconsImages.push(
-                globals.cardsIconsImages[IconID.WEAPON_MELEE_TYPE]
-              );
+              cardTypeIcon = globals.cardsIconsImages[IconID.WEAPON_MELEE_TYPE];
             } else if (currentCard.getWeaponType() === WeaponType.MISSILE) {
-              iconsImages.push(
-                globals.cardsIconsImages[IconID.WEAPON_MISSILE_TYPE]
-              );
+              cardTypeIcon =
+                globals.cardsIconsImages[IconID.WEAPON_MISSILE_TYPE];
             } else {
-              iconsImages.push(
-                globals.cardsIconsImages[IconID.WEAPON_HYBRID_TYPE]
-              );
+              cardTypeIcon =
+                globals.cardsIconsImages[IconID.WEAPON_HYBRID_TYPE];
             }
           } else if (currentCard.getCategory() === CardCategory.ARMOR) {
             cardImage = globals.cardsImages.armor[currentCard.getID()];
@@ -962,32 +978,49 @@ export default class Game {
             bigVersionTemplateImage =
               globals.cardsTemplatesImages[TemplateID.ARMOR_LIGHT_HEAVY_BIG];
 
+            iconsImages = {
+              smallVersion: [
+                globals.cardsIconsImages[IconID.EVENT_EFFECT_DIAMOND],
+                globals.cardsIconsImages[IconID.EVENT_PREP_TIME_DIAMOND],
+                globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
+              ],
+              bigVersion: [
+                globals.cardsIconsImages[IconID.EVENT_EFFECT],
+                globals.cardsIconsImages[IconID.WEAPON_ARMOR_DURABILITY],
+                globals.cardsIconsImages[IconID.EVENT_PREP_TIME],
+              ],
+            };
+
             if (currentCard.getArmorType() === ArmorType.LIGHT) {
-              iconsImages.push(
-                globals.cardsIconsImages[IconID.ARMOR_LIGHT_TYPE]
-              );
+              cardTypeIcon = globals.cardsIconsImages[IconID.ARMOR_LIGHT_TYPE];
             } else if (currentCard.getArmorType() === ArmorType.MEDIUM) {
               bigVersionTemplateImage =
                 globals.cardsTemplatesImages[TemplateID.ARMOR_LIGHT_HEAVY_BIG];
 
-              iconsImages.push(
-                globals.cardsIconsImages[IconID.ARMOR_MEDIUM_TYPE]
-              );
+              cardTypeIcon = globals.cardsIconsImages[IconID.ARMOR_MEDIUM_TYPE];
             } else {
-              iconsImages.push(
-                globals.cardsIconsImages[IconID.ARMOR_HEAVY_TYPE]
-              );
+              cardTypeIcon = globals.cardsIconsImages[IconID.ARMOR_HEAVY_TYPE];
             }
           } else if (currentCard.getCategory() === CardCategory.SPECIAL) {
             cardImage = globals.cardsImages.special[currentCard.getID()];
 
             bigVersionTemplateImage =
               globals.cardsTemplatesImages[TemplateID.SPECIAL_EVENTS_BIG];
+
+            cardTypeIcon = globals.cardsIconsImages[IconID.SPECIAL_TYPE];
           } else {
             cardImage = globals.cardsImages.rare[currentCard.getID()];
 
             bigVersionTemplateImage =
               globals.cardsTemplatesImages[TemplateID.RARE_EVENTS_BIG];
+
+            cardTypeIcon = globals.cardsIconsImages[IconID.RARE_TYPE];
+          }
+        }
+
+        if (cardTypeIcon) {
+          for (const cardVersion in iconsImages) {
+            iconsImages[cardVersion].unshift(cardTypeIcon);
           }
         }
 
