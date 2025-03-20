@@ -80,7 +80,6 @@ export default class InitialPhase {
 
     for (let i = 0; i < numCards; i++) {
       let selectedMinion = minionsDeck[0];
-      minionsDeck.length = minionsDeck.length - 1;
       for (let j = 0; j < minionsDeck.length; j++) {
         minionsDeck[j] = minionsDeck[j + 1];
       }

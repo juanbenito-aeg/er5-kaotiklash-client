@@ -75,4 +75,12 @@ export default class MouseInput {
   isRightButtonPressed() {
     return this.#rightButtonPressed;
   }
+
+  setLeftButtonPressedFalse() {
+    this.#leftButtonPressed = false;
+  }
+
+  setRightButtonPressedFalse() {
+    this.#rightButtonPressed = false;
+  }
 }

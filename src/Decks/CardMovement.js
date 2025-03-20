@@ -1,5 +1,6 @@
 export default class CardMovement {
   #card;
+  #previousState;
   #state;
 
   constructor(card, state) {
@@ -37,6 +38,14 @@ export default class CardMovement {
 
   getImageSet() {
     return this.#card.getImageSet();
+  }
+
+  getPreviousState() {
+    return this.#previousState;
+  }
+
+  setPreviousState(newPreviousState) {
+    this.#previousState = newPreviousState;
   }
 
   getState() {
