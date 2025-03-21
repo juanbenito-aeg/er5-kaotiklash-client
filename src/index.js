@@ -22,14 +22,58 @@ const globals = {
   },
   cardsTemplatesImages: [],
   cardsIconsImages: [],
+  imagesDestinationSizes: {},
   assetsToLoad: [], // HOLDS THE ELEMENTS TO LOAD
   assetsLoaded: 0, // INDICATES THE NUMBER OF ELEMENTS THAT HAVE BEEN LOADED SO FAR
   gameState: GameState.INVALID,
   game: {},
   language: 0,
-  isFinished: false,
-  currentPlayer: 0, //Fake for turns
+  isCurrentTurnFinished: false,
 };
+
+window.onload = initStartGameScreen;
+
+function initStartGameScreen() {
+  const btn = document.getElementById("start-game-btn");
+  btn.addEventListener("click", initGameScreen);
+}
+
+async function initGameScreen() {
+  const startGameScreen = document.getElementById("start-game-screen");
+  startGameScreen.style.display = "none";
+
+  initVars();
+
+  // INITIALIZE CANVAS AND ITS CONTEXT
+  globals.canvas = document.getElementById("game-screen");
+  globals.canvas.style.display = "block";
+  globals.ctx = globals.canvas.getContext("2d");
+
+  // LOAD DB CARDS DATA AND ASSETS
+  loadDBCardsDataAndAssets();
+}
+
+function initVars() {
+  // INITIALIZE TIME MANAGEMENT VARIABLES
+  globals.previousCycleMilliseconds = 0;
+  globals.deltaTime = 0;
+  globals.frameTimeObj = 1 / FPS;
+
+  globals.imagesDestinationSizes = {
+    allCardsBigVersion: {
+      width: 425,
+      height: 501,
+    },
+    mainCharactersSmallVersion: {
+      width: 200,
+      height: 200,
+    },
+    minionsAndEventsSmallVersion: {
+      width: 110,
+      height: 110,
+    },
+  };
+}
 
 async function loadDBCardsDataAndAssets() {
   // RELATIVE PATH TO THE FILE CONTAINING THE CARDS DATA
@@ -44,49 +88,6 @@ async function loadDBCardsDataAndAssets() {
   } else {
     alert(`Communication error: ${response.statusText}`);
   }
-}
-
-function executeGameLoop(timeStamp) {
-  // KEEP REQUESTING ANIMATION FRAMES
-  window.requestAnimationFrame(executeGameLoop, globals.canvas);
-
-  // ACTUAL EXECUTION CYCLE TIME
-  const elapsedCycleSeconds =
-    (timeStamp - globals.previousCycleMilliseconds) / 1000;
-
-  // PREVIOUS EXECUTION CYCLE TIME
-  globals.previousCycleMilliseconds = timeStamp;
-
-  // VARIABLE CORRECTING THE FRAME TIME DUE TO DELAYS WITH RESPECT TO GOAL TIME (frameTimeObj)
-  globals.deltaTime += elapsedCycleSeconds;
-
-  globals.cycleRealTime += elapsedCycleSeconds;
-
-  if (globals.cycleRealTime >= globals.frameTimeObj) {
-    globals.game.execute();
-
-    // CORRECT EXCESS OF TIME
-    globals.cycleRealTime -= globals.frameTimeObj;
-    globals.deltaTime = 0;
-  }
-}
-
-async function initGameScreen() {
-  const startGameScreen = document.getElementById("start-game-screen");
-  startGameScreen.style.display = "none";
-
-  // INITIALIZE TIME MANAGEMENT VARIABLES
-  globals.previousCycleMilliseconds = 0;
-  globals.deltaTime = 0;
-  globals.frameTimeObj = 1 / FPS;
-
-  // INITIALIZE CANVAS AND ITS CONTEXT
-  globals.canvas = document.getElementById("game-screen");
-  globals.canvas.style.display = "block";
-  globals.ctx = globals.canvas.getContext("2d");
-
-  // LOAD DB CARDS DATA AND ASSETS
-  loadDBCardsDataAndAssets();
 }
 
 function loadAssets() {
@@ -249,9 +250,59 @@ function loadAssets() {
       name: "rareType",
       image_src: "../images/rare/icons/type.png",
     },
+    {
+      name: "minionsHP",
+      image_src: "../images/common_icons/minion_hp.png",
+    },
+    {
+      name: "minionsMadness",
+      image_src: "../images/common_icons/minion_madness.png",
+    },
+    {
+      name: "minionsAttack",
+      image_src: "../images/common_icons/minion_attack.png",
+    },
+    {
+      name: "minionsDefense",
+      image_src: "../images/common_icons/minion_defense.png",
+    },
+    {
+      name: "weaponsDamage",
+      image_src: "../images/weapons/icons/attribute_damage.png",
+    },
+    {
+      name: "weaponsArmorDurability",
+      image_src: "../images/common_icons/weapon_armor_durability.png",
+    },
+    {
+      name: "eventsPrepTime",
+      image_src: "../images/common_icons/event_prep_time.png",
+    },
+    {
+      name: "eventsEffect",
+      image_src: "../images/common_icons/event_effect.png",
+    },
+    {
+      name: "eventsDuration",
+      image_src: "../images/common_icons/event_duration.png",
+    },
   ];
 
   createAndStoreImageObjs(icons, globals.cardsIconsImages);
+}
+
+// CODE BLOCK TO CALL EACH TIME AN ASSET IS LOADED
+async function loadHandler() {
+  globals.assetsLoaded++;
+
+  if (globals.assetsLoaded === globals.assetsToLoad.length) {
+    globals.gameState = GameState.PLAYING;
+
+    globals.game = await Game.create();
+
+    // FIRST FRAME REQUEST
+    window.requestAnimationFrame(executeGameLoop);
+  }
 }
 
 function createAndStoreImageObjs(arrayOfSameTypeObjs, arrayToPutImageObjsInto) {
@@ -267,25 +318,29 @@ function createAndStoreImageObjs(arrayOfSameTypeObjs, arrayToPutImageObjsInto) {
   }
 }
 
-// CODE BLOCK TO CALL EACH TIME AN ASSET IS LOADED
-async function loadHandler() {
-  globals.assetsLoaded++;
+function executeGameLoop(timeStamp) {
+  // KEEP REQUESTING ANIMATION FRAMES
+  window.requestAnimationFrame(executeGameLoop, globals.canvas);
 
-  if (globals.assetsLoaded === globals.assetsToLoad.length) {
-    globals.gameState = GameState.GRIDS_DRAWING;
+  // ACTUAL EXECUTION CYCLE TIME
+  const elapsedCycleSeconds =
+    (timeStamp - globals.previousCycleMilliseconds) / 1000;
 
-    globals.game = await Game.create();
+  // PREVIOUS EXECUTION CYCLE TIME
+  globals.previousCycleMilliseconds = timeStamp;
 
-    // FIRST FRAME REQUEST
-    window.requestAnimationFrame(executeGameLoop);
+  // VARIABLE CORRECTING THE FRAME TIME DUE TO DELAYS WITH RESPECT TO GOAL TIME (frameTimeObj)
+  globals.deltaTime += elapsedCycleSeconds;
+
+  globals.cycleRealTime += elapsedCycleSeconds;
+
+  if (globals.cycleRealTime >= globals.frameTimeObj) {
+    globals.game.execute();
+
+    // CORRECT EXCESS OF TIME
+    globals.cycleRealTime -= globals.frameTimeObj;
+    globals.deltaTime = 0;
   }
-}
-
-window.onload = initStartGameScreen;
-
-function initStartGameScreen() {
-  const btn = document.getElementById("start-game-btn");
-  btn.addEventListener("click", initGameScreen);
 }
 
 export { globals };

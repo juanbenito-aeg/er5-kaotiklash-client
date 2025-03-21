@@ -2,9 +2,12 @@ import Card from "./Card.js";
 
 export default class Weapon extends Card {
   #weaponType;
-  #damage;
-  #durability;
-  #prepTimeInRounds;
+  #initialDamage;
+  #currentDamage;
+  #initialDurability;
+  #currentDurability;
+  #initialPrepTimeInRounds;
+  #currentPrepTimeInRounds;
 
   constructor(
     category,
@@ -12,31 +15,44 @@ export default class Weapon extends Card {
     name,
     description,
     weaponType,
-    damage,
-    durability,
-    prepTimeInRounds
+    initialDamage,
+    initialDurability,
+    initialPrepTimeInRounds
   ) {
     super(category, id, name, description);
 
     this.#weaponType = weaponType;
-    this.#damage = damage;
-    this.#durability = durability;
-    this.#prepTimeInRounds = prepTimeInRounds;
+    this.#initialDamage = this.#currentDamage = initialDamage;
+    this.#initialDurability = this.#currentDurability = initialDurability;
+    this.#initialPrepTimeInRounds = this.#currentPrepTimeInRounds =
+      initialPrepTimeInRounds;
   }
 
   getWeaponType() {
     return this.#weaponType;
   }
 
-  getDamage() {
-    return this.#damage;
+  getInitialDamage() {
+    return this.#initialDamage;
   }
 
-  getDurability() {
-    return this.#durability;
+  getCurrentDamage() {
+    return this.#currentDamage;
   }
 
-  getPrepTimeInRounds() {
-    return this.#prepTimeInRounds;
+  getInitialDurability() {
+    return this.#initialDurability;
+  }
+
+  getCurrentDurability() {
+    return this.#currentDurability;
+  }
+
+  getInitialPrepTimeInRounds() {
+    return this.#initialPrepTimeInRounds;
+  }
+
+  getCurrentPrepTimeInRounds() {
+    return this.#currentPrepTimeInRounds;
   }
 }

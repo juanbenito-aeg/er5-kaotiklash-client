@@ -2,12 +2,18 @@ import Card from "./Card.js";
 
 export default class Minion extends Card {
   #minionType;
-  #hp;
-  #madness;
-  #strength;
-  #attack;
-  #constitution;
-  #defense;
+  #initialHP;
+  #currentHP;
+  #initialMadness;
+  #currentMadness;
+  #initialStrength;
+  #currentStrength;
+  #initialAttack;
+  #currentAttack;
+  #initialConstitution;
+  #currentConstitution;
+  #initialDefense;
+  #currentDefense;
 
   constructor(
     category,
@@ -15,37 +21,57 @@ export default class Minion extends Card {
     name,
     description,
     minionType,
-    hp,
-    madness,
-    strength,
-    attack,
-    constitution,
-    defense
+    initialHP,
+    initialMadness,
+    initialStrength,
+    initialAttack,
+    initialConstitution,
+    initialDefense
   ) {
     super(category, id, name, description);
 
     this.#minionType = minionType;
-    this.#hp = hp;
-    this.#madness = madness;
-    this.#strength = strength;
-    this.#attack = attack;
-    this.#constitution = constitution;
-    this.#defense = defense;
+    this.#initialHP = this.#currentHP = initialHP;
+    this.#initialMadness = this.#currentMadness = initialMadness;
+    this.#initialStrength = this.#currentStrength = initialStrength;
+    this.#initialAttack = this.#currentAttack = initialAttack;
+    this.#initialConstitution = this.#currentConstitution = initialConstitution;
+    this.#initialDefense = this.#currentDefense = initialDefense;
   }
 
   getMinionType() {
     return this.#minionType;
   }
 
-  getHp() {
-    return this.#hp;
+  getInitialHP() {
+    return this.#initialHP;
   }
 
-  getAttack() {
-    return this.#attack;
+  getCurrentHP() {
+    return this.#currentHP;
   }
 
-  getDefense() {
-    return this.#defense;
+  getInitialMadness() {
+    return this.#initialMadness;
+  }
+
+  getCurrentMadness() {
+    return this.#currentMadness;
+  }
+
+  getInitialAttack() {
+    return this.#initialAttack;
+  }
+
+  getCurrentAttack() {
+    return this.#currentAttack;
+  }
+
+  getInitialDefense() {
+    return this.#initialDefense;
+  }
+
+  getCurrentDefense() {
+    return this.#currentDefense;
   }
 }

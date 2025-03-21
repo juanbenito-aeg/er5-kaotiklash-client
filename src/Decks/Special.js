@@ -2,8 +2,10 @@ import Card from "./Card.js";
 
 export default class Special extends Card {
   #effect;
-  #durationInRounds;
-  #prepTimeInRounds;
+  #initialDurationInRounds;
+  #currentDurationInRounds;
+  #initialPrepTimeInRounds;
+  #currentPrepTimeInRounds;
 
   constructor(
     category,
@@ -11,13 +13,35 @@ export default class Special extends Card {
     name,
     description,
     effect,
-    durationInRounds,
-    prepTimeInRounds
+    initialDurationInRounds,
+    initialPrepTimeInRounds
   ) {
     super(category, id, name, description);
 
     this.#effect = effect;
-    this.#durationInRounds = durationInRounds;
-    this.#prepTimeInRounds = prepTimeInRounds;
+    this.#initialDurationInRounds = this.#currentDurationInRounds =
+      initialDurationInRounds;
+    this.#initialPrepTimeInRounds = this.#currentPrepTimeInRounds =
+      initialPrepTimeInRounds;
+  }
+
+  getEffect() {
+    return this.#effect;
+  }
+
+  getInitialDurationInRounds() {
+    return this.#initialDurationInRounds;
+  }
+
+  getCurrentDurationInRounds() {
+    return this.#currentDurationInRounds;
+  }
+
+  getInitialPrepTimeInRounds() {
+    return this.#initialPrepTimeInRounds;
+  }
+
+  getCurrentPrepTimeInRounds() {
+    return this.#currentPrepTimeInRounds;
   }
 }

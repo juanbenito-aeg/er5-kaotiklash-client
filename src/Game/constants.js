@@ -1,7 +1,8 @@
 const GameState = {
   INVALID: -1,
-  GRIDS_DRAWING: 0,
-  ELEMENT_RENDER: 1,
+  PLAYING: 0,
+  GRIDS_DRAWING: 1,
+  ELEMENT_RENDER: 2,
 };
 
 // FPS (FRAMES PER SECOND)
@@ -10,6 +11,11 @@ const FPS = 30;
 const Language = {
   ENGLISH: 0,
   BASQUE: 1,
+};
+
+const PlayerID = {
+  PLAYER_1: 0,
+  PLAYER_2: 1,
 };
 
 const TemplateID = {
@@ -46,6 +52,15 @@ const IconID = {
   ARMOR_HEAVY_TYPE: 15,
   SPECIAL_TYPE: 16,
   RARE_TYPE: 17,
+  MINION_HP: 18,
+  MINION_MADNESS: 19,
+  MINION_ATTACK: 20,
+  MINION_DEFENSE: 21,
+  WEAPON_DAMAGE: 22,
+  WEAPON_ARMOR_DURABILITY: 23,
+  EVENT_PREP_TIME: 24,
+  EVENT_EFFECT: 25,
+  EVENT_DURATION: 26,
 };
 
 const CardCategory = {
@@ -109,12 +124,13 @@ const ChaoticEventID = {
 };
 
 const CardState = {
-  NOT_SELECTED: 0,
+  INACTIVE: 0,
   MOVING: 1,
   PLACED: 2,
-  SELECTED: 3,
+  INACTIVE_HOVERED: 3,
   HOVERED: 4,
-  DISCARDED: 5,
+  SELECTED: 5,
+  EXPANDED: 6,
 };
 
 const BoxState = {
@@ -181,6 +197,7 @@ export {
   GameState,
   FPS,
   Language,
+  PlayerID,
   TemplateID,
   IconID,
   CardCategory,
