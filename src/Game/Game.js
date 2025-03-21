@@ -294,8 +294,8 @@ export default class Game {
 
   #renderElements() 
   {
-    globals.currentPlayer = 2;
-    console.log(this.#deckContainer.getDecks()[3]);
+    globals.currentPlayer = 1;
+    //console.log(this.#deckContainer.getDecks()[3]);
     this.#renderPlayers();
     this.#renderDeckReverses();
     this.#renderPhasesButtons();
@@ -314,18 +314,16 @@ export default class Game {
   }
 
   #renderPlayers() {
-    this.#renderMainCharacters();
+
     let player1MinionsHp = 0;
     let player2MinionsHp = 0;
   
-    // Definir decks de minions para ambos jugadores
     const player1MinionsDeck = this.#deckContainer.getDecks()[4].getCards();
     const player1MinionsInPlayDeck = this.#deckContainer.getDecks()[5].getCards();
   
     const player2MinionsDeck = this.#deckContainer.getDecks()[4].getCards();
     const player2MinionsInPlayDeck = this.#deckContainer.getDecks()[5].getCards();
   
-    // Función para sumar la vida de los minions de un jugador
     function sumMinionsHp(minionsDeck) {
       let totalHp = 0;
       let length = minionsDeck.length - 1;
@@ -337,22 +335,25 @@ export default class Game {
       return totalHp;
     }
   
-    // Sumar la vida de los minions de ambos jugadores
     player1MinionsHp = sumMinionsHp(player1MinionsDeck) + sumMinionsHp(player1MinionsInPlayDeck);
     player2MinionsHp = sumMinionsHp(player2MinionsDeck) + sumMinionsHp(player2MinionsInPlayDeck);
   
-  // Determinar posiciones en función del jugador actual (invertidos)
   let player1X, player1Y, player2X, player2Y;
-
+  const activePlayerX = this.#board.getGrids()[5].getBoxes()[0].getXCoordinate();
+  const activePlayerY = this.#board.getGrids()[5].getBoxes()[0].getYCoordinate();
+  const inactivePlayerX = this.#board.getGrids()[10].getBoxes()[0].getXCoordinate();
+  const inacctivePlayerY = this.#board.getGrids()[10].getBoxes()[0].getYCoordinate();
+  this.#renderMainCharacters(activePlayerX, activePlayerY, inactivePlayerX, inacctivePlayerY);
+    //Box MC P1: x = 2020, y = 840
+    //Box MC P2: x = 200, y = 60
   if (globals.currentPlayer === 1) {
-    player1X = 2120; player1Y = 1065;  // Ahora en la parte inferior
-    player2X = 300; player2Y = 285;    // Ahora en la parte superior
+    player1X = activePlayerX + 100; player1Y = activePlayerY + 225;  
+    player2X = inactivePlayerX + 100; player2Y = inacctivePlayerY + 225;    
   } else {
-    player1X = 300; player1Y = 285;    // Ahora en la parte superior
-    player2X = 2120; player2Y = 1065;  // Ahora en la parte inferior
+    player1X = inactivePlayerX + 100; player1Y = inacctivePlayerY + 225;    
+    player2X = activePlayerX + 100; player2Y = activePlayerY + 225;  
   }
 
-  // Renderizar la información de los jugadores
   globals.ctx.font = "20px MedievalSharp";
   globals.ctx.fillStyle = "yellow";
   globals.ctx.fillText("Player 1", player1X, player1Y);
@@ -364,13 +365,47 @@ export default class Game {
   globals.ctx.fillText("HP: " + player2MinionsHp, player2X, player2Y + 25);
 }
 
+#renderMainCharacters(activePlayerX, activePlayerY, inactivePlayerX, inacctivePlayerY) {
+  const player1Card = this.#deckContainer.getDecks()[2].getCards()[0];
+  const player2Card = this.#deckContainer.getDecks()[8].getCards()[0];
+
+  let player1X, player1Y, player2X, player2Y;
+
+  let smallSizeX = 200;
+  let smallSizeY = 200;
+
+  if (globals.currentPlayer === 1) {
+      // Player 1 down, Player 2 up
+      player1X = activePlayerX; player1Y = activePlayerY;
+      player2X = inactivePlayerX; player2Y = inacctivePlayerY;
+  } else {
+      // Player 1 up, Player 2 down
+      player1X = inactivePlayerX; player1Y = inacctivePlayerY;
+      player2X = activePlayerX; player2Y = activePlayerY;
+  }
+
+  // Render the cards in their respective positions
+  this.#renderCard(player1Card, player1X, player1Y, smallSizeX, smallSizeY);
+  this.#renderSmallTemplate(player1Card, player1X, player1Y, smallSizeX, smallSizeY);
+
+  this.#renderCard(player2Card, player2X, player2Y, smallSizeX, smallSizeY);
+  this.#renderSmallTemplate(player2Card, player2X, player2Y, smallSizeX, smallSizeY);
+}
+
 #renderDeckReverses()
 {
-  this.#renderPlayer1MinionsDeck(420, 60);
+  const player1MinionsX = this.#board.getGrids()[6].getBoxes()[0].getXCoordinate();
+  const player1MinionsY = this.#board.getGrids()[6].getBoxes()[0].getYCoordinate();
+  const player2MinionsX = this.#board.getGrids()[11].getBoxes()[0].getXCoordinate();
+  const player2MinionsY = this.#board.getGrids()[11].getBoxes()[0].getYCoordinate();
+  const eventsX = this.#board.getGrids()[0].getBoxes()[0].getXCoordinate();
+  const eventsY = this.#board.getGrids()[0].getBoxes()[0].getYCoordinate();
 
-  this.#renderPlayer2MinionsDeck(1800, 840);
+  this.#renderPlayer1MinionsDeck(player1MinionsX, player1MinionsY);
 
-  this.#renderEventsDeck(1890, 550);
+  this.#renderPlayer2MinionsDeck(player2MinionsX, player2MinionsY);
+
+  this.#renderEventsDeck(eventsX, eventsY);
 }
 
 #renderPlayer1MinionsDeck(xCoordinate, yCoordinate) {
@@ -415,41 +450,13 @@ export default class Game {
   );
 }
 
-#renderMainCharacters() {
-  const player1Card = this.#deckContainer.getDecks()[2].getCards()[0];
-  const player2Card = this.#deckContainer.getDecks()[8].getCards()[0];
-
-  let player1X, player1Y, player2X, player2Y;
-  let smallSizeX = 200;
-  let smallSizeY = 200;
-
-  if (globals.currentPlayer === 1) {
-      // Player 1 down, Player 2 up
-      player1X = 2020; player1Y = 840;
-      player2X = 200; player2Y = 60;
-  } else {
-      // Player 1 up, Player 2 down
-      player1X = 200; player1Y = 60;
-      player2X = 2020; player2Y = 840;
-  }
-
-  // Render the cards in their respective positions
-  this.#renderCard(player1Card, player1X, player1Y, smallSizeX, smallSizeY);
-  this.#renderSmallTemplate(player1Card, player1X, player1Y, smallSizeX, smallSizeY);
-
-  this.#renderCard(player2Card, player2X, player2Y, smallSizeX, smallSizeY);
-  this.#renderSmallTemplate(player2Card, player2X, player2Y, smallSizeX, smallSizeY);
-}
-
-
 #renderPhasesButtons() {
   const phaseNumber = ["Skip", "Attack", "Prepare Event", "Move", "Perform Event"];
   const buttonCount = phaseNumber.length;
-  
-  for (let j = 0; j < buttonCount; j++) {
-      const currentPhase = phaseNumber[j];
-      const x = 400; 
-      const y = 705 + j * 50;
+  for (let i = 0; i < buttonCount; i++) {
+      const currentPhase = phaseNumber[i];
+      const x = this.#board.getGrids()[4].getBoxes()[0].getXCoordinate(); 
+      const y = this.#board.getGrids()[4].getBoxes()[i].getYCoordinate() + 5;
       const width = 200;
       const height = 40;
       const radius = 10;
@@ -485,12 +492,11 @@ export default class Game {
   }
 }
 
-
 #renderActiveEventsTable() {
-  const tableX = 1790;
-  const tableY = 210;
-  const tableWidth = 400;
-  const tableHeight = 300;
+  const tableX = this.#board.getGrids()[1].getBoxes()[0].getXCoordinate();
+  const tableY = this.#board.getGrids()[1].getBoxes()[0].getYCoordinate();
+  const tableWidth = this.#board.getGrids()[1].getBoxes()[0].getWidth();
+  const tableHeight = this.#board.getGrids()[1].getBoxes()[0].getHeight();
   
   globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
   globals.ctx.shadowBlur = 10;
@@ -540,12 +546,11 @@ export default class Game {
   globals.ctx.fillText("2 rounds", tableX + columnWidth * 2.5, tableY + tableHeight - 185);
 }
 
-
 #renderMessages() {
-  const messageBoxX = 1790; 
-  const messageBoxY = 10;
-  const messageBoxWidth = 420;
-  const messageBoxHeight = 185;
+  const messageBoxX = this.#board.getGrids()[3].getBoxes()[0].getXCoordinate(); 
+  const messageBoxY = this.#board.getGrids()[3].getBoxes()[0].getYCoordinate();
+  const messageBoxWidth = this.#board.getGrids()[3].getBoxes()[0].getWidth();
+  const messageBoxHeight = this.#board.getGrids()[3].getBoxes()[0].getHeight();
 
   globals.ctx.fillStyle = 'black';
   globals.ctx.fillRect(messageBoxX, messageBoxY, messageBoxWidth, messageBoxHeight);
@@ -559,15 +564,18 @@ export default class Game {
 
 #renderPlayer1MinionActiveCards() {
   const player1MinionsInPlayDeck = this.#deckContainer.getDecks()[5].getCards();
+  const battlefieldBot = this.#board.getGrids()[8].getBoxes();
+  const battlefieldTop = this.#board.getGrids()[13].getBoxes();
+
 
 let fixedPositions = [];
 if(globals.currentPlayer === 1)
 {
 fixedPositions = [
 
-  { x: 1105, y: 580 },    // (1,4)
-  { x: 970, y: 715 },     // (2,3)
-  { x: 835, y: 850 },     // (1,2)
+  { x: battlefieldBot[1].getXCoordinate(), y: battlefieldBot[1].getYCoordinate() },  
+  { x: battlefieldBot[8].getXCoordinate(), y: battlefieldBot[8].getYCoordinate() },   
+  { x: battlefieldBot[3].getXCoordinate(), y: battlefieldBot[3].getYCoordinate() },     
 
 ];
 }
@@ -575,9 +583,9 @@ else
 {
 fixedPositions = [
 
-    { x: 1105, y: 170 },   // (1,4)
-    { x: 970, y: 305 },    // (2,3)
-    { x: 835, y: 170 },    // (1,2)
+    { x: battlefieldTop[1].getXCoordinate(), y: battlefieldTop[1].getYCoordinate() },  
+    { x: battlefieldTop[8].getXCoordinate(), y: battlefieldTop[8].getYCoordinate() },   
+    { x: battlefieldTop[3].getXCoordinate(), y: battlefieldTop[3].getYCoordinate() },   
     
   ];
 }
@@ -598,27 +606,28 @@ fixedPositions = [
 
 #renderPlayer2MinionActiveCards() {
   const player2MinionsInPlayDeck = this.#deckContainer.getDecks()[11].getCards();
+  const battlefieldBot = this.#board.getGrids()[8].getBoxes();
+  const battlefieldTop = this.#board.getGrids()[13].getBoxes();
 
   let fixedPositions = [];
   if(globals.currentPlayer === 1)
   {
-  fixedPositions = [
-  
-      { x: 1105, y: 170 },    // (1,4)
-      { x: 970, y: 305 },     // (2,3)
-      { x: 835, y: 170 },     // (1,2)
+    fixedPositions = [
 
-  ];
-  }
-  else
-  {
-  fixedPositions = [
-  
-      { x: 1105, y: 850 },    // (1,4)
-      { x: 970, y: 715 },     // (2,3)
-      { x: 835, y: 850 },     // (1,2)
-        
+      { x: battlefieldTop[1].getXCoordinate(), y: battlefieldTop[1].getYCoordinate() },  
+      { x: battlefieldTop[8].getXCoordinate(), y: battlefieldTop[8].getYCoordinate() },   
+      { x: battlefieldTop[3].getXCoordinate(), y: battlefieldTop[3].getYCoordinate() },      
+    
     ];
+    }
+    else
+    {
+    fixedPositions = [
+    
+        { x: battlefieldBot[1].getXCoordinate(), y: battlefieldBot[1].getYCoordinate() },  
+        { x: battlefieldBot[8].getXCoordinate(), y: battlefieldBot[8].getYCoordinate() },   
+        { x: battlefieldBot[3].getXCoordinate(), y: battlefieldBot[3].getYCoordinate() },   
+      ];
   }
 
   for (let i = 0; i < player2MinionsInPlayDeck.length && i < fixedPositions.length; i++) {
@@ -639,11 +648,12 @@ fixedPositions = [
 
     const MinionPlayer1 = this.#deckContainer.getDecks()[3];
 
+
     for(let i = 0; i < MinionPlayer1.getCards().length ; i++)
     {
       const currentCard = MinionPlayer1.getCards()[i];
-      let xCoordinate = 680 + i * 135;
-      let yCoordinate = 987;
+      let xCoordinate = this.#board.getGrids()[7].getBoxes()[i].getXCoordinate();
+      let yCoordinate = this.#board.getGrids()[7].getBoxes()[i].getYCoordinate();
       let smallSizeX = 110;
       let smallSizeY = 110;
       this.#renderCard(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
@@ -661,8 +671,8 @@ fixedPositions = [
 
 #renderEventHandPlayer2Reverse(){
   const EventPlayer2 = this.#deckContainer.getDecks()[9].getCards();
-  const xCoordinate = 677;
-  const yCoordinate = 23;
+  const xCoordinate = this.#board.getGrids()[12].getBoxes()[0].getXCoordinate() - 3;
+  const yCoordinate = this.#board.getGrids()[12].getBoxes()[0].getYCoordinate() - 2;
   for( let i = 0; i < EventPlayer2.length; i++)
   {
     globals.ctx.drawImage(
@@ -682,13 +692,14 @@ fixedPositions = [
 
 #renderEventHandPlayer2Cards() {
 
-    const EventPlayer1 = this.#deckContainer.getDecks()[9].getCards();
+    const EventPlayer2 = this.#deckContainer.getDecks()[9].getCards();
+    //console.log(this.#board.getGrids()[7].getBoxes()[0]);
 
-    for(let i = 0; i < EventPlayer1.length ; i++)
+    for(let i = 0; i < EventPlayer2.length ; i++)
     {
-      const currentCard = EventPlayer1[i];
-      let xCoordinate = 680 + i * 135;
-      let yCoordinate = 987;
+      const currentCard = EventPlayer2[i];
+      let xCoordinate = this.#board.getGrids()[7].getBoxes()[i].getXCoordinate();
+      let yCoordinate = this.#board.getGrids()[7].getBoxes()[i].getYCoordinate();
       let smallSizeX = 110;
       let smallSizeY = 110;
       this.#renderCard(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
@@ -705,8 +716,10 @@ fixedPositions = [
 
 #renderEventHandPlayer1Reverse(){
   const EventPlayer1 = this.#deckContainer.getDecks()[3].getCards();
-  const xCoordinate = 677;
-  const yCoordinate = 23;
+  console.log(this.#board.getGrids()[12].getBoxes()[0]);
+
+  const xCoordinate = this.#board.getGrids()[12].getBoxes()[0].getXCoordinate() - 3;
+  const yCoordinate = this.#board.getGrids()[12].getBoxes()[0].getYCoordinate() - 2;
   for( let i = 0; i < EventPlayer1.length; i++)
   {
     globals.ctx.drawImage(

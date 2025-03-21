@@ -4,7 +4,6 @@ import { MovePhaseState, CardState, BoxState } from "../Game/constants.js";
 export default class MovePhase extends Phase {
   #currentPlayerMovementGridDeck;
   #currentPlayerMovementGrid;
-  ç;
   #selectedCard;
   #state;
 
