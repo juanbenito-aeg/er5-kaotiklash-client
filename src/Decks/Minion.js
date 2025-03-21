@@ -3,16 +3,16 @@ import Card from "./Card.js";
 export default class Minion extends Card {
   #minionType;
   #initialHP;
-  #initialMadness;
-  #initialStrength;
-  #initialAttack;
-  #initialConstitution;
-  #initialDefense;
   #currentHP;
+  #initialMadness;
   #currentMadness;
+  #initialStrength;
   #currentStrength;
+  #initialAttack;
   #currentAttack;
+  #initialConstitution;
   #currentConstitution;
+  #initialDefense;
   #currentDefense;
 
   constructor(

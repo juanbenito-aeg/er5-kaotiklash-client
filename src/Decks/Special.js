@@ -2,7 +2,7 @@ import Card from "./Card.js";
 
 export default class Special extends Card {
   #effect;
-  #intialDurationInRounds;
+  #initialDurationInRounds;
   #currentDurationInRounds;
   #initialPrepTimeInRounds;
   #currentPrepTimeInRounds;
@@ -19,14 +19,26 @@ export default class Special extends Card {
     super(category, id, name, description);
 
     this.#effect = effect;
-    this.#intialDurationInRounds = this.#currentDurationInRounds =
+    this.#initialDurationInRounds = this.#currentDurationInRounds =
       initialDurationInRounds;
     this.#initialPrepTimeInRounds = this.#currentPrepTimeInRounds =
       initialPrepTimeInRounds;
   }
 
+  getEffect() {
+    return this.#effect;
+  }
+
+  getInitialDurationInRounds() {
+    return this.#initialDurationInRounds;
+  }
+
   getCurrentDurationInRounds() {
     return this.#currentDurationInRounds;
+  }
+
+  getInitialPrepTimeInRounds() {
+    return this.#initialPrepTimeInRounds;
   }
 
   getCurrentPrepTimeInRounds() {

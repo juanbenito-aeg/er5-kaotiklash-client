@@ -31,8 +31,20 @@ export default class Armor extends Card {
     return this.#armorType;
   }
 
+  getSpecialEffect() {
+    return this.#specialEffect;
+  }
+
+  getInitialDurability() {
+    return this.#initialDurability;
+  }
+
   getCurrentDurability() {
     return this.#currentDurability;
+  }
+
+  getInitialPrepTimeInRounds() {
+    return this.#initialPrepTimeInRounds;
   }
 
   getCurrentPrepTimeInRounds() {

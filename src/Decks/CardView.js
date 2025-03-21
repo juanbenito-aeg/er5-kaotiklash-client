@@ -87,24 +87,56 @@ export default class CardView {
     return this.#card.getCurrentPrepTimeInRounds();
   }
 
-  getCurrentArmorDurability() {
+  getArmorType() {
+    return this.#card.getArmorType();
+  }
+
+  getInitialDurability() {
+    return this.#card.getInitialDurability();
+  }
+
+  getInitialPrepTimeInRounds() {
+    return this.#card.getInitialPrepTimeInRounds();
+  }
+
+  getCurrentDurability() {
     return this.#card.getCurrentDurability();
   }
 
-  getCurrentArmorPrepTimeInRounds() {
+  getCurrentPrepTimeInRounds() {
     return this.#card.getCurrentPrepTimeInRounds();
   }
 
-  getSpecialCurrentDurationInRounds() {
+  getInitialDurationInRounds() {
+    return this.#card.getIntialDurationInRounds();
+  }
+
+  getInitialPrepTimeInRounds() {
+    return this.#card.getInitialPrepTimeInRounds();
+  }
+
+  getCurrentDurationInRounds() {
     return this.#card.getCurrentDurationInRounds();
   }
 
-  getSpecialCurrentPrepTimeInRounds() {
+  getCurrentPrepTimeInRounds() {
     return this.#card.getCurrentPrepTimeInRounds();
   }
 
-  getRareCurrentDurationInRounds() {
+  getInitialDurationInRounds() {
+    return this.#card.getInitialDurationInRounds();
+  }
+
+  getCurrentDurationInRounds() {
     return this.#card.getCurrentDurationInRounds();
+  }
+
+  getSpecialEffect() {
+    return this.#card.getSpecialEffect();
+  }
+
+  getEffect() {
+    return this.#card.getEffect();
   }
 
   getImageSet() {

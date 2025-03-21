@@ -20,6 +20,14 @@ export default class Rare extends Card {
       initialDurationInRounds;
   }
 
+  getEffect() {
+    return this.#effect;
+  }
+
+  getInitialDurationInRounds() {
+    return this.#initialDurationInRounds;
+  }
+
   getCurrentDurationInRounds() {
     return this.#currentDurationInRounds;
   }

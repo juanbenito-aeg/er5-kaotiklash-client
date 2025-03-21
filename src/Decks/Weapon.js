@@ -36,20 +36,20 @@ export default class Weapon extends Card {
     return this.#initialDamage;
   }
 
+  getCurrentDamage() {
+    return this.#currentDamage;
+  }
+
   getInitialDurability() {
     return this.#initialDurability;
   }
 
-  getInitialPrepTimeInRounds() {
-    return this.#initialPrepTimeInRounds;
-  }
-
-  geCurrenttDamage() {
-    return this.#currentDamage;
-  }
-
   getCurrentDurability() {
     return this.#currentDurability;
+  }
+
+  getInitialPrepTimeInRounds() {
+    return this.#initialPrepTimeInRounds;
   }
 
   getCurrentPrepTimeInRounds() {
