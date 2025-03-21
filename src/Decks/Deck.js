@@ -79,6 +79,12 @@ export default class Deck {
           currentCard.setPreviousState(CardState.PLACED);
           currentCard.setState(CardState.HOVERED);
         }
+      } else if (
+        (!isMouseWithinCardWidth || !isMouseWithinCardHeight) &&
+        (currentCard.getState() === CardState.INACTIVE_HOVERED ||
+          currentCard.getState() === CardState.HOVERED)
+      ) {
+        currentCard.setState(currentCard.getPreviousState());
       }
     }
 
