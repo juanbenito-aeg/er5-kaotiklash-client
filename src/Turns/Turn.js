@@ -203,7 +203,7 @@ export default class Turn {
       );
     }
 
-    decksToCheck.push(DeckType.JOSEPH, DeckType.EVENTS /* TO BE REMOVED */);
+    decksToCheck.push(DeckType.JOSEPH);
 
     const hoveredCardData = this.#checkIfMouseOverAnyCard(decksToCheck);
     this.#checkIfRightClickWasPressedOnCard(decksToCheck, hoveredCardData);
@@ -238,12 +238,12 @@ export default class Turn {
     ) {
       this.#mouseInput.setRightButtonPressedFalse();
 
+      const isAnyCardExpanded = this.#checkIfAnyCardIsExpanded(decksToCheck);
+
       for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
         for (let j = 0; j < decksToCheck.length; j++) {
           if (i === decksToCheck[j]) {
             const currentDeck = this.#deckContainer.getDecks()[i];
-
-            const isAnyCardExpanded = currentDeck.checkIfAnyCardIsExpanded();
 
             for (let k = 0; k < currentDeck.getCards().length; k++) {
               const currentCard = currentDeck.getCards()[k];
@@ -260,6 +260,20 @@ export default class Turn {
                 currentCard.setState(CardState.EXPANDED);
               }
             }
+          }
+        }
+      }
+    }
+  }
+
+  #checkIfAnyCardIsExpanded(decksToCheck) {
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+      for (let j = 0; j < decksToCheck.length; j++) {
+        if (i === decksToCheck[j]) {
+          const currentDeck = this.#deckContainer.getDecks()[i];
+
+          if (currentDeck.checkIfAnyCardIsExpanded()) {
+            return true;
           }
         }
       }

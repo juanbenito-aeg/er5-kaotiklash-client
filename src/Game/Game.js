@@ -181,7 +181,6 @@ export default class Game {
   }
 
   #renderCards() {
-    let xCoordinate = 0;
     let expandedCard;
 
     for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
@@ -190,15 +189,10 @@ export default class Game {
       for (let j = 0; j < currentDeck.getCards().length; j++) {
         const currentCard = currentDeck.getCards()[j];
 
-        if (currentCard.getCategory() === CardCategory.MAIN_CHARACTER) {
-          currentCard.setXCoordinate(xCoordinate);
-          currentCard.setYCoordinate(100);
-          xCoordinate += 450;
-          this.#renderCard(currentCard);
+        this.#renderCard(currentCard);
 
-          if (currentCard.getState() === CardState.EXPANDED) {
-            expandedCard = currentCard;
-          }
+        if (currentCard.getState() === CardState.EXPANDED) {
+          expandedCard = currentCard;
         }
       }
     }
@@ -729,15 +723,15 @@ export default class Game {
 
     globals.ctx.textAlign = "center";
     globals.ctx.fillStyle = "white";
-    globals.ctx.font = "24px MedievalSharp";
+    globals.ctx.font = "22px MedievalSharp";
 
     globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 365);
 
     globals.ctx.font = "18px MedievalSharp";
 
-    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 540);
-    globals.ctx.fillText("Special Skill:", canvasWidthDividedBy2, 620);
-    globals.ctx.fillText(card.getSpecialSkill(), canvasWidthDividedBy2, 640);
+    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 700);
+    globals.ctx.fillText("Special Skill:", canvasWidthDividedBy2, 760);
+    globals.ctx.fillText(card.getSpecialSkill(), canvasWidthDividedBy2, 780);
   }
 
   #renderExpandedMinion(card) {
