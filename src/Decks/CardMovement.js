@@ -152,6 +152,14 @@ export default class CardMovement {
     return this.#card.setYCoordinate(newYCoordinate);
   }
 
+  getChaoticEventName() {
+    return this.#card.getChaoticEventName();
+  }
+
+  getChaoticEventDescription() {
+    return this.#card.getChaoticEventDescription();
+  }
+
   getImageSet() {
     return this.#card.getImageSet();
   }

@@ -139,6 +139,14 @@ export default class CardView {
     return this.#card.getEffect();
   }
 
+  getChaoticEventName() {
+    return this.#card.getChaoticEventName();
+  }
+
+  getChaoticEventDescription() {
+    return this.#card.getChaoticEventDescription();
+  }
+
   getImageSet() {
     return this.#imageSet;
   }

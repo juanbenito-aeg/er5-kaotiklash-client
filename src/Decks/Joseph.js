@@ -20,4 +20,12 @@ export default class Joseph extends Card {
     this.#chaoticEventName = chaoticEventName;
     this.#chaoticEventDescription = chaoticEventDescription;
   }
+
+  getChaoticEventName() {
+    return this.#chaoticEventName;
+  }
+
+  getChaoticEventDescription() {
+    return this.#chaoticEventDescription;
+  }
 }
