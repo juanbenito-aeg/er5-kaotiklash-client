@@ -3,6 +3,7 @@ const GameState = {
   PLAYING: 0,
   GRIDS_DRAWING: 1,
   ELEMENT_RENDER: 2,
+  SKIP_BUTTON: 3,
 };
 
 // FPS (FRAMES PER SECOND)

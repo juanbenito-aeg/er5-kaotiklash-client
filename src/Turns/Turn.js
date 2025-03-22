@@ -279,4 +279,12 @@ export default class Turn {
       }
     }
   }
+
+  getnumOfExecutedPhases() {
+    return this.#numOfExecutedPhases;
+  }
+
+  setnumOfExecutedPhases() {
+    this.#numOfExecutedPhases++;
+  }
 }

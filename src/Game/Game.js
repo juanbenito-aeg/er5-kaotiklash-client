@@ -107,6 +107,48 @@ export default class Game {
     }
 
     this.#turns[this.#currentPlayer].execute();
+    this.#skipPhase();
+  }
+
+
+
+  #skipPhase() {
+    if(this.#currentPlayer === 0)
+    {
+
+      // console.log(this.#turns[0].getnumOfExecutedPhases())
+      // console.log(` mouse x: ${this.#mouseInput.getMouseXCoordinate()}, mouse y: ${this.#mouseInput.getMouseYCoordinate()}`);
+      let mouseX = this.#mouseInput.getMouseXCoordinate();
+      let mouseY = this.#mouseInput.getMouseYCoordinate();
+      let skipButtonX = this.#board.getGrids()[4].getBoxes()[0].getXCoordinate();
+      let skipButtonY = this.#board.getGrids()[4].getBoxes()[0].getYCoordinate();
+      let skipButtonWidth = 200;
+      let skipButtonHeight = 40;
+      if((mouseX >= skipButtonX && mouseX <= skipButtonX + skipButtonWidth && mouseY >= skipButtonY && mouseY <= skipButtonY + skipButtonHeight) && this.#mouseInput.isLeftButtonPressed() === true)
+      {
+        console.log("player 1 skipped a phase")
+        this.#turns[0].setnumOfExecutedPhases()
+        console.log(`player1: ${this.#turns[0].getnumOfExecutedPhases()}`)
+      }
+    }
+    else
+    {
+
+      // console.log(this.#turns[0].getnumOfExecutedPhases())
+      // console.log(` mouse x: ${this.#mouseInput.getMouseXCoordinate()}, mouse y: ${this.#mouseInput.getMouseYCoordinate()}`);
+      let mouseX = this.#mouseInput.getMouseXCoordinate();
+      let mouseY = this.#mouseInput.getMouseYCoordinate();
+      let skipButtonX = this.#board.getGrids()[4].getBoxes()[0].getXCoordinate();
+      let skipButtonY = this.#board.getGrids()[4].getBoxes()[0].getYCoordinate();
+      let skipButtonWidth = 200;
+      let skipButtonHeight = 40;
+      if((mouseX >= skipButtonX && mouseX <= skipButtonX + skipButtonWidth && mouseY >= skipButtonY && mouseY <= skipButtonY + skipButtonHeight) && this.#mouseInput.isLeftButtonPressed() === true)
+      {
+        console.log("player 2 skipped a phase")
+        this.#turns[1].setnumOfExecutedPhases()
+        console.log(`player2: ${this.#turns[1].getnumOfExecutedPhases()}`)
+      }
+    }
   }
 
   #render() {
@@ -127,6 +169,11 @@ export default class Game {
 
       case GameState.PLAYING:
         this.#renderGame();
+        break;
+
+      case GameState.SKIP_BUTTON:
+        this.#renderGrids();
+        this.#renderPhasesButtons();
         break;
     }
   }
@@ -206,6 +253,7 @@ export default class Game {
       this.#renderExpandedCard(expandedCard);
     }
   }
+
 
   #renderCard(card) {
     switch (card.getCategory()) {
@@ -1260,10 +1308,9 @@ export default class Game {
     this.#deckContainer.setDecks(updatedDecks);
   }
 
-  #renderElements() 
+  #renderElements()
   {
-    globals.currentPlayer = 1;
-    //console.log(this.#deckContainer.getDecks()[3]);
+
     this.#renderPlayers();
     this.#renderDeckReverses();
     this.#renderPhasesButtons();
@@ -1271,7 +1318,7 @@ export default class Game {
     this.#renderMessages();
     this.#renderPlayer1MinionActiveCards();
     this.#renderPlayer2MinionActiveCards();
-    if(globals.currentPlayer == 1)
+    if(this.#currentPlayer == 0)
     {
       this.#renderEventHandPlayer1Cards();
     }
@@ -1285,13 +1332,13 @@ export default class Game {
 
     let player1MinionsHp = 0;
     let player2MinionsHp = 0;
-  
+
     const player1MinionsDeck = this.#deckContainer.getDecks()[4].getCards();
     const player1MinionsInPlayDeck = this.#deckContainer.getDecks()[5].getCards();
-  
+
     const player2MinionsDeck = this.#deckContainer.getDecks()[4].getCards();
     const player2MinionsInPlayDeck = this.#deckContainer.getDecks()[5].getCards();
-  
+
     function sumMinionsHp(minionsDeck) {
       let totalHp = 0;
       let length = minionsDeck.length - 1;
@@ -1302,10 +1349,10 @@ export default class Game {
       }
       return totalHp;
     }
-  
+
     player1MinionsHp = sumMinionsHp(player1MinionsDeck) + sumMinionsHp(player1MinionsInPlayDeck);
     player2MinionsHp = sumMinionsHp(player2MinionsDeck) + sumMinionsHp(player2MinionsInPlayDeck);
-  
+
   let player1X, player1Y, player2X, player2Y;
   const activePlayerX = this.#board.getGrids()[5].getBoxes()[0].getXCoordinate();
   const activePlayerY = this.#board.getGrids()[5].getBoxes()[0].getYCoordinate();
@@ -1314,12 +1361,13 @@ export default class Game {
   this.#renderMainCharacters(activePlayerX, activePlayerY, inactivePlayerX, inacctivePlayerY);
     //Box MC P1: x = 2020, y = 840
     //Box MC P2: x = 200, y = 60
-  if (globals.currentPlayer === 1) {
-    player1X = activePlayerX + 100; player1Y = activePlayerY + 225;  
-    player2X = inactivePlayerX + 100; player2Y = inacctivePlayerY + 225;    
+    if(this.#currentPlayer == 0)
+  {
+    player1X = activePlayerX + 100; player1Y = activePlayerY + 225;
+    player2X = inactivePlayerX + 100; player2Y = inacctivePlayerY + 225;
   } else {
-    player1X = inactivePlayerX + 100; player1Y = inacctivePlayerY + 225;    
-    player2X = activePlayerX + 100; player2Y = activePlayerY + 225;  
+    player1X = inactivePlayerX + 100; player1Y = inacctivePlayerY + 225;
+    player2X = activePlayerX + 100; player2Y = activePlayerY + 225;
   }
 
   globals.ctx.font = "20px MedievalSharp";
@@ -1342,7 +1390,8 @@ export default class Game {
   let smallSizeX = 200;
   let smallSizeY = 200;
 
-  if (globals.currentPlayer === 1) {
+  if(this.#currentPlayer == 0)
+    {
       // Player 1 down, Player 2 up
       player1X = activePlayerX; player1Y = activePlayerY;
       player2X = inactivePlayerX; player2Y = inacctivePlayerY;
@@ -1353,11 +1402,11 @@ export default class Game {
   }
 
   // Render the cards in their respective positions
-  this.#renderCard(player1Card, player1X, player1Y, smallSizeX, smallSizeY);
-  this.#renderSmallTemplate(player1Card, player1X, player1Y, smallSizeX, smallSizeY);
+  this.#renderCardImage(player1Card, player1X, player1Y, smallSizeX, smallSizeY);
+  //this.#renderSmallTemplate(player1Card, player1X, player1Y, smallSizeX, smallSizeY);
 
-  this.#renderCard(player2Card, player2X, player2Y, smallSizeX, smallSizeY);
-  this.#renderSmallTemplate(player2Card, player2X, player2Y, smallSizeX, smallSizeY);
+  this.#renderCardImage(player2Card, player2X, player2Y, smallSizeX, smallSizeY);
+  //this.#renderSmallTemplate(player2Card, player2X, player2Y, smallSizeX, smallSizeY);
 }
 
 #renderDeckReverses()
@@ -1423,7 +1472,7 @@ export default class Game {
   const buttonCount = phaseNumber.length;
   for (let i = 0; i < buttonCount; i++) {
       const currentPhase = phaseNumber[i];
-      const x = this.#board.getGrids()[4].getBoxes()[0].getXCoordinate(); 
+      const x = this.#board.getGrids()[4].getBoxes()[0].getXCoordinate();
       const y = this.#board.getGrids()[4].getBoxes()[i].getYCoordinate() + 5;
       const width = 200;
       const height = 40;
@@ -1465,15 +1514,15 @@ export default class Game {
   const tableY = this.#board.getGrids()[1].getBoxes()[0].getYCoordinate();
   const tableWidth = this.#board.getGrids()[1].getBoxes()[0].getWidth();
   const tableHeight = this.#board.getGrids()[1].getBoxes()[0].getHeight();
-  
+
   globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
   globals.ctx.shadowBlur = 10;
   globals.ctx.shadowOffsetX = 4;
   globals.ctx.shadowOffsetY = 4;
-  
+
   globals.ctx.fillStyle = 'darkcyan';
   globals.ctx.fillRect(tableX, tableY, tableWidth, tableHeight);
-  
+
   globals.ctx.shadowBlur = 0;
   globals.ctx.shadowOffsetX = 0;
   globals.ctx.shadowOffsetY = 0;
@@ -1515,7 +1564,7 @@ export default class Game {
 }
 
 #renderMessages() {
-  const messageBoxX = this.#board.getGrids()[3].getBoxes()[0].getXCoordinate(); 
+  const messageBoxX = this.#board.getGrids()[3].getBoxes()[0].getXCoordinate();
   const messageBoxY = this.#board.getGrids()[3].getBoxes()[0].getYCoordinate();
   const messageBoxWidth = this.#board.getGrids()[3].getBoxes()[0].getWidth();
   const messageBoxHeight = this.#board.getGrids()[3].getBoxes()[0].getHeight();
@@ -1537,13 +1586,13 @@ export default class Game {
 
 
 let fixedPositions = [];
-if(globals.currentPlayer === 1)
+if(this.#currentPlayer == 0)
 {
 fixedPositions = [
 
-  { x: battlefieldBot[1].getXCoordinate(), y: battlefieldBot[1].getYCoordinate() },  
-  { x: battlefieldBot[8].getXCoordinate(), y: battlefieldBot[8].getYCoordinate() },   
-  { x: battlefieldBot[3].getXCoordinate(), y: battlefieldBot[3].getYCoordinate() },     
+  { x: battlefieldBot[1].getXCoordinate(), y: battlefieldBot[1].getYCoordinate() },
+  { x: battlefieldBot[8].getXCoordinate(), y: battlefieldBot[8].getYCoordinate() },
+  { x: battlefieldBot[3].getXCoordinate(), y: battlefieldBot[3].getYCoordinate() },
 
 ];
 }
@@ -1551,24 +1600,24 @@ else
 {
 fixedPositions = [
 
-    { x: battlefieldTop[1].getXCoordinate(), y: battlefieldTop[1].getYCoordinate() },  
-    { x: battlefieldTop[8].getXCoordinate(), y: battlefieldTop[8].getYCoordinate() },   
-    { x: battlefieldTop[3].getXCoordinate(), y: battlefieldTop[3].getYCoordinate() },   
-    
+    { x: battlefieldTop[1].getXCoordinate(), y: battlefieldTop[1].getYCoordinate() },
+    { x: battlefieldTop[8].getXCoordinate(), y: battlefieldTop[8].getYCoordinate() },
+    { x: battlefieldTop[3].getXCoordinate(), y: battlefieldTop[3].getYCoordinate() },
+
   ];
 }
 
   for (let i = 0; i < player1MinionsInPlayDeck.length && i < fixedPositions.length; i++) {
     const currentCard = player1MinionsInPlayDeck[i];
-    const { x, y } = fixedPositions[i]; 
+    const { x, y } = fixedPositions[i];
 
     let smallSizeX = 110;
     let smallSizeY = 110;
 
-    this.#renderCard(currentCard, x, y, smallSizeX, smallSizeY);
-    this.#renderSmallTemplate(currentCard, x, y, smallSizeX, smallSizeY);
-    this.#renderIcons(currentCard, x, y);
-    this.#renderAttributesMinions(currentCard, x, y);
+    this.#renderCardImage(currentCard, x, y, smallSizeX, smallSizeY);
+    //this.#renderSmallTemplate(currentCard, x, y, smallSizeX, smallSizeY);
+    // this.#renderIcons(currentCard, x, y);
+    // this.#renderAttributesMinions(currentCard, x, y);
   }
 }
 
@@ -1578,37 +1627,37 @@ fixedPositions = [
   const battlefieldTop = this.#board.getGrids()[13].getBoxes();
 
   let fixedPositions = [];
-  if(globals.currentPlayer === 1)
+  if(this.#currentPlayer == 0)
   {
     fixedPositions = [
 
-      { x: battlefieldTop[1].getXCoordinate(), y: battlefieldTop[1].getYCoordinate() },  
-      { x: battlefieldTop[8].getXCoordinate(), y: battlefieldTop[8].getYCoordinate() },   
-      { x: battlefieldTop[3].getXCoordinate(), y: battlefieldTop[3].getYCoordinate() },      
-    
+      { x: battlefieldTop[1].getXCoordinate(), y: battlefieldTop[1].getYCoordinate() },
+      { x: battlefieldTop[8].getXCoordinate(), y: battlefieldTop[8].getYCoordinate() },
+      { x: battlefieldTop[3].getXCoordinate(), y: battlefieldTop[3].getYCoordinate() },
+
     ];
     }
     else
     {
     fixedPositions = [
-    
-        { x: battlefieldBot[1].getXCoordinate(), y: battlefieldBot[1].getYCoordinate() },  
-        { x: battlefieldBot[8].getXCoordinate(), y: battlefieldBot[8].getYCoordinate() },   
-        { x: battlefieldBot[3].getXCoordinate(), y: battlefieldBot[3].getYCoordinate() },   
+
+        { x: battlefieldBot[1].getXCoordinate(), y: battlefieldBot[1].getYCoordinate() },
+        { x: battlefieldBot[8].getXCoordinate(), y: battlefieldBot[8].getYCoordinate() },
+        { x: battlefieldBot[3].getXCoordinate(), y: battlefieldBot[3].getYCoordinate() },
       ];
   }
 
   for (let i = 0; i < player2MinionsInPlayDeck.length && i < fixedPositions.length; i++) {
     const currentCard = player2MinionsInPlayDeck[i];
-    const { x, y } = fixedPositions[i]; 
+    const { x, y } = fixedPositions[i];
 
     let smallSizeX = 110;
     let smallSizeY = 110;
 
-    this.#renderCard(currentCard, x, y, smallSizeX, smallSizeY);
-    this.#renderSmallTemplate(currentCard, x, y, smallSizeX, smallSizeY);
-    this.#renderIcons(currentCard, x, y);
-    this.#renderAttributesMinions(currentCard, x, y);
+    this.#renderCardImage(currentCard, x, y, smallSizeX, smallSizeY);
+    //this.#renderSmallTemplate(currentCard, x, y, smallSizeX, smallSizeY);
+    // this.#renderIcons(currentCard, x, y);
+    // this.#renderAttributesMinions(currentCard, x, y);
   }
 }
 
@@ -1624,10 +1673,10 @@ fixedPositions = [
       let yCoordinate = this.#board.getGrids()[7].getBoxes()[i].getYCoordinate();
       let smallSizeX = 110;
       let smallSizeY = 110;
-      this.#renderCard(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
-      this.#renderSmallTemplate(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
-      this.#renderIcons(currentCard, xCoordinate, yCoordinate);
-      this.#renderAttributesWeaponns(currentCard, xCoordinate, yCoordinate);
+      this.#renderCardImage(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
+      //this.#renderSmallTemplate(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
+      // this.#renderIcons(currentCard, xCoordinate, yCoordinate);
+      // this.#renderAttributesWeaponns(currentCard, xCoordinate, yCoordinate);
       this.#renderEventHandPlayer2Reverse();
     }
 
@@ -1637,146 +1686,144 @@ fixedPositions = [
 
 }
 
-#renderEventHandPlayer2Reverse(){
-  const EventPlayer2 = this.#deckContainer.getDecks()[9].getCards();
-  const xCoordinate = this.#board.getGrids()[12].getBoxes()[0].getXCoordinate() - 3;
-  const yCoordinate = this.#board.getGrids()[12].getBoxes()[0].getYCoordinate() - 2;
-  for( let i = 0; i < EventPlayer2.length; i++)
-  {
-    globals.ctx.drawImage(
-      globals.cardsReverseImage,
-      0,
-      0,
-      425,
-      587,
-      xCoordinate +  i*135,
-      yCoordinate,
-      115,
-      115
-    );
-  }
-
-}
-
-#renderEventHandPlayer2Cards() {
-
+  #renderEventHandPlayer2Reverse(){
     const EventPlayer2 = this.#deckContainer.getDecks()[9].getCards();
-    //console.log(this.#board.getGrids()[7].getBoxes()[0]);
-
-    for(let i = 0; i < EventPlayer2.length ; i++)
+    const xCoordinate = this.#board.getGrids()[12].getBoxes()[0].getXCoordinate() - 3;
+    const yCoordinate = this.#board.getGrids()[12].getBoxes()[0].getYCoordinate() - 2;
+    for( let i = 0; i < EventPlayer2.length; i++)
     {
-      const currentCard = EventPlayer2[i];
-      let xCoordinate = this.#board.getGrids()[7].getBoxes()[i].getXCoordinate();
-      let yCoordinate = this.#board.getGrids()[7].getBoxes()[i].getYCoordinate();
-      let smallSizeX = 110;
-      let smallSizeY = 110;
-      this.#renderCard(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
-      this.#renderSmallTemplate(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
-      this.#renderIcons(currentCard, xCoordinate, yCoordinate);
-      this.#renderAttributesWeaponns(currentCard, xCoordinate, yCoordinate);
-      this.#renderEventHandPlayer1Reverse();
+      globals.ctx.drawImage(
+        globals.cardsReverseImage,
+        0,
+        0,
+        425,
+        587,
+        xCoordinate +  i*135,
+        yCoordinate,
+        115,
+        115
+      );
     }
+  }
 
-    globals.ctx.font = "20px MedievalSharp";
-    globals.ctx.fillStyle = "yellow";
-    globals.ctx.fillText("Player 2", 580, 990);
-}
+  #renderEventHandPlayer2Cards() {
 
-#renderEventHandPlayer1Reverse(){
-  const EventPlayer1 = this.#deckContainer.getDecks()[3].getCards();
-  console.log(this.#board.getGrids()[12].getBoxes()[0]);
+      const EventPlayer2 = this.#deckContainer.getDecks()[9].getCards();
+      //console.log(this.#board.getGrids()[7].getBoxes()[0]);
 
-  const xCoordinate = this.#board.getGrids()[12].getBoxes()[0].getXCoordinate() - 3;
-  const yCoordinate = this.#board.getGrids()[12].getBoxes()[0].getYCoordinate() - 2;
-  for( let i = 0; i < EventPlayer1.length; i++)
-  {
+      for(let i = 0; i < EventPlayer2.length ; i++)
+      {
+        const currentCard = EventPlayer2[i];
+        let xCoordinate = this.#board.getGrids()[7].getBoxes()[i].getXCoordinate();
+        let yCoordinate = this.#board.getGrids()[7].getBoxes()[i].getYCoordinate();
+        let smallSizeX = 110;
+        let smallSizeY = 110;
+        this.#renderCardImage(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
+        //this.#renderSmallTemplate(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
+        // this.#renderIcons(currentCard, xCoordinate, yCoordinate);
+        // this.#renderAttributesWeaponns(currentCard, xCoordinate, yCoordinate);
+        this.#renderEventHandPlayer1Reverse();
+      };
+
+      globals.ctx.font = "20px MedievalSharp";
+      globals.ctx.fillStyle = "yellow";
+      globals.ctx.fillText("Player 2", 580, 990);
+  }
+
+  #renderEventHandPlayer1Reverse(){
+    const EventPlayer1 = this.#deckContainer.getDecks()[3].getCards();
+    console.log(this.#board.getGrids()[12].getBoxes()[0]);
+
+    const xCoordinate = this.#board.getGrids()[12].getBoxes()[0].getXCoordinate() - 3;
+    const yCoordinate = this.#board.getGrids()[12].getBoxes()[0].getYCoordinate() - 2;
+    for( let i = 0; i < EventPlayer1.length; i++)
+    {
+      globals.ctx.drawImage(
+        globals.cardsReverseImage,
+        0,
+        0,
+        425,
+        587,
+        xCoordinate +  i*135,
+        yCoordinate,
+        115,
+        115
+      );
+    };
+  }
+
+  #renderCardImage(card, xCoordinate, yCoordinate, sizeX, sizeY) {
     globals.ctx.drawImage(
-      globals.cardsReverseImage,
+      card.getImageSet().getCard(),
       0,
       0,
-      425,
-      587,
-      xCoordinate +  i*135,
+      1024,
+      1024,
+      xCoordinate,
       yCoordinate,
-      115,
-      115
+      sizeX,
+      sizeY
     );
   }
 
-}
-
-#renderCard(card, xCoordinate, yCoordinate, sizeX, sizeY) {
-  globals.ctx.drawImage(
-    card.getImageSet().getCard(),
-    0,
-    0,
-    1024,
-    1024,
-    xCoordinate,
-    yCoordinate,
-    sizeX,
-    sizeY
-  );
-}
-#renderSmallTemplate(card, xCoordinate, yCoordinate, sizeX, sizeY) {
-  globals.ctx.drawImage(
-    card.getImageSet().getSmallVersionTemplate(),
-    0,
-    0,
-    625,
-    801,
-    xCoordinate,
-    yCoordinate,
-    sizeX,
-    sizeY
-  );
-}
-#renderIcons(card, xCoordinate, yCoordinate) {
-  const icons = card.getImageSet().getIcons();
-  
-  const positions = [
-    { x: xCoordinate - 17, y: yCoordinate + 40, width: 35, height: 35 },  // left
-    { x: xCoordinate + 37, y: yCoordinate + 92, width: 35, height: 35 },  // bottom
-    { x: xCoordinate + 92, y: yCoordinate + 40, width: 35, height: 35 },  // right
-    { x: xCoordinate + 37, y: yCoordinate - 17, width: 35, height: 35 },  // top
-    { x: xCoordinate + 46, y: yCoordinate - 8, width: 17, height: 17 }   // top (smaller size)
-  ];
-
-  for (let i = 0; i < icons.length; i++) {
-    const { x, y, width, height } = positions[i];
-    globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
+  #renderSmallTemplate(card, xCoordinate, yCoordinate, sizeX, sizeY) {
+    globals.ctx.drawImage(
+      card.getImageSet().getSmallVersionTemplate(),
+      0,
+      0,
+      625,
+      801,
+      xCoordinate,
+      yCoordinate,
+      sizeX,
+      sizeY
+    );
   }
-}
 
-#renderAttributesMinions(card, xCoordinate, yCoordinate) {
-  const attack = card.getCard().getAttack();
-  const hp = card.getCard().getHp();
-  const defense = card.getCard().getDefense();
-  
-  globals.ctx.fillStyle = 'black';
-  globals.ctx.font = '14px MedievalSharp';
-  globals.ctx.textAlign = 'center';
-  globals.ctx.textBaseline = 'middle';
-  
-  globals.ctx.fillText(attack, xCoordinate, yCoordinate + 58);
-  globals.ctx.fillText(hp, xCoordinate + 55, yCoordinate + 110);
-  globals.ctx.fillText(defense, xCoordinate + 110, yCoordinate + 58);
-  
-}
+  #renderIcons(card, xCoordinate, yCoordinate) {
+    const icons = card.getImageSet().getIcons();
 
-#renderAttributesWeaponns(card, xCoordinate, yCoordinate) {
-  const damage = card.getCard().getDamage();
-  const prep_time = card.getCard().getPrepTimeInRounds();
-  const durability = card.getCard().getDurability();
-  
-  globals.ctx.fillStyle = 'black';
-  globals.ctx.font = '14px MedievalSharp';
-  globals.ctx.textAlign = 'center';
-  globals.ctx.textBaseline = 'middle';
-  
-  globals.ctx.fillText(damage, xCoordinate, yCoordinate + 58);
-  globals.ctx.fillText(prep_time, xCoordinate + 55, yCoordinate + 110);
-  globals.ctx.fillText(durability, xCoordinate + 110, yCoordinate + 58);
-  
-}
+    const positions = [
+      { x: xCoordinate - 17, y: yCoordinate + 40, width: 35, height: 35 },  // left
+      { x: xCoordinate + 37, y: yCoordinate + 92, width: 35, height: 35 },  // bottom
+      { x: xCoordinate + 92, y: yCoordinate + 40, width: 35, height: 35 },  // right
+      { x: xCoordinate + 37, y: yCoordinate - 17, width: 35, height: 35 },  // top
+      { x: xCoordinate + 46, y: yCoordinate - 8, width: 17, height: 17 }   // top (smaller size)
+    ];
+
+    for (let i = 0; i < icons.length; i++) {
+      const { x, y, width, height } = positions[i];
+      globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
+    };
+  }
+
+  #renderAttributesMinions(card, xCoordinate, yCoordinate) {
+    const attack = card.getCard().getAttack();
+    const hp = card.getCard().getHp();
+    const defense = card.getCard().getDefense();
+
+    globals.ctx.fillStyle = 'black';
+    globals.ctx.font = '14px MedievalSharp';
+    globals.ctx.textAlign = 'center';
+    globals.ctx.textBaseline = 'middle';
+
+    globals.ctx.fillText(attack, xCoordinate, yCoordinate + 58);
+    globals.ctx.fillText(hp, xCoordinate + 55, yCoordinate + 110);
+    globals.ctx.fillText(defense, xCoordinate + 110, yCoordinate + 58);
+  }
+
+  #renderAttributesWeaponns(card, xCoordinate, yCoordinate) {
+    const damage = card.getCard().getDamage();
+    const prep_time = card.getCard().getPrepTimeInRounds();
+    const durability = card.getCard().getDurability();
+
+    globals.ctx.fillStyle = 'black';
+    globals.ctx.font = '14px MedievalSharp';
+    globals.ctx.textAlign = 'center';
+    globals.ctx.textBaseline = 'middle';
+
+    globals.ctx.fillText(damage, xCoordinate, yCoordinate + 58);
+    globals.ctx.fillText(prep_time, xCoordinate + 55, yCoordinate + 110);
+    globals.ctx.fillText(durability, xCoordinate + 110, yCoordinate + 58);
+  }
 }

@@ -294,9 +294,8 @@ function loadAssets() {
 // CODE BLOCK TO CALL EACH TIME AN ASSET IS LOADED
 async function loadHandler() {
   globals.assetsLoaded++;
-
   if (globals.assetsLoaded === globals.assetsToLoad.length) {
-    globals.gameState = GameState.PLAYING;
+    globals.gameState = GameState.SKIP_BUTTON;
 
     globals.game = await Game.create();
 
