@@ -205,37 +205,57 @@ export default class Turn {
 
     decksToCheck.push(DeckType.JOSEPH);
 
-    const hoveredCardData = this.#checkIfMouseOverAnyCard(decksToCheck);
-    this.#checkIfRightClickWasPressedOnCard(decksToCheck, hoveredCardData);
+    const hoveredCard = this.#lookForHoveredCard(decksToCheck);
+
+    this.#lookForCardThatIsntHoveredAnymore(decksToCheck);
+
+    this.#lookForRightClickedCard(decksToCheck, hoveredCard);
   }
 
-  #checkIfMouseOverAnyCard(decksToCheck) {
-    let hoveredCardData;
-
+  #lookForHoveredCard(decksToCheck) {
     for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
       for (let j = 0; j < decksToCheck.length; j++) {
         if (i === decksToCheck[j]) {
           const currentDeck = this.#deckContainer.getDecks()[i];
 
-          hoveredCardData = currentDeck.checkIfMouseOverAnyCard(
-            this.#mouseInput
-          );
+          const hoveredCard = currentDeck.lookForHoveredCard(this.#mouseInput);
 
-          if (hoveredCardData.isAnyCardHovered) {
-            return hoveredCardData;
+          if (hoveredCard) {
+            if (hoveredCard.getState() === CardState.INACTIVE) {
+              hoveredCard.setPreviousState(CardState.INACTIVE);
+              hoveredCard.setState(CardState.INACTIVE_HOVERED);
+            } else if (hoveredCard.getState() === CardState.PLACED) {
+              hoveredCard.setPreviousState(CardState.PLACED);
+              hoveredCard.setState(CardState.HOVERED);
+            }
+
+            return hoveredCard;
           }
         }
       }
     }
-
-    return hoveredCardData;
   }
 
-  #checkIfRightClickWasPressedOnCard(decksToCheck, hoveredCardData) {
-    if (
-      this.#mouseInput.isRightButtonPressed() &&
-      hoveredCardData.isAnyCardHovered
-    ) {
+  #lookForCardThatIsntHoveredAnymore(decksToCheck) {
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+      for (let j = 0; j < decksToCheck.length; j++) {
+        if (i === decksToCheck[j]) {
+          const currentDeck = this.#deckContainer.getDecks()[i];
+
+          const notHoveredCard = currentDeck.lookForCardThatIsntHoveredAnymore(
+            this.#mouseInput
+          );
+
+          if (notHoveredCard) {
+            notHoveredCard.setState(notHoveredCard.getPreviousState());
+          }
+        }
+      }
+    }
+  }
+
+  #lookForRightClickedCard(decksToCheck, hoveredCard) {
+    if (this.#mouseInput.isRightButtonPressed() && hoveredCard) {
       this.#mouseInput.setRightButtonPressedFalse();
 
       const isAnyCardExpanded = this.#checkIfAnyCardIsExpanded(decksToCheck);
@@ -250,13 +270,10 @@ export default class Turn {
 
               if (
                 currentCard.getState() === CardState.EXPANDED &&
-                currentCard === hoveredCardData.hoveredCard
+                currentCard === hoveredCard
               ) {
                 currentCard.setState(currentCard.getPreviousState());
-              } else if (
-                !isAnyCardExpanded &&
-                currentCard === hoveredCardData.hoveredCard
-              ) {
+              } else if (!isAnyCardExpanded && currentCard === hoveredCard) {
                 currentCard.setState(CardState.EXPANDED);
               }
             }
@@ -272,7 +289,9 @@ export default class Turn {
         if (i === decksToCheck[j]) {
           const currentDeck = this.#deckContainer.getDecks()[i];
 
-          if (currentDeck.checkIfAnyCardIsExpanded()) {
+          const isAnyCardExpanded = currentDeck.checkIfAnyCardIsExpanded();
+
+          if (isAnyCardExpanded) {
             return true;
           }
         }
