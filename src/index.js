@@ -29,6 +29,7 @@ const globals = {
   game: {},
   language: 0,
   isCurrentTurnFinished: false,
+  buttonDataGlobal: [],
 };
 
 window.onload = initStartGameScreen;
