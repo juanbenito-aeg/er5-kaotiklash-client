@@ -179,4 +179,8 @@ export default class CardMovement {
   setState(newState) {
     this.#state = newState;
   }
+
+  setCurrenPrepTimeInRounds(newPrepTimeInRounds) {
+    this.#card.setCurrenPrepTimeInRounds(newPrepTimeInRounds);
+  }
 }

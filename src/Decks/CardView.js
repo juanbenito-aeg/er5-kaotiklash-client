@@ -170,4 +170,8 @@ export default class CardView {
   getCard() {
     return this.#card;
   }
+
+  setCurrenPrepTimeInRounds(newPrepTimeInRounds) {
+    this.#card.setCurrenPrepTimeInRounds(newPrepTimeInRounds);
+  }
 }

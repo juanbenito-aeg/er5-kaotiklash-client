@@ -83,4 +83,19 @@ export default class MouseInput {
   setRightButtonPressedFalse() {
     this.#rightButtonPressed = false;
   }
+
+  isMouseOverBox(box) {
+    const boxX = box.getX();
+    const boxY = box.getY();
+    const boxWidth = box.getWidth();
+    const boxHeight = box.getHeight();
+
+    const isOverBox = (
+      this.mouseX >= boxX && 
+      this.mouseX <= boxX + boxWidth &&
+      this.mouseY >= boxY && 
+      this.mouseY <= boxY + boxHeight
+    );
+    return isOverBox;
+  }
 }
