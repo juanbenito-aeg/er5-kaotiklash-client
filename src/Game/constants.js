@@ -129,8 +129,9 @@ const CardState = {
   PLACED: 2,
   INACTIVE_HOVERED: 3,
   HOVERED: 4,
-  SELECTED: 5,
-  EXPANDED: 6,
+  INACTIVE_SELECTED: 5,
+  SELECTED: 6,
+  EXPANDED: 7,
 };
 
 const BoxState = {
@@ -139,6 +140,14 @@ const BoxState = {
   HOVERED: 2,
   SELECTED: 3,
   OCCUPIED: 4,
+};
+
+const AttackPhaseState = {
+  INIT: 0,
+  SELECT_ATTACKER: 1,
+  SELECT_TARGET: 2,
+  CALC_AND_APPLY_DMG: 3,
+  END: 4,
 };
 
 const DiscardCardState = {
@@ -211,6 +220,7 @@ export {
   BoxState,
   GridType,
   BattlefieldArea,
+  AttackPhaseState,
   DiscardCardState,
   MovePhaseState,
   PrepareEventState,
