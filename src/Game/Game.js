@@ -16,6 +16,7 @@ import {
   PlayerID,
   CardState,
   MainCharacterID,
+  DeckType
 } from "./constants.js";
 import { globals } from "../index.js";
 import ImageSet from "./ImageSet.js";
@@ -27,6 +28,7 @@ export default class Game {
   #board;
   #turns;
   #mouseInput;
+  #events;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -89,6 +91,8 @@ export default class Game {
     turnPlayer2.fillPhases();
     game.#turns = [turnPlayer1, turnPlayer2];
 
+    game.#events = [];
+
     return game;
   }
 
@@ -107,7 +111,25 @@ export default class Game {
     }
 
     this.#turns[this.#currentPlayer].execute();
+    this.#executeEvent();
   }
+
+  addEventToQueue(event) {
+    this.#events.push(event);
+  }
+
+  #executeEvent() {
+    for (let i = 0; i < this.#events.length; i++) {
+      let event = this.#events[i];
+      event.execute();
+
+      if(!event.isActive()) {
+        this.#events.splice(i, 1);
+        i--;
+      }
+    }
+  }
+
 
   #render() {
     // CLEAR SCREEN
@@ -117,8 +139,8 @@ export default class Game {
 
     switch (globals.gameState) {
       case GameState.GRIDS_DRAWING:
-        this.#renderGrids();
-        this.#renderElements();
+        //this.#renderGrids();
+        //this.#renderElements();
         break;
 
       case GameState.ELEMENT_RENDER:
@@ -183,12 +205,21 @@ export default class Game {
 
   #renderGame() {
     this.#renderCards();
+    this.#renderPhasesButtons();
   }
 
   #renderCards() {
     let expandedCard;
+    const player1Deck = this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
+    for (let i = 0; i < player1Deck.getCards().length; i++) {
+      const currentCard = player1Deck.getCards()[i];
+      this.#renderCard(currentCard);
+      if (currentCard.getState() === CardState.EXPANDED) {
+        expandedCard = currentCard;
+      }
+    }
 
-    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+    /* for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
       const currentDeck = this.#deckContainer.getDecks()[i];
 
       for (let j = 0; j < currentDeck.getCards().length; j++) {
@@ -200,7 +231,7 @@ export default class Game {
           expandedCard = currentCard;
         }
       }
-    }
+    } */
 
     if (expandedCard) {
       this.#renderExpandedCard(expandedCard);
@@ -1260,13 +1291,12 @@ export default class Game {
     this.#deckContainer.setDecks(updatedDecks);
   }
 
-  #renderElements() 
+ /*  #renderElements() 
   {
     globals.currentPlayer = 1;
     //console.log(this.#deckContainer.getDecks()[3]);
     this.#renderPlayers();
     this.#renderDeckReverses();
-    this.#renderPhasesButtons();
     this.#renderActiveEventsTable();
     this.#renderMessages();
     this.#renderPlayer1MinionActiveCards();
@@ -1354,10 +1384,10 @@ export default class Game {
 
   // Render the cards in their respective positions
   this.#renderCard(player1Card, player1X, player1Y, smallSizeX, smallSizeY);
-  this.#renderSmallTemplate(player1Card, player1X, player1Y, smallSizeX, smallSizeY);
+  //this.#renderSmallTemplate(player1Card, player1X, player1Y, smallSizeX, smallSizeY);
 
   this.#renderCard(player2Card, player2X, player2Y, smallSizeX, smallSizeY);
-  this.#renderSmallTemplate(player2Card, player2X, player2Y, smallSizeX, smallSizeY);
+  //this.#renderSmallTemplate(player2Card, player2X, player2Y, smallSizeX, smallSizeY);
 }
 
 #renderDeckReverses()
@@ -1417,17 +1447,18 @@ export default class Game {
     200
   );
 }
-
+ */
 #renderPhasesButtons() {
-  const phaseNumber = ["Skip", "Attack", "Prepare Event", "Move", "Perform Event"];
-  const buttonCount = phaseNumber.length;
-  for (let i = 0; i < buttonCount; i++) {
-      const currentPhase = phaseNumber[i];
+  const phaseName = ["Skip", "Prepare Event", "Perform Event", "Move", "Attack"];
+  for (let i = 0; i < phaseName.length; i++) {
       const x = this.#board.getGrids()[4].getBoxes()[0].getXCoordinate(); 
       const y = this.#board.getGrids()[4].getBoxes()[i].getYCoordinate() + 5;
       const width = 200;
       const height = 40;
       const radius = 10;
+
+      const buttonData = [x, y, width, height, phaseName[i]];
+      globals.buttonDataGlobal.push(buttonData);
 
       globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
       globals.ctx.shadowBlur = 10;
@@ -1436,30 +1467,26 @@ export default class Game {
 
       globals.ctx.fillStyle = 'darkcyan';
       globals.ctx.beginPath();
-      globals.ctx.moveTo(x + radius, y);
-      globals.ctx.lineTo(x + width - radius, y);
-      globals.ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-      globals.ctx.lineTo(x + width, y + height - radius);
-      globals.ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-      globals.ctx.lineTo(x + radius, y + height);
-      globals.ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-      globals.ctx.lineTo(x, y + radius);
-      globals.ctx.quadraticCurveTo(x, y, x + radius, y);
+      globals.ctx.moveTo(buttonData[0] + 10, buttonData[1]);
+      globals.ctx.lineTo(buttonData[0] + buttonData[2] - 10, buttonData[1]);
+      globals.ctx.quadraticCurveTo(buttonData[0] + buttonData[2], buttonData[1], buttonData[0] + buttonData[2], buttonData[1] + 10);
+      globals.ctx.lineTo(buttonData[0] + buttonData[2], buttonData[1] + buttonData[3] - 10);
+      globals.ctx.quadraticCurveTo(buttonData[0] + buttonData[2], buttonData[1] + buttonData[3], buttonData[0] + buttonData[2] - 10, buttonData[1] + buttonData[3]);
+      globals.ctx.lineTo(buttonData[0] + 10, buttonData[1] + buttonData[3]);
+      globals.ctx.quadraticCurveTo(buttonData[0], buttonData[1] + buttonData[3], buttonData[0], buttonData[1] + buttonData[3] - 10);
+      globals.ctx.lineTo(buttonData[0], buttonData[1] + 10);
+      globals.ctx.quadraticCurveTo(buttonData[0], buttonData[1], buttonData[0] + 10, buttonData[1]);
       globals.ctx.closePath();
       globals.ctx.fill();
-
-      globals.ctx.shadowBlur = 0;
-      globals.ctx.shadowOffsetX = 0;
-      globals.ctx.shadowOffsetY = 0;
 
       globals.ctx.fillStyle = 'white';
       globals.ctx.font = '18px MedievalSharp';
       globals.ctx.textAlign = 'center';
       globals.ctx.textBaseline = 'middle';
-      globals.ctx.fillText(currentPhase, x + width / 2, y + height / 2);
+      globals.ctx.fillText(buttonData[4], buttonData[0] + buttonData[2] / 2, buttonData[1] + buttonData[3] / 2);
   }
 }
-
+/* 
 #renderActiveEventsTable() {
   const tableX = this.#board.getGrids()[1].getBoxes()[0].getXCoordinate();
   const tableY = this.#board.getGrids()[1].getBoxes()[0].getYCoordinate();
@@ -1566,7 +1593,7 @@ fixedPositions = [
     let smallSizeY = 110;
 
     this.#renderCard(currentCard, x, y, smallSizeX, smallSizeY);
-    this.#renderSmallTemplate(currentCard, x, y, smallSizeX, smallSizeY);
+    //this.#renderSmallTemplate(currentCard, x, y, smallSizeX, smallSizeY);
     this.#renderIcons(currentCard, x, y);
     this.#renderAttributesMinions(currentCard, x, y);
   }
@@ -1606,7 +1633,7 @@ fixedPositions = [
     let smallSizeY = 110;
 
     this.#renderCard(currentCard, x, y, smallSizeX, smallSizeY);
-    this.#renderSmallTemplate(currentCard, x, y, smallSizeX, smallSizeY);
+    //this.#renderSmallTemplate(currentCard, x, y, smallSizeX, smallSizeY);
     this.#renderIcons(currentCard, x, y);
     this.#renderAttributesMinions(currentCard, x, y);
   }
@@ -1625,7 +1652,7 @@ fixedPositions = [
       let smallSizeX = 110;
       let smallSizeY = 110;
       this.#renderCard(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
-      this.#renderSmallTemplate(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
+      //this.#renderSmallTemplate(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
       this.#renderIcons(currentCard, xCoordinate, yCoordinate);
       this.#renderAttributesWeaponns(currentCard, xCoordinate, yCoordinate);
       this.#renderEventHandPlayer2Reverse();
@@ -1778,5 +1805,5 @@ fixedPositions = [
   globals.ctx.fillText(prep_time, xCoordinate + 55, yCoordinate + 110);
   globals.ctx.fillText(durability, xCoordinate + 110, yCoordinate + 58);
   
-}
+} */
 }

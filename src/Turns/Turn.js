@@ -10,6 +10,7 @@ import {
   DeckType,
   DiscardCardState,
   DrawCardState,
+  GridType,
   MovePhaseState,
   PlayerID,
   PrepareEventState,
@@ -42,7 +43,13 @@ export default class Turn {
 
     // TODO: FILL ARRAYS
     const decksRelevantToDrawCardPhase = [];
-    const decksRelevantToPrepareEventPhase = [];
+    const decksRelevantToPrepareEventPhase = [
+/*       gameDecks[DeckType.PLAYER_1_CARDS_IN_HAND],
+      gameDecks[DeckType.PLAYER_1_EVENTS_IN_PREPARATION],
+      gameDecks[DeckType.PLAYER_2_CARDS_IN_HAND],
+      gameDecks[DeckType.PLAYER_2_EVENTS_IN_PREPARATION], */
+
+    ];
     const decksRelevantToPerformEventPhase = [
       gameDecks[DeckType.PLAYER_1_ACTIVE_EVENTS],
       gameDecks[DeckType.PLAYER_2_ACTIVE_EVENTS],
@@ -57,7 +64,12 @@ export default class Turn {
 
     // TODO: FILL ARRAYS
     const gridsRelevantToDrawCardPhase = [];
-    const gridsRelevantToPrepareEventPhase = [];
+    const gridsRelevantToPrepareEventPhase = [
+      gameGrids[GridType.PLAYER_1_CARDS_IN_HAND],
+      gameGrids[GridType.PLAYER_2_CARDS_IN_HAND],
+      gameGrids[GridType.PLAYER_1_PREPARE_EVENT],
+      gameGrids[GridType.PLAYER_2_PREPARE_EVENT],
+    ];
     const gridsRelevantToPerformEventPhase = [];
     const gridsRelevantToMovePhase = [];
     const gridsRelevantToAttackPhase = [];
@@ -65,13 +77,29 @@ export default class Turn {
 
     if (this.#player.getID() === PlayerID.PLAYER_1) {
       // TODO: TO BE COMPLETED
-
+      decksRelevantToPrepareEventPhase.push(
+        gameDecks[DeckType.PLAYER_1_EVENTS_IN_PREPARATION],
+        gameDecks[DeckType.PLAYER_1_CARDS_IN_HAND]
+      );
+      gridsRelevantToPerformEventPhase.push(
+        gameGrids[GridType.PLAYER_1_CARDS_IN_HAND],
+        gameGrids[GridType.PLAYER_1_PREPARE_EVENT],
+      )
       decksRelevantToPerformEventPhase.push(
         gameDecks[DeckType.PLAYER_1_EVENTS_IN_PREPARATION]
       );
+
     } else {
       // TODO: TO BE COMPLETED
+      decksRelevantToPrepareEventPhase.push(
+        gameDecks[DeckType.PLAYER_2_EVENTS_IN_PREPARATION],
+        gameDecks[DeckType.PLAYER_2_CARDS_IN_HAND]
+      );
 
+      gridsRelevantToPerformEventPhase.push(
+        gameGrids[GridType.PLAYER_2_CARDS_IN_HAND],
+        gameGrids[GridType.PLAYER_2_PREPARE_EVENT],
+      );
       decksRelevantToPerformEventPhase.push(
         gameDecks[DeckType.PLAYER_2_EVENTS_IN_PREPARATION]
       );
@@ -103,8 +131,8 @@ export default class Turn {
     );
     const prepareEventPhase = new PrepareEventPhase(
       PrepareEventState.INIT,
-      this.#deckContainer,
-      this.#board,
+      decksRelevantToPrepareEventPhase,
+      gameGrids,
       this.#mouseInput
     );
     const performEventPhase = new PerformEventPhase(
@@ -171,7 +199,8 @@ export default class Turn {
       currentPhase = this.#phases[this.#numOfExecutedPhases];
     }
 
-    currentPhase.execute();
+    /* currentPhase.execute(); */
+    this.#checkButtonClick();
 
     // this.#numOfExecutedPhases++;
 
@@ -277,6 +306,35 @@ export default class Turn {
           }
         }
       }
+    }
+  }
+
+  #checkButtonClick() {
+    const mouseX = this.#mouseInput.getMouseXCoordinate();
+    const mouseY = this.#mouseInput.getMouseYCoordinate();
+    
+    if (this.#mouseInput.isLeftButtonPressed()) {
+    for (let i = 0; i < globals.buttonDataGlobal.length; i++) {
+      const buttonData = globals.buttonDataGlobal[i];
+      const buttonX = buttonData[0];
+      const buttonY = buttonData[1];
+      const buttonWidth = buttonData[2];
+      const buttonHeight = buttonData[3];
+      const phase = buttonData[4];
+
+      if (  mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
+          mouseY >= buttonY && mouseY <= buttonY + buttonHeight) {
+            this.#executePhase(i);
+            break;
+        }
+      }
+    }
+  }
+
+  #executePhase(phase) {
+    if(phase >= 0 && phase < this.#phases.length) {
+      const currentPhase = this.#phases[phase];
+      currentPhase.execute();
     }
   }
 }
