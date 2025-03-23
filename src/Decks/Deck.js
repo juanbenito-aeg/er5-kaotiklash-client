@@ -21,6 +21,12 @@ export default class Deck {
     this.#cards.push(card);
   }
 
+  removeCard(card) {
+    const indexOfCardToRemove = this.#cards.indexOf(card);
+
+    this.#cards.splice(indexOfCardToRemove, 1);
+  }
+
   lookForHoveredCard(mouseInput) {
     for (let i = 0; i < this.getCards().length; i++) {
       const currentCard = this.getCards()[i];
@@ -59,7 +65,15 @@ export default class Deck {
         return true;
       }
     }
+  }
 
-    return false;
+  checkIfAnyCardIsSelected() {
+    for (let i = 0; i < this.getCards().length; i++) {
+      const currentCard = this.getCards()[i];
+
+      if (currentCard.getState() === CardState.SELECTED) {
+        return true;
+      }
+    }
   }
 }
