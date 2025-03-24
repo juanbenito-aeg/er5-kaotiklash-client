@@ -8,6 +8,7 @@ import MouseInput from "./MouseInput.js";
 import {
   GameState,
   CardCategory,
+  DeckType,
   WeaponType,
   ArmorType,
   MinionType,
@@ -107,6 +108,32 @@ export default class Game {
     }
 
     this.#turns[this.#currentPlayer].execute();
+
+    this.#checkIfGameOver();
+  }
+
+  // (!) THIS METHOD WILL BE CHANGED IN A FUTURE SO THAT A WINNER IS ASSIGNED WHEN THE OTHER PLAYER GETS TO 0 TOTAL HIT-POINTS
+  #checkIfGameOver() {
+    const player1MinionsInPlay =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
+    const player2MinionsInPlay =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
+
+    const decksToCheck = [player1MinionsInPlay, player2MinionsInPlay];
+
+    for (let i = 0; i < decksToCheck.length; i++) {
+      const currentDeck = decksToCheck[i];
+
+      if (currentDeck.getCards().length === 0) {
+        if (currentDeck === player1MinionsInPlay) {
+          globals.gameWinner = this.#players[PlayerID.PLAYER_2];
+        } else {
+          globals.gameWinner = this.#players[PlayerID.PLAYER_1];
+        }
+
+        globals.gameState = GameState.OVER;
+      }
+    }
   }
 
   #render() {

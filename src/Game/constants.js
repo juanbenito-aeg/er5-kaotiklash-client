@@ -1,8 +1,7 @@
 const GameState = {
   INVALID: -1,
   PLAYING: 0,
-  GRIDS_DRAWING: 1,
-  ELEMENT_RENDER: 2,
+  OVER: 1,
 };
 
 // FPS (FRAMES PER SECOND)
