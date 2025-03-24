@@ -1,21 +1,11 @@
 import InitialPhase from "./InitialPhase.js";
+import DrawCardPhase from "./DrawCardPhase.js";
+import AttackPhase from "./AttackPhase.js";
+import MovePhase from "./MovePhase.js";
 import PrepareEventPhase from "./PrepareEventPhase.js";
 import PerformEventPhase from "./PerformEventPhase.js";
-import MovePhase from "./MovePhase.js";
-import DrawCardPhase from "./DrawCardPhase.js";
 import DiscardCardPhase from "./DiscardCardPhase.js";
-import AttackPhase from "./AttackPhase.js";
-import {
-  CardState,
-  DeckType,
-  DiscardCardState,
-  DrawCardState,
-  GridType,
-  MovePhaseState,
-  PlayerID,
-  PrepareEventState,
-  PhaseType,
-} from "../Game/constants.js";
+import { PlayerID, CardState, DeckType, PhaseType } from "../Game/constants.js";
 import { globals } from "../index.js";
 
 export default class Turn {
@@ -32,6 +22,7 @@ export default class Turn {
     this.#currentPhase = PhaseType.INVALID;
     this.#isCurrentPhaseFinished = false;
     this.#numOfExecutedPhases = 0;
+    this.#phases = [];
     this.#deckContainer = deckContainer;
     this.#board = board;
     this.#mouseInput = mouseInput;
@@ -44,144 +35,24 @@ export default class Turn {
       initialPhase.execute();
     }
 
-    const gameDecks = this.#deckContainer.getDecks();
-
-    // TODO: FILL ARRAYS
-    const decksRelevantToDrawCardPhase = [];
-    const decksRelevantToPrepareEventPhase = [
-      /*       gameDecks[DeckType.PLAYER_1_CARDS_IN_HAND],
-      gameDecks[DeckType.PLAYER_1_EVENTS_IN_PREPARATION],
-      gameDecks[DeckType.PLAYER_2_CARDS_IN_HAND],
-      gameDecks[DeckType.PLAYER_2_EVENTS_IN_PREPARATION], */
-    ];
-    const decksRelevantToPerformEventPhase = [
-      gameDecks[DeckType.PLAYER_1_ACTIVE_EVENTS],
-      gameDecks[DeckType.PLAYER_2_ACTIVE_EVENTS],
-      gameDecks[DeckType.PLAYER_1_MINIONS_IN_PLAY],
-      gameDecks[DeckType.PLAYER_2_MINIONS_IN_PLAY],
-    ];
-    const decksRelevantToMovePhase = [];
-    const decksRelevantToAttackPhase = [];
-    const decksRelevantToDiscardCardPhase = [];
-
-    const gameGrids = this.#board.getGrids();
-
-    // TODO: FILL ARRAYS
-    const gridsRelevantToDrawCardPhase = [];
-    const gridsRelevantToPrepareEventPhase = [
-      gameGrids[GridType.PLAYER_1_CARDS_IN_HAND],
-      gameGrids[GridType.PLAYER_2_CARDS_IN_HAND],
-      gameGrids[GridType.PLAYER_1_PREPARE_EVENT],
-      gameGrids[GridType.PLAYER_2_PREPARE_EVENT],
-    ];
-    const gridsRelevantToPerformEventPhase = [];
-    const gridsRelevantToMovePhase = [];
-    const gridsRelevantToAttackPhase = [];
-    const gridsRelevantToDiscardCardPhase = [];
-
-    if (this.#player.getID() === PlayerID.PLAYER_1) {
-      // TODO: TO BE COMPLETED
-      decksRelevantToPrepareEventPhase.push(
-        gameDecks[DeckType.PLAYER_1_EVENTS_IN_PREPARATION],
-        gameDecks[DeckType.PLAYER_1_CARDS_IN_HAND]
-      );
-      gridsRelevantToPerformEventPhase.push(
-        gameGrids[GridType.PLAYER_1_CARDS_IN_HAND],
-        gameGrids[GridType.PLAYER_1_PREPARE_EVENT]
-      );
-      decksRelevantToPerformEventPhase.push(
-        gameDecks[DeckType.PLAYER_1_EVENTS_IN_PREPARATION]
-      );
-    } else {
-      // TODO: TO BE COMPLETED
-      decksRelevantToPrepareEventPhase.push(
-        gameDecks[DeckType.PLAYER_2_EVENTS_IN_PREPARATION],
-        gameDecks[DeckType.PLAYER_2_CARDS_IN_HAND]
-      );
-
-      gridsRelevantToPerformEventPhase.push(
-        gameGrids[GridType.PLAYER_2_CARDS_IN_HAND],
-        gameGrids[GridType.PLAYER_2_PREPARE_EVENT]
-      );
-      decksRelevantToPerformEventPhase.push(
-        gameDecks[DeckType.PLAYER_2_EVENTS_IN_PREPARATION]
-      );
-    }
-
-    const decksRelevantToPhases = [
-      decksRelevantToDrawCardPhase,
-      decksRelevantToPrepareEventPhase,
-      decksRelevantToPerformEventPhase,
-      decksRelevantToMovePhase,
-      decksRelevantToAttackPhase,
-      decksRelevantToDiscardCardPhase,
+    const phaseTypes = [
+      DrawCardPhase,
+      PrepareEventPhase,
+      PerformEventPhase,
+      MovePhase,
+      AttackPhase,
+      DiscardCardPhase,
     ];
 
-    const gridsRelevantToPhases = [
-      gridsRelevantToDrawCardPhase,
-      gridsRelevantToPrepareEventPhase,
-      gridsRelevantToPerformEventPhase,
-      gridsRelevantToMovePhase,
-      gridsRelevantToAttackPhase,
-      gridsRelevantToDiscardCardPhase,
-    ];
+    for (let i = 0; i < phaseTypes.length; i++) {
+      const currentPhase = phaseTypes[i].create(
+        this.#player,
+        this.#deckContainer,
+        this.#board,
+        this.#mouseInput
+      );
 
-    const drawCardPhase = new DrawCardPhase(
-      DrawCardState.INIT,
-      this.#deckContainer,
-      this.#board,
-      this.#mouseInput
-    );
-    const prepareEventPhase = new PrepareEventPhase(
-      PrepareEventState.INIT,
-      decksRelevantToPrepareEventPhase,
-      gameGrids,
-      this.#mouseInput
-    );
-    const performEventPhase = new PerformEventPhase(
-      0 /* TO BE CHANGED */,
-      this.#deckContainer,
-      this.#board,
-      this.#mouseInput
-    );
-    const movePhase = new MovePhase(
-      MovePhaseState.INIT,
-      this.#deckContainer,
-      this.#board,
-      this.#mouseInput
-    );
-    const attackPhase = new AttackPhase(
-      0 /* TO BE CHANGED */,
-      this.#deckContainer,
-      this.#board,
-      this.#mouseInput
-    );
-    const discardCardPhase = new DiscardCardPhase(
-      DiscardCardState.INIT,
-      this.#deckContainer,
-      this.#board,
-      this.#mouseInput
-    );
-
-    this.#phases = [
-      drawCardPhase,
-      prepareEventPhase,
-      performEventPhase,
-      movePhase,
-      attackPhase,
-      discardCardPhase,
-    ];
-
-    for (let i = 0; i < this.#phases.length; i++) {
-      const currentPhase = this.#phases[i];
-
-      for (let j = 0; j < decksRelevantToPhases[i].length; j++) {
-        currentPhase.addDeck(decksRelevantToPhases[i][j]);
-      }
-
-      for (let j = 0; j < gridsRelevantToPhases[i].length; j++) {
-        currentPhase.addGrid(gridsRelevantToPhases[i][j]);
-      }
+      this.#phases.push(currentPhase);
     }
   }
 
@@ -237,37 +108,57 @@ export default class Turn {
 
     decksToCheck.push(DeckType.JOSEPH);
 
-    const hoveredCardData = this.#checkIfMouseOverAnyCard(decksToCheck);
-    this.#checkIfRightClickWasPressedOnCard(decksToCheck, hoveredCardData);
+    const hoveredCard = this.#lookForHoveredCard(decksToCheck);
+
+    this.#lookForCardThatIsntHoveredAnymore(decksToCheck);
+
+    this.#lookForRightClickedCard(decksToCheck, hoveredCard);
   }
 
-  #checkIfMouseOverAnyCard(decksToCheck) {
-    let hoveredCardData;
-
+  #lookForHoveredCard(decksToCheck) {
     for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
       for (let j = 0; j < decksToCheck.length; j++) {
         if (i === decksToCheck[j]) {
           const currentDeck = this.#deckContainer.getDecks()[i];
 
-          hoveredCardData = currentDeck.checkIfMouseOverAnyCard(
-            this.#mouseInput
-          );
+          const hoveredCard = currentDeck.lookForHoveredCard(this.#mouseInput);
 
-          if (hoveredCardData.isAnyCardHovered) {
-            return hoveredCardData;
+          if (hoveredCard) {
+            if (hoveredCard.getState() === CardState.INACTIVE) {
+              hoveredCard.setPreviousState(CardState.INACTIVE);
+              hoveredCard.setState(CardState.INACTIVE_HOVERED);
+            } else if (hoveredCard.getState() === CardState.PLACED) {
+              hoveredCard.setPreviousState(CardState.PLACED);
+              hoveredCard.setState(CardState.HOVERED);
+            }
+
+            return hoveredCard;
           }
         }
       }
     }
-
-    return hoveredCardData;
   }
 
-  #checkIfRightClickWasPressedOnCard(decksToCheck, hoveredCardData) {
-    if (
-      this.#mouseInput.isRightButtonPressed() &&
-      hoveredCardData.isAnyCardHovered
-    ) {
+  #lookForCardThatIsntHoveredAnymore(decksToCheck) {
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+      for (let j = 0; j < decksToCheck.length; j++) {
+        if (i === decksToCheck[j]) {
+          const currentDeck = this.#deckContainer.getDecks()[i];
+
+          const notHoveredCard = currentDeck.lookForCardThatIsntHoveredAnymore(
+            this.#mouseInput
+          );
+
+          if (notHoveredCard) {
+            notHoveredCard.setState(notHoveredCard.getPreviousState());
+          }
+        }
+      }
+    }
+  }
+
+  #lookForRightClickedCard(decksToCheck, hoveredCard) {
+    if (this.#mouseInput.isRightButtonPressed() && hoveredCard) {
       this.#mouseInput.setRightButtonPressedFalse();
 
       const isAnyCardExpanded = this.#checkIfAnyCardIsExpanded(decksToCheck);
@@ -282,13 +173,10 @@ export default class Turn {
 
               if (
                 currentCard.getState() === CardState.EXPANDED &&
-                currentCard === hoveredCardData.hoveredCard
+                currentCard === hoveredCard
               ) {
                 currentCard.setState(currentCard.getPreviousState());
-              } else if (
-                !isAnyCardExpanded &&
-                currentCard === hoveredCardData.hoveredCard
-              ) {
+              } else if (!isAnyCardExpanded && currentCard === hoveredCard) {
                 currentCard.setState(CardState.EXPANDED);
               }
             }
@@ -304,7 +192,9 @@ export default class Turn {
         if (i === decksToCheck[j]) {
           const currentDeck = this.#deckContainer.getDecks()[i];
 
-          if (currentDeck.checkIfAnyCardIsExpanded()) {
+          const isAnyCardExpanded = currentDeck.checkIfAnyCardIsExpanded();
+
+          if (isAnyCardExpanded) {
             return true;
           }
         }

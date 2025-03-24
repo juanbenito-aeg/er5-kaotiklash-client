@@ -1,27 +1,13 @@
 export default class Phase {
   _state;
-  #deckContainer;
-  #board;
-  #mouseInput;
-  #decksRelevantToPhase;
-  #gridsRelevantToPhase;
+  _mouseInput;
 
-  constructor(state, deckContainer, board, mouseInput) {
+  constructor(state, mouseInput) {
     this._state = state;
-    this.#deckContainer = deckContainer;
-    this.#board = board;
-    this.#mouseInput = mouseInput;
-    this.#decksRelevantToPhase = [];
-    this.#gridsRelevantToPhase = [];
+    this._mouseInput = mouseInput;
   }
+
+  static create() {}
 
   execute() {}
-
-  addDeck(newDeck) {
-    this.#decksRelevantToPhase.push(newDeck);
-  }
-
-  addGrid(newGrid) {
-    this.#gridsRelevantToPhase.push(newGrid);
-  }
 }

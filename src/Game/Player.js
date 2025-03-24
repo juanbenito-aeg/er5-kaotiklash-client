@@ -3,10 +3,9 @@ export default class Player {
   #name;
   #totalHP;
 
-  constructor(id, name, totalHP) {
+  constructor(id, name) {
     this.#id = id;
     this.#name = name;
-    this.#totalHP = totalHP;
   }
 
   getID() {
@@ -19,5 +18,9 @@ export default class Player {
 
   getTotalHP() {
     return this.#totalHP;
+  }
+
+  setTotalHP(newTotalHP) {
+    this.#totalHP = newTotalHP;
   }
 }
