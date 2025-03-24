@@ -281,12 +281,14 @@ export default class Game {
   #setInitialCardsCoordinates() {
     const activePlayerData = {
       mainCharacter: {},
+      cardsInHand: {},
       minionsInPlayDeck: {},
       minionsInPlayGrid: {},
     };
 
     const inactivePlayerData = {
       mainCharacter: {},
+      cardsInHand: {},
       minionsInPlayDeck: {},
       minionsInPlayGrid: {},
     };
@@ -297,6 +299,9 @@ export default class Game {
       activePlayerData.mainCharacter = this.#deckContainer
         .getDecks()
         [DeckType.PLAYER_1_MAIN_CHARACTER].getCards()[0];
+
+      activePlayerData.cardsInHand =
+        this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
 
       activePlayerData.minionsInPlayDeck =
         this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
@@ -309,6 +314,9 @@ export default class Game {
       inactivePlayerData.mainCharacter = this.#deckContainer
         .getDecks()
         [DeckType.PLAYER_2_MAIN_CHARACTER].getCards()[0];
+
+      inactivePlayerData.cardsInHand =
+        this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND];
 
       inactivePlayerData.minionsInPlayDeck =
         this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
@@ -322,11 +330,14 @@ export default class Game {
         .getDecks()
         [DeckType.PLAYER_2_MAIN_CHARACTER].getCards()[0];
 
+      activePlayerData.cardsInHand =
+        this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND];
+
       activePlayerData.minionsInPlayDeck =
         this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
 
       activePlayerData.minionsInPlayGrid =
-        this.#board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
+        this.#board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
 
       // SET THE INACTIVE PLAYER'S DATA
 
@@ -334,11 +345,14 @@ export default class Game {
         .getDecks()
         [DeckType.PLAYER_1_MAIN_CHARACTER].getCards()[0];
 
+      inactivePlayerData.cardsInHand =
+        this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
+
       inactivePlayerData.minionsInPlayDeck =
         this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
 
       inactivePlayerData.minionsInPlayGrid =
-        this.#board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
+        this.#board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
     }
 
     const bottomRightMainCharacterBox = this.#board
@@ -371,13 +385,12 @@ export default class Game {
       for (let j = 0; j < 3; j++) {
         const currentCard = currentPlayer.minionsInPlayDeck.getCards()[j];
 
-        let currentBoxIndex = j;
+        let currentBoxIndex = j + 1;
         if (
           currentPlayer.minionsInPlayGrid ===
           this.#board.getGrids()[GridType.PLAYER_1_BATTLEFIELD]
         ) {
-          currentBoxIndex =
-            currentPlayer.minionsInPlayGrid.getBoxes().length - (j + 1);
+          currentBoxIndex = j + 2;
         }
         const currentBox =
           currentPlayer.minionsInPlayGrid.getBoxes()[currentBoxIndex];
@@ -461,8 +474,45 @@ export default class Game {
 
     switch (globals.gameState) {
       case GameState.PLAYING:
+        this.#renderGrids();
         this.#renderGame();
         break;
+    }
+  }
+
+  #renderGrids() {
+    const colors = [
+      "white",
+      "red",
+      "green",
+      "blue",
+      "yellow",
+      "orange",
+      "pink",
+      "darkcyan",
+      "magenta",
+      "cyan",
+      "gold",
+      "grey",
+      "bisque",
+      "black",
+      "blueviolet",
+    ];
+
+    for (let i = 0; i < this.#board.getGrids().length; i++) {
+      const currentGrid = this.#board.getGrids()[i];
+
+      for (let j = 0; j < currentGrid.getBoxes().length; j++) {
+        const currentBox = currentGrid.getBoxes()[j];
+
+        globals.ctx.strokeStyle = colors[i];
+        globals.ctx.strokeRect(
+          currentBox.getXCoordinate(),
+          currentBox.getYCoordinate(),
+          currentBox.getWidth(),
+          currentBox.getHeight()
+        );
+      }
     }
   }
 
@@ -791,13 +841,20 @@ export default class Game {
     for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
       const currentDeck = this.#deckContainer.getDecks()[i];
 
-      for (let j = 0; j < currentDeck.getCards().length; j++) {
-        const currentCard = currentDeck.getCards()[j];
+      if (
+        currentDeck.getDeckType() !== DeckType.EVENTS &&
+        currentDeck.getDeckType() !== DeckType.PLAYER_1_ACTIVE_EVENTS &&
+        currentDeck.getDeckType() !== DeckType.PLAYER_1_MINIONS &&
+        currentDeck.getDeckType() !== DeckType.PLAYER_2_MINIONS
+      ) {
+        for (let j = 0; j < currentDeck.getCards().length; j++) {
+          const currentCard = currentDeck.getCards()[j];
 
-        this.#renderCard(currentCard);
+          this.#renderCard(currentCard);
 
-        if (currentCard.getState() === CardState.EXPANDED) {
-          expandedCard = currentCard;
+          if (currentCard.getState() === CardState.EXPANDED) {
+            expandedCard = currentCard;
+          }
         }
       }
     }

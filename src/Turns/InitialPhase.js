@@ -103,7 +103,7 @@ export default class InitialPhase {
       const currentCard = eventCards[i];
 
       if (currentCard.getCategory() === CardCategory.WEAPON) {
-        if (currentCard.getID() !== WeaponType.HYBRID) {
+        if (currentCard.getWeaponType() === WeaponType.MELEE) {
           eventWeapon.push(currentCard);
         }
       }
@@ -111,7 +111,7 @@ export default class InitialPhase {
 
     this.#shuffleDeck(eventWeapon);
 
-    this.#selectAndInsertCards(eventWeapon, player1CardsInHand, 5);
-    this.#selectAndInsertCards(eventWeapon, player2CardsInHand, 5);
+    this.#selectAndInsertCards(eventWeapon, player1CardsInHand, 3);
+    this.#selectAndInsertCards(eventWeapon, player2CardsInHand, 3);
   }
 }
