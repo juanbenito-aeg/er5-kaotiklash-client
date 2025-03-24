@@ -98,6 +98,10 @@ export default class CardMovement {
     return this.#card.getCurrentDefense();
   }
 
+  getWeaponType() {
+    return this.#card.getWeaponType();
+  }
+
   getInitialDamage() {
     return this.#card.getInitialDamage();
   }

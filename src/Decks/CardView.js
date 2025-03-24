@@ -63,6 +63,10 @@ export default class CardView {
     return this.#card.getCurrentDefense();
   }
 
+  getWeaponType() {
+    return this.#card.getWeaponType();
+  }
+
   getInitialDamage() {
     return this.#card.getInitialDamage();
   }
