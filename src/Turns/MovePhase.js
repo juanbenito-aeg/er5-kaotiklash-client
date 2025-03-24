@@ -2,61 +2,129 @@ import Phase from "./Phase.js";
 import { MovePhaseState, CardState, BoxState } from "../Game/constants.js";
 
 export default class MovePhase extends Phase {
-  // #currentPlayerMovementGridDeck;
-  // #currentPlayerMovementGrid;
-  // #selectedCard;
-  // #state;
+  #state;
+  #decksRelevants;
+  #gridsRelevants;
+  #selectedCard;
+  #selectedGrid;
 
   constructor(
-    /* currentPlayerMovementGridDeck, currentPlayerMovementGrid */
-
     state,
-    deckContainer,
-    board,
+    decksRelevants,
+    gridRelevants,
     mouseInput
   ) {
-    // this.#currentPlayerMovementGridDeck = currentPlayerMovementGridDeck;
-    // this.#currentPlayerMovementGrid = currentPlayerMovementGrid;
-    // this.#selectedCard = null;
-    // this.#state = MovePhaseState.INIT;
+    super(state, mouseInput);
+    this.#decksRelevants = decksRelevants;
+    this.#gridsRelevants = gridRelevants;
+    this.#selectedCard = null;
+    this.#selectedGrid = null;
+    this.#state = state;
 
-    super(state, deckContainer, board, mouseInput);
+  }
+
+  static create(currentPlayer, deckContainer, board, mouseInput) {
+    let deckRelevants;
+    let gridRelevants;
+
+    if(currentPlayer.getID() === PlayerID.PLAYER_1) {
+      deckRelevants = deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
+      gridRelevants = board.getGrids()[GridType.PLAYER_1_MINIONS_IN_PLAY]
+    } else {
+      deckRelevants = deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
+      gridRelevants = board.getGrids()[GridType.PLAYER_2_MINIONS_IN_PLAY]
+    }
+
+    const movePhase = new movePhase(
+      MovePhaseState.INIT,
+      deckRelevants,
+      gridRelevants,
+      mouseInput
+    );
+
+    return movePhase;
   }
 
   execute() {
-    // if (this.#state === MovePhaseState.INIT) {
-    //   this.#state = MovePhaseState.SELECT_CARD;
-    // }
-    // if (this.#state === MovePhaseState.SELECT_CARD) {
-    //   for (let i = 0; i < this.#currentPlayerMovementGridDeck.length; i++) {
-    //     let card = this.#currentPlayerMovementGridDeck[i];
-    //     if (card.isClicked) {
-    //       this.#selectedCard = card;
-    //       this.#selectedCard.state = CardState.SELECTED;
-    //       this.#state = MovePhaseState.SELECT_TARGET;
-    //     }
-    //   }
-    // }
-    // if (this.#state === MovePhaseState.SELECT_TARGET) {
-    //   for (let i = 0; i < this.#currentPlayerMovementGrid.boxes.length; i++) {
-    //     let box = this.#currentPlayerMovementGrid.boxes[i];
-    //     if (box.isClicked && box.state === BoxState.EMPTY) {
-    //       this.#state = MovePhaseState.MOVE_CARD;
-    //       this.moveCardToBox(box);
-    //     }
-    //   }
-    // }
-    // if (this.#state === MovePhaseState.MOVE_CARD) {
-    //   this.#state = MovePhaseState.END;
-    // }
+    console.log("halo")
+    switch (this.state) {
+      case PrepareEventState.INIT:
+        this.#initializePhase();
+        break;
+
+      case PrepareEventState.SELECT_CARD:
+        this.#selectCard();
+        break;
+
+      case PrepareEventState.SELECT_TARGET:
+        this.#selectTargetGrid();
+        break;
+
+      case PrepareEventState.MOVE_CARD:
+        this.#moveCardToBox();
+        break;
+      
+      case PrepareEventState.END:
+        this.#finalizePhase();
+        break;
+      
+      default:
+        console.error("Move Event State Fail");
+    }
   }
 
-  moveCardToBox(targetBox) {
-    // if (this.#selectedCard) {
-    //   this.#selectedCard.xCoordinate = targetBox.xCoordinate;
-    //   this.#selectedCard.yCoordinate = targetBox.yCoordinate;
-    //   this.#selectedCard.state = CardState.PLACED;
-    //   targetBox.state = BoxState.OCCUPIED;
-    // }
+  #initializePhase() {
+    this.state = MovePhaseState.SELECT_CARD;
   }
+
+  #selectCard() {
+    const battlefieldGrid = this.gridRelevants;
+    for (let i = 0; i < battlefieldGrid.getBoxes().length; i++) {
+      const box = battlefieldGrid.getBoxes()[i];
+      if (this.mouseInput.isMouseOverBox(box) && !box.isOccupied()) {
+        this.#selectedCard = box.getCard();
+        this.#selectedCard.setState(CardState.SELECTED);
+        console.log(this.#selectedCard.getName())
+      }
+    }
+    if (this.#selectedCard) {
+      this.state = MovePhaseState.SELECT_TARGET;
+    }
+  }
+
+  #selectTargetGrid() {
+    const battlefieldGrid = this.gridRelevants;
+    for (let i = 0; i < battlefieldGrid.getBoxes().length; i++) {
+      const box = battlefieldGrid.getBoxes()[i];
+      if (this.mouseInput.isMouseOverBox(box) && !box.isOccupied()) {
+        this.#selectedGrid = box;
+        box.setState(BoxState.SELECTED);
+      }
+    }
+    if (this.#selectedGrid) {
+      this.state = MovePhaseState.MOVE_CARD;
+    }
+  }
+
+  #moveCardToBox() {
+    if (this.#selectedCard) {
+      this.#selectedCard.setXCoordinate() = this.#selectedGrid.getXCoordinate();
+      this.#selectedCard.setYCoordinate() = this.#selectedGrid.getYCoordinate();
+      this.#selectedCard.state = CardState.PLACED;
+      targetBox.state = BoxState.OCCUPIED;
+    }
+  }
+
+  #finalizePhase() {
+    if (this.#selectedCard && this.#selectedGrid) {
+      if (!this.#selectedGrid.isOccupied()) {
+        this.#selectedGrid.setCard(this.#selectedCard); 
+        this.#selectedCard.setState(CardState.PLACED);
+        this.#selectedCard = null;
+      }
+      this.#selectedGrid = null;
+      this.state = PrepareEventState.END;
+    }
+  }
+
 }
