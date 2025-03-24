@@ -2,26 +2,20 @@ import Phase from "./Phase.js";
 import { PrepareEventState, CardState, BoxState } from "../Game/constants.js";
 import PrepareEvent from "../Events/PrepareEvent.js";
 
-export default class PrepareEventPhase extends Phase { 
-  #state;
+export default class PrepareEventPhase extends Phase {
   #selectedCard;
   #selectedGrid;
 
-  constructor(
-    state,
-    decksRelevants,
-    gridRelevants,
-    mouseInput
-  ) {
+  constructor(state, decksRelevants, gridRelevants, mouseInput) {
     super(state, decksRelevants, gridRelevants, mouseInput);
     this.#selectedCard = null;
     this.#selectedGrid = null;
-    this.#state = state;
   }
 
-  execute() { 
-    console.log("aaa")
-    switch (this.#state) {
+  execute() {
+    let isPhaseFinished = false;
+    console.log("aaa");
+    switch (this._state) {
       case PrepareEventState.INIT:
         this.#initializePhase();
         break;
@@ -36,11 +30,13 @@ export default class PrepareEventPhase extends Phase {
 
       case PrepareEventState.END:
         this.#finalizePhase();
+        isPhaseFinished = true;
         break;
-      
+
       default:
         console.error("Prepare Event State Fail");
     }
+    return isPhaseFinished;
   }
 
   #initializePhase() {
@@ -54,7 +50,7 @@ export default class PrepareEventPhase extends Phase {
       if (this.mouseInput.isMouseOverBox(box) && !box.isOccupied()) {
         this.#selectedCard = box.getCard();
         this.#selectedCard.setState(CardState.SELECTED);
-        console.log(this.#selectedCard.getName())
+        console.log(this.#selectedCard.getName());
       }
     }
     if (this.#selectedCard) {
@@ -79,15 +75,14 @@ export default class PrepareEventPhase extends Phase {
   #finalizePhase() {
     if (this.#selectedCard && this.#selectedGrid) {
       if (!this.#selectedGrid.isOccupied()) {
-        this.#selectedGrid.setCard(this.#selectedCard); 
+        this.#selectedGrid.setCard(this.#selectedCard);
         this.#selectedCard.setState(CardState.PLACED);
-        this.decksRelevants[1].insertCard(this.#selectedCard); 
+        this.decksRelevants[1].insertCard(this.#selectedCard);
         this.#selectedCard = null;
       }
       this.#selectedGrid = null;
       const prepareEvent = PrepareEvent.create(this.decksRelevants[1]);
       game.addEventToQueue(prepareEvent);
-      this.state = PrepareEventState.END;
     }
   }
 }

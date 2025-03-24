@@ -14,10 +14,13 @@ import {
   MovePhaseState,
   PlayerID,
   PrepareEventState,
+  PhaseType,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 
 export default class Turn {
+  #isCurrentPhaseFinished;
+  #currentPhase;
   #numOfExecutedPhases;
   #phases;
   #deckContainer;
@@ -26,6 +29,8 @@ export default class Turn {
   #player;
 
   constructor(deckContainer, board, mouseInput, player) {
+    this.#currentPhase = PhaseType.INVALID;
+    this.#isCurrentPhaseFinished = false;
     this.#numOfExecutedPhases = 0;
     this.#deckContainer = deckContainer;
     this.#board = board;
@@ -44,11 +49,10 @@ export default class Turn {
     // TODO: FILL ARRAYS
     const decksRelevantToDrawCardPhase = [];
     const decksRelevantToPrepareEventPhase = [
-/*       gameDecks[DeckType.PLAYER_1_CARDS_IN_HAND],
+      /*       gameDecks[DeckType.PLAYER_1_CARDS_IN_HAND],
       gameDecks[DeckType.PLAYER_1_EVENTS_IN_PREPARATION],
       gameDecks[DeckType.PLAYER_2_CARDS_IN_HAND],
       gameDecks[DeckType.PLAYER_2_EVENTS_IN_PREPARATION], */
-
     ];
     const decksRelevantToPerformEventPhase = [
       gameDecks[DeckType.PLAYER_1_ACTIVE_EVENTS],
@@ -83,12 +87,11 @@ export default class Turn {
       );
       gridsRelevantToPerformEventPhase.push(
         gameGrids[GridType.PLAYER_1_CARDS_IN_HAND],
-        gameGrids[GridType.PLAYER_1_PREPARE_EVENT],
-      )
+        gameGrids[GridType.PLAYER_1_PREPARE_EVENT]
+      );
       decksRelevantToPerformEventPhase.push(
         gameDecks[DeckType.PLAYER_1_EVENTS_IN_PREPARATION]
       );
-
     } else {
       // TODO: TO BE COMPLETED
       decksRelevantToPrepareEventPhase.push(
@@ -98,7 +101,7 @@ export default class Turn {
 
       gridsRelevantToPerformEventPhase.push(
         gameGrids[GridType.PLAYER_2_CARDS_IN_HAND],
-        gameGrids[GridType.PLAYER_2_PREPARE_EVENT],
+        gameGrids[GridType.PLAYER_2_PREPARE_EVENT]
       );
       decksRelevantToPerformEventPhase.push(
         gameDecks[DeckType.PLAYER_2_EVENTS_IN_PREPARATION]
@@ -193,22 +196,22 @@ export default class Turn {
   }
 
   execute() {
-    let currentPhase;
+    this.#expandCard();
 
-    if (this.#numOfExecutedPhases < this.#phases.length) {
-      currentPhase = this.#phases[this.#numOfExecutedPhases];
+    if (this.#currentPhase === PhaseType.INVALID) {
+      this.#checkButtonClick();
+    } else if (!this.#isCurrentPhaseFinished) {
+      this.#isCurrentPhaseFinished = this.#phases[this.#currentPhase].execute();
     }
 
-    /* currentPhase.execute(); */
-    this.#checkButtonClick();
-
-    // this.#numOfExecutedPhases++;
+    if (this.#isCurrentPhaseFinished) {
+      this.#currentPhase = PhaseType.INVALID;
+      this.#numOfExecutedPhases++;
+    }
 
     if (this.#numOfExecutedPhases === 5) {
       globals.isCurrentTurnFinished = true;
     }
-
-    this.#expandCard();
   }
 
   #expandCard() {
@@ -312,29 +315,32 @@ export default class Turn {
   #checkButtonClick() {
     const mouseX = this.#mouseInput.getMouseXCoordinate();
     const mouseY = this.#mouseInput.getMouseYCoordinate();
-    
-    if (this.#mouseInput.isLeftButtonPressed()) {
-    for (let i = 0; i < globals.buttonDataGlobal.length; i++) {
-      const buttonData = globals.buttonDataGlobal[i];
-      const buttonX = buttonData[0];
-      const buttonY = buttonData[1];
-      const buttonWidth = buttonData[2];
-      const buttonHeight = buttonData[3];
-      const phase = buttonData[4];
 
-      if (  mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
-          mouseY >= buttonY && mouseY <= buttonY + buttonHeight) {
-            this.#executePhase(i);
-            break;
+    if (this.#mouseInput.isLeftButtonPressed()) {
+      for (let i = 0; i < globals.buttonDataGlobal.length; i++) {
+        const buttonData = globals.buttonDataGlobal[i];
+        const buttonX = buttonData[0];
+        const buttonY = buttonData[1];
+        const buttonWidth = buttonData[2];
+        const buttonHeight = buttonData[3];
+        const phase = buttonData[4];
+
+        if (
+          mouseX >= buttonX &&
+          mouseX <= buttonX + buttonWidth &&
+          mouseY >= buttonY &&
+          mouseY <= buttonY + buttonHeight
+        ) {
+          this.#executePhase(i);
         }
       }
     }
   }
 
   #executePhase(phase) {
-    if(phase >= 0 && phase < this.#phases.length) {
-      const currentPhase = this.#phases[phase];
-      currentPhase.execute();
+    if (this.#phases[phase]) {
+      this.#currentPhase = phase;
+      this.#isCurrentPhaseFinished = false;
     }
   }
 }

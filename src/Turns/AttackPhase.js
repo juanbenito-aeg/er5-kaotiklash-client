@@ -5,6 +5,7 @@ export default class AttackPhase extends Phase {
   // #currentPlayerMovementGridDeck;
   // #enemyMovementGrid;
   // #currentPlayerMovementGrid;
+ 
 
   constructor(
     /* enemyMovementGridDeck,
@@ -26,6 +27,8 @@ export default class AttackPhase extends Phase {
   }
 
   execute() {
+    console.log("paqueee")
+ 
     // TODO
   }
 }

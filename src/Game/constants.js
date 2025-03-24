@@ -193,6 +193,16 @@ const BattlefieldArea = {
   FRONT: 3,
 };
 
+const PhaseType = {
+  INVALID: -1,
+  DRAW_CARD: 0,
+  PREPARE_EVENT: 1,
+  PERFORM_eVENT: 2,
+  MOVE: 3,
+  ATTACK: 4,
+  DISCARD_CARD: 5,
+};
+
 export {
   GameState,
   FPS,
@@ -215,4 +225,5 @@ export {
   MovePhaseState,
   PrepareEventState,
   DrawCardState,
+  PhaseType,
 };

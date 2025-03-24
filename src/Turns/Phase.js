@@ -1,5 +1,5 @@
 export default class Phase {
-  #state;
+  _state;
   #deckContainer;
   #board;
   #mouseInput;
@@ -7,7 +7,7 @@ export default class Phase {
   #gridsRelevantToPhase;
 
   constructor(state, deckContainer, board, mouseInput) {
-    this.#state = state;
+    this._state = state;
     this.#deckContainer = deckContainer;
     this.#board = board;
     this.#mouseInput = mouseInput;
