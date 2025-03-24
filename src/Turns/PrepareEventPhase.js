@@ -1,9 +1,11 @@
 import Phase from "./Phase.js";
-import { PrepareEventState, CardState, BoxState } from "../Game/constants.js";
+import { PrepareEventState, CardState, BoxState, PlayerID, DeckType, GridType } from "../Game/constants.js";
 import PrepareEvent from "../Events/PrepareEvent.js";
 
 export default class PrepareEventPhase extends Phase { 
   #state;
+  #decksRelevants;
+  #gridsRelevants;
   #selectedCard;
   #selectedGrid;
 
@@ -13,10 +15,39 @@ export default class PrepareEventPhase extends Phase {
     gridRelevants,
     mouseInput
   ) {
-    super(state, decksRelevants, gridRelevants, mouseInput);
+    super(state, mouseInput);
+    this.#decksRelevants = decksRelevants;
+    this.#gridsRelevants = gridRelevants;
     this.#selectedCard = null;
     this.#selectedGrid = null;
     this.#state = state;
+  }
+
+  static create(currentPlayer, deckContainer, board, mouseInput) {
+    let deckRelevants;
+    let gridRelevants;
+
+    if(currentPlayer.getID() === PlayerID.PLAYER_1) {
+      deckRelevants = [deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND],
+                      deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION]];
+      gridRelevants = [board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND],
+                      board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT]
+      ]
+    } else {
+      deckRelevants = [deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND],
+                      deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION]];
+      gridRelevants = [board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND],
+                      board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT]]
+    }
+
+    const prepareEventPhase = new PrepareEventPhase(
+      PrepareEventState.INIT,
+      deckRelevants,
+      gridRelevants,
+      mouseInput
+    );
+
+    return prepareEventPhase;
   }
 
   execute() { 

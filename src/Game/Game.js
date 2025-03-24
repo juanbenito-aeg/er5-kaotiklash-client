@@ -563,69 +563,44 @@ export default class Game {
   }
 
   #renderPhasesButtons() {
-    const phaseNumber = [
-      "Skip",
-      "Attack",
-      "Prepare Event",
-      "Move",
-      "Perform Event",
-    ];
-    const buttonCount = phaseNumber.length;
-    for (let i = 0; i < buttonCount; i++) {
-      const currentPhase = phaseNumber[i];
-      const x = this.#board
-        .getGrids()
-        [GridType.PHASE_BUTTONS].getBoxes()[0]
-        .getXCoordinate();
-      const y =
-        this.#board
-          .getGrids()
-          [GridType.PHASE_BUTTONS].getBoxes()
-          [i].getYCoordinate() + 5;
-      const width = 200;
-      const height = 40;
-      const radius = 10;
-
-      globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-      globals.ctx.shadowBlur = 10;
-      globals.ctx.shadowOffsetX = 4;
-      globals.ctx.shadowOffsetY = 4;
-
-      globals.ctx.fillStyle = "darkcyan";
-      globals.ctx.beginPath();
-      globals.ctx.moveTo(x + radius, y);
-      globals.ctx.lineTo(x + width - radius, y);
-      globals.ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-      globals.ctx.lineTo(x + width, y + height - radius);
-      globals.ctx.quadraticCurveTo(
-        x + width,
-        y + height,
-        x + width - radius,
-        y + height
-      );
-      globals.ctx.lineTo(x + radius, y + height);
-      globals.ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-      globals.ctx.lineTo(x, y + radius);
-      globals.ctx.quadraticCurveTo(x, y, x + radius, y);
-      globals.ctx.closePath();
-      globals.ctx.fill();
-
-      globals.ctx.shadowBlur = 0;
-      globals.ctx.shadowOffsetX = 0;
-      globals.ctx.shadowOffsetY = 0;
-
-      globals.ctx.fillStyle = "white";
-      globals.ctx.font = "18px MedievalSharp";
-      globals.ctx.textAlign = "center";
-      globals.ctx.textBaseline = "middle";
-      globals.ctx.fillText(currentPhase, x + width / 2, y + height / 2);
+    const phaseName = ["Skip", "Prepare Event", "Perform Event", "Move", "Attack"];
+    for (let i = 0; i < phaseName.length; i++) {
+        const x = this.#board.getGrids()[4].getBoxes()[0].getXCoordinate(); 
+        const y = this.#board.getGrids()[4].getBoxes()[i].getYCoordinate() + 5;
+        const width = 200;
+        const height = 40;
+        const radius = 10;
+  
+        const buttonData = [x, y, width, height, phaseName[i]];
+        globals.buttonDataGlobal.push(buttonData);
+  
+        globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+        globals.ctx.shadowBlur = 10;
+        globals.ctx.shadowOffsetX = 4;
+        globals.ctx.shadowOffsetY = 4;
+  
+        globals.ctx.fillStyle = 'darkcyan';
+        globals.ctx.beginPath();
+        globals.ctx.moveTo(buttonData[0] + 10, buttonData[1]);
+        globals.ctx.lineTo(buttonData[0] + buttonData[2] - 10, buttonData[1]);
+        globals.ctx.quadraticCurveTo(buttonData[0] + buttonData[2], buttonData[1], buttonData[0] + buttonData[2], buttonData[1] + 10);
+        globals.ctx.lineTo(buttonData[0] + buttonData[2], buttonData[1] + buttonData[3] - 10);
+        globals.ctx.quadraticCurveTo(buttonData[0] + buttonData[2], buttonData[1] + buttonData[3], buttonData[0] + buttonData[2] - 10, buttonData[1] + buttonData[3]);
+        globals.ctx.lineTo(buttonData[0] + 10, buttonData[1] + buttonData[3]);
+        globals.ctx.quadraticCurveTo(buttonData[0], buttonData[1] + buttonData[3], buttonData[0], buttonData[1] + buttonData[3] - 10);
+        globals.ctx.lineTo(buttonData[0], buttonData[1] + 10);
+        globals.ctx.quadraticCurveTo(buttonData[0], buttonData[1], buttonData[0] + 10, buttonData[1]);
+        globals.ctx.closePath();
+        globals.ctx.fill();
+  
+        globals.ctx.fillStyle = 'white';
+        globals.ctx.font = '18px MedievalSharp';
+        globals.ctx.textAlign = 'center';
+        globals.ctx.textBaseline = 'middle';
+        globals.ctx.fillText(buttonData[4], buttonData[0] + buttonData[2] / 2, buttonData[1] + buttonData[3] / 2);
     }
   }
 
-  #renderGame() {
-    this.#renderCards();
-    this.#renderPhasesButtons();
-  }
   #renderActiveEventsTable() {
     const tableX = this.#board
       .getGrids()
@@ -669,13 +644,11 @@ export default class Game {
       globals.ctx.stroke();
     }
 
-    for (let i = 1; i < 4; i++) {
-      let lineY = tableY + (tableHeight / 4) * i;
+      let lineY = tableY + (tableHeight/ 4) * 1;
       globals.ctx.beginPath();
       globals.ctx.moveTo(tableX, lineY);
       globals.ctx.lineTo(tableX + tableWidth, lineY);
       globals.ctx.stroke();
-    }
 
     globals.ctx.fillStyle = "white";
     globals.ctx.font = "18px MedievalSharp";

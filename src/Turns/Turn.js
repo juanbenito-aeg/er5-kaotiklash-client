@@ -5,21 +5,7 @@ import MovePhase from "./MovePhase.js";
 import PrepareEventPhase from "./PrepareEventPhase.js";
 import PerformEventPhase from "./PerformEventPhase.js";
 import DiscardCardPhase from "./DiscardCardPhase.js";
-<<<<<<< HEAD
-import AttackPhase from "./AttackPhase.js";
-import {
-  CardState,
-  DeckType,
-  DiscardCardState,
-  DrawCardState,
-  GridType,
-  MovePhaseState,
-  PlayerID,
-  PrepareEventState,
-} from "../Game/constants.js";
-=======
 import { PlayerID, CardState, DeckType } from "../Game/constants.js";
->>>>>>> kk-52
 import { globals } from "../index.js";
 
 export default class Turn {
@@ -45,155 +31,16 @@ export default class Turn {
       initialPhase.execute();
     }
 
-<<<<<<< HEAD
-    const gameDecks = this.#deckContainer.getDecks();
-
-    // TODO: FILL ARRAYS
-    const decksRelevantToDrawCardPhase = [];
-    const decksRelevantToPrepareEventPhase = [
-/*       gameDecks[DeckType.PLAYER_1_CARDS_IN_HAND],
-      gameDecks[DeckType.PLAYER_1_EVENTS_IN_PREPARATION],
-      gameDecks[DeckType.PLAYER_2_CARDS_IN_HAND],
-      gameDecks[DeckType.PLAYER_2_EVENTS_IN_PREPARATION], */
-
-    ];
-    const decksRelevantToPerformEventPhase = [
-      gameDecks[DeckType.PLAYER_1_ACTIVE_EVENTS],
-      gameDecks[DeckType.PLAYER_2_ACTIVE_EVENTS],
-      gameDecks[DeckType.PLAYER_1_MINIONS_IN_PLAY],
-      gameDecks[DeckType.PLAYER_2_MINIONS_IN_PLAY],
-=======
     const phaseTypes = [
-      // DrawCardPhase,
+      DrawCardPhase,
+      PrepareEventPhase,
+      PerformEventPhase,
+      MovePhase,
       AttackPhase,
-      // MovePhase,
-      // PrepareEventPhase,
-      // PerformEventPhase,
-      // DiscardCardPhase,
->>>>>>> kk-52
+      DiscardCardPhase,
+    
     ];
 
-<<<<<<< HEAD
-    const gameGrids = this.#board.getGrids();
-
-    // TODO: FILL ARRAYS
-    const gridsRelevantToDrawCardPhase = [];
-    const gridsRelevantToPrepareEventPhase = [
-      gameGrids[GridType.PLAYER_1_CARDS_IN_HAND],
-      gameGrids[GridType.PLAYER_2_CARDS_IN_HAND],
-      gameGrids[GridType.PLAYER_1_PREPARE_EVENT],
-      gameGrids[GridType.PLAYER_2_PREPARE_EVENT],
-    ];
-    const gridsRelevantToPerformEventPhase = [];
-    const gridsRelevantToMovePhase = [];
-    const gridsRelevantToAttackPhase = [];
-    const gridsRelevantToDiscardCardPhase = [];
-
-    if (this.#player.getID() === PlayerID.PLAYER_1) {
-      // TODO: TO BE COMPLETED
-      decksRelevantToPrepareEventPhase.push(
-        gameDecks[DeckType.PLAYER_1_EVENTS_IN_PREPARATION],
-        gameDecks[DeckType.PLAYER_1_CARDS_IN_HAND]
-      );
-      gridsRelevantToPerformEventPhase.push(
-        gameGrids[GridType.PLAYER_1_CARDS_IN_HAND],
-        gameGrids[GridType.PLAYER_1_PREPARE_EVENT],
-      )
-      decksRelevantToPerformEventPhase.push(
-        gameDecks[DeckType.PLAYER_1_EVENTS_IN_PREPARATION]
-      );
-
-    } else {
-      // TODO: TO BE COMPLETED
-      decksRelevantToPrepareEventPhase.push(
-        gameDecks[DeckType.PLAYER_2_EVENTS_IN_PREPARATION],
-        gameDecks[DeckType.PLAYER_2_CARDS_IN_HAND]
-      );
-
-      gridsRelevantToPerformEventPhase.push(
-        gameGrids[GridType.PLAYER_2_CARDS_IN_HAND],
-        gameGrids[GridType.PLAYER_2_PREPARE_EVENT],
-      );
-      decksRelevantToPerformEventPhase.push(
-        gameDecks[DeckType.PLAYER_2_EVENTS_IN_PREPARATION]
-      );
-    }
-
-    const decksRelevantToPhases = [
-      decksRelevantToDrawCardPhase,
-      decksRelevantToPrepareEventPhase,
-      decksRelevantToPerformEventPhase,
-      decksRelevantToMovePhase,
-      decksRelevantToAttackPhase,
-      decksRelevantToDiscardCardPhase,
-    ];
-
-    const gridsRelevantToPhases = [
-      gridsRelevantToDrawCardPhase,
-      gridsRelevantToPrepareEventPhase,
-      gridsRelevantToPerformEventPhase,
-      gridsRelevantToMovePhase,
-      gridsRelevantToAttackPhase,
-      gridsRelevantToDiscardCardPhase,
-    ];
-
-    const drawCardPhase = new DrawCardPhase(
-      DrawCardState.INIT,
-      this.#deckContainer,
-      this.#board,
-      this.#mouseInput
-    );
-    const prepareEventPhase = new PrepareEventPhase(
-      PrepareEventState.INIT,
-      decksRelevantToPrepareEventPhase,
-      gameGrids,
-      this.#mouseInput
-    );
-    const performEventPhase = new PerformEventPhase(
-      0 /* TO BE CHANGED */,
-      this.#deckContainer,
-      this.#board,
-      this.#mouseInput
-    );
-    const movePhase = new MovePhase(
-      MovePhaseState.INIT,
-      this.#deckContainer,
-      this.#board,
-      this.#mouseInput
-    );
-    const attackPhase = new AttackPhase(
-      0 /* TO BE CHANGED */,
-      this.#deckContainer,
-      this.#board,
-      this.#mouseInput
-    );
-    const discardCardPhase = new DiscardCardPhase(
-      DiscardCardState.INIT,
-      this.#deckContainer,
-      this.#board,
-      this.#mouseInput
-    );
-
-    this.#phases = [
-      drawCardPhase,
-      prepareEventPhase,
-      performEventPhase,
-      movePhase,
-      attackPhase,
-      discardCardPhase,
-    ];
-
-    for (let i = 0; i < this.#phases.length; i++) {
-      const currentPhase = this.#phases[i];
-
-      for (let j = 0; j < decksRelevantToPhases[i].length; j++) {
-        currentPhase.addDeck(decksRelevantToPhases[i][j]);
-      }
-
-      for (let j = 0; j < gridsRelevantToPhases[i].length; j++) {
-        currentPhase.addGrid(gridsRelevantToPhases[i][j]);
-      }
-=======
     for (let i = 0; i < phaseTypes.length; i++) {
       const currentPhase = phaseTypes[i].create(
         this.#player,
@@ -203,7 +50,6 @@ export default class Turn {
       );
 
       this.#phases.push(currentPhase);
->>>>>>> kk-52
     }
   }
 
