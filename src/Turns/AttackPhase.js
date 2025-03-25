@@ -135,10 +135,20 @@ export default class AttackPhase extends Phase {
 
         // CALCULATION AND APPLICATION OF DAMAGE
         case AttackPhaseState.CALC_AND_APPLY_DMG:
-          const attackEvent = AttackEvent.create(this.#attacker, this.#target);
-          attackEvent.execute();
+          const attackEvent = AttackEvent.create(
+            this.#attacker,
+            this.#target,
+            this.#currentPlayerMovementGrid,
+            this.#enemyMovementGrid
+          );
 
-          this._state = AttackPhaseState.END;
+          const wasTheAttackPerformed = attackEvent.execute();
+
+          if (wasTheAttackPerformed) {
+            this._state = AttackPhaseState.END;
+          } else {
+            this._state = AttackPhaseState.SELECT_TARGET;
+          }
 
           break;
 

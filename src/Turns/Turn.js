@@ -229,10 +229,10 @@ export default class Turn {
         const buttonHeight = buttonData[3];
 
         if (
-          mouseX >= buttonX &&
-          mouseX <= buttonX + buttonWidth &&
-          mouseY >= buttonY &&
-          mouseY <= buttonY + buttonHeight
+          mouseX >= buttonXCoordinate &&
+          mouseX <= buttonXCoordinate + buttonWidth &&
+          mouseY >= buttonYCoordinate &&
+          mouseY <= buttonYCoordinate + buttonHeight
         ) {
           if (i === PhaseButton.SKIP) {
             // TODO: INSERT METHOD THAT SKIPS CURRENT PHASE
