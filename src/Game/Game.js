@@ -486,27 +486,29 @@ export default class Game {
   #updatePlayersTotalHP() {
     // PLAYER 1
 
-    const player1MinionsDeck =
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS];
+    // (!) UNCOMMENT AFTER TURNING DEMO (SPRINT 3) IN
+    /* const player1MinionsDeck =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS]; */
     const player1MinionsInPlayDeck =
       this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
 
     const player1 = this.#players[PlayerID.PLAYER_1];
     const player1UpdatedTotalHP =
-      this.#sumMinionsHP(player1MinionsDeck) +
+      /* this.#sumMinionsHP(player1MinionsDeck) + */
       this.#sumMinionsHP(player1MinionsInPlayDeck);
     player1.setTotalHP(player1UpdatedTotalHP);
 
     // PLAYER 2
 
-    const player2MinionsDeck =
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
+    // (!) UNCOMMENT AFTER TURNING DEMO (SPRINT 3) IN
+    /* const player2MinionsDeck =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS]; */
     const player2MinionsInPlayDeck =
       this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
 
     const player2 = this.#players[PlayerID.PLAYER_2];
     const player2UpdatedTotalHP =
-      this.#sumMinionsHP(player2MinionsDeck) +
+      /* this.#sumMinionsHP(player2MinionsDeck) + */
       this.#sumMinionsHP(player2MinionsInPlayDeck);
     player2.setTotalHP(player2UpdatedTotalHP);
   }
@@ -543,11 +545,8 @@ export default class Game {
     // CLEAR SCREEN
     globals.ctx.clearRect(0, 0, globals.canvas.width, globals.canvas.height);
 
-    this.#renderBoard();
-
     switch (globals.gameState) {
       case GameState.PLAYING:
-        this.#renderGrids();
         this.#renderGame();
         break;
     }
@@ -604,6 +603,8 @@ export default class Game {
   }
 
   #renderGame() {
+    this.#renderBoard();
+    this.#renderGrids();
     this.#renderPlayersInfo();
     this.#renderPhaseButtons();
     this.#renderActiveEventsTable();
