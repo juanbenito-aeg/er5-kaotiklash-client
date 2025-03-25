@@ -1,3 +1,6 @@
+import { CardCategory, CardState } from "../Game/constants.js";
+import { globals } from "../index.js";
+
 export default class CardMovement {
   #card;
   #previousState;
@@ -6,6 +9,41 @@ export default class CardMovement {
   constructor(card, state) {
     this.#card = card;
     this.#state = state;
+  }
+
+  checkIfMouseWithinCardWidthAndHeight(mouseInput) {
+    let cardWidth = globals.imagesDestinationSizes.allCardsBigVersion.width;
+    let cardHeight = globals.imagesDestinationSizes.allCardsBigVersion.height;
+
+    let cardXCoordinate = globals.canvas.width / 2 - cardWidth / 2;
+    let cardYCoordinate = globals.canvas.height / 2 - cardHeight / 2;
+
+    if (this.getState() !== CardState.EXPANDED) {
+      if (this.getCategory() === CardCategory.MAIN_CHARACTER) {
+        cardWidth =
+          globals.imagesDestinationSizes.mainCharactersSmallVersion.width;
+        cardHeight =
+          globals.imagesDestinationSizes.mainCharactersSmallVersion.height;
+      } else {
+        cardWidth =
+          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width;
+        cardHeight =
+          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height;
+      }
+
+      cardXCoordinate = this.getXCoordinate();
+      cardYCoordinate = this.getYCoordinate();
+    }
+
+    const isMouseWithinCardWidth =
+      mouseInput.getMouseXCoordinate() >= cardXCoordinate &&
+      mouseInput.getMouseXCoordinate() <= cardXCoordinate + cardWidth;
+
+    const isMouseWithinCardHeight =
+      mouseInput.getMouseYCoordinate() >= cardYCoordinate &&
+      mouseInput.getMouseYCoordinate() <= cardYCoordinate + cardHeight;
+
+    return [isMouseWithinCardWidth, isMouseWithinCardHeight];
   }
 
   getCategory() {
@@ -58,6 +96,10 @@ export default class CardMovement {
 
   getCurrentDefense() {
     return this.#card.getCurrentDefense();
+  }
+
+  getWeaponType() {
+    return this.#card.getWeaponType();
   }
 
   getInitialDamage() {
@@ -178,5 +220,9 @@ export default class CardMovement {
 
   setState(newState) {
     this.#state = newState;
+  }
+
+  setCurrenPrepTimeInRounds(newPrepTimeInRounds) {
+    this.#card.setCurrenPrepTimeInRounds(newPrepTimeInRounds);
   }
 }

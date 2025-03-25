@@ -63,6 +63,10 @@ export default class CardView {
     return this.#card.getCurrentDefense();
   }
 
+  getWeaponType() {
+    return this.#card.getWeaponType();
+  }
+
   getInitialDamage() {
     return this.#card.getInitialDamage();
   }
@@ -169,5 +173,9 @@ export default class CardView {
 
   getCard() {
     return this.#card;
+  }
+
+  setCurrenPrepTimeInRounds(newPrepTimeInRounds) {
+    this.#card.setCurrenPrepTimeInRounds(newPrepTimeInRounds);
   }
 }
