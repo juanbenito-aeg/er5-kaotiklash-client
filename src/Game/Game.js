@@ -424,6 +424,7 @@ export default class Game {
         }
         const currentCardsInHandBox =
           currentPlayer.cardsInHandGrid.getBoxes()[currentCardsInHandBoxIndex];
+        currentCardsInHandBox.setCard(currentEventCard);
 
         currentEventCard.setXCoordinate(currentCardsInHandBox.getXCoordinate());
         currentEventCard.setYCoordinate(currentCardsInHandBox.getYCoordinate());
@@ -444,6 +445,7 @@ export default class Game {
           currentPlayer.minionsInPlayGrid.getBoxes()[
             currentBattlefieldBoxIndex
           ];
+        currentBattlefieldBox.setCard(currentMinionCard);
 
         currentMinionCard.setXCoordinate(
           currentBattlefieldBox.getXCoordinate()

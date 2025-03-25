@@ -152,7 +152,7 @@ export default class GridCreator {
       let battlefieldArea;
 
       if (i < 6) {
-        battlefieldArea = BattlefieldArea.FRONT;
+        battlefieldArea = BattlefieldArea.REAR;
       } else if (i < 12) {
         if (i === 6) {
           player1BattlefieldBoxXCoordinate = 700;
@@ -166,7 +166,7 @@ export default class GridCreator {
           player1BattlefieldBoxYCoordinate = 580;
         }
 
-        battlefieldArea = BattlefieldArea.REAR;
+        battlefieldArea = BattlefieldArea.FRONT;
       }
 
       const player1BattlefieldBox = new Box(
@@ -176,7 +176,7 @@ export default class GridCreator {
         110,
         false,
         false,
-        BoxState.INACTIVE,
+        BoxState.AVAILABLE,
         battlefieldArea
       );
 
@@ -198,7 +198,7 @@ export default class GridCreator {
         110,
         false,
         false,
-        BoxState.INACTIVE,
+        BoxState.AVAILABLE,
         BattlefieldArea.NONE
       );
 
@@ -255,7 +255,7 @@ export default class GridCreator {
         110,
         false,
         false,
-        BoxState.INACTIVE,
+        BoxState.AVAILABLE,
         BattlefieldArea.NONE
       );
 
@@ -278,7 +278,7 @@ export default class GridCreator {
       let battlefieldArea;
 
       if (i < 6) {
-        battlefieldArea = BattlefieldArea.FRONT;
+        battlefieldArea = BattlefieldArea.REAR;
       } else if (i < 12) {
         if (i === 6) {
           player2BattlefieldBoxXCoordinate = 835;
@@ -292,7 +292,7 @@ export default class GridCreator {
           player2BattlefieldBoxYCoordinate = 440;
         }
 
-        battlefieldArea = BattlefieldArea.REAR;
+        battlefieldArea = BattlefieldArea.FRONT;
       }
 
       const player2BattlefieldBox = new Box(
@@ -302,7 +302,7 @@ export default class GridCreator {
         110,
         false,
         false,
-        BoxState.INACTIVE,
+        BoxState.AVAILABLE,
         battlefieldArea
       );
 
@@ -324,7 +324,7 @@ export default class GridCreator {
         110,
         false,
         false,
-        BoxState.INACTIVE,
+        BoxState.AVAILABLE,
         BattlefieldArea.NONE
       );
 

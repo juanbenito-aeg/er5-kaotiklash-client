@@ -1,3 +1,5 @@
+import { BoxState } from "../Game/constants.js";
+
 export default class Box {
   #xCoordinate;
   #yCoordinate;
@@ -74,10 +76,10 @@ export default class Box {
     if (this.#state === BoxState.AVAILABLE) {
       this.#card = card;
       this.setState(BoxState.OCCUPIED);
-      }
+    }
   }
-  
+
   isOccupied() {
     return this.#card !== null;
-    }
+  }
 }
