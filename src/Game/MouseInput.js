@@ -1,4 +1,5 @@
 import { globals } from "../index.js";
+import { BoxState } from "./constants.js";
 
 export default class MouseInput {
   #mouseXCoordinate;
@@ -85,17 +86,31 @@ export default class MouseInput {
   }
 
   isMouseOverBox(box) {
-    const boxX = box.getX();
-    const boxY = box.getY();
+    let isOverBox;
+
+    const boxX = box.getXCoordinate();
+    const boxY = box.getYCoordinate();
     const boxWidth = box.getWidth();
     const boxHeight = box.getHeight();
 
-    const isOverBox = (
-      this.mouseX >= boxX && 
-      this.mouseX <= boxX + boxWidth &&
-      this.mouseY >= boxY && 
-      this.mouseY <= boxY + boxHeight
-    );
+    isOverBox =
+      this.#mouseXCoordinate >= boxX &&
+      this.#mouseXCoordinate <= boxX + boxWidth &&
+      this.#mouseYCoordinate >= boxY &&
+      this.#mouseYCoordinate <= boxY + boxHeight;
+
     return isOverBox;
   }
+
+  /* calculeCollisionBetweenMouseAndDecks(deck) {
+    for (let i = 0; i < deck.length; i++) {
+      let cards = deck[i];
+      for (let j = 0; j < cards.getCards(); j++) {
+        const card = cards.getCards()[j];
+        const xCard = card.getXCoordinate();
+        const yCard = card.getYCoordinate();
+
+      }
+    }
+  } */
 }
