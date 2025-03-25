@@ -7,6 +7,7 @@ export default class Box {
   #isDangerous;
   #state;
   #battlefieldAreaItBelongsTo;
+  #card;
 
   constructor(
     xCoordinate,
@@ -26,6 +27,7 @@ export default class Box {
     this.#isDangerous = isDangerous;
     this.#state = state;
     this.#battlefieldAreaItBelongsTo = battlefieldAreaItBelongsTo;
+    this.#card = null;
   }
 
   getXCoordinate() {
@@ -56,7 +58,26 @@ export default class Box {
     return this.#state;
   }
 
+  setState(state) {
+    this.#state = state;
+  }
+
   getBattlefieldAreaItBelongsTo() {
     return this.#battlefieldAreaItBelongsTo;
   }
+
+  getCard() {
+    return this.#card;
+  }
+
+  setCard(card) {
+    if (this.#state === BoxState.AVAILABLE) {
+      this.#card = card;
+      this.setState(BoxState.OCCUPIED);
+      }
+  }
+  
+  isOccupied() {
+    return this.#card !== null;
+    }
 }
