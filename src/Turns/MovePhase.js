@@ -7,6 +7,7 @@ export default class MovePhase extends Phase {
   #gridsRelevants;
   #selectedCard;
   #selectedGrid;
+  #previousBox
 
   constructor(
     state,
@@ -15,11 +16,12 @@ export default class MovePhase extends Phase {
     mouseInput
   ) {
     super(state, mouseInput);
+    this.#state = state;
     this.#decksRelevants = decksRelevants;
     this.#gridsRelevants = gridRelevants;
     this.#selectedCard = null;
     this.#selectedGrid = null;
-    this.#state = state;
+    this.#previousBox = null;
 
   }
 
@@ -99,7 +101,13 @@ export default class MovePhase extends Phase {
     console.log("select target phase")
 
     const battlefieldGrid = this.#gridsRelevants;
+
     for (let i = 0; i < battlefieldGrid.getBoxes().length; i++) {
+      if(this.#selectedCard.getXCoordinate() === battlefieldGrid.getBoxes()[i].getXCoordinate() && this.#selectedCard.getYCoordinate()  === battlefieldGrid.getBoxes()[i].getYCoordinate())
+      {
+        this.#previousBox = battlefieldGrid.getBoxes()[i]
+
+      }
       const box = battlefieldGrid.getBoxes()[i];
       const targetBoxX = this.#selectedCard.getXCoordinate() - 135;
       const targetBoxY = this.#selectedCard.getYCoordinate() - 135;
@@ -107,13 +115,18 @@ export default class MovePhase extends Phase {
       const targetBoxWidth = box.getWidth() ;
       const targetSizeX = targetBoxX + targetBoxWidth * 3 + 50;
       const targetSizeY = targetBoxY + targetBoxHeight * 3 + 50;
-      console.log(targetSizeX )
+
       const isMouseOnAvailableArea = this._mouseInput.getMouseXCoordinate() >= targetBoxX && this._mouseInput.getMouseXCoordinate() <= targetSizeX &&
                                      this._mouseInput.getMouseYCoordinate() >= targetBoxY && this._mouseInput.getMouseYCoordinate() <= targetSizeY;
 
       if (this._mouseInput.isMouseOverBox(box) && !box.isOccupied() && this._mouseInput.isLeftButtonPressed() && isMouseOnAvailableArea) {
         this.#selectedGrid = box;
+        console.log(this.#previousBox)
+        box.setCard(this.#selectedCard);
+        this.#previousBox.setState(BoxState.AVAILABLE);
+        this.#previousBox.resetCard();
         box.setState(BoxState.SELECTED);
+
       }
     }
     if (this.#selectedGrid) {
@@ -122,8 +135,8 @@ export default class MovePhase extends Phase {
   }
 
   #moveCardToBox() {
-    console.log("move card phase")
-
+    // console.log(this.#gridsRelevants)
+    // console.log(this.#selectedGrid)
     if (this.#selectedCard) {
 
       this.#selectedCard.setXCoordinate(this.#selectedGrid.getXCoordinate()); 
@@ -146,6 +159,7 @@ export default class MovePhase extends Phase {
         this.#selectedCard = null;
       }
       this.#selectedGrid = null;
+      this.#previousBox
       this._state = MovePhaseState.INIT;
     }
   }
