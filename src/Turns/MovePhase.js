@@ -81,7 +81,7 @@ export default class MovePhase extends Phase {
     const battlefieldGrid = this.gridRelevants;
     for (let i = 0; i < battlefieldGrid.getBoxes().length; i++) {
       const box = battlefieldGrid.getBoxes()[i];
-      if (this.mouseInput.isMouseOverBox(box) && !box.isOccupied()) {
+      if (this.mouseInput.isMouseOverBox(box) && box.isOccupied() && this.mouseInput.isLeftButtonPressed()) {
         this.#selectedCard = box.getCard();
         this.#selectedCard.setState(CardState.SELECTED);
         console.log(this.#selectedCard.getName())
@@ -96,7 +96,16 @@ export default class MovePhase extends Phase {
     const battlefieldGrid = this.gridRelevants;
     for (let i = 0; i < battlefieldGrid.getBoxes().length; i++) {
       const box = battlefieldGrid.getBoxes()[i];
-      if (this.mouseInput.isMouseOverBox(box) && !box.isOccupied()) {
+      const targetBoxX = box.getXCoordinate();
+      const targetBoxY = box.getYCoordinate();
+      const targetBoxHeight = box.getHeight();
+      const targetBoxWidth = box.getWidth() ;
+      const targetSizeX = targetBoxX + targetBoxWidth * 3 + 50;
+      const targetSizeY = targetBoxY + targetBoxHeight * 3 + 50;
+      const isMouseOnAvailableArea = this.mouseInput.getMouseXCoordinate() >= targetBoxX && this.mouseInput.getMouseXCoordinate() <= targetSizeX &&
+                                     this.mouseInput.getMouseYCoordinate() >= targetBoxY && this.mouseInput.getMouseYCoordinate() <= targetSizeY;
+
+      if (this.mouseInput.isMouseOverBox(box) && !box.isOccupied() && this.mouseInput.isLeftButtonPressed() && isMouseOnAvailableArea) {
         this.#selectedGrid = box;
         box.setState(BoxState.SELECTED);
       }
@@ -112,6 +121,10 @@ export default class MovePhase extends Phase {
       this.#selectedCard.setYCoordinate() = this.#selectedGrid.getYCoordinate();
       this.#selectedCard.state = CardState.PLACED;
       targetBox.state = BoxState.OCCUPIED;
+    }
+    if(this.#selectedCard.setXCoordinate() === this.#selectedGrid.getXCoordinate() && 
+       this.#selectedCard.setYCoordinate() === this.#selectedGrid.getYCoordinate()) {
+      this.state = MovePhaseState.END;
     }
   }
 
