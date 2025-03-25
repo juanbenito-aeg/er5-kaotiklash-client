@@ -84,8 +84,11 @@ export default class Game {
     turnPlayer2.fillPhases();
     game.#turns = [turnPlayer1, turnPlayer2];
 
-    game.#events = [];
+    game.#createPhaseButtons();
+
     game.#setInitialCardsCoordinates();
+
+    game.#events = [];
 
     return game;
   }
@@ -278,6 +281,40 @@ export default class Game {
     }
 
     this.#deckContainer.setDecks(updatedDecks);
+  }
+
+  #createPhaseButtons() {
+    const buttonNames = [
+      "Skip",
+      "Prepare Event",
+      "Perform Event",
+      "Move",
+      "Attack",
+    ];
+
+    const buttonsXCoordinate = this.#board
+      .getGrids()
+      [GridType.PHASE_BUTTONS].getBoxes()[0]
+      .getXCoordinate();
+    const buttonsWidth = 200;
+    const buttonsHeight = 40;
+
+    for (let i = 0; i < buttonNames.length; i++) {
+      const currentButtonYCoordinate =
+        this.#board
+          .getGrids()
+          [GridType.PHASE_BUTTONS].getBoxes()
+          [i].getYCoordinate() + 5;
+
+      const buttonData = [
+        buttonsXCoordinate,
+        currentButtonYCoordinate,
+        buttonsWidth,
+        buttonsHeight,
+        buttonNames[i],
+      ];
+      globals.buttonDataGlobal.push(buttonData);
+    }
   }
 
   #setInitialCardsCoordinates() {
@@ -493,13 +530,12 @@ export default class Game {
       let event = this.#events[i];
       event.execute();
 
-      if(!event.isActive()) {
+      if (!event.isActive()) {
         this.#events.splice(i, 1);
         i--;
       }
     }
   }
-
 
   #render() {
     // CLEAR SCREEN
@@ -567,7 +603,7 @@ export default class Game {
 
   #renderGame() {
     this.#renderPlayersInfo();
-    this.#renderPhasesButtons();
+    this.#renderPhaseButtons();
     this.#renderActiveEventsTable();
     this.#renderMessages();
     this.#renderCardsReverse();
@@ -627,42 +663,73 @@ export default class Game {
     );
   }
 
-  #renderPhasesButtons() {
-    const phaseName = ["Skip", "Prepare Event", "Perform Event", "Move", "Attack"];
-    for (let i = 0; i < phaseName.length; i++) {
-        const x = this.#board.getGrids()[4].getBoxes()[0].getXCoordinate(); 
-        const y = this.#board.getGrids()[4].getBoxes()[i].getYCoordinate() + 5;
-        const width = 200;
-        const height = 40;
-        const radius = 10;
-  
-        const buttonData = [x, y, width, height, phaseName[i]];
-        globals.buttonDataGlobal.push(buttonData);
-  
-        globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-        globals.ctx.shadowBlur = 10;
-        globals.ctx.shadowOffsetX = 4;
-        globals.ctx.shadowOffsetY = 4;
-  
-        globals.ctx.fillStyle = 'darkcyan';
-        globals.ctx.beginPath();
-        globals.ctx.moveTo(buttonData[0] + 10, buttonData[1]);
-        globals.ctx.lineTo(buttonData[0] + buttonData[2] - 10, buttonData[1]);
-        globals.ctx.quadraticCurveTo(buttonData[0] + buttonData[2], buttonData[1], buttonData[0] + buttonData[2], buttonData[1] + 10);
-        globals.ctx.lineTo(buttonData[0] + buttonData[2], buttonData[1] + buttonData[3] - 10);
-        globals.ctx.quadraticCurveTo(buttonData[0] + buttonData[2], buttonData[1] + buttonData[3], buttonData[0] + buttonData[2] - 10, buttonData[1] + buttonData[3]);
-        globals.ctx.lineTo(buttonData[0] + 10, buttonData[1] + buttonData[3]);
-        globals.ctx.quadraticCurveTo(buttonData[0], buttonData[1] + buttonData[3], buttonData[0], buttonData[1] + buttonData[3] - 10);
-        globals.ctx.lineTo(buttonData[0], buttonData[1] + 10);
-        globals.ctx.quadraticCurveTo(buttonData[0], buttonData[1], buttonData[0] + 10, buttonData[1]);
-        globals.ctx.closePath();
-        globals.ctx.fill();
-  
-        globals.ctx.fillStyle = 'white';
-        globals.ctx.font = '18px MedievalSharp';
-        globals.ctx.textAlign = 'center';
-        globals.ctx.textBaseline = 'middle';
-        globals.ctx.fillText(buttonData[4], buttonData[0] + buttonData[2] / 2, buttonData[1] + buttonData[3] / 2);
+  #renderPhaseButtons() {
+    const BUTTON_X = 0;
+    const BUTTON_Y = 1;
+    const BUTTON_WIDTH = 2;
+    const BUTTON_HEIGHT = 3;
+    const BUTTON_NAME = 4;
+
+    for (let i = 0; i < globals.buttonDataGlobal.length; i++) {
+      const currentButton = globals.buttonDataGlobal[i];
+
+      globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      globals.ctx.shadowBlur = 10;
+      globals.ctx.shadowOffsetX = 4;
+      globals.ctx.shadowOffsetY = 4;
+
+      globals.ctx.fillStyle = "darkcyan";
+      globals.ctx.beginPath();
+      globals.ctx.moveTo(currentButton[BUTTON_X] + 10, currentButton[BUTTON_Y]);
+      globals.ctx.lineTo(
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH] - 10,
+        currentButton[BUTTON_Y]
+      );
+      globals.ctx.quadraticCurveTo(
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH],
+        currentButton[BUTTON_Y],
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH],
+        currentButton[BUTTON_Y] + 10
+      );
+      globals.ctx.lineTo(
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH],
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT] - 10
+      );
+      globals.ctx.quadraticCurveTo(
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH],
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT],
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH] - 10,
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT]
+      );
+      globals.ctx.lineTo(
+        currentButton[BUTTON_X] + 10,
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT]
+      );
+      globals.ctx.quadraticCurveTo(
+        currentButton[BUTTON_X],
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT],
+        currentButton[BUTTON_X],
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT] - 10
+      );
+      globals.ctx.lineTo(currentButton[BUTTON_X], currentButton[BUTTON_Y] + 10);
+      globals.ctx.quadraticCurveTo(
+        currentButton[BUTTON_X],
+        currentButton[BUTTON_Y],
+        currentButton[BUTTON_X] + 10,
+        currentButton[BUTTON_Y]
+      );
+      globals.ctx.closePath();
+      globals.ctx.fill();
+
+      globals.ctx.fillStyle = "white";
+      globals.ctx.font = "18px MedievalSharp";
+      globals.ctx.textAlign = "center";
+      globals.ctx.textBaseline = "middle";
+      globals.ctx.fillText(
+        currentButton[BUTTON_NAME],
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH] / 2,
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT] / 2
+      );
     }
   }
 
@@ -709,11 +776,11 @@ export default class Game {
       globals.ctx.stroke();
     }
 
-      let lineY = tableY + (tableHeight/ 4) * 1;
-      globals.ctx.beginPath();
-      globals.ctx.moveTo(tableX, lineY);
-      globals.ctx.lineTo(tableX + tableWidth, lineY);
-      globals.ctx.stroke();
+    let lineY = tableY + (tableHeight / 4) * 1;
+    globals.ctx.beginPath();
+    globals.ctx.moveTo(tableX, lineY);
+    globals.ctx.lineTo(tableX + tableWidth, lineY);
+    globals.ctx.stroke();
 
     globals.ctx.fillStyle = "white";
     globals.ctx.font = "18px MedievalSharp";
@@ -851,16 +918,8 @@ export default class Game {
 
   #renderCards() {
     let expandedCard;
-    const player1Deck = this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
-    for (let i = 0; i < player1Deck.getCards().length; i++) {
-      const currentCard = player1Deck.getCards()[i];
-      this.#renderCard(currentCard);
-      if (currentCard.getState() === CardState.EXPANDED) {
-        expandedCard = currentCard;
-      }
-    }
 
-    /* for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
       const currentDeck = this.#deckContainer.getDecks()[i];
 
       const isDeckCardsInHandOfInactivePlayer =
@@ -896,7 +955,7 @@ export default class Game {
           }
         }
       }
-    } */
+    }
 
     if (expandedCard) {
       this.#renderExpandedCard(expandedCard);
@@ -1766,176 +1825,3 @@ export default class Game {
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
   }
 }
-
-// #renderPlayer1MinionActiveCards() {
-//   const player1MinionsInPlayDeck = this.#deckContainer.getDecks()[5].getCards();
-//   const battlefieldBot = this.#board.getGrids()[8].getBoxes();
-//   const battlefieldTop = this.#board.getGrids()[13].getBoxes();
-
-// let fixedPositions = [];
-// if(globals.currentPlayer === 1)
-// {
-// fixedPositions = [
-
-//   { x: battlefieldBot[1].getXCoordinate(), y: battlefieldBot[1].getYCoordinate() },
-//   { x: battlefieldBot[8].getXCoordinate(), y: battlefieldBot[8].getYCoordinate() },
-//   { x: battlefieldBot[3].getXCoordinate(), y: battlefieldBot[3].getYCoordinate() },
-
-// ];
-// }
-// else
-// {
-// fixedPositions = [
-
-//     { x: battlefieldTop[1].getXCoordinate(), y: battlefieldTop[1].getYCoordinate() },
-//     { x: battlefieldTop[8].getXCoordinate(), y: battlefieldTop[8].getYCoordinate() },
-//     { x: battlefieldTop[3].getXCoordinate(), y: battlefieldTop[3].getYCoordinate() },
-
-//   ];
-// }
-
-//   for (let i = 0; i < player1MinionsInPlayDeck.length && i < fixedPositions.length; i++) {
-//     const currentCard = player1MinionsInPlayDeck[i];
-//     const { x, y } = fixedPositions[i];
-
-//     let smallSizeX = 110;
-//     let smallSizeY = 110;
-
-//     this.#renderCard(currentCard, x, y, smallSizeX, smallSizeY);
-//     this.#renderSmallTemplate(currentCard, x, y, smallSizeX, smallSizeY);
-//     this.#renderIcons(currentCard, x, y);
-//     this.#renderAttributesMinions(currentCard, x, y);
-//   }
-// }
-
-// #renderPlayer2MinionActiveCards() {
-//   const player2MinionsInPlayDeck = this.#deckContainer.getDecks()[11].getCards();
-//   const battlefieldBot = this.#board.getGrids()[8].getBoxes();
-//   const battlefieldTop = this.#board.getGrids()[13].getBoxes();
-
-//   let fixedPositions = [];
-//   if(globals.currentPlayer === 1)
-//   {
-//     fixedPositions = [
-
-//       { x: battlefieldTop[1].getXCoordinate(), y: battlefieldTop[1].getYCoordinate() },
-//       { x: battlefieldTop[8].getXCoordinate(), y: battlefieldTop[8].getYCoordinate() },
-//       { x: battlefieldTop[3].getXCoordinate(), y: battlefieldTop[3].getYCoordinate() },
-
-//     ];
-//     }
-//     else
-//     {
-//     fixedPositions = [
-
-//         { x: battlefieldBot[1].getXCoordinate(), y: battlefieldBot[1].getYCoordinate() },
-//         { x: battlefieldBot[8].getXCoordinate(), y: battlefieldBot[8].getYCoordinate() },
-//         { x: battlefieldBot[3].getXCoordinate(), y: battlefieldBot[3].getYCoordinate() },
-//       ];
-//   }
-
-//   for (let i = 0; i < player2MinionsInPlayDeck.length && i < fixedPositions.length; i++) {
-//     const currentCard = player2MinionsInPlayDeck[i];
-//     const { x, y } = fixedPositions[i];
-
-//     let smallSizeX = 110;
-//     let smallSizeY = 110;
-
-//     this.#renderCard(currentCard, x, y, smallSizeX, smallSizeY);
-//     this.#renderSmallTemplate(currentCard, x, y, smallSizeX, smallSizeY);
-//     this.#renderIcons(currentCard, x, y);
-//     this.#renderAttributesMinions(currentCard, x, y);
-//   }
-// }
-
-// #renderEventHandPlayer1Cards() {
-
-//     const MinionPlayer1 = this.#deckContainer.getDecks()[3];
-
-//     for(let i = 0; i < MinionPlayer1.getCards().length ; i++)
-//     {
-//       const currentCard = MinionPlayer1.getCards()[i];
-//       let xCoordinate = this.#board.getGrids()[7].getBoxes()[i].getXCoordinate();
-//       let yCoordinate = this.#board.getGrids()[7].getBoxes()[i].getYCoordinate();
-//       let smallSizeX = 110;
-//       let smallSizeY = 110;
-//       this.#renderCard(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
-//       this.#renderSmallTemplate(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
-//       this.#renderIcons(currentCard, xCoordinate, yCoordinate);
-//       this.#renderAttributesWeaponns(currentCard, xCoordinate, yCoordinate);
-//       this.#renderEventHandPlayer2Reverse();
-//     }
-
-//     globals.ctx.font = "20px MedievalSharp";
-//     globals.ctx.fillStyle = "yellow";
-//     globals.ctx.fillText("Player 1", 580, 990);
-
-// }
-
-// #renderEventHandPlayer2Reverse(){
-//   const EventPlayer2 = this.#deckContainer.getDecks()[9].getCards();
-//   const xCoordinate = this.#board.getGrids()[12].getBoxes()[0].getXCoordinate() - 3;
-//   const yCoordinate = this.#board.getGrids()[12].getBoxes()[0].getYCoordinate() - 2;
-//   for( let i = 0; i < EventPlayer2.length; i++)
-//   {
-//     globals.ctx.drawImage(
-//       globals.cardsReverseImage,
-//       0,
-//       0,
-//       425,
-//       587,
-//       xCoordinate +  i*135,
-//       yCoordinate,
-//       115,
-//       115
-//     );
-//   }
-
-// }
-
-// #renderEventHandPlayer2Cards() {
-
-//     const EventPlayer2 = this.#deckContainer.getDecks()[9].getCards();
-//     //console.log(this.#board.getGrids()[7].getBoxes()[0]);
-
-//     for(let i = 0; i < EventPlayer2.length ; i++)
-//     {
-//       const currentCard = EventPlayer2[i];
-//       let xCoordinate = this.#board.getGrids()[7].getBoxes()[i].getXCoordinate();
-//       let yCoordinate = this.#board.getGrids()[7].getBoxes()[i].getYCoordinate();
-//       let smallSizeX = 110;
-//       let smallSizeY = 110;
-//       this.#renderCard(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
-//       this.#renderSmallTemplate(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
-//       this.#renderIcons(currentCard, xCoordinate, yCoordinate);
-//       this.#renderAttributesWeaponns(currentCard, xCoordinate, yCoordinate);
-//       this.#renderEventHandPlayer1Reverse();
-//     }
-
-//     globals.ctx.font = "20px MedievalSharp";
-//     globals.ctx.fillStyle = "yellow";
-//     globals.ctx.fillText("Player 2", 580, 990);
-// }
-
-// #renderEventHandPlayer1Reverse(){
-//   const EventPlayer1 = this.#deckContainer.getDecks()[3].getCards();
-//   console.log(this.#board.getGrids()[12].getBoxes()[0]);
-
-//   const xCoordinate = this.#board.getGrids()[12].getBoxes()[0].getXCoordinate() - 3;
-//   const yCoordinate = this.#board.getGrids()[12].getBoxes()[0].getYCoordinate() - 2;
-//   for( let i = 0; i < EventPlayer1.length; i++)
-//   {
-//     globals.ctx.drawImage(
-//       globals.cardsReverseImage,
-//       0,
-//       0,
-//       425,
-//       587,
-//       xCoordinate +  i*135,
-//       yCoordinate,
-//       115,
-//       115
-//     );
-//   }
-
-// }
