@@ -68,85 +68,96 @@ export default class AttackPhase extends Phase {
     return attackPhase;
   }
 
-  execute() {
-    let hoveredCard;
+  execute(isAnyCardExpanded) {
+    let isPhaseFinished = false;
 
-    this.#lookForCardThatIsntHoveredAnymore([
-      this.#enemyMovementGridDeck,
-      this.#currentPlayerMovementGridDeck,
-    ]);
+    if (!isAnyCardExpanded) {
+      let hoveredCard;
 
-    switch (this._state) {
-      // PHASE INITIALIZATION
-      case AttackPhaseState.INIT:
-        this.#resetRelevantCardsStates();
-        this._state = AttackPhaseState.SELECT_ATTACKER;
-        break;
+      this.#lookForCardThatIsntHoveredAnymore([
+        this.#enemyMovementGridDeck,
+        this.#currentPlayerMovementGridDeck,
+      ]);
 
-      // ATTACKER SELECTION
-      case AttackPhaseState.SELECT_ATTACKER:
-        hoveredCard = this.#lookForHoveredCard([
-          this.#currentPlayerMovementGridDeck,
-        ]);
+      switch (this._state) {
+        // PHASE INITIALIZATION
+        case AttackPhaseState.INIT:
+          this.#resetRelevantCardsStates();
+          this._state = AttackPhaseState.SELECT_ATTACKER;
+          break;
 
-        this.#attacker = this.#lookForLeftClickedCard(
-          [this.#currentPlayerMovementGridDeck],
-          hoveredCard
-        );
+        // ATTACKER SELECTION
+        case AttackPhaseState.SELECT_ATTACKER:
+          hoveredCard = this.#lookForHoveredCard([
+            this.#currentPlayerMovementGridDeck,
+          ]);
 
-        if (this.#attacker) {
-          this._state = AttackPhaseState.SELECT_TARGET;
-        }
+          this.#attacker = this.#lookForLeftClickedCard(
+            [this.#currentPlayerMovementGridDeck],
+            hoveredCard
+          );
 
-        break;
-
-      // TARGET SELECTION
-      case AttackPhaseState.SELECT_TARGET:
-        hoveredCard = this.#lookForHoveredCard([
-          this.#enemyMovementGridDeck,
-          this.#currentPlayerMovementGridDeck,
-        ]);
-
-        const leftClickedCard = this.#lookForLeftClickedCard(
-          [this.#enemyMovementGridDeck, this.#currentPlayerMovementGridDeck],
-          hoveredCard
-        );
-
-        if (leftClickedCard) {
-          if (
-            leftClickedCard.getPreviousState() === CardState.SELECTED &&
-            leftClickedCard.getState() === CardState.PLACED
-          ) {
-            // THE PREVIOUSLY SELECTED ATTACKER WAS DESELECTED
-            this.#attacker = null;
-            this._state = AttackPhaseState.SELECT_ATTACKER;
-          } else if (
-            leftClickedCard.getState() === CardState.INACTIVE_SELECTED
-          ) {
-            this.#target = leftClickedCard;
-            this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
+          if (this.#attacker) {
+            this._state = AttackPhaseState.SELECT_TARGET;
           }
-        }
 
-        break;
+          break;
 
-      // CALCULATION AND APPLICATION OF DAMAGE
-      case AttackPhaseState.CALC_AND_APPLY_DMG:
-        const attackEvent = AttackEvent.create(this.#attacker, this.#target);
-        attackEvent.execute();
+        // TARGET SELECTION
+        case AttackPhaseState.SELECT_TARGET:
+          hoveredCard = this.#lookForHoveredCard([
+            this.#enemyMovementGridDeck,
+            this.#currentPlayerMovementGridDeck,
+          ]);
 
-        this._state = AttackPhaseState.END;
+          const leftClickedCard = this.#lookForLeftClickedCard(
+            [this.#enemyMovementGridDeck, this.#currentPlayerMovementGridDeck],
+            hoveredCard
+          );
 
-        break;
+          if (leftClickedCard) {
+            if (
+              leftClickedCard.getPreviousState() === CardState.SELECTED &&
+              leftClickedCard.getState() === CardState.PLACED
+            ) {
+              // THE PREVIOUSLY SELECTED ATTACKER WAS DESELECTED
+              this.#attacker = null;
+              this._state = AttackPhaseState.SELECT_ATTACKER;
+            } else if (
+              leftClickedCard.getState() === CardState.INACTIVE_SELECTED
+            ) {
+              this.#target = leftClickedCard;
+              this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
+            }
+          }
 
-      // PHASE END
-      case AttackPhaseState.END:
-        this.#updateDecks([
-          this.#enemyMovementGridDeck,
-          this.#currentPlayerMovementGridDeck,
-        ]);
-        break;
+          break;
+
+        // CALCULATION AND APPLICATION OF DAMAGE
+        case AttackPhaseState.CALC_AND_APPLY_DMG:
+          const attackEvent = AttackEvent.create(this.#attacker, this.#target);
+          attackEvent.execute();
+
+          this._state = AttackPhaseState.END;
+
+          break;
+
+        // PHASE END
+        case AttackPhaseState.END:
+          this.#updateDecks([
+            this.#enemyMovementGridDeck,
+            this.#currentPlayerMovementGridDeck,
+          ]);
+
+          isPhaseFinished = true;
+
+          this._state = AttackPhaseState.INIT;
+
+          break;
+      }
     }
+
+    return isPhaseFinished;
   }
 
   #lookForCardThatIsntHoveredAnymore(decksToCheck) {
@@ -183,8 +194,6 @@ export default class AttackPhase extends Phase {
   }
 
   #lookForHoveredCard(decksToCheck) {
-    const isAnyCardSelected = this.#checkIfAnyCardIsSelected(decksToCheck);
-
     for (let i = 0; i < decksToCheck.length; i++) {
       const currentDeck = decksToCheck[i];
 
@@ -194,10 +203,7 @@ export default class AttackPhase extends Phase {
         if (hoveredCard.getState() === CardState.INACTIVE) {
           hoveredCard.setPreviousState(CardState.INACTIVE);
           hoveredCard.setState(CardState.INACTIVE_HOVERED);
-        } else if (
-          !isAnyCardSelected &&
-          hoveredCard.getState() === CardState.PLACED
-        ) {
+        } else if (hoveredCard.getState() === CardState.PLACED) {
           hoveredCard.setPreviousState(CardState.PLACED);
           hoveredCard.setState(CardState.HOVERED);
         }
@@ -223,6 +229,8 @@ export default class AttackPhase extends Phase {
     if (this._mouseInput.isLeftButtonPressed() && hoveredCard) {
       this._mouseInput.setLeftButtonPressedFalse();
 
+      const isAnyCardSelected = this.#checkIfAnyCardIsSelected(decksToCheck);
+
       for (let i = 0; i < decksToCheck.length; i++) {
         const currentDeck = decksToCheck[i];
 
@@ -230,7 +238,10 @@ export default class AttackPhase extends Phase {
           const currentCard = currentDeck.getCards()[j];
 
           if (currentCard === hoveredCard) {
-            if (currentCard.getState() === CardState.HOVERED) {
+            if (
+              !isAnyCardSelected &&
+              currentCard.getState() === CardState.HOVERED
+            ) {
               currentCard.setState(CardState.SELECTED);
             } else if (currentCard.getState() === CardState.SELECTED) {
               currentCard.setState(currentCard.getPreviousState());

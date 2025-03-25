@@ -5,7 +5,13 @@ import MovePhase from "./MovePhase.js";
 import PrepareEventPhase from "./PrepareEventPhase.js";
 import PerformEventPhase from "./PerformEventPhase.js";
 import DiscardCardPhase from "./DiscardCardPhase.js";
-import { PlayerID, CardState, DeckType, PhaseType } from "../Game/constants.js";
+import {
+  PlayerID,
+  CardState,
+  DeckType,
+  PhaseType,
+  PhaseButton,
+} from "../Game/constants.js";
 import { globals } from "../index.js";
 
 export default class Turn {
@@ -19,8 +25,8 @@ export default class Turn {
   #player;
 
   constructor(deckContainer, board, mouseInput, player) {
-    this.#currentPhase = PhaseType.INVALID;
     this.#isCurrentPhaseFinished = false;
+    this.#currentPhase = PhaseType.INVALID;
     this.#numOfExecutedPhases = 0;
     this.#phases = [];
     this.#deckContainer = deckContainer;
@@ -67,15 +73,17 @@ export default class Turn {
   }
 
   execute() {
-    this.#expandCard();
+    const isAnyCardExpanded = this.#expandCard();
 
     if (this.#currentPhase === PhaseType.INVALID) {
       this.#checkButtonClick();
     } else if (!this.#isCurrentPhaseFinished) {
-      this.#isCurrentPhaseFinished = this.#phases[this.#currentPhase].execute();
+      this.#isCurrentPhaseFinished =
+        this.#phases[this.#currentPhase].execute(isAnyCardExpanded);
     }
 
     if (this.#isCurrentPhaseFinished) {
+      this.#isCurrentPhaseFinished = false;
       this.#currentPhase = PhaseType.INVALID;
       this.#numOfExecutedPhases++;
     }
@@ -108,11 +116,15 @@ export default class Turn {
 
     decksToCheck.push(DeckType.JOSEPH);
 
-    const hoveredCard = this.#lookForHoveredCard(decksToCheck);
-
     this.#lookForCardThatIsntHoveredAnymore(decksToCheck);
 
+    const hoveredCard = this.#lookForHoveredCard(decksToCheck);
+
     this.#lookForRightClickedCard(decksToCheck, hoveredCard);
+
+    const isAnyCardExpanded = this.#checkIfAnyCardIsExpanded(decksToCheck);
+
+    return isAnyCardExpanded;
   }
 
   #lookForHoveredCard(decksToCheck) {
@@ -177,6 +189,7 @@ export default class Turn {
               ) {
                 currentCard.setState(currentCard.getPreviousState());
               } else if (!isAnyCardExpanded && currentCard === hoveredCard) {
+                currentCard.setPreviousState(currentCard.getState());
                 currentCard.setState(CardState.EXPANDED);
               }
             }
@@ -209,11 +222,11 @@ export default class Turn {
     if (this.#mouseInput.isLeftButtonPressed()) {
       for (let i = 0; i < globals.buttonDataGlobal.length; i++) {
         const buttonData = globals.buttonDataGlobal[i];
-        const buttonX = buttonData[0];
-        const buttonY = buttonData[1];
+
+        const buttonXCoordinate = buttonData[0];
+        const buttonYCoordinate = buttonData[1];
         const buttonWidth = buttonData[2];
         const buttonHeight = buttonData[3];
-        const phase = buttonData[4];
 
         if (
           mouseX >= buttonX &&
@@ -221,16 +234,13 @@ export default class Turn {
           mouseY >= buttonY &&
           mouseY <= buttonY + buttonHeight
         ) {
-          this.#executePhase(i);
+          if (i === PhaseButton.SKIP) {
+            // TODO: INSERT METHOD THAT SKIPS CURRENT PHASE
+          } else {
+            this.#currentPhase = i;
+          }
         }
       }
-    }
-  }
-
-  #executePhase(phase) {
-    if (this.#phases[phase]) {
-      this.#currentPhase = phase;
-      this.#isCurrentPhaseFinished = false;
     }
   }
 }

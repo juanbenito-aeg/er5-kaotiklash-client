@@ -8,20 +8,27 @@ export default class AttackEvent extends Event {
     const attackEvent = new AttackEvent();
     attackEvent.#attacker = attacker;
     attackEvent.#target = target;
+
+    return attackEvent;
   }
 
   execute() {
     let damageToInflict;
 
-    if (!this.#attacker.getWeapon()) {
+    if (/* !this.#attacker.getWeapon() */ true) {
       // ATTACK USING FISTS
-      damageToInflict = this.#attacker.getAttack() - this.#target.getDefense();
+      damageToInflict =
+        this.#attacker.getCurrentAttack() - this.#target.getCurrentDefense();
     } else {
       // ATTACK USING A WEAPON (FOR NOW ONLY MELEE OR MISSILE)
       damageToInflict =
-        this.#attacker.getAttack() +
+        this.#attacker.getCurrentAttack() +
         this.#attacker.getWeaponDamage() -
-        this.#target.getDefense();
+        this.#target.getCurrentDefense();
+    }
+
+    if (damageToInflict < 0) {
+      damageToInflict = 0;
     }
 
     let targetNewCurrentHP = this.#target.getCurrentHP() - damageToInflict;
