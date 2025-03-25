@@ -78,6 +78,11 @@ export default class Box {
       this.setState(BoxState.OCCUPIED);
       }
   }
+
+  resetCard() {
+      this.#card = null;
+      this.setState(BoxState.AVAILABLE);
+  }
   
   isOccupied() {
     return this.#card !== null;
