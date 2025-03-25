@@ -73,9 +73,11 @@ export default class Turn {
       this.#checkButtonClick();
     } else if (!this.#isCurrentPhaseFinished) {
       this.#isCurrentPhaseFinished = this.#phases[this.#currentPhase].execute();
+
     }
 
     if (this.#isCurrentPhaseFinished) {
+      this.#isCurrentPhaseFinished = false;
       this.#currentPhase = PhaseType.INVALID;
       this.#numOfExecutedPhases++;
     }

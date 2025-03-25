@@ -296,7 +296,7 @@ function loadAssets() {
 async function loadHandler() {
   globals.assetsLoaded++;
   if (globals.assetsLoaded === globals.assetsToLoad.length) {
-    globals.gameState = GameState.SKIP_BUTTON;
+    globals.gameState = GameState.PLAYING;
 
     globals.game = await Game.create();
 

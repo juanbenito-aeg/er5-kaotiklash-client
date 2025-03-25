@@ -176,7 +176,7 @@ export default class GridCreator {
         110,
         false,
         false,
-        BoxState.INACTIVE,
+        BoxState.AVAILABLE,
         battlefieldArea
       );
 

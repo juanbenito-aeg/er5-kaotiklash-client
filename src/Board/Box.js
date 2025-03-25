@@ -1,3 +1,5 @@
+import { BoxState } from "../Game/constants.js";
+
 export default class Box {
   #xCoordinate;
   #yCoordinate;

@@ -414,6 +414,11 @@ export default class Game {
         currentMinionCard.setYCoordinate(
           currentBattlefieldBox.getYCoordinate()
         );
+        //ERROR: esto da problemas, como setea la carta a esta posicion se queda ahi, da igual que la imagen se mueva 
+        if(currentMinionCard.getXCoordinate() === currentBattlefieldBox.getXCoordinate() && currentMinionCard.getYCoordinate() === currentBattlefieldBox.getYCoordinate())
+        {
+          currentBattlefieldBox.setCard(currentMinionCard);
+        }
       }
     }
   }
@@ -424,6 +429,7 @@ export default class Game {
   }
 
   #update() {
+
     if (globals.isCurrentTurnFinished) {
       globals.isCurrentTurnFinished = false;
 
@@ -436,6 +442,8 @@ export default class Game {
 
     this.#turns[this.#currentPlayer].execute();
     this.#skipPhase();
+
+
   }
 
 
@@ -483,7 +491,7 @@ export default class Game {
   }
 
   #setCardsCoordinates() {
-    // TODO
+    
   }
 
   #updatePlayersTotalHP() {
@@ -555,10 +563,6 @@ export default class Game {
         this.#renderGame();
         break;
 
-      case GameState.SKIP_BUTTON:
-        this.#renderGrids();
-        this.#renderPhasesButtons();
-        break;
     }
   }
 
@@ -907,7 +911,7 @@ export default class Game {
       }
     }
 
-    /* for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
       const currentDeck = this.#deckContainer.getDecks()[i];
 
       const isDeckCardsInHandOfInactivePlayer =
@@ -943,7 +947,7 @@ export default class Game {
           }
         }
       }
-    } */
+    }
 
     if (expandedCard) {
       this.#renderExpandedCard(expandedCard);
