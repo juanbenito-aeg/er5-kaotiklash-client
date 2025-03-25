@@ -1,4 +1,4 @@
-import Event from "./Events.js";
+import Event from "./Event.js";
 
 export default class PrepareEvent extends Event {
   #preparationEventDeck;

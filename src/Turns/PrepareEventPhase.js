@@ -10,7 +10,6 @@ import {
 import PrepareEvent from "../Events/PrepareEvent.js";
 
 export default class PrepareEventPhase extends Phase {
-  #state;
   #decksRelevants;
   #gridsRelevants;
   #selectedCard;
@@ -33,19 +32,13 @@ export default class PrepareEventPhase extends Phase {
         deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND],
         deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION],
       ];
-      gridRelevants = [
-        board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND],
-        board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT],
-      ];
+      gridRelevants = board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
     } else {
       deckRelevants = [
         deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND],
         deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION],
       ];
-      gridRelevants = [
-        board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND],
-        board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT],
-      ];
+      gridRelevants = board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
     }
 
     const prepareEventPhase = new PrepareEventPhase(
@@ -86,49 +79,101 @@ export default class PrepareEventPhase extends Phase {
   }
 
   #initializePhase() {
-    this.state = PrepareEventState.SELECT_HAND_CARD;
+    this._state = PrepareEventState.SELECT_HAND_CARD;
   }
 
   #selectCardFromHand() {
-    const handGrid = this.gridRelevants[0];
-    for (let i = 0; i < handGrid.getBoxes().length; i++) {
-      const box = handGrid.getBoxes()[i];
-      if (this.mouseInput.isMouseOverBox(box) && !box.isOccupied()) {
-        this.#selectedCard = box.getCard();
-        this.#selectedCard.setState(CardState.SELECTED);
-        console.log(this.#selectedCard.getName());
+    this.#lookForHoveredCard(this.#decksRelevants);
+
+    for (let i = 0; i < this.#decksRelevants.length; i++) {
+      let decks = this.#decksRelevants[i];
+      console.log("mama");
+      for (let j = 0; j < decks.getCards().length; j++) {
+        let cards = decks.getCards()[j];
+        if (
+          this._mouseInput.isLeftButtonPressed() &&
+          cards.getState() === CardState.INACTIVE_HOVERED
+        ) {
+          cards.setState(CardState.SELECTED);
+          this.#selectedCard = cards;
+          console.log(this.#selectedCard);
+          if (this.#selectedCard.getState() === CardState.SELECTED) {
+            this._state = PrepareEventState.SELECT_TARGET_GRID;
+          }
+        }
       }
     }
-    if (this.#selectedCard) {
-      this.state = PrepareEventState.SELECT_TARGET_GRID;
+  }
+
+  #lookForHoveredCard(decksToCheck) {
+    for (let i = 0; i < this.#decksRelevants.length; i++) {
+      for (let j = 0; j < decksToCheck.length; j++) {
+        if (i === decksToCheck[j]) {
+          const currentDeck = this.#decksRelevants[i];
+
+          const hoveredCard = currentDeck.lookForHoveredCard(this._mouseInput);
+
+          if (hoveredCard) {
+            if (hoveredCard.getState() === CardState.INACTIVE) {
+              hoveredCard.setPreviousState(CardState.INACTIVE);
+              hoveredCard.setState(CardState.INACTIVE_HOVERED);
+            } else if (hoveredCard.getState() === CardState.PLACED) {
+              hoveredCard.setPreviousState(CardState.PLACED);
+              hoveredCard.setState(CardState.HOVERED);
+            }
+
+            return hoveredCard;
+          }
+        }
+      }
     }
   }
 
   #selectTargetGrid() {
-    const preparationGrid = this.gridRelevants[1];
-    for (let i = 0; i < preparationGrid.getBoxes().length; i++) {
-      const box = preparationGrid.getBoxes()[i];
-      if (this.mouseInput.isMouseOverBox(box) && !box.isOccupied()) {
-        this.#selectedGrid = box;
-        box.setState(BoxState.SELECTED);
+    console.log(this.#gridsRelevants);
+
+    let grids = this.#gridsRelevants;
+    let boxes = grids.getBoxes();
+    for (let i = 0; i < boxes.length; i++) {
+      const box = boxes[i];
+      this._mouseInput.isMouseOverBox(box);
+      if (this._mouseInput.isMouseOverBox(box)) {
+        box.setState(BoxState.HOVERED);
       }
-    }
-    if (this.#selectedGrid) {
-      this.state = PrepareEventState.END;
+      if (
+        this._mouseInput.isLeftButtonPressed() &&
+        box.getState() === BoxState.HOVERED
+      ) {
+        box.setState(BoxState.SELECTED);
+        this.#selectedGrid = box;
+        console.log(console.log(box.getState()));
+        console.log(this.#selectedGrid);
+        this._state = PrepareEventState.END;
+      }
     }
   }
 
   #finalizePhase() {
-    if (this.#selectedCard && this.#selectedGrid) {
-      if (!this.#selectedGrid.isOccupied()) {
-        this.#selectedGrid.setCard(this.#selectedCard);
-        this.#selectedCard.setState(CardState.PLACED);
-        this.decksRelevants[1].insertCard(this.#selectedCard);
-        this.#selectedCard = null;
-      }
+    /*    this.#selectedCard();
+    this.#selectTargetGrid(); */
+
+    console.log("bauino");
+
+    if (
+      this.#selectedCard.getState() === CardState.SELECTED &&
+      this.#selectedGrid.getState() === BoxState.SELECTED
+    ) {
+      this.#selectedGrid.setCard(this.#selectedCard);
+      this.#selectedCard.setState(CardState.PLACED);
+      console.log(this.#selectedCard.getState());
+      this.#decksRelevants[0].removeCard(this.#selectedCard);
+      this.#decksRelevants[1].insertCard(this.#selectedCard);
+      console.log(this.#decksRelevants[0]);
+      console.log(this.#decksRelevants[1]);
+      /*       this.#selectedCard = null;
       this.#selectedGrid = null;
       const prepareEvent = PrepareEvent.create(this.decksRelevants[1]);
-      game.addEventToQueue(prepareEvent);
+      game.addEventToQueue(prepareEvent); */
     }
   }
 }

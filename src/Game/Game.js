@@ -493,13 +493,12 @@ export default class Game {
       let event = this.#events[i];
       event.execute();
 
-      if(!event.isActive()) {
+      if (!event.isActive()) {
         this.#events.splice(i, 1);
         i--;
       }
     }
   }
-
 
   #render() {
     // CLEAR SCREEN
@@ -628,41 +627,74 @@ export default class Game {
   }
 
   #renderPhasesButtons() {
-    const phaseName = ["Skip", "Prepare Event", "Perform Event", "Move", "Attack"];
+    const phaseName = [
+      "Skip",
+      "Prepare Event",
+      "Perform Event",
+      "Move",
+      "Attack",
+    ];
     for (let i = 0; i < phaseName.length; i++) {
-        const x = this.#board.getGrids()[4].getBoxes()[0].getXCoordinate(); 
-        const y = this.#board.getGrids()[4].getBoxes()[i].getYCoordinate() + 5;
-        const width = 200;
-        const height = 40;
-        const radius = 10;
-  
-        const buttonData = [x, y, width, height, phaseName[i]];
-        globals.buttonDataGlobal.push(buttonData);
-  
-        globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-        globals.ctx.shadowBlur = 10;
-        globals.ctx.shadowOffsetX = 4;
-        globals.ctx.shadowOffsetY = 4;
-  
-        globals.ctx.fillStyle = 'darkcyan';
-        globals.ctx.beginPath();
-        globals.ctx.moveTo(buttonData[0] + 10, buttonData[1]);
-        globals.ctx.lineTo(buttonData[0] + buttonData[2] - 10, buttonData[1]);
-        globals.ctx.quadraticCurveTo(buttonData[0] + buttonData[2], buttonData[1], buttonData[0] + buttonData[2], buttonData[1] + 10);
-        globals.ctx.lineTo(buttonData[0] + buttonData[2], buttonData[1] + buttonData[3] - 10);
-        globals.ctx.quadraticCurveTo(buttonData[0] + buttonData[2], buttonData[1] + buttonData[3], buttonData[0] + buttonData[2] - 10, buttonData[1] + buttonData[3]);
-        globals.ctx.lineTo(buttonData[0] + 10, buttonData[1] + buttonData[3]);
-        globals.ctx.quadraticCurveTo(buttonData[0], buttonData[1] + buttonData[3], buttonData[0], buttonData[1] + buttonData[3] - 10);
-        globals.ctx.lineTo(buttonData[0], buttonData[1] + 10);
-        globals.ctx.quadraticCurveTo(buttonData[0], buttonData[1], buttonData[0] + 10, buttonData[1]);
-        globals.ctx.closePath();
-        globals.ctx.fill();
-  
-        globals.ctx.fillStyle = 'white';
-        globals.ctx.font = '18px MedievalSharp';
-        globals.ctx.textAlign = 'center';
-        globals.ctx.textBaseline = 'middle';
-        globals.ctx.fillText(buttonData[4], buttonData[0] + buttonData[2] / 2, buttonData[1] + buttonData[3] / 2);
+      const x = this.#board.getGrids()[4].getBoxes()[0].getXCoordinate();
+      const y = this.#board.getGrids()[4].getBoxes()[i].getYCoordinate() + 5;
+      const width = 200;
+      const height = 40;
+      const radius = 10;
+
+      const buttonData = [x, y, width, height, phaseName[i]];
+      globals.buttonDataGlobal.push(buttonData);
+
+      globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      globals.ctx.shadowBlur = 10;
+      globals.ctx.shadowOffsetX = 4;
+      globals.ctx.shadowOffsetY = 4;
+
+      globals.ctx.fillStyle = "darkcyan";
+      globals.ctx.beginPath();
+      globals.ctx.moveTo(buttonData[0] + 10, buttonData[1]);
+      globals.ctx.lineTo(buttonData[0] + buttonData[2] - 10, buttonData[1]);
+      globals.ctx.quadraticCurveTo(
+        buttonData[0] + buttonData[2],
+        buttonData[1],
+        buttonData[0] + buttonData[2],
+        buttonData[1] + 10
+      );
+      globals.ctx.lineTo(
+        buttonData[0] + buttonData[2],
+        buttonData[1] + buttonData[3] - 10
+      );
+      globals.ctx.quadraticCurveTo(
+        buttonData[0] + buttonData[2],
+        buttonData[1] + buttonData[3],
+        buttonData[0] + buttonData[2] - 10,
+        buttonData[1] + buttonData[3]
+      );
+      globals.ctx.lineTo(buttonData[0] + 10, buttonData[1] + buttonData[3]);
+      globals.ctx.quadraticCurveTo(
+        buttonData[0],
+        buttonData[1] + buttonData[3],
+        buttonData[0],
+        buttonData[1] + buttonData[3] - 10
+      );
+      globals.ctx.lineTo(buttonData[0], buttonData[1] + 10);
+      globals.ctx.quadraticCurveTo(
+        buttonData[0],
+        buttonData[1],
+        buttonData[0] + 10,
+        buttonData[1]
+      );
+      globals.ctx.closePath();
+      globals.ctx.fill();
+
+      globals.ctx.fillStyle = "white";
+      globals.ctx.font = "18px MedievalSharp";
+      globals.ctx.textAlign = "center";
+      globals.ctx.textBaseline = "middle";
+      globals.ctx.fillText(
+        buttonData[4],
+        buttonData[0] + buttonData[2] / 2,
+        buttonData[1] + buttonData[3] / 2
+      );
     }
   }
 
@@ -709,11 +741,11 @@ export default class Game {
       globals.ctx.stroke();
     }
 
-      let lineY = tableY + (tableHeight/ 4) * 1;
-      globals.ctx.beginPath();
-      globals.ctx.moveTo(tableX, lineY);
-      globals.ctx.lineTo(tableX + tableWidth, lineY);
-      globals.ctx.stroke();
+    let lineY = tableY + (tableHeight / 4) * 1;
+    globals.ctx.beginPath();
+    globals.ctx.moveTo(tableX, lineY);
+    globals.ctx.lineTo(tableX + tableWidth, lineY);
+    globals.ctx.stroke();
 
     globals.ctx.fillStyle = "white";
     globals.ctx.font = "18px MedievalSharp";
@@ -851,16 +883,17 @@ export default class Game {
 
   #renderCards() {
     let expandedCard;
-    const player1Deck = this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
+    /*   const player1Deck =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
     for (let i = 0; i < player1Deck.getCards().length; i++) {
       const currentCard = player1Deck.getCards()[i];
       this.#renderCard(currentCard);
       if (currentCard.getState() === CardState.EXPANDED) {
         expandedCard = currentCard;
       }
-    }
+    } */
 
-    /* for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
       const currentDeck = this.#deckContainer.getDecks()[i];
 
       const isDeckCardsInHandOfInactivePlayer =
@@ -896,7 +929,7 @@ export default class Game {
           }
         }
       }
-    } */
+    }
 
     if (expandedCard) {
       this.#renderExpandedCard(expandedCard);
