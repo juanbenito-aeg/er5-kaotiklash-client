@@ -1,5 +1,5 @@
 import Phase from "./Phase.js";
-import { MovePhaseState, CardState, BoxState } from "../Game/constants.js";
+import { MovePhaseState, CardState, BoxState, PlayerID, DeckType, GridType } from "../Game/constants.js";
 
 export default class MovePhase extends Phase {
   #state;
@@ -46,6 +46,7 @@ export default class MovePhase extends Phase {
   }
 
   execute() {
+    let isPhaseFinished = false;
     console.log("halo")
     switch (this.state) {
       case PrepareEventState.INIT:
@@ -66,11 +67,13 @@ export default class MovePhase extends Phase {
       
       case PrepareEventState.END:
         this.#finalizePhase();
+        isPhaseFinished = true;
         break;
       
       default:
         console.error("Move Event State Fail");
     }
+    return isPhaseFinished;
   }
 
   #initializePhase() {
