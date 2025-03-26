@@ -218,6 +218,14 @@ const PhaseButton = {
   ATTACK: 4,
 };
 
+const EquipWeaponState = {
+  OFF: 0,
+  SELECT_WEAPON: 1,
+  SELECT_MINION: 2,
+  EQUIP_WEAPON: 3,
+  END: 4,
+};
+
 export {
   GameState,
   FPS,
@@ -243,4 +251,5 @@ export {
   DrawCardState,
   PhaseType,
   PhaseButton,
+  EquipWeaponState,
 };

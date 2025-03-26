@@ -11,9 +11,11 @@ import {
   DeckType,
   PhaseType,
   PhaseButton,
-  GridType,
+  EquipWeaponState,
+  CardCategory,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
+import EquipWeaponEvent from "../Events/EquipWeaponEvent.js";
 
 export default class Turn {
   #isCurrentPhaseFinished;
@@ -24,6 +26,7 @@ export default class Turn {
   #board;
   #mouseInput;
   #player;
+  #equipWeaponState;
 
   constructor(deckContainer, board, mouseInput, player) {
     this.#isCurrentPhaseFinished = false;
@@ -34,6 +37,7 @@ export default class Turn {
     this.#board = board;
     this.#mouseInput = mouseInput;
     this.#player = player;
+    this.#equipWeaponState = EquipWeaponState.OFF;
   }
 
   fillPhases() {
@@ -79,21 +83,23 @@ export default class Turn {
     if (!isAnyCardExpanded) {
       this.#equipWeapon();
 
-      if (this.#currentPhase === PhaseType.INVALID) {
-        this.#checkButtonClick();
-      } else if (!this.#isCurrentPhaseFinished) {
-        this.#isCurrentPhaseFinished =
-          this.#phases[this.#currentPhase].execute();
-      }
+      if (this.#equipWeaponState === EquipWeaponState.OFF) {
+        if (this.#currentPhase === PhaseType.INVALID) {
+          this.#checkButtonClick();
+        } else if (!this.#isCurrentPhaseFinished) {
+          this.#isCurrentPhaseFinished =
+            this.#phases[this.#currentPhase].execute();
+        }
 
-      if (this.#isCurrentPhaseFinished) {
-        this.#isCurrentPhaseFinished = false;
-        this.#currentPhase = PhaseType.INVALID;
-        this.#numOfExecutedPhases++;
-      }
+        if (this.#isCurrentPhaseFinished) {
+          this.#isCurrentPhaseFinished = false;
+          this.#currentPhase = PhaseType.INVALID;
+          this.#numOfExecutedPhases++;
+        }
 
-      if (this.#numOfExecutedPhases === 5) {
-        globals.isCurrentTurnFinished = true;
+        if (this.#numOfExecutedPhases === 5) {
+          globals.isCurrentTurnFinished = true;
+        }
       }
     }
   }
@@ -176,72 +182,104 @@ export default class Turn {
     }
   }
 
-  // TODO (¿?): DEFINE STATE-MACHINE FOR THIS EVENT
   #equipWeapon() {
-    let playerXEventsInPreparationDeck,
-      playerXMinionsInPlayDeck,
-      playerXEventsInPreparationGrid,
-      playerXMinionsInPlayGrid;
+    let playerXEventsInPreparationDeck, playerXMinionsInPlayDeck;
 
     if (this.#player.getID() === PlayerID.PLAYER_1) {
       playerXEventsInPreparationDeck =
         this.#deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION];
       playerXMinionsInPlayDeck =
         this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
-      playerXEventsInPreparationGrid =
-        this.#board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
-      playerXMinionsInPlayGrid =
-        this.#board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
     } else {
       playerXEventsInPreparationDeck =
         this.#deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION];
       playerXMinionsInPlayDeck =
         this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
-      playerXEventsInPreparationGrid =
-        this.#board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
-      playerXMinionsInPlayGrid =
-        this.#board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
     }
 
-    this.#lookForLeftClickedCard([playerXEventsInPreparationDeck]);
+    let leftClickedCard = this.#lookForLeftClickedCard(
+      playerXEventsInPreparationDeck
+    );
+
+    if (
+      leftClickedCard &&
+      leftClickedCard.getCategory() === CardCategory.WEAPON &&
+      leftClickedCard.getCurrentPrepTimeInRounds() === 0
+    ) {
+      if (leftClickedCard.getState() === CardState.PLACED) {
+        // THE PREVIOUSLY SELECTED WEAPON WAS DESELECTED
+        console.log("weapon DESELECTED");
+        this.#equipWeaponState = this.#equipWeaponState.OFF;
+      } else {
+        console.log("weapon selected");
+        this.#equipWeaponState = EquipWeaponState.SELECT_MINION;
+      }
+    }
+
+    let weapon;
+    switch (this.#equipWeaponState) {
+      // SELECT MINION TO EQUIP WEAPON ON
+      case EquipWeaponState.SELECT_MINION:
+        console.log("minion selection");
+        leftClickedCard = this.#lookForLeftClickedCard(
+          playerXMinionsInPlayDeck
+        );
+
+        if (leftClickedCard && !leftClickedCard.getWeapon()) {
+          this.#equipWeaponState = EquipWeaponState.EQUIP_WEAPON;
+        }
+
+        break;
+
+      // PERFORM THE WEAPON EQUIPMENT
+      case EquipWeaponState.EQUIP_WEAPON:
+        console.log("weapon equipment");
+        weapon = playerXEventsInPreparationDeck.lookForSelectedCard();
+        const minionToEquipWeaponOn =
+          playerXMinionsInPlayDeck.lookForSelectedCard();
+
+        const equipWeaponEvent = new EquipWeaponEvent(
+          weapon,
+          minionToEquipWeaponOn
+        );
+        equipWeaponEvent.execute();
+
+        this.#equipWeaponState = EquipWeaponState.END;
+
+        break;
+
+      // EVENT END
+      case EquipWeaponState.END:
+        console.log("event end");
+        weapon = playerXEventsInPreparationDeck.lookForSelectedCard();
+        playerXEventsInPreparationDeck.removeCard(weapon);
+
+        this.#equipWeaponState = EquipWeaponState.OFF;
+
+        break;
+    }
   }
 
-  #lookForLeftClickedCard(decksToCheck) {
+  #lookForLeftClickedCard(deckToCheck) {
     if (this.#mouseInput.isLeftButtonPressed()) {
       this.#mouseInput.setLeftButtonPressedFalse();
 
-      const isAnyCardSelected = this.#checkIfAnyCardIsSelected(decksToCheck);
+      const isAnyCardSelected = deckToCheck.checkIfAnyCardIsSelected();
 
-      for (let i = 0; i < decksToCheck.length; i++) {
-        const currentDeck = decksToCheck[i];
+      const hoveredCard = deckToCheck.lookForHoveredCard(this.#mouseInput);
 
-        const hoveredCard = currentDeck.lookForHoveredCard(this.#mouseInput);
+      for (let i = 0; i < deckToCheck.getCards().length; i++) {
+        const currentCard = deckToCheck.getCards()[i];
 
-        for (let j = 0; j < currentDeck.getCards().length; j++) {
-          const currentCard = currentDeck.getCards()[j];
-
-          if (currentCard === hoveredCard) {
-            if (!isAnyCardSelected) {
-              currentCard.setState(CardState.SELECTED);
-              return currentCard;
-            } else if (currentCard.getState() === CardState.SELECTED) {
-              currentCard.setState(CardState.PLACED);
-              return currentCard;
-            }
+        if (currentCard === hoveredCard) {
+          if (!isAnyCardSelected) {
+            currentCard.setState(CardState.SELECTED);
+            return currentCard;
+          } else if (currentCard.getState() === CardState.SELECTED) {
+            currentCard.setState(CardState.PLACED);
+            return currentCard;
           }
         }
-      }
-    }
-  }
-
-  #checkIfAnyCardIsSelected(decksToCheck) {
-    for (let i = 0; i < decksToCheck.length; i++) {
-      const currentDeck = decksToCheck[i];
-
-      const isAnyCardSelected = currentDeck.checkIfAnyCardIsSelected();
-
-      if (isAnyCardSelected) {
-        return true;
       }
     }
   }
