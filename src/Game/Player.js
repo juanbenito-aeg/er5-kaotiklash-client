@@ -2,6 +2,7 @@ export default class Player {
   #id;
   #name;
   #totalHP;
+  #counter;
 
   constructor(id, name) {
     this.#id = id;

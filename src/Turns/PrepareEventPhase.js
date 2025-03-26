@@ -67,7 +67,7 @@ export default class PrepareEventPhase extends Phase {
       ];
       gridRelevants = board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
     }
-    console.log(currentPlayer);
+
     const prepareEventPhase = new PrepareEventPhase(
       currentPlayer,
       deckRelevants,
@@ -81,7 +81,6 @@ export default class PrepareEventPhase extends Phase {
   }
 
   execute() {
-    console.log("aaa");
     this.#isPhaseFinished = false;
 
     const phaseMessage = PhasesMessages.create(
@@ -121,7 +120,6 @@ export default class PrepareEventPhase extends Phase {
 
     for (let i = 0; i < this.#decksRelevants.length; i++) {
       let decks = this.#decksRelevants[i];
-      console.log("mama");
       for (let j = 0; j < decks.getCards().length; j++) {
         let cards = decks.getCards()[j];
         if (
@@ -130,7 +128,6 @@ export default class PrepareEventPhase extends Phase {
         ) {
           cards.setState(CardState.SELECTED);
           this.#selectedCard = cards;
-          console.log(this.#selectedCard);
           if (this.#selectedCard.getState() === CardState.SELECTED) {
             this._state = PrepareEventState.SELECT_TARGET_GRID;
           }
@@ -164,8 +161,6 @@ export default class PrepareEventPhase extends Phase {
   }
 
   #selectTargetGrid() {
-    console.log(this.#gridsRelevants);
-
     let grids = this.#gridsRelevants;
     let boxes = grids.getBoxes();
     for (let i = 0; i < boxes.length; i++) {
@@ -180,16 +175,12 @@ export default class PrepareEventPhase extends Phase {
       ) {
         box.setState(BoxState.SELECTED);
         this.#selectedGrid = box;
-        console.log(console.log(box.getState()));
-        console.log(this.#selectedGrid);
         this._state = PrepareEventState.END;
       }
     }
   }
 
   #finalizePhase() {
-    console.log("bauino");
-
     if (!this.#selectedCard || !this.#selectedGrid) {
       return;
     }
@@ -198,27 +189,23 @@ export default class PrepareEventPhase extends Phase {
       this.#selectedCard.getState() === CardState.SELECTED &&
       this.#selectedGrid.getState() === BoxState.SELECTED
     ) {
-      this.#selectedCard.setXCoordinate(this.#selectedGrid.getXCoordinate());
-      this.#selectedCard.setYCoordinate(this.#selectedGrid.getYCoordinate());
-      console.log(this.#selectedCard.getState());
-      console.log("----------");
-      console.log(this.#currentPlayer.getID());
       this.#selectedGrid.setCard(this.#selectedCard);
+
       this.#decksRelevants[0].removeCard(this.#selectedCard);
       this.#decksRelevants[1].insertCard(this.#selectedCard);
+
+      this.#selectedCard.setXCoordinate(this.#selectedGrid.getXCoordinate());
+      this.#selectedCard.setYCoordinate(this.#selectedGrid.getYCoordinate());
+
       this.#selectedCard.setState(CardState.PLACED);
       this.#selectedGrid.setState(BoxState.OCCUPIED);
-      console.log(this.#decksRelevants[0]);
-      console.log(this.#decksRelevants[1]);
 
       const prepareEvent = PrepareEvent.create(
         this.#decksRelevants[1],
         this.#currentPlayer
       );
-      console.log(this.#events);
+
       this.#events.push(prepareEvent);
-      console.log("-----");
-      console.log(this.#events[0]);
       this.#selectedCard = null;
       this.#selectedGrid = null;
       this._state = PrepareEventState.INIT;

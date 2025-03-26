@@ -42,7 +42,7 @@ export default class Game {
     game.#players = [player1, player2];
 
     // RANDOMLY ASSIGN PLAYER THAT STARTS PLAYING
-    game.#currentPlayer = Math.floor(Math.random() * 1);
+    game.#currentPlayer = Math.floor(Math.random() * 2);
 
     // MAIN DECK CONFIGURATION FILE LOAD
     const url = "./src/mainDeck.json";
@@ -533,7 +533,7 @@ export default class Game {
   #executeEvent() {
     for (let i = 0; i < this.#events.length; i++) {
       let event = this.#events[i];
-      event.execute(this.#currentPlayer);
+      event.execute();
 
       if (!event.isActive()) {
         this.#events.splice(i, 1);
@@ -874,12 +874,13 @@ export default class Game {
     globals.ctx.textBaseline = "middle";
 
     const phaseMessages = this.#phasesMenssages;
-    let messageText = "Select a Phase";
+    let messageText = "Select a Phase to start";
 
     if (phaseMessages.length > 0) {
       const currentMessage = phaseMessages[0];
       messageText = currentMessage.content;
     }
+
     globals.ctx.fillText(
       messageText,
       messageBoxX + messageBoxWidth / 2,

@@ -16,22 +16,21 @@ export default class PrepareEvent extends Event {
     return new PrepareEvent(preparationEventDeck, executedByPlayer);
   }
 
-  execute(currentPlayer) {
+  execute() {
     const cards = this.#preparationEventDeck.getCards();
-    if (currentPlayer === this.#executedByPlayer) {
-      for (let i = 0; i < cards.length; i++) {
-        let card = cards[i];
-        let remainingTime = card.getCurrentPrepTimeInRounds();
-        let newRemainingTime = remainingTime - 1;
+    for (let i = 0; i < cards.length; i++) {
+      let card = cards[i];
+      let remainingTime = card.getCurrentPrepTimeInRounds();
+      let newRemainingTime = remainingTime - 1;
 
-        if (remainingTime > 0) {
-          card.setCurrenPrepTimeInRounds(newRemainingTime);
-        }
+      if (remainingTime > 0) {
+        console.log("nananana");
+        card.setCurrenPrepTimeInRounds(newRemainingTime);
+      }
 
-        if (newRemainingTime === 0) {
-          console.log("aaaaaa");
-          this.#eventIsActive = false;
-        }
+      if (newRemainingTime === 0) {
+        console.log("aaaaaa");
+        this.#eventIsActive = false;
       }
     }
   }

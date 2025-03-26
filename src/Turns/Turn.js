@@ -78,18 +78,17 @@ export default class Turn {
   changeTurn(currentPlayer) {
     globals.executedPhasesCount = 0;
     this.#numOfExecutedPhases = 0;
-    console.log(" 2`2 4");
+    /*   this.#swapTurnPosition(); */
     if (currentPlayer === 0) {
-      return this.#swapTurnPosition(), 1;
+      return 1;
     } else {
-      this.#swapTurnPosition();
       return 0;
     }
   }
 
   #swapTurnPosition() {
-    this.#swapGridPosition();
     this.#sawpDeckPosition();
+    this.#swapGridPosition();
   }
 
   #sawpDeckPosition() {
@@ -168,7 +167,6 @@ export default class Turn {
         const tempY = player1Box.getYCoordinate();
 
         //PLAYER 1 BOXES
-
         player1Box.setXCoordinate(player2Box.getXCoordinate());
         player1Box.setYCoordinate(player2Box.getYCoordinate());
 
@@ -196,7 +194,7 @@ export default class Turn {
       globals.executedPhasesCount++;
     }
 
-    if (this.#numOfExecutedPhases === 3) {
+    if (this.#numOfExecutedPhases === 1) {
       console.log("-----------------");
       console.log(this.#numOfExecutedPhases);
       globals.isCurrentTurnFinished = true;
