@@ -75,4 +75,14 @@ export default class Deck {
       }
     }
   }
+
+  lookForSelectedCard() {
+    for (let i = 0; i < this.getCards().length; i++) {
+      const currentCard = this.getCards()[i];
+
+      if (currentCard.getState() === CardState.SELECTED) {
+        return currentCard;
+      }
+    }
+  }
 }
