@@ -30,6 +30,7 @@ export default class Game {
   #turns;
   #mouseInput;
   #events;
+  #phasesMenssages;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -41,7 +42,7 @@ export default class Game {
     game.#players = [player1, player2];
 
     // RANDOMLY ASSIGN PLAYER THAT STARTS PLAYING
-    game.#currentPlayer = Math.floor(Math.random() * 2);
+    game.#currentPlayer = Math.floor(Math.random() * 1);
 
     // MAIN DECK CONFIGURATION FILE LOAD
     const url = "./src/mainDeck.json";
@@ -67,24 +68,35 @@ export default class Game {
     game.#mouseInput = new MouseInput();
     game.#mouseInput.addMouseEventListeners();
 
+    // EVENTS CREATION
+    game.#events = [];
+
+    //PHASES MESSAGES
+    game.#phasesMenssages = [];
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
       game.#board,
       game.#mouseInput,
-      game.#players[PlayerID.PLAYER_1]
+      game.#players[PlayerID.PLAYER_1],
+      game.#events,
+      game.#phasesMenssages
     );
     turnPlayer1.fillPhases();
     const turnPlayer2 = new Turn(
       game.#deckContainer,
       game.#board,
       game.#mouseInput,
-      game.#players[PlayerID.PLAYER_2]
+      game.#players[PlayerID.PLAYER_2],
+      game.#events,
+      game.#phasesMenssages
     );
     turnPlayer2.fillPhases();
     game.#turns = [turnPlayer1, turnPlayer2];
 
-    game.#events = [];
+    game.#createPhaseButtons();
+
     game.#setInitialCardsCoordinates();
 
     return game;
@@ -280,6 +292,40 @@ export default class Game {
     this.#deckContainer.setDecks(updatedDecks);
   }
 
+  #createPhaseButtons() {
+    const buttonNames = [
+      "Skip",
+      "Prepare Event",
+      "Perform Event",
+      "Move",
+      "Attack",
+    ];
+
+    const buttonsXCoordinate = this.#board
+      .getGrids()
+      [GridType.PHASE_BUTTONS].getBoxes()[0]
+      .getXCoordinate();
+    const buttonsWidth = 200;
+    const buttonsHeight = 40;
+
+    for (let i = 0; i < buttonNames.length; i++) {
+      const currentButtonYCoordinate =
+        this.#board
+          .getGrids()
+          [GridType.PHASE_BUTTONS].getBoxes()
+          [i].getYCoordinate() + 5;
+
+      const buttonData = [
+        buttonsXCoordinate,
+        currentButtonYCoordinate,
+        buttonsWidth,
+        buttonsHeight,
+        buttonNames[i],
+      ];
+      globals.buttonDataGlobal.push(buttonData);
+    }
+  }
+
   #setInitialCardsCoordinates() {
     const activePlayerData = {
       mainCharacter: {},
@@ -426,15 +472,15 @@ export default class Game {
   #update() {
     if (globals.isCurrentTurnFinished) {
       globals.isCurrentTurnFinished = false;
-
       this.#currentPlayer = this.#turns[this.#currentPlayer].changeTurn(
         this.#currentPlayer
       );
-
       this.#setCardsCoordinates();
+      console.log("cambio");
     }
 
     this.#turns[this.#currentPlayer].execute();
+    this.#executeMessage();
     this.#executeEvent();
 
     this.#updatePlayersTotalHP();
@@ -484,19 +530,22 @@ export default class Game {
     return totalHP;
   }
 
-  addEventToQueue(event) {
-    this.#events.push(event);
-  }
-
   #executeEvent() {
     for (let i = 0; i < this.#events.length; i++) {
       let event = this.#events[i];
-      event.execute();
+      event.execute(this.#currentPlayer);
 
       if (!event.isActive()) {
         this.#events.splice(i, 1);
         i--;
       }
+    }
+  }
+
+  #executeMessage() {
+    for (let i = 0; i < this.#phasesMenssages.length; i++) {
+      let phaseMessage = this.#phasesMenssages[i];
+      phaseMessage.execute();
     }
   }
 
@@ -627,22 +676,23 @@ export default class Game {
   }
 
   #renderPhasesButtons() {
-    const phaseName = [
-      "Skip",
-      "Prepare Event",
-      "Perform Event",
-      "Move",
-      "Attack",
-    ];
-    for (let i = 0; i < phaseName.length; i++) {
-      const x = this.#board.getGrids()[4].getBoxes()[0].getXCoordinate();
-      const y = this.#board.getGrids()[4].getBoxes()[i].getYCoordinate() + 5;
-      const width = 200;
-      const height = 40;
-      const radius = 10;
+    const BUTTON_X = 0;
+    const BUTTON_Y = 1;
+    const BUTTON_WIDTH = 2;
+    const BUTTON_HEIGHT = 3;
+    const BUTTON_NAME = 4;
 
-      const buttonData = [x, y, width, height, phaseName[i]];
-      globals.buttonDataGlobal.push(buttonData);
+    const totalPhases = 5;
+    const phaseText =
+      "Phase: " + globals.executedPhasesCount + "/" + totalPhases;
+    globals.ctx.fillStyle = "white";
+    globals.ctx.font = "24px MedievalSharp";
+    globals.ctx.textAlign = "center";
+    globals.ctx.textBaseline = "middle";
+    globals.ctx.fillText(phaseText, 500, 675);
+
+    for (let i = 0; i < globals.buttonDataGlobal.length; i++) {
+      const currentButton = globals.buttonDataGlobal[i];
 
       globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
       globals.ctx.shadowBlur = 10;
@@ -651,37 +701,43 @@ export default class Game {
 
       globals.ctx.fillStyle = "darkcyan";
       globals.ctx.beginPath();
-      globals.ctx.moveTo(buttonData[0] + 10, buttonData[1]);
-      globals.ctx.lineTo(buttonData[0] + buttonData[2] - 10, buttonData[1]);
+      globals.ctx.moveTo(currentButton[BUTTON_X] + 10, currentButton[BUTTON_Y]);
+      globals.ctx.lineTo(
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH] - 10,
+        currentButton[BUTTON_Y]
+      );
       globals.ctx.quadraticCurveTo(
-        buttonData[0] + buttonData[2],
-        buttonData[1],
-        buttonData[0] + buttonData[2],
-        buttonData[1] + 10
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH],
+        currentButton[BUTTON_Y],
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH],
+        currentButton[BUTTON_Y] + 10
       );
       globals.ctx.lineTo(
-        buttonData[0] + buttonData[2],
-        buttonData[1] + buttonData[3] - 10
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH],
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT] - 10
       );
       globals.ctx.quadraticCurveTo(
-        buttonData[0] + buttonData[2],
-        buttonData[1] + buttonData[3],
-        buttonData[0] + buttonData[2] - 10,
-        buttonData[1] + buttonData[3]
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH],
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT],
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH] - 10,
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT]
       );
-      globals.ctx.lineTo(buttonData[0] + 10, buttonData[1] + buttonData[3]);
-      globals.ctx.quadraticCurveTo(
-        buttonData[0],
-        buttonData[1] + buttonData[3],
-        buttonData[0],
-        buttonData[1] + buttonData[3] - 10
+      globals.ctx.lineTo(
+        currentButton[BUTTON_X] + 10,
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT]
       );
-      globals.ctx.lineTo(buttonData[0], buttonData[1] + 10);
       globals.ctx.quadraticCurveTo(
-        buttonData[0],
-        buttonData[1],
-        buttonData[0] + 10,
-        buttonData[1]
+        currentButton[BUTTON_X],
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT],
+        currentButton[BUTTON_X],
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT] - 10
+      );
+      globals.ctx.lineTo(currentButton[BUTTON_X], currentButton[BUTTON_Y] + 10);
+      globals.ctx.quadraticCurveTo(
+        currentButton[BUTTON_X],
+        currentButton[BUTTON_Y],
+        currentButton[BUTTON_X] + 10,
+        currentButton[BUTTON_Y]
       );
       globals.ctx.closePath();
       globals.ctx.fill();
@@ -691,9 +747,9 @@ export default class Game {
       globals.ctx.textAlign = "center";
       globals.ctx.textBaseline = "middle";
       globals.ctx.fillText(
-        buttonData[4],
-        buttonData[0] + buttonData[2] / 2,
-        buttonData[1] + buttonData[3] / 2
+        currentButton[BUTTON_NAME],
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH] / 2,
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT] / 2
       );
     }
   }
@@ -816,8 +872,16 @@ export default class Game {
     globals.ctx.font = "20px MedievalSharp";
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
+
+    const phaseMessages = this.#phasesMenssages;
+    let messageText = "Select a Phase";
+
+    if (phaseMessages.length > 0) {
+      const currentMessage = phaseMessages[0];
+      messageText = currentMessage.content;
+    }
     globals.ctx.fillText(
-      "COMING SOON",
+      messageText,
       messageBoxX + messageBoxWidth / 2,
       messageBoxY + messageBoxHeight / 2
     );
@@ -883,7 +947,7 @@ export default class Game {
 
   #renderCards() {
     let expandedCard;
-    /*   const player1Deck =
+    /*       const player1Deck =
       this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
     for (let i = 0; i < player1Deck.getCards().length; i++) {
       const currentCard = player1Deck.getCards()[i];

@@ -30,6 +30,7 @@ const globals = {
   language: 0,
   isCurrentTurnFinished: false,
   buttonDataGlobal: [],
+  executedPhasesCount: 0,
 };
 
 window.onload = initStartGameScreen;
