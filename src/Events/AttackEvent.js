@@ -39,14 +39,17 @@ export default class AttackEvent extends Event {
     if (
       /* (!this.#attacker.getWeapon() ||
         this.#attacker.getWeaponType() === WeaponType.MELEE) && */
-      attackerBox.getBattlefieldAreaItBelongsTo() === BattlefieldArea.FRONT &&
-      targetBox.getBattlefieldAreaItBelongsTo() === BattlefieldArea.FRONT
+      attackerBox.getBattlefieldAreaItBelongsTo() === BattlefieldArea.REAR &&
+      targetBox.getBattlefieldAreaItBelongsTo() === BattlefieldArea.REAR
     ) {
       // THE (MELEE) ATTACK CAN BE PERFORMED AS BOTH MINIONS ARE POSITIONED IN THEIR MOVEMENT GRID'S FRONT AREA
       if (/* !this.#attacker.getWeapon() */ true) {
         // ATTACK USING FISTS
         damageToInflict =
           this.#attacker.getCurrentAttack() - this.#target.getCurrentDefense();
+          console.log(`Attacker damage ${this.#attacker.getCurrentAttack()}`)
+          console.log(`Target defense ${this.#target.getCurrentDefense()}`)
+
       } else {
         // ATTACK USING A MELEE WEAPON
         damageToInflict =
@@ -69,7 +72,7 @@ export default class AttackEvent extends Event {
     if (targetNewCurrentHP < 0) {
       targetNewCurrentHP = 0;
     }
-
+    console.log(`Total damage ${damageToInflict}`)
     this.#target.setCurrentHP(targetNewCurrentHP);
 
     wasTheAttackPerformed = true;

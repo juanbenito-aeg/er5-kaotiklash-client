@@ -80,6 +80,8 @@ export default class AttackPhase extends Phase {
 
       // ATTACKER SELECTION
       case AttackPhaseState.SELECT_ATTACKER:
+        console.log("select attacker")
+
         this.#attacker = this.#lookForLeftClickedCard([
           this.#currentPlayerMovementGridDeck,
         ]);
@@ -93,6 +95,8 @@ export default class AttackPhase extends Phase {
 
       // TARGET SELECTION
       case AttackPhaseState.SELECT_TARGET:
+        console.log("select target")
+
         this.#lookForLeftClickedCard([this.#currentPlayerMovementGridDeck]);
 
         if (this.#attacker.getState() === CardState.PLACED) {
@@ -115,6 +119,7 @@ export default class AttackPhase extends Phase {
 
       // CALCULATION AND APPLICATION OF DAMAGE
       case AttackPhaseState.CALC_AND_APPLY_DMG:
+        console.log(`${this.#attacker.getName()} attacked ${this.#target.getName()}`)
         const attackEvent = AttackEvent.create(
           this.#attacker,
           this.#target,
@@ -212,3 +217,4 @@ export default class AttackPhase extends Phase {
     }
   }
 }
+

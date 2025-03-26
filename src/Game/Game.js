@@ -635,6 +635,7 @@ export default class Game {
     this.#renderMessages();
     this.#renderCardsReverse();
     this.#renderCards();
+    this.#renderPrueba();
   }
 
   #renderPlayersInfo() {
@@ -1850,5 +1851,14 @@ export default class Game {
     globals.ctx.font = "18px MedievalSharp";
 
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
+  }
+   
+  #renderPrueba()
+  {
+    globals.ctx.font = "50px MedievalSharp";
+    globals.ctx.fillStyle = "white"
+
+    globals.ctx.fillText("hola", 100, globals.canvas.height /2);
+
   }
 }
