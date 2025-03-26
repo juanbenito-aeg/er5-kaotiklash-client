@@ -281,6 +281,7 @@ export default class Game {
   }
 
   #setInitialCardsCoordinates() {
+
     const activePlayerData = {
       mainCharacter: {},
       cardsInHandDeck: {},
@@ -443,6 +444,9 @@ export default class Game {
     this.#turns[this.#currentPlayer].execute();
     this.#skipPhase();
 
+    this.#executeEvent();
+
+    this.#updatePlayersTotalHP();
 
   }
 
@@ -485,9 +489,7 @@ export default class Game {
         console.log(`player2: ${this.#turns[1].getnumOfExecutedPhases()}`)
       }
     }
-    this.#executeEvent();
 
-    this.#updatePlayersTotalHP();
   }
 
   #setCardsCoordinates() {
@@ -504,7 +506,7 @@ export default class Game {
 
     const player1 = this.#players[PlayerID.PLAYER_1];
     const player1UpdatedTotalHP =
-      this.#sumMinionsHP(player1MinionsDeck) +
+      // this.#sumMinionsHP(player1MinionsDeck) +
       this.#sumMinionsHP(player1MinionsInPlayDeck);
     player1.setTotalHP(player1UpdatedTotalHP);
 
@@ -517,7 +519,7 @@ export default class Game {
 
     const player2 = this.#players[PlayerID.PLAYER_2];
     const player2UpdatedTotalHP =
-      this.#sumMinionsHP(player2MinionsDeck) +
+      // this.#sumMinionsHP(player2MinionsDeck) +
       this.#sumMinionsHP(player2MinionsInPlayDeck);
     player2.setTotalHP(player2UpdatedTotalHP);
   }
