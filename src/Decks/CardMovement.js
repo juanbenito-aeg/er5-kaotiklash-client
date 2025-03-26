@@ -5,6 +5,7 @@ export default class CardMovement {
   #card;
   #previousState;
   #state;
+  #gridPosition;
 
   constructor(card, state) {
     this.#card = card;
@@ -220,6 +221,14 @@ export default class CardMovement {
 
   setState(newState) {
     this.#state = newState;
+  }
+
+  getGridPosition() {
+    return this.#gridPosition;
+  }
+
+  setGridPosition(position) {
+    this.#gridPosition = position;
   }
 
   setCurrenPrepTimeInRounds(newPrepTimeInRounds) {

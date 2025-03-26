@@ -40,6 +40,14 @@ export default class Box {
     return this.#yCoordinate;
   }
 
+  setXCoordinate(newXCoordinate) {
+    return (this.#xCoordinate = newXCoordinate);
+  }
+
+  setYCoordinate(newYCoordinate) {
+    return (this.#yCoordinate = newYCoordinate);
+  }
+
   getWidth() {
     return this.#width;
   }
