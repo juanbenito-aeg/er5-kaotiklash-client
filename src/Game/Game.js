@@ -469,18 +469,42 @@ export default class Game {
       this.#currentPlayer = this.#turns[this.#currentPlayer].changeTurn(
         this.#currentPlayer
       );
-
-      this.#setCardsCoordinates();
     }
 
     this.#turns[this.#currentPlayer].execute();
+
     this.#executeEvent();
+
+    this.#lookForCardThatIsntHoveredAnymore();
+    this.#lookForHoveredCard();
 
     this.#updatePlayersTotalHP();
   }
 
-  #setCardsCoordinates() {
-    // TODO
+  #lookForCardThatIsntHoveredAnymore() {
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+      const currentDeck = this.#deckContainer.getDecks()[i];
+
+      const notHoveredCard = currentDeck.lookForCardThatIsntHoveredAnymore(
+        this.#mouseInput
+      );
+
+      if (notHoveredCard) {
+        notHoveredCard.setState(CardState.PLACED);
+      }
+    }
+  }
+
+  #lookForHoveredCard() {
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+      const currentDeck = this.#deckContainer.getDecks()[i];
+
+      const hoveredCard = currentDeck.lookForHoveredCard(this.#mouseInput);
+
+      if (hoveredCard && hoveredCard.getState() === CardState.PLACED) {
+        hoveredCard.setState(CardState.HOVERED);
+      }
+    }
   }
 
   #updatePlayersTotalHP() {

@@ -75,21 +75,23 @@ export default class Turn {
   execute() {
     const isAnyCardExpanded = this.#expandCard();
 
-    if (this.#currentPhase === PhaseType.INVALID) {
-      this.#checkButtonClick();
-    } else if (!this.#isCurrentPhaseFinished) {
-      this.#isCurrentPhaseFinished =
-        this.#phases[this.#currentPhase].execute(isAnyCardExpanded);
-    }
+    if (!isAnyCardExpanded) {
+      if (this.#currentPhase === PhaseType.INVALID) {
+        this.#checkButtonClick();
+      } else if (!this.#isCurrentPhaseFinished) {
+        this.#isCurrentPhaseFinished =
+          this.#phases[this.#currentPhase].execute();
+      }
 
-    if (this.#isCurrentPhaseFinished) {
-      this.#isCurrentPhaseFinished = false;
-      this.#currentPhase = PhaseType.INVALID;
-      this.#numOfExecutedPhases++;
-    }
+      if (this.#isCurrentPhaseFinished) {
+        this.#isCurrentPhaseFinished = false;
+        this.#currentPhase = PhaseType.INVALID;
+        this.#numOfExecutedPhases++;
+      }
 
-    if (this.#numOfExecutedPhases === 5) {
-      globals.isCurrentTurnFinished = true;
+      if (this.#numOfExecutedPhases === 5) {
+        globals.isCurrentTurnFinished = true;
+      }
     }
   }
 
@@ -116,61 +118,14 @@ export default class Turn {
 
     decksToCheck.push(DeckType.JOSEPH);
 
-    this.#lookForCardThatIsntHoveredAnymore(decksToCheck);
-
-    const hoveredCard = this.#lookForHoveredCard(decksToCheck);
-
-    this.#lookForRightClickedCard(decksToCheck, hoveredCard);
+    this.#lookForRightClickedCard(decksToCheck);
 
     const isAnyCardExpanded = this.#checkIfAnyCardIsExpanded(decksToCheck);
-
     return isAnyCardExpanded;
   }
 
-  #lookForHoveredCard(decksToCheck) {
-    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
-      for (let j = 0; j < decksToCheck.length; j++) {
-        if (i === decksToCheck[j]) {
-          const currentDeck = this.#deckContainer.getDecks()[i];
-
-          const hoveredCard = currentDeck.lookForHoveredCard(this.#mouseInput);
-
-          if (hoveredCard) {
-            if (hoveredCard.getState() === CardState.INACTIVE) {
-              hoveredCard.setPreviousState(CardState.INACTIVE);
-              hoveredCard.setState(CardState.INACTIVE_HOVERED);
-            } else if (hoveredCard.getState() === CardState.PLACED) {
-              hoveredCard.setPreviousState(CardState.PLACED);
-              hoveredCard.setState(CardState.HOVERED);
-            }
-
-            return hoveredCard;
-          }
-        }
-      }
-    }
-  }
-
-  #lookForCardThatIsntHoveredAnymore(decksToCheck) {
-    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
-      for (let j = 0; j < decksToCheck.length; j++) {
-        if (i === decksToCheck[j]) {
-          const currentDeck = this.#deckContainer.getDecks()[i];
-
-          const notHoveredCard = currentDeck.lookForCardThatIsntHoveredAnymore(
-            this.#mouseInput
-          );
-
-          if (notHoveredCard) {
-            notHoveredCard.setState(notHoveredCard.getPreviousState());
-          }
-        }
-      }
-    }
-  }
-
-  #lookForRightClickedCard(decksToCheck, hoveredCard) {
-    if (this.#mouseInput.isRightButtonPressed() && hoveredCard) {
+  #lookForRightClickedCard(decksToCheck) {
+    if (this.#mouseInput.isRightButtonPressed()) {
       this.#mouseInput.setRightButtonPressedFalse();
 
       const isAnyCardExpanded = this.#checkIfAnyCardIsExpanded(decksToCheck);
@@ -180,17 +135,20 @@ export default class Turn {
           if (i === decksToCheck[j]) {
             const currentDeck = this.#deckContainer.getDecks()[i];
 
+            const hoveredCard = currentDeck.lookForHoveredCard(
+              this.#mouseInput
+            );
+
             for (let k = 0; k < currentDeck.getCards().length; k++) {
               const currentCard = currentDeck.getCards()[k];
 
-              if (
-                currentCard.getState() === CardState.EXPANDED &&
-                currentCard === hoveredCard
-              ) {
-                currentCard.setState(currentCard.getPreviousState());
-              } else if (!isAnyCardExpanded && currentCard === hoveredCard) {
-                currentCard.setPreviousState(currentCard.getState());
-                currentCard.setState(CardState.EXPANDED);
+              if (currentCard === hoveredCard) {
+                if (!isAnyCardExpanded) {
+                  currentCard.setPreviousState(currentCard.getState());
+                  currentCard.setState(CardState.EXPANDED);
+                } else if (currentCard.getState() === CardState.EXPANDED) {
+                  currentCard.setState(currentCard.getPreviousState());
+                }
               }
             }
           }

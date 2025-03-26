@@ -56,8 +56,7 @@ export default class AttackEvent extends Event {
       }
     } else {
       // THE ATTACK CANNOT BE PERFORMED, SO THE TARGET IS DESELECTED
-      this.#target.setState(this.#target.getPreviousState());
-      this.#target.setPreviousState(CardState.INACTIVE_SELECTED);
+      this.#target.setState(CardState.PLACED);
 
       return wasTheAttackPerformed;
     }
