@@ -126,7 +126,7 @@ export default class InitialPhase {
 
     this.#shuffleDeck(eventWeapon);
 
-    this.#selectAndInsertCards(eventWeapon, player1CardsInHand, 5);
-    this.#selectAndInsertCards(eventWeapon, player2CardsInHand, 5);
+    this.#selectAndInsertCards(eventWeapon, player1CardsInHand, 3);
+    this.#selectAndInsertCards(eventWeapon, player2CardsInHand, 3);
   }
 }

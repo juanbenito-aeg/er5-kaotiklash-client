@@ -907,7 +907,6 @@ export default class Game {
     const player1Deck = this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
     for (let i = 0; i < player1Deck.getCards().length; i++) {
       const currentCard = player1Deck.getCards()[i];
-      this.#renderCard(currentCard);
       if (currentCard.getState() === CardState.EXPANDED) {
         expandedCard = currentCard;
       }
