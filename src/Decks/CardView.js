@@ -175,8 +175,24 @@ export default class CardView {
     return this.#card;
   }
 
+  getWeapon() {
+    return this.#card.getWeapon();
+  }
+
+  getWeaponType() {
+    return this.#card.getWeapon().getWeaponType();
+  }
+
+  getWeaponCurrentDamage() {
+    return this.#card.getWeapon().getCurrentDamage();
+  }
+
   setCurrentHP(newHP) {
     this.#card.setCurrentHP(newHP);
+  }
+
+  setWeapon(weapon) {
+    this.#card.setWeapon(weapon);
   }
 
   setCurrenPrepTimeInRounds(newPrepTimeInRounds) {

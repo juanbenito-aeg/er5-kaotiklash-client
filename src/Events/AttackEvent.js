@@ -51,7 +51,7 @@ export default class AttackEvent extends Event {
         // ATTACK USING A MELEE WEAPON
         damageToInflict =
           this.#attacker.getCurrentAttack() +
-          this.#attacker.getWeaponDamage() -
+          this.#attacker.getWeaponCurrentDamage() -
           this.#target.getCurrentDefense();
       }
     } else {

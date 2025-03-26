@@ -218,12 +218,28 @@ export default class CardMovement {
     return this.#state;
   }
 
+  getWeapon() {
+    return this.#card.getWeapon();
+  }
+
+  getWeaponType() {
+    return this.#card.getWeapon().getWeaponType();
+  }
+
+  getWeaponCurrentDamage() {
+    return this.#card.getWeapon().getCurrentDamage();
+  }
+
   setState(newState) {
     this.#state = newState;
   }
 
   setCurrentHP(newHP) {
     this.#card.setCurrentHP(newHP);
+  }
+
+  setWeapon(weapon) {
+    this.#card.setWeapon(weapon);
   }
 
   setCurrenPrepTimeInRounds(newPrepTimeInRounds) {
