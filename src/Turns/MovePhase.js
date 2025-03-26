@@ -121,7 +121,6 @@ export default class MovePhase extends Phase {
 
       if (this._mouseInput.isMouseOverBox(box) && !box.isOccupied() && this._mouseInput.isLeftButtonPressed() && isMouseOnAvailableArea) {
         this.#selectedGrid = box;
-        console.log(this.#previousBox)
         box.setCard(this.#selectedCard);
         this.#previousBox.setState(BoxState.AVAILABLE);
         this.#previousBox.resetCard();
@@ -135,8 +134,7 @@ export default class MovePhase extends Phase {
   }
 
   #moveCardToBox() {
-    // console.log(this.#gridsRelevants)
-    // console.log(this.#selectedGrid)
+
     if (this.#selectedCard) {
 
       this.#selectedCard.setXCoordinate(this.#selectedGrid.getXCoordinate()); 
@@ -157,9 +155,12 @@ export default class MovePhase extends Phase {
         this.#selectedGrid.setCard(this.#selectedCard); 
         this.#selectedCard.setState(CardState.PLACED);
         this.#selectedCard = null;
+        console.log(this.#selectedCard)
+
       }
+      this.#selectedCard = null;
       this.#selectedGrid = null;
-      this.#previousBox
+      this.#previousBox = null;
       this._state = MovePhaseState.INIT;
     }
   }
