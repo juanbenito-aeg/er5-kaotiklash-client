@@ -6,75 +6,73 @@ import {
   PlayerID,
   DeckType,
   GridType,
-  Language,
-  PhaseType,
 } from "../Game/constants.js";
 import PrepareEvent from "../Events/PrepareEvent.js";
-import PhasesMessages from "../Messages/PhasesMessages.js";
 
 export default class PrepareEventPhase extends Phase {
+  #player;
   #decksRelevants;
   #gridsRelevants;
   #selectedCard;
   #selectedGrid;
   #events;
-  #currentPlayer;
   #isPhaseFinished;
-  #phaseMessage;
 
   constructor(
-    currentPlayer,
+    state,
+    mouseInput,
+    player,
     decksRelevants,
     gridRelevants,
-    mouseInput,
-    events,
-    phaseMessage,
-    state
+    events
   ) {
     super(state, mouseInput);
+
+    this.#player = player;
     this.#decksRelevants = decksRelevants;
     this.#gridsRelevants = gridRelevants;
     this.#selectedCard = null;
     this.#selectedGrid = null;
     this.#events = events;
-    this.#currentPlayer = currentPlayer;
-    this._state = PrepareEventState.INIT;
     this.#isPhaseFinished = false;
-    this.#phaseMessage = phaseMessage;
   }
 
   static create(
-    currentPlayer,
+    player,
     deckContainer,
     board,
     mouseInput,
     events,
-    phaseMessage
+    currentPlayer
   ) {
     let deckRelevants;
     let gridRelevants;
 
-    if (currentPlayer.getID() === PlayerID.PLAYER_1) {
+    if (player === currentPlayer) {
+      gridRelevants = board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
+    } else {
+      gridRelevants = board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
+    }
+
+    if (player.getID() === PlayerID.PLAYER_1) {
       deckRelevants = [
         deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND],
         deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION],
       ];
-      gridRelevants = board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
     } else {
       deckRelevants = [
         deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND],
         deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION],
       ];
-      gridRelevants = board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
     }
 
     const prepareEventPhase = new PrepareEventPhase(
-      currentPlayer,
+      PrepareEventState.INIT,
+      mouseInput,
+      player,
       deckRelevants,
       gridRelevants,
-      mouseInput,
-      events,
-      phaseMessage
+      events
     );
 
     return prepareEventPhase;
@@ -83,11 +81,6 @@ export default class PrepareEventPhase extends Phase {
   execute() {
     this.#isPhaseFinished = false;
 
-    const phaseMessage = PhasesMessages.create(
-      PhaseType.PREPARE_EVENT,
-      Language.ENGLISH
-    );
-    this.#phaseMessage.push(phaseMessage);
     switch (this._state) {
       case PrepareEventState.INIT:
         this.#initializePhase();
@@ -108,6 +101,7 @@ export default class PrepareEventPhase extends Phase {
       default:
         console.error("Prepare Event State Fail");
     }
+
     return this.#isPhaseFinished;
   }
 
@@ -184,7 +178,7 @@ export default class PrepareEventPhase extends Phase {
     if (!this.#selectedCard || !this.#selectedGrid) {
       return;
     }
-    console.log(this.#currentPlayer);
+
     if (
       this.#selectedCard.getState() === CardState.SELECTED &&
       this.#selectedGrid.getState() === BoxState.SELECTED
@@ -202,7 +196,7 @@ export default class PrepareEventPhase extends Phase {
 
       const prepareEvent = PrepareEvent.create(
         this.#decksRelevants[1],
-        this.#currentPlayer
+        this.#player
       );
 
       this.#events.push(prepareEvent);

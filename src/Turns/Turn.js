@@ -24,18 +24,10 @@ export default class Turn {
   #mouseInput;
   #player;
   #events;
-  #phasesMessages;
 
-  constructor(
-    deckContainer,
-    board,
-    mouseInput,
-    player,
-    events,
-    phasesMessages
-  ) {
-    this.#currentPhase = PhaseType.INVALID;
+  constructor(deckContainer, board, mouseInput, player, events) {
     this.#isCurrentPhaseFinished = false;
+    this.#currentPhase = PhaseType.INVALID;
     this.#numOfExecutedPhases = 0;
     this.#phases = [];
     this.#deckContainer = deckContainer;
@@ -43,10 +35,9 @@ export default class Turn {
     this.#mouseInput = mouseInput;
     this.#player = player;
     this.#events = events;
-    this.#phasesMessages = phasesMessages;
   }
 
-  fillPhases() {
+  fillPhases(currentPlayer) {
     if (this.#player.getID() === PlayerID.PLAYER_1) {
       const initialPhase = new InitialPhase(this.#deckContainer);
       initialPhase.execute();
@@ -68,7 +59,7 @@ export default class Turn {
         this.#board,
         this.#mouseInput,
         this.#events,
-        this.#phasesMessages
+        currentPlayer
       );
 
       this.#phases.push(currentPhase);
@@ -77,12 +68,15 @@ export default class Turn {
 
   changeTurn(currentPlayer) {
     globals.executedPhasesCount = 0;
+
     this.#numOfExecutedPhases = 0;
+
     /*   this.#swapTurnPosition(); */
-    if (currentPlayer === 0) {
-      return 1;
+
+    if (currentPlayer.getID() === PlayerID.PLAYER_1) {
+      return PlayerID.PLAYER_2;
     } else {
-      return 0;
+      return PlayerID.PLAYER_1;
     }
   }
 

@@ -2,14 +2,15 @@ import Event from "./Event.js";
 
 export default class PrepareEvent extends Event {
   #preparationEventDeck;
-  #eventIsActive;
   #executedByPlayer;
+  #eventIsActive;
 
   constructor(preparationEventDeck, executedByPlayer) {
     super();
+
     this.#preparationEventDeck = preparationEventDeck;
-    this.#eventIsActive = true;
     this.#executedByPlayer = executedByPlayer;
+    this.#eventIsActive = true;
   }
 
   static create(preparationEventDeck, executedByPlayer) {

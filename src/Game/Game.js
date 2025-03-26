@@ -42,7 +42,7 @@ export default class Game {
     game.#players = [player1, player2];
 
     // RANDOMLY ASSIGN PLAYER THAT STARTS PLAYING
-    game.#currentPlayer = Math.floor(Math.random() * 2);
+    game.#currentPlayer = game.#players[Math.floor(Math.random() * 2)];
 
     // MAIN DECK CONFIGURATION FILE LOAD
     const url = "./src/mainDeck.json";
@@ -83,7 +83,7 @@ export default class Game {
       game.#events,
       game.#phasesMenssages
     );
-    turnPlayer1.fillPhases();
+    turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
       game.#deckContainer,
       game.#board,
@@ -92,7 +92,7 @@ export default class Game {
       game.#events,
       game.#phasesMenssages
     );
-    turnPlayer2.fillPhases();
+    turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
 
     game.#createPhaseButtons();
@@ -355,7 +355,7 @@ export default class Game {
     inactivePlayerData.minionsInPlayGrid =
       this.#board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
 
-    if (this.#currentPlayer === PlayerID.PLAYER_1) {
+    if (this.#currentPlayer === this.#players[PlayerID.PLAYER_1]) {
       // SET (PART OF) THE ACTIVE PLAYER'S DATA
       activePlayerData.mainCharacter = this.#deckContainer
         .getDecks()
@@ -472,48 +472,46 @@ export default class Game {
   #update() {
     if (globals.isCurrentTurnFinished) {
       globals.isCurrentTurnFinished = false;
-      this.#currentPlayer = this.#turns[this.#currentPlayer].changeTurn(
-        this.#currentPlayer
-      );
-      this.#setCardsCoordinates();
-      console.log("cambio");
+
+      const newCurrentPlayerID = this.#turns[
+        this.#currentPlayer.getID()
+      ].changeTurn(this.#currentPlayer);
+
+      this.#currentPlayer = this.#players[newCurrentPlayerID];
     }
 
-    this.#turns[this.#currentPlayer].execute();
-    this.#executeMessage();
+    this.#turns[this.#currentPlayer.getID()].execute();
+
     this.#executeEvent();
+    this.#executeMessage();
 
     this.#updatePlayersTotalHP();
-  }
-
-  #setCardsCoordinates() {
-    // TODO
   }
 
   #updatePlayersTotalHP() {
     // PLAYER 1
 
-    const player1MinionsDeck =
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS];
+    /* const player1MinionsDeck =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS]; */
     const player1MinionsInPlayDeck =
       this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
 
     const player1 = this.#players[PlayerID.PLAYER_1];
     const player1UpdatedTotalHP =
-      this.#sumMinionsHP(player1MinionsDeck) +
+      /* this.#sumMinionsHP(player1MinionsDeck) + */
       this.#sumMinionsHP(player1MinionsInPlayDeck);
     player1.setTotalHP(player1UpdatedTotalHP);
 
     // PLAYER 2
 
-    const player2MinionsDeck =
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
+    /* const player2MinionsDeck =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS]; */
     const player2MinionsInPlayDeck =
       this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
 
     const player2 = this.#players[PlayerID.PLAYER_2];
     const player2UpdatedTotalHP =
-      this.#sumMinionsHP(player2MinionsDeck) +
+      /* this.#sumMinionsHP(player2MinionsDeck) + */
       this.#sumMinionsHP(player2MinionsInPlayDeck);
     player2.setTotalHP(player2UpdatedTotalHP);
   }
@@ -553,14 +551,36 @@ export default class Game {
     // CLEAR SCREEN
     globals.ctx.clearRect(0, 0, globals.canvas.width, globals.canvas.height);
 
-    this.#renderBoard();
-
     switch (globals.gameState) {
       case GameState.PLAYING:
-        this.#renderGrids();
         this.#renderGame();
         break;
     }
+  }
+
+  #renderGame() {
+    this.#renderBoard();
+    this.#renderGrids();
+    this.#renderPlayersInfo();
+    this.#renderPhasesButtons();
+    this.#renderActiveEventsTable();
+    this.#renderMessages();
+    this.#renderCardsReverse();
+    this.#renderCards();
+  }
+
+  #renderBoard() {
+    globals.ctx.drawImage(
+      globals.boardImage,
+      0,
+      0,
+      3584,
+      2048,
+      0,
+      0,
+      globals.canvas.width,
+      globals.canvas.height
+    );
   }
 
   #renderGrids() {
@@ -599,29 +619,6 @@ export default class Game {
     }
   }
 
-  #renderBoard() {
-    globals.ctx.drawImage(
-      globals.boardImage,
-      0,
-      0,
-      3584,
-      2048,
-      0,
-      0,
-      globals.canvas.width,
-      globals.canvas.height
-    );
-  }
-
-  #renderGame() {
-    this.#renderPlayersInfo();
-    this.#renderPhasesButtons();
-    this.#renderActiveEventsTable();
-    this.#renderMessages();
-    this.#renderCardsReverse();
-    this.#renderCards();
-  }
-
   #renderPlayersInfo() {
     const activePlayerX = this.#board
       .getGrids()
@@ -643,7 +640,7 @@ export default class Game {
 
     let player1X, player1Y, player2X, player2Y;
 
-    if (this.#currentPlayer === PlayerID.PLAYER_1) {
+    if (this.#currentPlayer.getID() === PlayerID.PLAYER_1) {
       player1X = activePlayerX + 100;
       player1Y = activePlayerY + 225;
       player2X = inactivePlayerX + 100;
@@ -962,10 +959,10 @@ export default class Game {
       const currentDeck = this.#deckContainer.getDecks()[i];
 
       const isDeckCardsInHandOfInactivePlayer =
-        (this.#currentPlayer === PlayerID.PLAYER_1 &&
+        (this.#currentPlayer.getID() === PlayerID.PLAYER_1 &&
           currentDeck ===
             this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND]) ||
-        (this.#currentPlayer === PlayerID.PLAYER_2 &&
+        (this.#currentPlayer.getID() === PlayerID.PLAYER_2 &&
           currentDeck ===
             this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND]);
 
@@ -1864,176 +1861,3 @@ export default class Game {
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
   }
 }
-
-// #renderPlayer1MinionActiveCards() {
-//   const player1MinionsInPlayDeck = this.#deckContainer.getDecks()[5].getCards();
-//   const battlefieldBot = this.#board.getGrids()[8].getBoxes();
-//   const battlefieldTop = this.#board.getGrids()[13].getBoxes();
-
-// let fixedPositions = [];
-// if(globals.currentPlayer === 1)
-// {
-// fixedPositions = [
-
-//   { x: battlefieldBot[1].getXCoordinate(), y: battlefieldBot[1].getYCoordinate() },
-//   { x: battlefieldBot[8].getXCoordinate(), y: battlefieldBot[8].getYCoordinate() },
-//   { x: battlefieldBot[3].getXCoordinate(), y: battlefieldBot[3].getYCoordinate() },
-
-// ];
-// }
-// else
-// {
-// fixedPositions = [
-
-//     { x: battlefieldTop[1].getXCoordinate(), y: battlefieldTop[1].getYCoordinate() },
-//     { x: battlefieldTop[8].getXCoordinate(), y: battlefieldTop[8].getYCoordinate() },
-//     { x: battlefieldTop[3].getXCoordinate(), y: battlefieldTop[3].getYCoordinate() },
-
-//   ];
-// }
-
-//   for (let i = 0; i < player1MinionsInPlayDeck.length && i < fixedPositions.length; i++) {
-//     const currentCard = player1MinionsInPlayDeck[i];
-//     const { x, y } = fixedPositions[i];
-
-//     let smallSizeX = 110;
-//     let smallSizeY = 110;
-
-//     this.#renderCard(currentCard, x, y, smallSizeX, smallSizeY);
-//     this.#renderSmallTemplate(currentCard, x, y, smallSizeX, smallSizeY);
-//     this.#renderIcons(currentCard, x, y);
-//     this.#renderAttributesMinions(currentCard, x, y);
-//   }
-// }
-
-// #renderPlayer2MinionActiveCards() {
-//   const player2MinionsInPlayDeck = this.#deckContainer.getDecks()[11].getCards();
-//   const battlefieldBot = this.#board.getGrids()[8].getBoxes();
-//   const battlefieldTop = this.#board.getGrids()[13].getBoxes();
-
-//   let fixedPositions = [];
-//   if(globals.currentPlayer === 1)
-//   {
-//     fixedPositions = [
-
-//       { x: battlefieldTop[1].getXCoordinate(), y: battlefieldTop[1].getYCoordinate() },
-//       { x: battlefieldTop[8].getXCoordinate(), y: battlefieldTop[8].getYCoordinate() },
-//       { x: battlefieldTop[3].getXCoordinate(), y: battlefieldTop[3].getYCoordinate() },
-
-//     ];
-//     }
-//     else
-//     {
-//     fixedPositions = [
-
-//         { x: battlefieldBot[1].getXCoordinate(), y: battlefieldBot[1].getYCoordinate() },
-//         { x: battlefieldBot[8].getXCoordinate(), y: battlefieldBot[8].getYCoordinate() },
-//         { x: battlefieldBot[3].getXCoordinate(), y: battlefieldBot[3].getYCoordinate() },
-//       ];
-//   }
-
-//   for (let i = 0; i < player2MinionsInPlayDeck.length && i < fixedPositions.length; i++) {
-//     const currentCard = player2MinionsInPlayDeck[i];
-//     const { x, y } = fixedPositions[i];
-
-//     let smallSizeX = 110;
-//     let smallSizeY = 110;
-
-//     this.#renderCard(currentCard, x, y, smallSizeX, smallSizeY);
-//     this.#renderSmallTemplate(currentCard, x, y, smallSizeX, smallSizeY);
-//     this.#renderIcons(currentCard, x, y);
-//     this.#renderAttributesMinions(currentCard, x, y);
-//   }
-// }
-
-// #renderEventHandPlayer1Cards() {
-
-//     const MinionPlayer1 = this.#deckContainer.getDecks()[3];
-
-//     for(let i = 0; i < MinionPlayer1.getCards().length ; i++)
-//     {
-//       const currentCard = MinionPlayer1.getCards()[i];
-//       let xCoordinate = this.#board.getGrids()[7].getBoxes()[i].getXCoordinate();
-//       let yCoordinate = this.#board.getGrids()[7].getBoxes()[i].getYCoordinate();
-//       let smallSizeX = 110;
-//       let smallSizeY = 110;
-//       this.#renderCard(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
-//       this.#renderSmallTemplate(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
-//       this.#renderIcons(currentCard, xCoordinate, yCoordinate);
-//       this.#renderAttributesWeaponns(currentCard, xCoordinate, yCoordinate);
-//       this.#renderEventHandPlayer2Reverse();
-//     }
-
-//     globals.ctx.font = "20px MedievalSharp";
-//     globals.ctx.fillStyle = "yellow";
-//     globals.ctx.fillText("Player 1", 580, 990);
-
-// }
-
-// #renderEventHandPlayer2Reverse(){
-//   const EventPlayer2 = this.#deckContainer.getDecks()[9].getCards();
-//   const xCoordinate = this.#board.getGrids()[12].getBoxes()[0].getXCoordinate() - 3;
-//   const yCoordinate = this.#board.getGrids()[12].getBoxes()[0].getYCoordinate() - 2;
-//   for( let i = 0; i < EventPlayer2.length; i++)
-//   {
-//     globals.ctx.drawImage(
-//       globals.cardsReverseImage,
-//       0,
-//       0,
-//       425,
-//       587,
-//       xCoordinate +  i*135,
-//       yCoordinate,
-//       115,
-//       115
-//     );
-//   }
-
-// }
-
-// #renderEventHandPlayer2Cards() {
-
-//     const EventPlayer2 = this.#deckContainer.getDecks()[9].getCards();
-//     //console.log(this.#board.getGrids()[7].getBoxes()[0]);
-
-//     for(let i = 0; i < EventPlayer2.length ; i++)
-//     {
-//       const currentCard = EventPlayer2[i];
-//       let xCoordinate = this.#board.getGrids()[7].getBoxes()[i].getXCoordinate();
-//       let yCoordinate = this.#board.getGrids()[7].getBoxes()[i].getYCoordinate();
-//       let smallSizeX = 110;
-//       let smallSizeY = 110;
-//       this.#renderCard(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
-//       this.#renderSmallTemplate(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
-//       this.#renderIcons(currentCard, xCoordinate, yCoordinate);
-//       this.#renderAttributesWeaponns(currentCard, xCoordinate, yCoordinate);
-//       this.#renderEventHandPlayer1Reverse();
-//     }
-
-//     globals.ctx.font = "20px MedievalSharp";
-//     globals.ctx.fillStyle = "yellow";
-//     globals.ctx.fillText("Player 2", 580, 990);
-// }
-
-// #renderEventHandPlayer1Reverse(){
-//   const EventPlayer1 = this.#deckContainer.getDecks()[3].getCards();
-//   console.log(this.#board.getGrids()[12].getBoxes()[0]);
-
-//   const xCoordinate = this.#board.getGrids()[12].getBoxes()[0].getXCoordinate() - 3;
-//   const yCoordinate = this.#board.getGrids()[12].getBoxes()[0].getYCoordinate() - 2;
-//   for( let i = 0; i < EventPlayer1.length; i++)
-//   {
-//     globals.ctx.drawImage(
-//       globals.cardsReverseImage,
-//       0,
-//       0,
-//       425,
-//       587,
-//       xCoordinate +  i*135,
-//       yCoordinate,
-//       115,
-//       115
-//     );
-//   }
-
-// }
