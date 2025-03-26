@@ -11,6 +11,7 @@ import {
   DeckType,
   PhaseType,
   PhaseButton,
+  GridType,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 
@@ -76,6 +77,8 @@ export default class Turn {
     const isAnyCardExpanded = this.#expandCard();
 
     if (!isAnyCardExpanded) {
+      this.#equipWeapon();
+
       if (this.#currentPhase === PhaseType.INVALID) {
         this.#checkButtonClick();
       } else if (!this.#isCurrentPhaseFinished) {
@@ -169,6 +172,76 @@ export default class Turn {
             return true;
           }
         }
+      }
+    }
+  }
+
+  // TODO (¿?): DEFINE STATE-MACHINE FOR THIS EVENT
+  #equipWeapon() {
+    let playerXEventsInPreparationDeck,
+      playerXMinionsInPlayDeck,
+      playerXEventsInPreparationGrid,
+      playerXMinionsInPlayGrid;
+
+    if (this.#player.getID() === PlayerID.PLAYER_1) {
+      playerXEventsInPreparationDeck =
+        this.#deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION];
+      playerXMinionsInPlayDeck =
+        this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
+      playerXEventsInPreparationGrid =
+        this.#board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
+      playerXMinionsInPlayGrid =
+        this.#board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
+    } else {
+      playerXEventsInPreparationDeck =
+        this.#deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION];
+      playerXMinionsInPlayDeck =
+        this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
+      playerXEventsInPreparationGrid =
+        this.#board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
+      playerXMinionsInPlayGrid =
+        this.#board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
+    }
+
+    this.#lookForLeftClickedCard([playerXEventsInPreparationDeck]);
+  }
+
+  #lookForLeftClickedCard(decksToCheck) {
+    if (this.#mouseInput.isLeftButtonPressed()) {
+      this.#mouseInput.setLeftButtonPressedFalse();
+
+      const isAnyCardSelected = this.#checkIfAnyCardIsSelected(decksToCheck);
+
+      for (let i = 0; i < decksToCheck.length; i++) {
+        const currentDeck = decksToCheck[i];
+
+        const hoveredCard = currentDeck.lookForHoveredCard(this.#mouseInput);
+
+        for (let j = 0; j < currentDeck.getCards().length; j++) {
+          const currentCard = currentDeck.getCards()[j];
+
+          if (currentCard === hoveredCard) {
+            if (!isAnyCardSelected) {
+              currentCard.setState(CardState.SELECTED);
+              return currentCard;
+            } else if (currentCard.getState() === CardState.SELECTED) {
+              currentCard.setState(CardState.PLACED);
+              return currentCard;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  #checkIfAnyCardIsSelected(decksToCheck) {
+    for (let i = 0; i < decksToCheck.length; i++) {
+      const currentDeck = decksToCheck[i];
+
+      const isAnyCardSelected = currentDeck.checkIfAnyCardIsSelected();
+
+      if (isAnyCardSelected) {
+        return true;
       }
     }
   }
