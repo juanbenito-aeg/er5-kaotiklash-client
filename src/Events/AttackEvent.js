@@ -39,24 +39,26 @@ export default class AttackEvent extends Event {
     let damageToInflict;
 
     if (
-      /* (!this.#attacker.getWeapon() ||
-        this.#attacker.getWeaponType() === WeaponType.MELEE) && */
-      attackerBox.getBattlefieldAreaItBelongsTo() === BattlefieldArea.REAR &&
-      targetBox.getBattlefieldAreaItBelongsTo() === BattlefieldArea.REAR
+      (!this.#attacker.getWeapon() ||
+        this.#attacker.getMinionWeaponType() === WeaponType.MELEE) &&
+      attackerBox.getBattlefieldAreaItBelongsTo() ===
+        /* BattlefieldArea.FRONT (!!!!!) TO UNCOMMENT BEFORE SHOWING DEMO */ BattlefieldArea.REAR &&
+      targetBox.getBattlefieldAreaItBelongsTo() ===
+        /* BattlefieldArea.FRONT (!!!!!) TO UNCOMMENT BEFORE SHOWING DEMO */ BattlefieldArea.REAR
     ) {
       // THE (MELEE) ATTACK CAN BE PERFORMED AS BOTH MINIONS ARE POSITIONED IN THEIR MOVEMENT GRID'S FRONT AREA
-      if (/* !this.#attacker.getWeapon() */ true) {
+      if (!this.#attacker.getWeapon()) {
         // ATTACK USING FISTS
         damageToInflict =
           this.#attacker.getCurrentAttack() - this.#target.getCurrentDefense();
-          console.log(`Attacker damage ${this.#attacker.getCurrentAttack()}`)
-          console.log(`Target defense ${this.#target.getCurrentDefense()}`)
 
+        console.log(`Attacker damage ${this.#attacker.getCurrentAttack()}`);
+        console.log(`Target defense ${this.#target.getCurrentDefense()}`);
       } else {
         // ATTACK USING A MELEE WEAPON
         damageToInflict =
           this.#attacker.getCurrentAttack() +
-          this.#attacker.getWeaponDamage() -
+          this.#attacker.getWeaponCurrentDamage() -
           this.#target.getCurrentDefense();
       }
     } else {
@@ -74,13 +76,21 @@ export default class AttackEvent extends Event {
     if (targetNewCurrentHP < 0) {
       targetNewCurrentHP = 0;
     }
-    console.log(`Total damage ${damageToInflict}`)
-    if(damageToInflict > 0)
-    {
-      damageToInflict = damageToInflict * -1
+
+    console.log(`Total damage ${damageToInflict}`);
+
+    if (damageToInflict > 0) {
+      damageToInflict = damageToInflict * -1;
     }
-    const DamageMessage = new DamageMessages(damageToInflict,4,targetBox.getCard().getXCoordinate() + 55,targetBox.getCard().getYCoordinate() + 55)
-    globals.damageMessages.push(DamageMessage)
+
+    const DamageMessage = new DamageMessages(
+      damageToInflict,
+      4,
+      targetBox.getCard().getXCoordinate() + 55,
+      targetBox.getCard().getYCoordinate() + 55
+    );
+    globals.damageMessages.push(DamageMessage);
+
     this.#target.setCurrentHP(targetNewCurrentHP);
 
     wasTheAttackPerformed = true;

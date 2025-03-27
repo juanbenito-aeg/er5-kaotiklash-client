@@ -1,49 +1,12 @@
-import { CardCategory, CardState } from "../Game/constants.js";
-import { globals } from "../index.js";
-
 export default class CardMovement {
   #card;
   #previousState;
   #state;
+  #gridPosition;
 
   constructor(card, state) {
     this.#card = card;
     this.#state = state;
-  }
-
-  checkIfMouseWithinCardWidthAndHeight(mouseInput) {
-    let cardWidth = globals.imagesDestinationSizes.allCardsBigVersion.width;
-    let cardHeight = globals.imagesDestinationSizes.allCardsBigVersion.height;
-
-    let cardXCoordinate = globals.canvas.width / 2 - cardWidth / 2;
-    let cardYCoordinate = globals.canvas.height / 2 - cardHeight / 2;
-
-    if (this.getState() !== CardState.EXPANDED) {
-      if (this.getCategory() === CardCategory.MAIN_CHARACTER) {
-        cardWidth =
-          globals.imagesDestinationSizes.mainCharactersSmallVersion.width;
-        cardHeight =
-          globals.imagesDestinationSizes.mainCharactersSmallVersion.height;
-      } else {
-        cardWidth =
-          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width;
-        cardHeight =
-          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height;
-      }
-
-      cardXCoordinate = this.getXCoordinate();
-      cardYCoordinate = this.getYCoordinate();
-    }
-
-    const isMouseWithinCardWidth =
-      mouseInput.getMouseXCoordinate() >= cardXCoordinate &&
-      mouseInput.getMouseXCoordinate() <= cardXCoordinate + cardWidth;
-
-    const isMouseWithinCardHeight =
-      mouseInput.getMouseYCoordinate() >= cardYCoordinate &&
-      mouseInput.getMouseYCoordinate() <= cardYCoordinate + cardHeight;
-
-    return [isMouseWithinCardWidth, isMouseWithinCardHeight];
   }
 
   getCategory() {
@@ -218,6 +181,18 @@ export default class CardMovement {
     return this.#state;
   }
 
+  getWeapon() {
+    return this.#card.getWeapon();
+  }
+
+  getMinionWeaponType() {
+    return this.#card.getWeapon().getWeaponType();
+  }
+
+  getWeaponCurrentDamage() {
+    return this.#card.getWeapon().getCurrentDamage();
+  }
+
   setState(newState) {
     this.#state = newState;
   }
@@ -226,7 +201,35 @@ export default class CardMovement {
     this.#card.setCurrentHP(newHP);
   }
 
+  setWeapon(weapon) {
+    this.#card.setWeapon(weapon);
+  }
+
+  getGridPosition() {
+    return this.#gridPosition;
+  }
+
+  setGridPosition(position) {
+    this.#gridPosition = position;
+  }
+
   setCurrenPrepTimeInRounds(newPrepTimeInRounds) {
     this.#card.setCurrenPrepTimeInRounds(newPrepTimeInRounds);
+  }
+
+  isMouseOver() {
+    return this.#card.isMouseOver();
+  }
+
+  setIsMouseOver(isMouseOver) {
+    this.#card.setIsMouseOver(isMouseOver);
+  }
+
+  isLeftClicked() {
+    return this.#card.isLeftClicked();
+  }
+
+  setIsLeftClicked(isLeftClicked) {
+    this.#card.setIsLeftClicked(isLeftClicked);
   }
 }

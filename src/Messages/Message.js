@@ -1,5 +1,5 @@
 export default class Message {
-    static create() {}
+  static create() {}
 
-    execute() {}
+  execute() {}
 }

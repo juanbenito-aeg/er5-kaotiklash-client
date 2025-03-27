@@ -2,15 +2,19 @@ import Event from "./Event.js";
 
 export default class PrepareEvent extends Event {
   #preparationEventDeck;
+  #executedByPlayer;
   #eventIsActive;
-  constructor(preparationEventDeck) {
+
+  constructor(preparationEventDeck, executedByPlayer) {
     super();
+
     this.#preparationEventDeck = preparationEventDeck;
+    this.#executedByPlayer = executedByPlayer;
     this.#eventIsActive = true;
   }
 
-  static create(preparationEventDeck) {
-    return new PrepareEvent(preparationEventDeck);
+  static create(preparationEventDeck, executedByPlayer) {
+    return new PrepareEvent(preparationEventDeck, executedByPlayer);
   }
 
   execute() {
@@ -21,15 +25,14 @@ export default class PrepareEvent extends Event {
       let newRemainingTime = remainingTime - 1;
 
       if (remainingTime > 0) {
+        console.log("nananana");
         card.setCurrenPrepTimeInRounds(newRemainingTime);
       }
 
       if (newRemainingTime === 0) {
         console.log("aaaaaa");
+        this.#eventIsActive = false;
       }
-    }
-    if (cards.length === 0) {
-      this.#eventIsActive = false;
     }
   }
 

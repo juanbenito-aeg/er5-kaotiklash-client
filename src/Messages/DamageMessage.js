@@ -14,12 +14,9 @@ export default class DamageMessages extends Message {
     this.#duration = duration;
     this.#xPosition = xPosition;
     this.#yPosition = yPosition;
-
-
   }
 
   static create(damage, duration, xPosition, yPosition) {
-
     duration = 2;
     const message = new DamageMessages(damage, duration, xPosition, yPosition);
     globals.damageMessages.push(message);
@@ -38,24 +35,19 @@ export default class DamageMessages extends Message {
     return false; // MESSAGE IS ACTIVE
   }
 
-  getContent()
-  {
-    return this.#content
+  getContent() {
+    return this.#content;
   }
 
-  getDuration()
-  {
-    return this,this.#duration
+  getDuration() {
+    return this, this.#duration;
   }
 
-  getXPosition()
-  {
-    return this.#xPosition
+  getXPosition() {
+    return this.#xPosition;
   }
 
-  getYPosition()
-  {
-    return this.#yPosition
+  getYPosition() {
+    return this.#yPosition;
   }
-
 }

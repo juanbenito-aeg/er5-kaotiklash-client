@@ -27,30 +27,44 @@ export default class Deck {
     this.#cards.splice(indexOfCardToRemove, 1);
   }
 
-  lookForHoveredCard(mouseInput) {
+  lookForHoveredCard() {
     for (let i = 0; i < this.getCards().length; i++) {
       const currentCard = this.getCards()[i];
 
-      const [isMouseWithinCardWidth, isMouseWithinCardHeight] =
-        currentCard.checkIfMouseWithinCardWidthAndHeight(mouseInput);
-
-      if (isMouseWithinCardWidth && isMouseWithinCardHeight) {
+      if (currentCard.isMouseOver()) {
         return currentCard;
       }
     }
   }
 
-  lookForCardThatIsntHoveredAnymore(mouseInput) {
+  lookForCardThatIsntHoveredAnymore() {
     for (let i = 0; i < this.getCards().length; i++) {
       const currentCard = this.getCards()[i];
 
-      const [isMouseWithinCardWidth, isMouseWithinCardHeight] =
-        currentCard.checkIfMouseWithinCardWidthAndHeight(mouseInput);
-
       if (
-        (!isMouseWithinCardWidth || !isMouseWithinCardHeight) &&
-        currentCard.getState() === CardState.HOVERED
+        currentCard.getState() === CardState.HOVERED &&
+        !currentCard.isMouseOver()
       ) {
+        return currentCard;
+      }
+    }
+  }
+
+  lookForLeftClickedCard() {
+    for (let i = 0; i < this.getCards().length; i++) {
+      const currentCard = this.getCards()[i];
+
+      if (currentCard.isLeftClicked()) {
+        return currentCard;
+      }
+    }
+  }
+
+  lookForSelectedCard() {
+    for (let i = 0; i < this.getCards().length; i++) {
+      const currentCard = this.getCards()[i];
+
+      if (currentCard.getState() === CardState.SELECTED) {
         return currentCard;
       }
     }

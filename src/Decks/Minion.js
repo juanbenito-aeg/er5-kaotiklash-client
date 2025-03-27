@@ -14,6 +14,7 @@ export default class Minion extends Card {
   #currentConstitution;
   #initialDefense;
   #currentDefense;
+  #weapon;
 
   constructor(
     category,
@@ -37,6 +38,7 @@ export default class Minion extends Card {
     this.#initialAttack = this.#currentAttack = initialAttack;
     this.#initialConstitution = this.#currentConstitution = initialConstitution;
     this.#initialDefense = this.#currentDefense = initialDefense;
+    this.#weapon = null;
   }
 
   getMinionType() {
@@ -75,7 +77,23 @@ export default class Minion extends Card {
     return this.#currentDefense;
   }
 
+  getWeapon() {
+    return this.#weapon;
+  }
+
+  getWeaponType() {
+    return this.#weapon.getWeaponType();
+  }
+
+  getWeaponCurrentDamage() {
+    return this.#weapon.getCurrentDamage();
+  }
+
   setCurrentHP(newHP) {
     this.#currentHP = newHP;
+  }
+
+  setWeapon(weapon) {
+    this.#weapon = weapon;
   }
 }

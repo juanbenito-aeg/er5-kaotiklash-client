@@ -32,9 +32,12 @@ const globals = {
   language: 0,
   isCurrentTurnFinished: false,
   buttonDataGlobal: [],
+  // (!!!!!) DELETE AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
+  firstActivePlayerID: -1,
   gameWinner: {},
   damageMessages: [],
   damageFontSize: 75,
+  executedPhasesCount: 0,
 };
 
 window.onload = initStartGameScreen;

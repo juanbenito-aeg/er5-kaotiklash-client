@@ -51,8 +51,11 @@ export default class InitialPhase {
     const player2Minions =
       this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
 
-    this.#shuffleDeckMinions(player1Minions.getCards(), player2Minions.getCards());
-    //DEMO 1: FAKE FOR BOTH PLAYERS TO HAVE THE SAME MINIONS 
+    this.#shuffleDeckMinions(
+      player1Minions.getCards(),
+      player2Minions.getCards()
+    );
+    //DEMO 1: FAKE FOR BOTH PLAYERS TO HAVE THE SAME MINIONS
     // this.#shuffleDeck(player2Minions.getCards());
 
     this.#selectAndInsertCards(
@@ -76,9 +79,8 @@ export default class InitialPhase {
     }
   }
 
-  //DEMO 1: FAKE FOR BOTH PLAYERS TO HAVE THE SAME MINIONS 
+  // DEMO 1: FAKE FOR BOTH PLAYERS TO HAVE THE SAME MINIONS
   #shuffleDeckMinions(deck1, deck2) {
-    console.log(deck1)
     for (let i = 0; i < deck1.length; i++) {
       const randomIndex = Math.floor(Math.random() * deck1.length);
       const temp1 = deck1[i];

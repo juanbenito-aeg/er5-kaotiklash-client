@@ -17,7 +17,6 @@ import {
   PlayerID,
   CardState,
   MainCharacterID,
-  DeckType,
   GridType,
 } from "./constants.js";
 import { globals } from "../index.js";
@@ -31,6 +30,7 @@ export default class Game {
   #turns;
   #mouseInput;
   #events;
+  #phasesMenssages;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -42,7 +42,10 @@ export default class Game {
     game.#players = [player1, player2];
 
     // RANDOMLY ASSIGN PLAYER THAT STARTS PLAYING
-    game.#currentPlayer = Math.floor(Math.random() * 2);
+    game.#currentPlayer = game.#players[Math.floor(Math.random() * 2)];
+
+    // (!!!!!) DELETE AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
+    globals.firstActivePlayerID = game.#currentPlayer.getID();
 
     // MAIN DECK CONFIGURATION FILE LOAD
     const url = "./src/mainDeck.json";
@@ -68,21 +71,29 @@ export default class Game {
     game.#mouseInput = new MouseInput();
     game.#mouseInput.addMouseEventListeners();
 
+    // EVENTS CREATION
+    game.#events = [];
+
+    //PHASES MESSAGES
+    game.#phasesMenssages = [];
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
       game.#board,
       game.#mouseInput,
-      game.#players[PlayerID.PLAYER_1]
+      game.#players[PlayerID.PLAYER_1],
+      game.#events
     );
-    turnPlayer1.fillPhases();
+    turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
       game.#deckContainer,
       game.#board,
       game.#mouseInput,
-      game.#players[PlayerID.PLAYER_2]
+      game.#players[PlayerID.PLAYER_2],
+      game.#events
     );
-    turnPlayer2.fillPhases();
+    turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
 
     game.#createPhaseButtons();
@@ -151,6 +162,13 @@ export default class Game {
                 globals.cardsIconsImages[IconID.ATTACK_DAMAGE_DIAMOND],
                 globals.cardsIconsImages[IconID.MINION_HP_DIAMOND],
                 globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
+                globals.cardsIconsImages[IconID.EVENT_TYPE_CIRCLE],
+                globals.cardsIconsImages[IconID.WEAPON_MELEE_TYPE],
+                // globals.cardsIconsImages[IconID.WEAPON_HYBRID_TYPE],
+                // globals.cardsIconsImages[IconID.WEAPON_MISSILE_TYPE],
+                // globals.cardsIconsImages[IconID.ARMOR_LIGHT_TYPE],
+                // globals.cardsIconsImages[IconID.ARMOR_MEDIUM_TYPE],
+                // globals.cardsIconsImages[IconID.ARMOR_HEAVY_TYPE],
               ],
               bigVersion: [
                 globals.cardsIconsImages[IconID.MINION_HP],
@@ -319,7 +337,6 @@ export default class Game {
   }
 
   #setInitialCardsCoordinates() {
-
     const activePlayerData = {
       mainCharacter: {},
       cardsInHandDeck: {},
@@ -348,7 +365,7 @@ export default class Game {
     inactivePlayerData.minionsInPlayGrid =
       this.#board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
 
-    if (this.#currentPlayer === PlayerID.PLAYER_1) {
+    if (this.#currentPlayer === this.#players[PlayerID.PLAYER_1]) {
       // SET (PART OF) THE ACTIVE PLAYER'S DATA
       activePlayerData.mainCharacter = this.#deckContainer
         .getDecks()
@@ -455,9 +472,13 @@ export default class Game {
         currentMinionCard.setYCoordinate(
           currentBattlefieldBox.getYCoordinate()
         );
-        //ERROR: esto da problemas, como setea la carta a esta posicion se queda ahi, da igual que la imagen se mueva 
-        if(currentMinionCard.getXCoordinate() === currentBattlefieldBox.getXCoordinate() && currentMinionCard.getYCoordinate() === currentBattlefieldBox.getYCoordinate())
-        {
+        //ERROR: esto da problemas, como setea la carta a esta posicion se queda ahi, da igual que la imagen se mueva
+        if (
+          currentMinionCard.getXCoordinate() ===
+            currentBattlefieldBox.getXCoordinate() &&
+          currentMinionCard.getYCoordinate() ===
+            currentBattlefieldBox.getYCoordinate()
+        ) {
           currentBattlefieldBox.setCard(currentMinionCard);
         }
       }
@@ -470,98 +491,89 @@ export default class Game {
   }
 
   #update() {
-
     if (globals.isCurrentTurnFinished) {
       globals.isCurrentTurnFinished = false;
 
-      this.#currentPlayer = this.#turns[this.#currentPlayer].changeTurn(
-        this.#currentPlayer
-      );
+      const newCurrentPlayerID = this.#turns[
+        this.#currentPlayer.getID()
+      ].changeTurn(this.#currentPlayer);
+
+      this.#currentPlayer = this.#players[newCurrentPlayerID];
     }
 
-    this.#turns[this.#currentPlayer].execute();
+    this.#turns[this.#currentPlayer.getID()].execute();
+
     this.#skipPhase();
 
     this.#executeEvent();
+    this.#executeMessage();
 
-    this.#lookForCardThatIsntHoveredAnymore();
-    this.#lookForHoveredCard();
+    this.#mouseInput.resetIsLeftClicked(this.#deckContainer);
+    this.#mouseInput.detectMouseOverCard(this.#deckContainer);
+    this.#mouseInput.detectCardThatIsntHoveredAnymore(this.#deckContainer);
+    this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
 
     this.#updatePlayersTotalHP();
-
   }
 
-
-
   #skipPhase() {
-    if(this.#currentPlayer === 0)
-    {
-
+    if (this.#currentPlayer.getID() === PlayerID.PLAYER_1) {
       // console.log(this.#turns[0].getnumOfExecutedPhases())
       // console.log(` mouse x: ${this.#mouseInput.getMouseXCoordinate()}, mouse y: ${this.#mouseInput.getMouseYCoordinate()}`);
       let mouseX = this.#mouseInput.getMouseXCoordinate();
       let mouseY = this.#mouseInput.getMouseYCoordinate();
-      let skipButtonX = this.#board.getGrids()[4].getBoxes()[0].getXCoordinate();
-      let skipButtonY = this.#board.getGrids()[4].getBoxes()[0].getYCoordinate();
+      let skipButtonX = this.#board
+        .getGrids()[4]
+        .getBoxes()[0]
+        .getXCoordinate();
+      let skipButtonY = this.#board
+        .getGrids()[4]
+        .getBoxes()[0]
+        .getYCoordinate();
       let skipButtonWidth = 200;
       let skipButtonHeight = 40;
-      if((mouseX >= skipButtonX && mouseX <= skipButtonX + skipButtonWidth && mouseY >= skipButtonY && mouseY <= skipButtonY + skipButtonHeight) && this.#mouseInput.isLeftButtonPressed() === true)
-      {
-        console.log("player 1 skipped a phase")
-        this.#turns[0].setnumOfExecutedPhases()
-        console.log(`player1: ${this.#turns[0].getnumOfExecutedPhases()}`)
+      if (
+        mouseX >= skipButtonX &&
+        mouseX <= skipButtonX + skipButtonWidth &&
+        mouseY >= skipButtonY &&
+        mouseY <= skipButtonY + skipButtonHeight &&
+        this.#mouseInput.isLeftButtonPressed() === true
+      ) {
+        console.log("player 1 skipped a phase");
+        this.#turns[0].setnumOfExecutedPhases();
+        console.log(`player1: ${this.#turns[0].getnumOfExecutedPhases()}`);
       }
-    }
-    else
-    {
-
+    } else {
       // console.log(this.#turns[0].getnumOfExecutedPhases())
       // console.log(` mouse x: ${this.#mouseInput.getMouseXCoordinate()}, mouse y: ${this.#mouseInput.getMouseYCoordinate()}`);
       let mouseX = this.#mouseInput.getMouseXCoordinate();
       let mouseY = this.#mouseInput.getMouseYCoordinate();
-      let skipButtonX = this.#board.getGrids()[4].getBoxes()[0].getXCoordinate();
-      let skipButtonY = this.#board.getGrids()[4].getBoxes()[0].getYCoordinate();
+      let skipButtonX = this.#board
+        .getGrids()[4]
+        .getBoxes()[0]
+        .getXCoordinate();
+      let skipButtonY = this.#board
+        .getGrids()[4]
+        .getBoxes()[0]
+        .getYCoordinate();
       let skipButtonWidth = 200;
       let skipButtonHeight = 40;
-      if((mouseX >= skipButtonX && mouseX <= skipButtonX + skipButtonWidth && mouseY >= skipButtonY && mouseY <= skipButtonY + skipButtonHeight) && this.#mouseInput.isLeftButtonPressed() === true)
-      {
-        console.log("player 2 skipped a phase")
-        this.#turns[1].setnumOfExecutedPhases()
-        console.log(`player2: ${this.#turns[1].getnumOfExecutedPhases()}`)
+      if (
+        mouseX >= skipButtonX &&
+        mouseX <= skipButtonX + skipButtonWidth &&
+        mouseY >= skipButtonY &&
+        mouseY <= skipButtonY + skipButtonHeight &&
+        this.#mouseInput.isLeftButtonPressed() === true
+      ) {
+        console.log("player 2 skipped a phase");
+        this.#turns[1].setnumOfExecutedPhases();
+        console.log(`player2: ${this.#turns[1].getnumOfExecutedPhases()}`);
       }
     }
-
   }
 
   #setCardsCoordinates() {
-    
     this.#updateDamageMessages();
-  }
-
-  #lookForCardThatIsntHoveredAnymore() {
-    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
-      const currentDeck = this.#deckContainer.getDecks()[i];
-
-      const notHoveredCard = currentDeck.lookForCardThatIsntHoveredAnymore(
-        this.#mouseInput
-      );
-
-      if (notHoveredCard) {
-        notHoveredCard.setState(CardState.PLACED);
-      }
-    }
-  }
-
-  #lookForHoveredCard() {
-    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
-      const currentDeck = this.#deckContainer.getDecks()[i];
-
-      const hoveredCard = currentDeck.lookForHoveredCard(this.#mouseInput);
-
-      if (hoveredCard && hoveredCard.getState() === CardState.PLACED) {
-        hoveredCard.setState(CardState.HOVERED);
-      }
-    }
   }
 
   #updatePlayersTotalHP() {
@@ -608,10 +620,6 @@ export default class Game {
     return totalHP;
   }
 
-  addEventToQueue(event) {
-    this.#events.push(event);
-  }
-
   #executeEvent() {
     for (let i = 0; i < this.#events.length; i++) {
       let event = this.#events[i];
@@ -620,7 +628,7 @@ export default class Game {
       if (!event.isActive()) {
         this.#events.splice(i, 1);
         i--;
-    this.#checkIfGameOver();
+        this.#checkIfGameOver();
       }
     }
   }
@@ -649,6 +657,13 @@ export default class Game {
     }
   }
 
+  #executeMessage() {
+    for (let i = 0; i < this.#phasesMenssages.length; i++) {
+      let phaseMessage = this.#phasesMenssages[i];
+      phaseMessage.execute();
+    }
+  }
+
   #render() {
     // CLEAR SCREEN
     globals.ctx.clearRect(0, 0, globals.canvas.width, globals.canvas.height);
@@ -662,6 +677,32 @@ export default class Game {
         this.#renderGameOver();
         break;
     }
+  }
+
+  #renderGame() {
+    this.#renderBoard();
+    this.#renderGrids();
+    this.#renderPlayersInfo();
+    this.#renderPhaseButtons();
+    this.#renderActiveEventsTable();
+    this.#renderMessages();
+    this.#renderCardsReverse();
+    this.#renderCards();
+    this.#renderDamageMessages();
+  }
+
+  #renderBoard() {
+    globals.ctx.drawImage(
+      globals.boardImage,
+      0,
+      0,
+      3584,
+      2048,
+      0,
+      0,
+      globals.canvas.width,
+      globals.canvas.height
+    );
   }
 
   #renderGrids() {
@@ -699,36 +740,6 @@ export default class Game {
       }
     }
   }
-  #renderGame() {
-    this.#renderBoard();
-    this.#renderCards();
-  }
-
-  #renderBoard() {
-    globals.ctx.drawImage(
-      globals.boardImage,
-      0,
-      0,
-      3584,
-      2048,
-      0,
-      0,
-      globals.canvas.width,
-      globals.canvas.height
-    );
-  }
-
-  #renderGame() {
-    this.#renderBoard();
-    this.#renderGrids();
-    this.#renderPlayersInfo();
-    this.#renderPhaseButtons();
-    this.#renderActiveEventsTable();
-    this.#renderMessages();
-    this.#renderCardsReverse();
-    this.#renderCards();
-    this.#renderDamageMesagges();
-  }
 
   #renderPlayersInfo() {
     const activePlayerX = this.#board
@@ -751,7 +762,11 @@ export default class Game {
 
     let player1X, player1Y, player2X, player2Y;
 
-    if (this.#currentPlayer === PlayerID.PLAYER_1) {
+    // (!!!!!) MODIFY AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
+    if (
+      /* this.#currentPlayer.getID() */ globals.firstActivePlayerID ===
+      PlayerID.PLAYER_1
+    ) {
       player1X = activePlayerX + 100;
       player1Y = activePlayerY + 225;
       player2X = inactivePlayerX + 100;
@@ -789,6 +804,15 @@ export default class Game {
     const BUTTON_WIDTH = 2;
     const BUTTON_HEIGHT = 3;
     const BUTTON_NAME = 4;
+
+    const totalPhases = 5;
+    const phaseText =
+      "Phase: " + globals.executedPhasesCount + "/" + totalPhases;
+    globals.ctx.fillStyle = "white";
+    globals.ctx.font = "24px MedievalSharp";
+    globals.ctx.textAlign = "center";
+    globals.ctx.textBaseline = "middle";
+    globals.ctx.fillText(phaseText, 500, 675);
 
     for (let i = 0; i < globals.buttonDataGlobal.length; i++) {
       const currentButton = globals.buttonDataGlobal[i];
@@ -971,8 +995,17 @@ export default class Game {
     globals.ctx.font = "20px MedievalSharp";
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
+
+    const phaseMessages = this.#phasesMenssages;
+    let messageText = "Select a Phase to start";
+
+    if (phaseMessages.length > 0) {
+      const currentMessage = phaseMessages[0];
+      messageText = currentMessage.content;
+    }
+
     globals.ctx.fillText(
-      "COMING SOON",
+      messageText,
       messageBoxX + messageBoxWidth / 2,
       messageBoxY + messageBoxHeight / 2
     );
@@ -1038,7 +1071,8 @@ export default class Game {
 
   #renderCards() {
     let expandedCard;
-    const player1Deck = this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
+    const player1Deck =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
     for (let i = 0; i < player1Deck.getCards().length; i++) {
       const currentCard = player1Deck.getCards()[i];
       if (currentCard.getState() === CardState.EXPANDED) {
@@ -1050,10 +1084,10 @@ export default class Game {
       const currentDeck = this.#deckContainer.getDecks()[i];
 
       const isDeckCardsInHandOfInactivePlayer =
-        (this.#currentPlayer === PlayerID.PLAYER_1 &&
+        (this.#currentPlayer.getID() === PlayerID.PLAYER_1 &&
           currentDeck ===
             this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND]) ||
-        (this.#currentPlayer === PlayerID.PLAYER_2 &&
+        (this.#currentPlayer.getID() === PlayerID.PLAYER_2 &&
           currentDeck ===
             this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND]);
 
@@ -1088,7 +1122,6 @@ export default class Game {
       this.#renderExpandedCard(expandedCard);
     }
   }
-
 
   #renderCard(card) {
     switch (card.getCategory()) {
@@ -1172,32 +1205,64 @@ export default class Game {
     this.#renderCardImageAndTemplate(card, xCoordinate, yCoordinate);
 
     // RENDER ICONS
+
     const icons = card.getImageSet().getIcons().smallVersion;
+
     const iconsPositions = [
       {
         // TYPE
         x: xCoordinate + 37,
         y: yCoordinate - 17,
+        width: 35,
+        height: 35,
       },
       {
         // ATTACK
         x: xCoordinate - 17,
         y: yCoordinate + 40,
+        width: 35,
+        height: 35,
       },
       {
         // HP
         x: xCoordinate + 37,
         y: yCoordinate + 92,
+        width: 35,
+        height: 35,
       },
       {
         // DEFENSE
         x: xCoordinate + 92,
         y: yCoordinate + 40,
+        width: 35,
+        height: 35,
       },
     ];
-    for (let i = 0; i < icons.length; i++) {
-      const { x, y } = iconsPositions[i];
-      globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, 35, 35);
+
+    if (card.getWeapon()) {
+      iconsPositions.push(
+        {
+          // (WEAPON) TYPE CIRCLE
+          x: xCoordinate - 17,
+          y: yCoordinate - 17,
+          width: 35,
+          height: 35,
+        },
+        {
+          // (WEAPON) TYPE
+          x: xCoordinate - 10,
+          y: yCoordinate - 10,
+          width: 20,
+          height: 20,
+        }
+      );
+    }
+
+    let numOfIconsToRender = iconsPositions.length - 1;
+
+    for (let i = 0; i <= numOfIconsToRender; i++) {
+      const { x, y, width, height } = iconsPositions[i];
+      globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
     }
 
     // RENDER ATTRIBUTES VALUES
@@ -1980,238 +2045,36 @@ export default class Game {
     globals.ctx.fillText("WON", 50, 300);
   }
 
-  #applyCardViewToAllCards() {
-    const updatedDecks = [];
+  #renderDamageMessages() {
+    for (let i = 0; i < globals.damageMessages.length; i++) {
+      let message = globals.damageMessages[i];
+      let duration = message.getDuration();
 
-    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
-      const currentDeck = this.#deckContainer.getDecks()[i];
+      console.log(duration);
 
-      const updatedDeck = new Deck(i, []);
-      updatedDecks.push(updatedDeck);
-
-      for (let j = 0; j < currentDeck.getCards().length; j++) {
-        let currentCard = currentDeck.getCards()[j];
-
-        // CREATION OF OBJECTS FOR THE CURRENT CARD'S IMAGESET
-
-        let cardImage;
-        let smallVersionTemplateImage;
-        let bigVersionTemplateImage;
-        let iconsImages = {
-          smallVersion: [
-            globals.cardsIconsImages[IconID.EVENT_EFFECT_DIAMOND],
-            globals.cardsIconsImages[IconID.EVENT_PREP_TIME_DIAMOND],
-            globals.cardsIconsImages[IconID.EVENT_DURATION_DIAMOND],
-          ],
-          bigVersion: [
-            globals.cardsIconsImages[IconID.EVENT_PREP_TIME],
-            globals.cardsIconsImages[IconID.EVENT_DURATION],
-          ],
-        };
-        let cardTypeIcon;
-
-        if (currentCard.getCategory() === CardCategory.MAIN_CHARACTER) {
-          cardImage = globals.cardsImages.main_characters[currentCard.getID()];
-
-          smallVersionTemplateImage =
-            globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_SMALL];
-
-          if (currentCard.getID() === MainCharacterID.JOSEPH) {
-            bigVersionTemplateImage =
-              globals.cardsTemplatesImages[TemplateID.JOSEPH_BIG];
-          } else {
-            bigVersionTemplateImage =
-              globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_BIG];
-          }
-
-          iconsImages = {};
-        } else {
-          smallVersionTemplateImage =
-            globals.cardsTemplatesImages[TemplateID.MINIONS_AND_EVENTS_SMALL];
-
-          if (currentCard.getCategory() === CardCategory.MINION) {
-            cardImage = globals.cardsImages.minions[currentCard.getID()];
-
-            iconsImages = {
-              smallVersion: [
-                globals.cardsIconsImages[IconID.ATTACK_DAMAGE_DIAMOND],
-                globals.cardsIconsImages[IconID.MINION_HP_DIAMOND],
-                globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
-              ],
-              bigVersion: [
-                globals.cardsIconsImages[IconID.MINION_HP],
-                globals.cardsIconsImages[IconID.MINION_MADNESS],
-                globals.cardsIconsImages[IconID.MINION_ATTACK],
-                globals.cardsIconsImages[IconID.MINION_DEFENSE],
-              ],
-            };
-
-            if (currentCard.getMinionType() === MinionType.SPECIAL) {
-              bigVersionTemplateImage =
-                globals.cardsTemplatesImages[TemplateID.MINIONS_SPECIAL_BIG];
-
-              cardTypeIcon =
-                globals.cardsIconsImages[IconID.MINION_SPECIAL_TYPE];
-            } else if (currentCard.getMinionType() === MinionType.WARRIOR) {
-              bigVersionTemplateImage =
-                globals.cardsTemplatesImages[TemplateID.MINIONS_WARRIORS_BIG];
-
-              cardTypeIcon =
-                globals.cardsIconsImages[IconID.MINION_WARRIOR_TYPE];
-            } else {
-              bigVersionTemplateImage =
-                globals.cardsTemplatesImages[TemplateID.MINIONS_WIZARDS_BIG];
-
-              cardTypeIcon =
-                globals.cardsIconsImages[IconID.MINION_WIZARD_TYPE];
-            }
-          } else if (currentCard.getCategory() === CardCategory.WEAPON) {
-            cardImage = globals.cardsImages.weapons[currentCard.getID()];
-
-            bigVersionTemplateImage =
-              globals.cardsTemplatesImages[TemplateID.WEAPONS_BIG];
-
-            iconsImages = {
-              smallVersion: [
-                globals.cardsIconsImages[IconID.ATTACK_DAMAGE_DIAMOND],
-                globals.cardsIconsImages[IconID.EVENT_PREP_TIME_DIAMOND],
-                globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
-              ],
-              bigVersion: [
-                globals.cardsIconsImages[IconID.WEAPON_DAMAGE],
-                globals.cardsIconsImages[IconID.WEAPON_ARMOR_DURABILITY],
-                globals.cardsIconsImages[IconID.EVENT_PREP_TIME],
-              ],
-            };
-
-            if (currentCard.getWeaponType() === WeaponType.MELEE) {
-              cardTypeIcon = globals.cardsIconsImages[IconID.WEAPON_MELEE_TYPE];
-            } else if (currentCard.getWeaponType() === WeaponType.MISSILE) {
-              cardTypeIcon =
-                globals.cardsIconsImages[IconID.WEAPON_MISSILE_TYPE];
-            } else {
-              cardTypeIcon =
-                globals.cardsIconsImages[IconID.WEAPON_HYBRID_TYPE];
-            }
-          } else if (currentCard.getCategory() === CardCategory.ARMOR) {
-            cardImage = globals.cardsImages.armor[currentCard.getID()];
-
-            bigVersionTemplateImage =
-              globals.cardsTemplatesImages[TemplateID.ARMOR_LIGHT_HEAVY_BIG];
-
-            iconsImages = {
-              smallVersion: [
-                globals.cardsIconsImages[IconID.EVENT_EFFECT_DIAMOND],
-                globals.cardsIconsImages[IconID.EVENT_PREP_TIME_DIAMOND],
-                globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
-              ],
-              bigVersion: [
-                globals.cardsIconsImages[IconID.WEAPON_ARMOR_DURABILITY],
-                globals.cardsIconsImages[IconID.EVENT_PREP_TIME],
-              ],
-            };
-
-            if (currentCard.getArmorType() === ArmorType.LIGHT) {
-              cardTypeIcon = globals.cardsIconsImages[IconID.ARMOR_LIGHT_TYPE];
-            } else if (currentCard.getArmorType() === ArmorType.MEDIUM) {
-              bigVersionTemplateImage =
-                globals.cardsTemplatesImages[TemplateID.ARMOR_MEDIUM_BIG];
-
-              cardTypeIcon = globals.cardsIconsImages[IconID.ARMOR_MEDIUM_TYPE];
-            } else {
-              cardTypeIcon = globals.cardsIconsImages[IconID.ARMOR_HEAVY_TYPE];
-            }
-          } else if (currentCard.getCategory() === CardCategory.SPECIAL) {
-            cardImage = globals.cardsImages.special[currentCard.getID()];
-
-            bigVersionTemplateImage =
-              globals.cardsTemplatesImages[TemplateID.SPECIAL_EVENTS_BIG];
-
-            cardTypeIcon = globals.cardsIconsImages[IconID.SPECIAL_TYPE];
-          } else {
-            cardImage = globals.cardsImages.rare[currentCard.getID()];
-
-            bigVersionTemplateImage =
-              globals.cardsTemplatesImages[TemplateID.RARE_EVENTS_BIG];
-
-            cardTypeIcon = globals.cardsIconsImages[IconID.RARE_TYPE];
-          }
-        }
-
-        if (cardTypeIcon) {
-          for (const cardVersion in iconsImages) {
-            iconsImages[cardVersion].unshift(cardTypeIcon);
-
-            if (
-              currentCard.getCategory() !== CardCategory.MAIN_CHARACTER &&
-              currentCard.getCategory() !== CardCategory.MINION
-            ) {
-              iconsImages[cardVersion].unshift(
-                globals.cardsIconsImages[IconID.EVENT_TYPE_CIRCLE]
-              );
-            }
-          }
-        }
-
-        const imageSet = new ImageSet(
-          globals.cardsReverseImage,
-          cardImage,
-          smallVersionTemplateImage,
-          bigVersionTemplateImage,
-          iconsImages
-        );
-
-        currentCard = new CardView(currentCard, 0, 0, imageSet);
-
-        updatedDeck.insertCard(currentCard);
-      }
-    }
-
-    this.#deckContainer.setDecks(updatedDecks);
-  }
-
-  #renderDamageMesagges()
-  {
-    for(let i = 0; i < globals.damageMessages.length; i++)
-    {
-      let message = globals.damageMessages[i]
-      let duration = message.getDuration()
-
-      console.log(duration)
-
-      let fontSize = globals.damageFontSize / duration  
-      if(fontSize >= 100)
-      {
+      let fontSize = globals.damageFontSize / duration;
+      if (fontSize >= 100) {
         fontSize = 100;
       }
-      
 
       globals.ctx.font = `${fontSize}px MedievalSharp`;
       globals.ctx.fillStyle = "red";
       globals.ctx.fillText(
         message.getContent(),
         message.getXPosition(),
-        message.getYPosition(),
-      )
+        message.getYPosition()
+      );
     }
   }
-  
 
-  #updateDamageMessages()
-  {
+  #updateDamageMessages() {
+    for (let i = 0; i < globals.damageMessages.length; i++) {
+      let message = globals.damageMessages[i];
 
-    for(let i = 0; i < globals.damageMessages.length; i++)
-    {
-      let message = globals.damageMessages[i]
-
-      let isFisished = message.execute()
-      if(isFisished)
-      {
-        globals.damageMessages.splice(i,1)
+      let isFisished = message.execute();
+      if (isFisished) {
+        globals.damageMessages.splice(i, 1);
       }
-
-
     }
   }
 }
-

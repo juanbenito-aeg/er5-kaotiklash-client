@@ -175,11 +175,43 @@ export default class CardView {
     return this.#card;
   }
 
+  getWeapon() {
+    return this.#card.getWeapon();
+  }
+
+  getMinionWeaponType() {
+    return this.#card.getWeapon().getWeaponType();
+  }
+
+  getWeaponCurrentDamage() {
+    return this.#card.getWeapon().getCurrentDamage();
+  }
+
   setCurrentHP(newHP) {
     this.#card.setCurrentHP(newHP);
   }
 
+  setWeapon(weapon) {
+    this.#card.setWeapon(weapon);
+  }
+
   setCurrenPrepTimeInRounds(newPrepTimeInRounds) {
     this.#card.setCurrenPrepTimeInRounds(newPrepTimeInRounds);
+  }
+
+  isMouseOver() {
+    return this.#card.isMouseOver();
+  }
+
+  setIsMouseOver(isMouseOver) {
+    this.#card.setIsMouseOver(isMouseOver);
+  }
+
+  isLeftClicked() {
+    return this.#card.isLeftClicked();
+  }
+
+  setIsLeftClicked(isLeftClicked) {
+    this.#card.setIsLeftClicked(isLeftClicked);
   }
 }
