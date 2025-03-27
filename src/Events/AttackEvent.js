@@ -79,7 +79,7 @@ export default class AttackEvent extends Event {
     {
       damageToInflict = damageToInflict * -1
     }
-    const DamageMessage = new DamageMessages(damageToInflict,2,targetBox.getCard().getXCoordinate() + 55,targetBox.getCard().getYCoordinate() + 55)
+    const DamageMessage = new DamageMessages(damageToInflict,4,targetBox.getCard().getXCoordinate() + 55,targetBox.getCard().getYCoordinate() + 55)
     globals.damageMessages.push(DamageMessage)
     this.#target.setCurrentHP(targetNewCurrentHP);
 

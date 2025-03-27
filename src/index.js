@@ -32,6 +32,7 @@ const globals = {
   isCurrentTurnFinished: false,
   buttonDataGlobal: [],
   damageMessages: [],
+  damageFontSize: 75,
 };
 
 window.onload = initStartGameScreen;
