@@ -83,18 +83,22 @@ export default class PrepareEventPhase extends Phase {
 
     switch (this._state) {
       case PrepareEventState.INIT:
+        console.log("init");
         this.#initializePhase();
         break;
 
       case PrepareEventState.SELECT_HAND_CARD:
+        console.log("select hand card");
         this.#selectCardFromHand();
         break;
 
       case PrepareEventState.SELECT_TARGET_GRID:
+        console.log("select target grid");
         this.#selectTargetGrid();
         break;
 
       case PrepareEventState.END:
+        console.log("end");
         this.#finalizePhase();
         break;
 
@@ -114,14 +118,18 @@ export default class PrepareEventPhase extends Phase {
 
     for (let i = 0; i < this.#decksRelevants.length; i++) {
       let decks = this.#decksRelevants[i];
+
       for (let j = 0; j < decks.getCards().length; j++) {
-        let cards = decks.getCards()[j];
+        let card = decks.getCards()[j];
+
         if (
           this._mouseInput.isLeftButtonPressed() &&
-          cards.getState() === CardState.INACTIVE_HOVERED
+          card.getState() === CardState.INACTIVE_HOVERED
         ) {
-          cards.setState(CardState.SELECTED);
-          this.#selectedCard = cards;
+          card.setState(CardState.SELECTED);
+
+          this.#selectedCard = card;
+
           if (this.#selectedCard.getState() === CardState.SELECTED) {
             this._state = PrepareEventState.SELECT_TARGET_GRID;
           }
@@ -156,13 +164,16 @@ export default class PrepareEventPhase extends Phase {
 
   #selectTargetGrid() {
     let grids = this.#gridsRelevants;
+
     let boxes = grids.getBoxes();
+
     for (let i = 0; i < boxes.length; i++) {
       const box = boxes[i];
-      this._mouseInput.isMouseOverBox(box);
+
       if (this._mouseInput.isMouseOverBox(box)) {
         box.setState(BoxState.HOVERED);
       }
+
       if (
         this._mouseInput.isLeftButtonPressed() &&
         this._mouseInput.isMouseOverBox(box)
@@ -175,35 +186,26 @@ export default class PrepareEventPhase extends Phase {
   }
 
   #finalizePhase() {
-    if (!this.#selectedCard || !this.#selectedGrid) {
-      return;
-    }
+    this.#selectedGrid.setCard(this.#selectedCard);
 
-    if (
-      this.#selectedCard.getState() === CardState.SELECTED &&
-      this.#selectedGrid.getState() === BoxState.SELECTED
-    ) {
-      this.#selectedGrid.setCard(this.#selectedCard);
+    this.#decksRelevants[0].removeCard(this.#selectedCard);
+    this.#decksRelevants[1].insertCard(this.#selectedCard);
 
-      this.#decksRelevants[0].removeCard(this.#selectedCard);
-      this.#decksRelevants[1].insertCard(this.#selectedCard);
+    this.#selectedCard.setXCoordinate(this.#selectedGrid.getXCoordinate());
+    this.#selectedCard.setYCoordinate(this.#selectedGrid.getYCoordinate());
 
-      this.#selectedCard.setXCoordinate(this.#selectedGrid.getXCoordinate());
-      this.#selectedCard.setYCoordinate(this.#selectedGrid.getYCoordinate());
+    this.#selectedCard.setState(CardState.PLACED);
+    this.#selectedGrid.setState(BoxState.OCCUPIED);
 
-      this.#selectedCard.setState(CardState.PLACED);
-      this.#selectedGrid.setState(BoxState.OCCUPIED);
+    const prepareEvent = PrepareEvent.create(
+      this.#decksRelevants[1],
+      this.#player
+    );
 
-      const prepareEvent = PrepareEvent.create(
-        this.#decksRelevants[1],
-        this.#player
-      );
-
-      this.#events.push(prepareEvent);
-      this.#selectedCard = null;
-      this.#selectedGrid = null;
-      this._state = PrepareEventState.INIT;
-      this.#isPhaseFinished = true;
-    }
+    this.#events.push(prepareEvent);
+    this.#selectedCard = null;
+    this.#selectedGrid = null;
+    this._state = PrepareEventState.INIT;
+    this.#isPhaseFinished = true;
   }
 }

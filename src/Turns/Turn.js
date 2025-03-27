@@ -81,11 +81,11 @@ export default class Turn {
   }
 
   #swapTurnPosition() {
-    this.#sawpDeckPosition();
+    this.#swapDeckPosition();
     this.#swapGridPosition();
   }
 
-  #sawpDeckPosition() {
+  #swapDeckPosition() {
     const player1Decks = [
       this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS],
       this.#deckContainer.getDecks()[DeckType.PLAYER_1_ACTIVE_EVENTS],
@@ -172,26 +172,29 @@ export default class Turn {
   }
 
   execute() {
-    this.#expandCard();
+    const isAnyCardExpanded = this.#expandCard();
 
-    if (this.#currentPhase === PhaseType.INVALID) {
-      this.#checkButtonClick();
-    } else if (!this.#isCurrentPhaseFinished) {
-      this.#isCurrentPhaseFinished = this.#phases[this.#currentPhase].execute();
-    }
+    if (!isAnyCardExpanded) {
+      if (this.#currentPhase === PhaseType.INVALID) {
+        this.#checkButtonClick();
+      } else if (!this.#isCurrentPhaseFinished) {
+        this.#isCurrentPhaseFinished =
+          this.#phases[this.#currentPhase].execute();
+      }
 
-    if (this.#isCurrentPhaseFinished) {
-      this.#currentPhase = PhaseType.INVALID;
-      this.#isCurrentPhaseFinished = false;
-      console.log(this.#numOfExecutedPhases);
-      this.#numOfExecutedPhases++;
-      globals.executedPhasesCount++;
-    }
+      if (this.#isCurrentPhaseFinished) {
+        this.#currentPhase = PhaseType.INVALID;
+        this.#isCurrentPhaseFinished = false;
+        console.log(this.#numOfExecutedPhases);
+        this.#numOfExecutedPhases++;
+        globals.executedPhasesCount++;
+      }
 
-    if (this.#numOfExecutedPhases === 1) {
-      console.log("-----------------");
-      console.log(this.#numOfExecutedPhases);
-      globals.isCurrentTurnFinished = true;
+      if (this.#numOfExecutedPhases === 1) {
+        console.log("-----------------");
+        console.log(this.#numOfExecutedPhases);
+        globals.isCurrentTurnFinished = true;
+      }
     }
   }
 
@@ -223,6 +226,9 @@ export default class Turn {
     this.#lookForCardThatIsntHoveredAnymore(decksToCheck);
 
     this.#lookForRightClickedCard(decksToCheck, hoveredCard);
+
+    const isAnyCardExpanded = this.#checkIfAnyCardIsExpanded(decksToCheck);
+    return isAnyCardExpanded;
   }
 
   #lookForHoveredCard(decksToCheck) {
