@@ -32,25 +32,43 @@ export default class AttackPhase extends Phase {
     this.#currentPlayerMovementGrid = currentPlayerMovementGrid;
   }
 
-  static create(currentPlayer, deckContainer, board, mouseInput) {
+  static create(
+    player,
+    deckContainer,
+    board,
+    mouseInput,
+    events,
+    currentPlayer
+  ) {
     let enemyMovementGridDeck;
     let currentPlayerMovementGridDeck;
     let enemyMovementGrid;
     let currentPlayerMovementGrid;
 
-    enemyMovementGrid = board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
-    currentPlayerMovementGrid = board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
+    if (player === currentPlayer) {
+      currentPlayerMovementGrid =
+        board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
 
-    if (currentPlayer.getID() === PlayerID.PLAYER_1) {
-      enemyMovementGridDeck =
-        deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
-      currentPlayerMovementGridDeck =
-        deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
+      enemyMovementGrid = board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
     } else {
-      enemyMovementGridDeck =
+      currentPlayerMovementGrid =
+        board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
+
+      enemyMovementGrid = board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
+    }
+
+    if (player.getID() === PlayerID.PLAYER_1) {
+      currentPlayerMovementGridDeck =
         deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
+
+      enemyMovementGridDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
+    } else {
       currentPlayerMovementGridDeck =
         deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
+
+      enemyMovementGridDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
     }
 
     const attackPhase = new AttackPhase(
@@ -71,6 +89,8 @@ export default class AttackPhase extends Phase {
     switch (this._state) {
       // PHASE INITIALIZATION
       case AttackPhaseState.INIT:
+        console.log("INIT");
+
         this.#resetRelevantCardsStates([
           this.#enemyMovementGridDeck,
           this.#currentPlayerMovementGridDeck,
@@ -80,6 +100,8 @@ export default class AttackPhase extends Phase {
 
       // ATTACKER SELECTION
       case AttackPhaseState.SELECT_ATTACKER:
+        console.log("ATTACKER SELECTION");
+
         this.#attacker = this.#lookForLeftClickedCard([
           this.#currentPlayerMovementGridDeck,
         ]);
@@ -93,6 +115,8 @@ export default class AttackPhase extends Phase {
 
       // TARGET SELECTION
       case AttackPhaseState.SELECT_TARGET:
+        console.log("TARGET SELECTION");
+
         this.#lookForLeftClickedCard([this.#currentPlayerMovementGridDeck]);
 
         if (this.#attacker.getState() === CardState.PLACED) {
@@ -115,6 +139,7 @@ export default class AttackPhase extends Phase {
 
       // CALCULATION AND APPLICATION OF DAMAGE
       case AttackPhaseState.CALC_AND_APPLY_DMG:
+        console.log("CALC. & APPLICATION OF DMG");
         const attackEvent = AttackEvent.create(
           this.#attacker,
           this.#target,
@@ -134,6 +159,8 @@ export default class AttackPhase extends Phase {
 
       // PHASE END
       case AttackPhaseState.END:
+        console.log("END");
+
         this.#updateDecks([
           this.#enemyMovementGridDeck,
           this.#currentPlayerMovementGridDeck,

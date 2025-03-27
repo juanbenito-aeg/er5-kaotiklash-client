@@ -37,13 +37,15 @@ export default class AttackEvent extends Event {
     let damageToInflict;
 
     if (
-      /* (!this.#attacker.getWeapon() ||
-        this.#attacker.getMinionWeaponType() === WeaponType.MELEE) && */
-      attackerBox.getBattlefieldAreaItBelongsTo() === BattlefieldArea.FRONT &&
-      targetBox.getBattlefieldAreaItBelongsTo() === BattlefieldArea.FRONT
+      (!this.#attacker.getWeapon() ||
+        this.#attacker.getMinionWeaponType() === WeaponType.MELEE) &&
+      attackerBox.getBattlefieldAreaItBelongsTo() ===
+        /* BattlefieldArea.FRONT (!!!!!) TO UNCOMMENT BEFORE SHOWING DEMO */ BattlefieldArea.REAR &&
+      targetBox.getBattlefieldAreaItBelongsTo() ===
+        /* BattlefieldArea.FRONT (!!!!!) TO UNCOMMENT BEFORE SHOWING DEMO */ BattlefieldArea.REAR
     ) {
       // THE (MELEE) ATTACK CAN BE PERFORMED AS BOTH MINIONS ARE POSITIONED IN THEIR MOVEMENT GRID'S FRONT AREA
-      if (/* !this.#attacker.getWeapon() */ true) {
+      if (!this.#attacker.getWeapon()) {
         // ATTACK USING FISTS
         damageToInflict =
           this.#attacker.getCurrentAttack() - this.#target.getCurrentDefense();
