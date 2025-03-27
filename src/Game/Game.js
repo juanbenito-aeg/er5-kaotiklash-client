@@ -8,6 +8,7 @@ import MouseInput from "./MouseInput.js";
 import {
   GameState,
   CardCategory,
+  DeckType,
   WeaponType,
   ArmorType,
   MinionType,
@@ -561,6 +562,31 @@ export default class Game {
       if (!event.isActive()) {
         this.#events.splice(i, 1);
         i--;
+    this.#checkIfGameOver();
+      }
+    }
+  }
+
+  // (!) THIS METHOD WILL BE CHANGED IN A FUTURE SO THAT A WINNER IS ASSIGNED WHEN THE OTHER PLAYER GETS TO 0 TOTAL HIT-POINTS
+  #checkIfGameOver() {
+    const player1MinionsInPlay =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
+    const player2MinionsInPlay =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
+
+    const decksToCheck = [player1MinionsInPlay, player2MinionsInPlay];
+
+    for (let i = 0; i < decksToCheck.length; i++) {
+      const currentDeck = decksToCheck[i];
+
+      if (currentDeck.getCards().length === 0) {
+        if (currentDeck === player1MinionsInPlay) {
+          globals.gameWinner = this.#players[PlayerID.PLAYER_2];
+        } else {
+          globals.gameWinner = this.#players[PlayerID.PLAYER_1];
+        }
+
+        globals.gameState = GameState.OVER;
       }
     }
   }
@@ -572,6 +598,10 @@ export default class Game {
     switch (globals.gameState) {
       case GameState.PLAYING:
         this.#renderGame();
+        break;
+
+      case GameState.OVER:
+        this.#renderGameOver();
         break;
     }
   }
@@ -611,6 +641,10 @@ export default class Game {
       }
     }
   }
+  #renderGame() {
+    this.#renderBoard();
+    this.#renderCards();
+  }
 
   #renderBoard() {
     globals.ctx.drawImage(
@@ -635,7 +669,6 @@ export default class Game {
     this.#renderMessages();
     this.#renderCardsReverse();
     this.#renderCards();
-    this.#renderPrueba();
   }
 
   #renderPlayersInfo() {
@@ -1852,13 +1885,221 @@ export default class Game {
 
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
   }
-   
-  #renderPrueba()
-  {
-    globals.ctx.font = "50px MedievalSharp";
-    globals.ctx.fillStyle = "white"
 
-    globals.ctx.fillText("hola", 100, globals.canvas.height /2);
+  #renderGameOver() {
+    // BACKGROUND IMAGE
+    globals.ctx.drawImage(
+      globals.gameOverBackgroundImage,
+      0,
+      0,
+      1792,
+      1024,
+      0,
+      0,
+      globals.canvas.width,
+      globals.canvas.height
+    );
 
+    // TEXT
+
+    const gameWinnerName = globals.gameWinner.getName().toUpperCase();
+
+    globals.ctx.fillStyle = "white";
+
+    globals.ctx.font = "140px MedievalSharp";
+    globals.ctx.fillText(gameWinnerName, 50, 165);
+
+    globals.ctx.font = "100px MedievalSharp";
+    globals.ctx.fillText("WON", 50, 300);
+  }
+
+  #applyCardViewToAllCards() {
+    const updatedDecks = [];
+
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+      const currentDeck = this.#deckContainer.getDecks()[i];
+
+      const updatedDeck = new Deck(i, []);
+      updatedDecks.push(updatedDeck);
+
+      for (let j = 0; j < currentDeck.getCards().length; j++) {
+        let currentCard = currentDeck.getCards()[j];
+
+        // CREATION OF OBJECTS FOR THE CURRENT CARD'S IMAGESET
+
+        let cardImage;
+        let smallVersionTemplateImage;
+        let bigVersionTemplateImage;
+        let iconsImages = {
+          smallVersion: [
+            globals.cardsIconsImages[IconID.EVENT_EFFECT_DIAMOND],
+            globals.cardsIconsImages[IconID.EVENT_PREP_TIME_DIAMOND],
+            globals.cardsIconsImages[IconID.EVENT_DURATION_DIAMOND],
+          ],
+          bigVersion: [
+            globals.cardsIconsImages[IconID.EVENT_PREP_TIME],
+            globals.cardsIconsImages[IconID.EVENT_DURATION],
+          ],
+        };
+        let cardTypeIcon;
+
+        if (currentCard.getCategory() === CardCategory.MAIN_CHARACTER) {
+          cardImage = globals.cardsImages.main_characters[currentCard.getID()];
+
+          smallVersionTemplateImage =
+            globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_SMALL];
+
+          if (currentCard.getID() === MainCharacterID.JOSEPH) {
+            bigVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.JOSEPH_BIG];
+          } else {
+            bigVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_BIG];
+          }
+
+          iconsImages = {};
+        } else {
+          smallVersionTemplateImage =
+            globals.cardsTemplatesImages[TemplateID.MINIONS_AND_EVENTS_SMALL];
+
+          if (currentCard.getCategory() === CardCategory.MINION) {
+            cardImage = globals.cardsImages.minions[currentCard.getID()];
+
+            iconsImages = {
+              smallVersion: [
+                globals.cardsIconsImages[IconID.ATTACK_DAMAGE_DIAMOND],
+                globals.cardsIconsImages[IconID.MINION_HP_DIAMOND],
+                globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
+              ],
+              bigVersion: [
+                globals.cardsIconsImages[IconID.MINION_HP],
+                globals.cardsIconsImages[IconID.MINION_MADNESS],
+                globals.cardsIconsImages[IconID.MINION_ATTACK],
+                globals.cardsIconsImages[IconID.MINION_DEFENSE],
+              ],
+            };
+
+            if (currentCard.getMinionType() === MinionType.SPECIAL) {
+              bigVersionTemplateImage =
+                globals.cardsTemplatesImages[TemplateID.MINIONS_SPECIAL_BIG];
+
+              cardTypeIcon =
+                globals.cardsIconsImages[IconID.MINION_SPECIAL_TYPE];
+            } else if (currentCard.getMinionType() === MinionType.WARRIOR) {
+              bigVersionTemplateImage =
+                globals.cardsTemplatesImages[TemplateID.MINIONS_WARRIORS_BIG];
+
+              cardTypeIcon =
+                globals.cardsIconsImages[IconID.MINION_WARRIOR_TYPE];
+            } else {
+              bigVersionTemplateImage =
+                globals.cardsTemplatesImages[TemplateID.MINIONS_WIZARDS_BIG];
+
+              cardTypeIcon =
+                globals.cardsIconsImages[IconID.MINION_WIZARD_TYPE];
+            }
+          } else if (currentCard.getCategory() === CardCategory.WEAPON) {
+            cardImage = globals.cardsImages.weapons[currentCard.getID()];
+
+            bigVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.WEAPONS_BIG];
+
+            iconsImages = {
+              smallVersion: [
+                globals.cardsIconsImages[IconID.ATTACK_DAMAGE_DIAMOND],
+                globals.cardsIconsImages[IconID.EVENT_PREP_TIME_DIAMOND],
+                globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
+              ],
+              bigVersion: [
+                globals.cardsIconsImages[IconID.WEAPON_DAMAGE],
+                globals.cardsIconsImages[IconID.WEAPON_ARMOR_DURABILITY],
+                globals.cardsIconsImages[IconID.EVENT_PREP_TIME],
+              ],
+            };
+
+            if (currentCard.getWeaponType() === WeaponType.MELEE) {
+              cardTypeIcon = globals.cardsIconsImages[IconID.WEAPON_MELEE_TYPE];
+            } else if (currentCard.getWeaponType() === WeaponType.MISSILE) {
+              cardTypeIcon =
+                globals.cardsIconsImages[IconID.WEAPON_MISSILE_TYPE];
+            } else {
+              cardTypeIcon =
+                globals.cardsIconsImages[IconID.WEAPON_HYBRID_TYPE];
+            }
+          } else if (currentCard.getCategory() === CardCategory.ARMOR) {
+            cardImage = globals.cardsImages.armor[currentCard.getID()];
+
+            bigVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.ARMOR_LIGHT_HEAVY_BIG];
+
+            iconsImages = {
+              smallVersion: [
+                globals.cardsIconsImages[IconID.EVENT_EFFECT_DIAMOND],
+                globals.cardsIconsImages[IconID.EVENT_PREP_TIME_DIAMOND],
+                globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
+              ],
+              bigVersion: [
+                globals.cardsIconsImages[IconID.WEAPON_ARMOR_DURABILITY],
+                globals.cardsIconsImages[IconID.EVENT_PREP_TIME],
+              ],
+            };
+
+            if (currentCard.getArmorType() === ArmorType.LIGHT) {
+              cardTypeIcon = globals.cardsIconsImages[IconID.ARMOR_LIGHT_TYPE];
+            } else if (currentCard.getArmorType() === ArmorType.MEDIUM) {
+              bigVersionTemplateImage =
+                globals.cardsTemplatesImages[TemplateID.ARMOR_MEDIUM_BIG];
+
+              cardTypeIcon = globals.cardsIconsImages[IconID.ARMOR_MEDIUM_TYPE];
+            } else {
+              cardTypeIcon = globals.cardsIconsImages[IconID.ARMOR_HEAVY_TYPE];
+            }
+          } else if (currentCard.getCategory() === CardCategory.SPECIAL) {
+            cardImage = globals.cardsImages.special[currentCard.getID()];
+
+            bigVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.SPECIAL_EVENTS_BIG];
+
+            cardTypeIcon = globals.cardsIconsImages[IconID.SPECIAL_TYPE];
+          } else {
+            cardImage = globals.cardsImages.rare[currentCard.getID()];
+
+            bigVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.RARE_EVENTS_BIG];
+
+            cardTypeIcon = globals.cardsIconsImages[IconID.RARE_TYPE];
+          }
+        }
+
+        if (cardTypeIcon) {
+          for (const cardVersion in iconsImages) {
+            iconsImages[cardVersion].unshift(cardTypeIcon);
+
+            if (
+              currentCard.getCategory() !== CardCategory.MAIN_CHARACTER &&
+              currentCard.getCategory() !== CardCategory.MINION
+            ) {
+              iconsImages[cardVersion].unshift(
+                globals.cardsIconsImages[IconID.EVENT_TYPE_CIRCLE]
+              );
+            }
+          }
+        }
+
+        const imageSet = new ImageSet(
+          globals.cardsReverseImage,
+          cardImage,
+          smallVersionTemplateImage,
+          bigVersionTemplateImage,
+          iconsImages
+        );
+
+        currentCard = new CardView(currentCard, 0, 0, imageSet);
+
+        updatedDeck.insertCard(currentCard);
+      }
+    }
+
+    this.#deckContainer.setDecks(updatedDecks);
   }
 }

@@ -22,6 +22,7 @@ const globals = {
   },
   cardsTemplatesImages: [],
   cardsIconsImages: [],
+  gameOverBackgroundImage: {},
   imagesDestinationSizes: {},
   assetsToLoad: [], // HOLDS THE ELEMENTS TO LOAD
   assetsLoaded: 0, // INDICATES THE NUMBER OF ELEMENTS THAT HAVE BEEN LOADED SO FAR
@@ -30,6 +31,7 @@ const globals = {
   language: 0,
   isCurrentTurnFinished: false,
   buttonDataGlobal: [],
+  gameWinner: {},
 };
 
 window.onload = initStartGameScreen;
@@ -290,6 +292,12 @@ function loadAssets() {
   ];
 
   createAndStoreImageObjs(icons, globals.cardsIconsImages);
+
+  // LOAD GAME OVER BACKGROUND IMAGE
+  globals.gameOverBackgroundImage = new Image();
+  globals.gameOverBackgroundImage.addEventListener("load", loadHandler, false);
+  globals.gameOverBackgroundImage.src = "../images/game_over.jpeg";
+  globals.assetsToLoad.push(globals.gameOverBackgroundImage);
 }
 
 // CODE BLOCK TO CALL EACH TIME AN ASSET IS LOADED
