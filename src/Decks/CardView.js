@@ -198,4 +198,20 @@ export default class CardView {
   setCurrenPrepTimeInRounds(newPrepTimeInRounds) {
     this.#card.setCurrenPrepTimeInRounds(newPrepTimeInRounds);
   }
+
+  isMouseOver() {
+    return this.#card.isMouseOver();
+  }
+
+  setIsMouseOver(isMouseOver) {
+    this.#card.setIsMouseOver(isMouseOver);
+  }
+
+  isLeftClicked() {
+    return this.#card.isLeftClicked();
+  }
+
+  setIsLeftClicked(isLeftClicked) {
+    this.#card.setIsLeftClicked(isLeftClicked);
+  }
 }

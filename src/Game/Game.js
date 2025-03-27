@@ -83,8 +83,7 @@ export default class Game {
       game.#board,
       game.#mouseInput,
       game.#players[PlayerID.PLAYER_1],
-      game.#events,
-      game.#phasesMenssages
+      game.#events
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -92,8 +91,7 @@ export default class Game {
       game.#board,
       game.#mouseInput,
       game.#players[PlayerID.PLAYER_2],
-      game.#events,
-      game.#phasesMenssages
+      game.#events
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -492,36 +490,12 @@ export default class Game {
     this.#executeEvent();
     this.#executeMessage();
 
-    this.#lookForCardThatIsntHoveredAnymore();
-    this.#lookForHoveredCard();
+    this.#mouseInput.resetIsLeftClicked(this.#deckContainer);
+    this.#mouseInput.detectMouseOverCard(this.#deckContainer);
+    this.#mouseInput.detectCardThatIsntHoveredAnymore(this.#deckContainer);
+    this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
 
     this.#updatePlayersTotalHP();
-  }
-
-  #lookForCardThatIsntHoveredAnymore() {
-    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
-      const currentDeck = this.#deckContainer.getDecks()[i];
-
-      const notHoveredCard = currentDeck.lookForCardThatIsntHoveredAnymore(
-        this.#mouseInput
-      );
-
-      if (notHoveredCard) {
-        notHoveredCard.setState(CardState.PLACED);
-      }
-    }
-  }
-
-  #lookForHoveredCard() {
-    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
-      const currentDeck = this.#deckContainer.getDecks()[i];
-
-      const hoveredCard = currentDeck.lookForHoveredCard(this.#mouseInput);
-
-      if (hoveredCard && hoveredCard.getState() === CardState.PLACED) {
-        hoveredCard.setState(CardState.HOVERED);
-      }
-    }
   }
 
   #updatePlayersTotalHP() {
