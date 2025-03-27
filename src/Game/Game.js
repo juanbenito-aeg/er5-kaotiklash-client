@@ -162,6 +162,13 @@ export default class Game {
                 globals.cardsIconsImages[IconID.ATTACK_DAMAGE_DIAMOND],
                 globals.cardsIconsImages[IconID.MINION_HP_DIAMOND],
                 globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
+                globals.cardsIconsImages[IconID.EVENT_TYPE_CIRCLE],
+                globals.cardsIconsImages[IconID.WEAPON_MELEE_TYPE],
+                // globals.cardsIconsImages[IconID.WEAPON_HYBRID_TYPE],
+                // globals.cardsIconsImages[IconID.WEAPON_MISSILE_TYPE],
+                // globals.cardsIconsImages[IconID.ARMOR_LIGHT_TYPE],
+                // globals.cardsIconsImages[IconID.ARMOR_MEDIUM_TYPE],
+                // globals.cardsIconsImages[IconID.ARMOR_HEAVY_TYPE],
               ],
               bigVersion: [
                 globals.cardsIconsImages[IconID.MINION_HP],
@@ -1087,32 +1094,64 @@ export default class Game {
     this.#renderCardImageAndTemplate(card, xCoordinate, yCoordinate);
 
     // RENDER ICONS
+
     const icons = card.getImageSet().getIcons().smallVersion;
+
     const iconsPositions = [
       {
         // TYPE
         x: xCoordinate + 37,
         y: yCoordinate - 17,
+        width: 35,
+        height: 35,
       },
       {
         // ATTACK
         x: xCoordinate - 17,
         y: yCoordinate + 40,
+        width: 35,
+        height: 35,
       },
       {
         // HP
         x: xCoordinate + 37,
         y: yCoordinate + 92,
+        width: 35,
+        height: 35,
       },
       {
         // DEFENSE
         x: xCoordinate + 92,
         y: yCoordinate + 40,
+        width: 35,
+        height: 35,
       },
     ];
-    for (let i = 0; i < icons.length; i++) {
-      const { x, y } = iconsPositions[i];
-      globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, 35, 35);
+
+    if (card.getWeapon()) {
+      iconsPositions.push(
+        {
+          // (WEAPON) TYPE CIRCLE
+          x: xCoordinate - 17,
+          y: yCoordinate - 17,
+          width: 35,
+          height: 35,
+        },
+        {
+          // (WEAPON) TYPE
+          x: xCoordinate - 10,
+          y: yCoordinate - 10,
+          width: 20,
+          height: 20,
+        }
+      );
+    }
+
+    let numOfIconsToRender = iconsPositions.length - 1;
+
+    for (let i = 0; i <= numOfIconsToRender; i++) {
+      const { x, y, width, height } = iconsPositions[i];
+      globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
     }
 
     // RENDER ATTRIBUTES VALUES
