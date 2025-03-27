@@ -44,6 +44,9 @@ export default class Game {
     // RANDOMLY ASSIGN PLAYER THAT STARTS PLAYING
     game.#currentPlayer = game.#players[Math.floor(Math.random() * 2)];
 
+    // (!!!!!) DELETE AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
+    globals.firstActivePlayerID = game.#currentPlayer.getID();
+
     // MAIN DECK CONFIGURATION FILE LOAD
     const url = "./src/mainDeck.json";
     const response = await fetch(url);
@@ -640,7 +643,11 @@ export default class Game {
 
     let player1X, player1Y, player2X, player2Y;
 
-    if (this.#currentPlayer.getID() === PlayerID.PLAYER_1) {
+    // (!!!!!) MODIFY AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
+    if (
+      /* this.#currentPlayer.getID() */ globals.firstActivePlayerID ===
+      PlayerID.PLAYER_1
+    ) {
       player1X = activePlayerX + 100;
       player1Y = activePlayerY + 225;
       player2X = inactivePlayerX + 100;
