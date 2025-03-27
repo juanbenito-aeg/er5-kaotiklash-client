@@ -179,7 +179,7 @@ export default class CardView {
     return this.#card.getWeapon();
   }
 
-  getWeaponType() {
+  getMinionWeaponType() {
     return this.#card.getWeapon().getWeaponType();
   }
 

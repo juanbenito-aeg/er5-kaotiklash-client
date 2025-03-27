@@ -5,6 +5,8 @@ export default class EquipWeaponEvent extends Event {
   #minionToEquipWeaponOn;
 
   constructor(weapon, minionToEquipWeaponOn) {
+    super();
+
     this.#weapon = weapon;
     this.#minionToEquipWeaponOn = minionToEquipWeaponOn;
   }

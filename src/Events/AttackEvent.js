@@ -38,7 +38,7 @@ export default class AttackEvent extends Event {
 
     if (
       /* (!this.#attacker.getWeapon() ||
-        this.#attacker.getWeaponType() === WeaponType.MELEE) && */
+        this.#attacker.getMinionWeaponType() === WeaponType.MELEE) && */
       attackerBox.getBattlefieldAreaItBelongsTo() === BattlefieldArea.FRONT &&
       targetBox.getBattlefieldAreaItBelongsTo() === BattlefieldArea.FRONT
     ) {

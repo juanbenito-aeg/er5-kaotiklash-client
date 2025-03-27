@@ -203,6 +203,8 @@ export default class Turn {
         }
       }
     }
+
+    this.#mouseInput.setLeftButtonPressedFalse();
   }
 
   #expandCard() {
@@ -305,7 +307,7 @@ export default class Turn {
     if (
       leftClickedCard &&
       leftClickedCard.getCategory() === CardCategory.WEAPON &&
-      leftClickedCard.getCurrentPrepTimeInRounds() === 0
+      leftClickedCard.getCurrentPrepTimeInRounds() /* === */ > 0
     ) {
       if (leftClickedCard.getState() === CardState.PLACED) {
         // THE PREVIOUSLY SELECTED WEAPON WAS DESELECTED
@@ -363,8 +365,6 @@ export default class Turn {
 
   #lookForLeftClickedCard(deckToCheck) {
     if (this.#mouseInput.isLeftButtonPressed()) {
-      this.#mouseInput.setLeftButtonPressedFalse();
-
       const isAnyCardSelected = deckToCheck.checkIfAnyCardIsSelected();
 
       const hoveredCard = deckToCheck.lookForHoveredCard(this.#mouseInput);

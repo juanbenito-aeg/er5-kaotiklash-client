@@ -223,7 +223,7 @@ export default class CardMovement {
     return this.#card.getWeapon();
   }
 
-  getWeaponType() {
+  getMinionWeaponType() {
     return this.#card.getWeapon().getWeaponType();
   }
 

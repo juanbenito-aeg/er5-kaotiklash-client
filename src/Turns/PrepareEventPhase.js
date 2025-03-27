@@ -114,49 +114,20 @@ export default class PrepareEventPhase extends Phase {
   }
 
   #selectCardFromHand() {
-    this.#lookForHoveredCard(this.#decksRelevants);
-
     for (let i = 0; i < this.#decksRelevants.length; i++) {
-      let decks = this.#decksRelevants[i];
+      let deck = this.#decksRelevants[i];
 
-      for (let j = 0; j < decks.getCards().length; j++) {
-        let card = decks.getCards()[j];
+      const hoveredCard = deck.lookForHoveredCard(this._mouseInput);
 
-        if (
-          this._mouseInput.isLeftButtonPressed() &&
-          card.getState() === CardState.INACTIVE_HOVERED
-        ) {
+      for (let j = 0; j < deck.getCards().length; j++) {
+        let card = deck.getCards()[j];
+
+        if (card === hoveredCard && this._mouseInput.isLeftButtonPressed()) {
           card.setState(CardState.SELECTED);
 
           this.#selectedCard = card;
 
-          if (this.#selectedCard.getState() === CardState.SELECTED) {
-            this._state = PrepareEventState.SELECT_TARGET_GRID;
-          }
-        }
-      }
-    }
-  }
-
-  #lookForHoveredCard(decksToCheck) {
-    for (let i = 0; i < this.#decksRelevants.length; i++) {
-      for (let j = 0; j < decksToCheck.length; j++) {
-        if (i === decksToCheck[j]) {
-          const currentDeck = this.#decksRelevants[i];
-
-          const hoveredCard = currentDeck.lookForHoveredCard(this._mouseInput);
-
-          if (hoveredCard) {
-            if (hoveredCard.getState() === CardState.INACTIVE) {
-              hoveredCard.setPreviousState(CardState.INACTIVE);
-              hoveredCard.setState(CardState.INACTIVE_HOVERED);
-            } else if (hoveredCard.getState() === CardState.PLACED) {
-              hoveredCard.setPreviousState(CardState.PLACED);
-              hoveredCard.setState(CardState.HOVERED);
-            }
-
-            return hoveredCard;
-          }
+          this._state = PrepareEventState.SELECT_TARGET_GRID;
         }
       }
     }
