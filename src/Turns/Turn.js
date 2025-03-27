@@ -40,7 +40,7 @@ export default class Turn {
     this.#mouseInput = mouseInput;
     this.#player = player;
     this.#events = events;
-    this.#equipWeaponState = EquipWeaponState.OFF;
+    this.#equipWeaponState = EquipWeaponState.SELECT_WEAPON;
   }
 
   fillPhases(currentPlayer) {
@@ -181,30 +181,28 @@ export default class Turn {
     const isAnyCardExpanded = this.#expandCard();
 
     if (!isAnyCardExpanded) {
-      this.#equipWeapon();
+      if (this.#currentPhase === PhaseType.INVALID) {
+        this.#equipWeapon();
 
-      if (this.#equipWeaponState === EquipWeaponState.OFF) {
-        if (this.#currentPhase === PhaseType.INVALID) {
+        if (this.#equipWeaponState === EquipWeaponState.SELECT_WEAPON) {
           this.#checkButtonClick();
-        } else if (!this.#isCurrentPhaseFinished) {
-          this.#isCurrentPhaseFinished =
-            this.#phases[this.#currentPhase].execute();
         }
+      } else if (!this.#isCurrentPhaseFinished) {
+        this.#isCurrentPhaseFinished =
+          this.#phases[this.#currentPhase].execute();
+      }
 
-        if (this.#isCurrentPhaseFinished) {
-          this.#isCurrentPhaseFinished = false;
-          this.#currentPhase = PhaseType.INVALID;
-          this.#numOfExecutedPhases++;
-          globals.executedPhasesCount++;
-        }
+      if (this.#isCurrentPhaseFinished) {
+        this.#isCurrentPhaseFinished = false;
+        this.#currentPhase = PhaseType.INVALID;
+        this.#numOfExecutedPhases++;
+        globals.executedPhasesCount++;
+      }
 
-        if (this.#numOfExecutedPhases === 3) {
-          globals.isCurrentTurnFinished = true;
-        }
+      if (this.#numOfExecutedPhases === 3) {
+        globals.isCurrentTurnFinished = true;
       }
     }
-
-    this.#mouseInput.setLeftButtonPressedFalse();
   }
 
   #expandCard() {
@@ -300,51 +298,79 @@ export default class Turn {
         this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
     }
 
-    let leftClickedCard = this.#lookForLeftClickedCard(
-      playerXEventsInPreparationDeck
-    );
-
-    if (
-      leftClickedCard &&
-      leftClickedCard.getCategory() === CardCategory.WEAPON &&
-      leftClickedCard.getCurrentPrepTimeInRounds() /* === */ > 0
-    ) {
-      if (leftClickedCard.getState() === CardState.PLACED) {
-        // THE PREVIOUSLY SELECTED WEAPON WAS DESELECTED
-        console.log("weapon DESELECTED");
-        this.#equipWeaponState = this.#equipWeaponState.OFF;
-      } else {
-        console.log("weapon selected");
-        this.#equipWeaponState = EquipWeaponState.SELECT_MINION;
-      }
+    // (¿?) MOVE TO THE BEGINNING OF THE execute() METHOD?
+    const notHoveredCard = this.#lookForCardThatIsntHoveredAnymore([
+      playerXEventsInPreparationDeck,
+      playerXMinionsInPlayDeck,
+    ]);
+    if (notHoveredCard) {
+      notHoveredCard.setState(CardState.PLACED);
     }
 
     let weapon;
+    let minion;
     switch (this.#equipWeaponState) {
+      // SELECT WEAPON TO EQUIP ON A MINION
+      case EquipWeaponState.SELECT_WEAPON:
+        console.log("WEAPON SELECTION");
+
+        weapon = playerXEventsInPreparationDeck.lookForHoveredCard();
+
+        if (weapon) {
+          if (!weapon.isLeftClicked()) {
+            weapon.setState(CardState.HOVERED);
+          } else if (
+            weapon.getCategory() === CardCategory.WEAPON &&
+            weapon.getCurrentPrepTimeInRounds() /* === (!!!!!) TO UNCOMMENT BEFORE SHOWING DEMO */ >
+              0
+          ) {
+            console.log("WEAPON SELECTED");
+
+            weapon.setState(CardState.SELECTED);
+            weapon.setIsLeftClicked(false);
+
+            this.#equipWeaponState = EquipWeaponState.SELECT_MINION;
+          }
+        }
+
+        break;
+
       // SELECT MINION TO EQUIP WEAPON ON
       case EquipWeaponState.SELECT_MINION:
-        console.log("minion selection");
-        leftClickedCard = this.#lookForLeftClickedCard(
-          playerXMinionsInPlayDeck
-        );
+        console.log("MINION SELECTION");
 
-        if (leftClickedCard && !leftClickedCard.getWeapon()) {
-          this.#equipWeaponState = EquipWeaponState.EQUIP_WEAPON;
+        weapon = playerXEventsInPreparationDeck.lookForSelectedCard();
+
+        if (weapon.isLeftClicked()) {
+          console.log("WEAPON DESELECTED");
+
+          // THE PREVIOUSLY SELECTED WEAPON WAS DESELECTED
+          weapon.setState(CardState.PLACED);
+          this.#equipWeaponState = EquipWeaponState.SELECT_WEAPON;
+        } else {
+          minion = playerXMinionsInPlayDeck.lookForHoveredCard();
+
+          if (minion) {
+            if (!minion.isLeftClicked()) {
+              minion.setState(CardState.HOVERED);
+            } else if (!minion.getWeapon()) {
+              minion.setState(CardState.SELECTED);
+              this.#equipWeaponState = EquipWeaponState.EQUIP_WEAPON;
+            }
+          }
         }
 
         break;
 
       // PERFORM THE WEAPON EQUIPMENT
       case EquipWeaponState.EQUIP_WEAPON:
-        console.log("weapon equipment");
-        weapon = playerXEventsInPreparationDeck.lookForSelectedCard();
-        const minionToEquipWeaponOn =
-          playerXMinionsInPlayDeck.lookForSelectedCard();
+        console.log("WEAPON EQUIPMENT");
 
-        const equipWeaponEvent = new EquipWeaponEvent(
-          weapon,
-          minionToEquipWeaponOn
-        );
+        weapon = playerXEventsInPreparationDeck.lookForSelectedCard();
+
+        minion = playerXMinionsInPlayDeck.lookForSelectedCard();
+
+        const equipWeaponEvent = new EquipWeaponEvent(weapon, minion);
         equipWeaponEvent.execute();
 
         this.#equipWeaponState = EquipWeaponState.END;
@@ -353,34 +379,25 @@ export default class Turn {
 
       // EVENT END
       case EquipWeaponState.END:
-        console.log("event end");
+        console.log("EVENT END");
+
         weapon = playerXEventsInPreparationDeck.lookForSelectedCard();
         playerXEventsInPreparationDeck.removeCard(weapon);
 
-        this.#equipWeaponState = EquipWeaponState.OFF;
+        this.#equipWeaponState = EquipWeaponState.SELECT_WEAPON;
 
         break;
     }
   }
 
-  #lookForLeftClickedCard(deckToCheck) {
-    if (this.#mouseInput.isLeftButtonPressed()) {
-      const isAnyCardSelected = deckToCheck.checkIfAnyCardIsSelected();
+  #lookForCardThatIsntHoveredAnymore(decksToCheck) {
+    for (let i = 0; i < decksToCheck.length; i++) {
+      const currentDeck = decksToCheck[i];
 
-      const hoveredCard = deckToCheck.lookForHoveredCard(this.#mouseInput);
+      const notHoveredCard = currentDeck.lookForCardThatIsntHoveredAnymore();
 
-      for (let i = 0; i < deckToCheck.getCards().length; i++) {
-        const currentCard = deckToCheck.getCards()[i];
-
-        if (currentCard === hoveredCard) {
-          if (!isAnyCardSelected) {
-            currentCard.setState(CardState.SELECTED);
-            return currentCard;
-          } else if (currentCard.getState() === CardState.SELECTED) {
-            currentCard.setState(CardState.PLACED);
-            return currentCard;
-          }
-        }
+      if (notHoveredCard) {
+        return notHoveredCard;
       }
     }
   }
