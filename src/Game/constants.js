@@ -1,6 +1,7 @@
 const GameState = {
   INVALID: -1,
   PLAYING: 0,
+  OVER: 1,
 };
 
 // FPS (FRAMES PER SECOND)
@@ -204,10 +205,18 @@ const PhaseType = {
   INVALID: -1,
   DRAW_CARD: 0,
   PREPARE_EVENT: 1,
-  PERFORM_eVENT: 2,
+  PERFORM_EVENT: 2,
   MOVE: 3,
   ATTACK: 4,
   DISCARD_CARD: 5,
+};
+
+const PhaseButton = {
+  SKIP: 0,
+  PREPARE_EVENT: 1,
+  PERFORM_EVENT: 2,
+  MOVE: 3,
+  ATTACK: 4,
 };
 
 export {
@@ -234,4 +243,5 @@ export {
   PrepareEventState,
   DrawCardState,
   PhaseType,
+  PhaseButton,
 };

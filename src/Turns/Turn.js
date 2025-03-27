@@ -5,7 +5,13 @@ import MovePhase from "./MovePhase.js";
 import PrepareEventPhase from "./PrepareEventPhase.js";
 import PerformEventPhase from "./PerformEventPhase.js";
 import DiscardCardPhase from "./DiscardCardPhase.js";
-import { PlayerID, CardState, DeckType, PhaseType } from "../Game/constants.js";
+import {
+  PlayerID,
+  CardState,
+  DeckType,
+  PhaseType,
+  PhaseButton,
+} from "../Game/constants.js";
 import { globals } from "../index.js";
 
 export default class Turn {
@@ -19,8 +25,8 @@ export default class Turn {
   #player;
 
   constructor(deckContainer, board, mouseInput, player) {
-    this.#currentPhase = PhaseType.INVALID;
     this.#isCurrentPhaseFinished = false;
+    this.#currentPhase = PhaseType.INVALID;
     this.#numOfExecutedPhases = 0;
     this.#phases = [];
     this.#deckContainer = deckContainer;
@@ -67,7 +73,7 @@ export default class Turn {
   }
 
   execute() {
-    this.#expandCard();
+    const isAnyCardExpanded = this.#expandCard();
 
     if (this.#currentPhase === PhaseType.INVALID) {
       this.#checkButtonClick();
@@ -81,9 +87,23 @@ export default class Turn {
       this.#currentPhase = PhaseType.INVALID;
       this.#numOfExecutedPhases++;
     }
+    if (!isAnyCardExpanded) {
+      if (this.#currentPhase === PhaseType.INVALID) {
+        this.#checkButtonClick();
+      } else if (!this.#isCurrentPhaseFinished) {
+        this.#isCurrentPhaseFinished =
+          this.#phases[this.#currentPhase].execute();
+      }
 
-    if (this.#numOfExecutedPhases === 5) {
-      globals.isCurrentTurnFinished = true;
+      if (this.#isCurrentPhaseFinished) {
+        this.#isCurrentPhaseFinished = false;
+        this.#currentPhase = PhaseType.INVALID;
+        this.#numOfExecutedPhases++;
+      }
+
+      if (this.#numOfExecutedPhases === 5) {
+        globals.isCurrentTurnFinished = true;
+      }
     }
   }
 
@@ -110,57 +130,14 @@ export default class Turn {
 
     decksToCheck.push(DeckType.JOSEPH);
 
-    const hoveredCard = this.#lookForHoveredCard(decksToCheck);
+    this.#lookForRightClickedCard(decksToCheck);
 
-    this.#lookForCardThatIsntHoveredAnymore(decksToCheck);
-
-    this.#lookForRightClickedCard(decksToCheck, hoveredCard);
+    const isAnyCardExpanded = this.#checkIfAnyCardIsExpanded(decksToCheck);
+    return isAnyCardExpanded;
   }
 
-  #lookForHoveredCard(decksToCheck) {
-    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
-      for (let j = 0; j < decksToCheck.length; j++) {
-        if (i === decksToCheck[j]) {
-          const currentDeck = this.#deckContainer.getDecks()[i];
-
-          const hoveredCard = currentDeck.lookForHoveredCard(this.#mouseInput);
-
-          if (hoveredCard) {
-            if (hoveredCard.getState() === CardState.INACTIVE) {
-              hoveredCard.setPreviousState(CardState.INACTIVE);
-              hoveredCard.setState(CardState.INACTIVE_HOVERED);
-            } else if (hoveredCard.getState() === CardState.PLACED) {
-              hoveredCard.setPreviousState(CardState.PLACED);
-              hoveredCard.setState(CardState.HOVERED);
-            }
-
-            return hoveredCard;
-          }
-        }
-      }
-    }
-  }
-
-  #lookForCardThatIsntHoveredAnymore(decksToCheck) {
-    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
-      for (let j = 0; j < decksToCheck.length; j++) {
-        if (i === decksToCheck[j]) {
-          const currentDeck = this.#deckContainer.getDecks()[i];
-
-          const notHoveredCard = currentDeck.lookForCardThatIsntHoveredAnymore(
-            this.#mouseInput
-          );
-
-          if (notHoveredCard) {
-            notHoveredCard.setState(notHoveredCard.getPreviousState());
-          }
-        }
-      }
-    }
-  }
-
-  #lookForRightClickedCard(decksToCheck, hoveredCard) {
-    if (this.#mouseInput.isRightButtonPressed() && hoveredCard) {
+  #lookForRightClickedCard(decksToCheck) {
+    if (this.#mouseInput.isRightButtonPressed()) {
       this.#mouseInput.setRightButtonPressedFalse();
 
       const isAnyCardExpanded = this.#checkIfAnyCardIsExpanded(decksToCheck);
@@ -170,16 +147,20 @@ export default class Turn {
           if (i === decksToCheck[j]) {
             const currentDeck = this.#deckContainer.getDecks()[i];
 
+            const hoveredCard = currentDeck.lookForHoveredCard(
+              this.#mouseInput
+            );
+
             for (let k = 0; k < currentDeck.getCards().length; k++) {
               const currentCard = currentDeck.getCards()[k];
 
-              if (
-                currentCard.getState() === CardState.EXPANDED &&
-                currentCard === hoveredCard
-              ) {
-                currentCard.setState(currentCard.getPreviousState());
-              } else if (!isAnyCardExpanded && currentCard === hoveredCard) {
-                currentCard.setState(CardState.EXPANDED);
+              if (currentCard === hoveredCard) {
+                if (!isAnyCardExpanded) {
+                  currentCard.setPreviousState(currentCard.getState());
+                  currentCard.setState(CardState.EXPANDED);
+                } else if (currentCard.getState() === CardState.EXPANDED) {
+                  currentCard.setState(currentCard.getPreviousState());
+                }
               }
             }
           }
@@ -218,28 +199,25 @@ export default class Turn {
     if (this.#mouseInput.isLeftButtonPressed()) {
       for (let i = 0; i < globals.buttonDataGlobal.length; i++) {
         const buttonData = globals.buttonDataGlobal[i];
-        const buttonX = buttonData[0];
-        const buttonY = buttonData[1];
+
+        const buttonXCoordinate = buttonData[0];
+        const buttonYCoordinate = buttonData[1];
         const buttonWidth = buttonData[2];
         const buttonHeight = buttonData[3];
-        const phase = buttonData[4];
 
         if (
-          mouseX >= buttonX &&
-          mouseX <= buttonX + buttonWidth &&
-          mouseY >= buttonY &&
-          mouseY <= buttonY + buttonHeight
+          mouseX >= buttonXCoordinate &&
+          mouseX <= buttonXCoordinate + buttonWidth &&
+          mouseY >= buttonYCoordinate &&
+          mouseY <= buttonYCoordinate + buttonHeight
         ) {
-          this.#executePhase(i);
+          if (i === PhaseButton.SKIP) {
+            // TODO: INSERT METHOD THAT SKIPS CURRENT PHASE
+          } else {
+            this.#currentPhase = i;
+          }
         }
       }
-    }
-  }
-
-  #executePhase(phase) {
-    if (this.#phases[phase]) {
-      this.#currentPhase = phase;
-      this.#isCurrentPhaseFinished = false;
     }
   }
 }

@@ -74,4 +74,8 @@ export default class Minion extends Card {
   getCurrentDefense() {
     return this.#currentDefense;
   }
+
+  setCurrentHP(newHP) {
+    this.#currentHP = newHP;
+  }
 }

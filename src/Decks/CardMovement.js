@@ -222,6 +222,10 @@ export default class CardMovement {
     this.#state = newState;
   }
 
+  setCurrentHP(newHP) {
+    this.#card.setCurrentHP(newHP);
+  }
+
   setCurrenPrepTimeInRounds(newPrepTimeInRounds) {
     this.#card.setCurrenPrepTimeInRounds(newPrepTimeInRounds);
   }

@@ -49,8 +49,7 @@ export default class Deck {
 
       if (
         (!isMouseWithinCardWidth || !isMouseWithinCardHeight) &&
-        (currentCard.getState() === CardState.INACTIVE_HOVERED ||
-          currentCard.getState() === CardState.HOVERED)
+        currentCard.getState() === CardState.HOVERED
       ) {
         return currentCard;
       }

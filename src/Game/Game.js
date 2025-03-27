@@ -8,6 +8,7 @@ import MouseInput from "./MouseInput.js";
 import {
   GameState,
   CardCategory,
+  DeckType,
   WeaponType,
   ArmorType,
   MinionType,
@@ -84,8 +85,11 @@ export default class Game {
     turnPlayer2.fillPhases();
     game.#turns = [turnPlayer1, turnPlayer2];
 
-    game.#events = [];
+    game.#createPhaseButtons();
+
     game.#setInitialCardsCoordinates();
+
+    game.#events = [];
 
     return game;
   }
@@ -280,6 +284,40 @@ export default class Game {
     this.#deckContainer.setDecks(updatedDecks);
   }
 
+  #createPhaseButtons() {
+    const buttonNames = [
+      "Skip",
+      "Prepare Event",
+      "Perform Event",
+      "Move",
+      "Attack",
+    ];
+
+    const buttonsXCoordinate = this.#board
+      .getGrids()
+      [GridType.PHASE_BUTTONS].getBoxes()[0]
+      .getXCoordinate();
+    const buttonsWidth = 200;
+    const buttonsHeight = 40;
+
+    for (let i = 0; i < buttonNames.length; i++) {
+      const currentButtonYCoordinate =
+        this.#board
+          .getGrids()
+          [GridType.PHASE_BUTTONS].getBoxes()
+          [i].getYCoordinate() + 5;
+
+      const buttonData = [
+        buttonsXCoordinate,
+        currentButtonYCoordinate,
+        buttonsWidth,
+        buttonsHeight,
+        buttonNames[i],
+      ];
+      globals.buttonDataGlobal.push(buttonData);
+    }
+  }
+
   #setInitialCardsCoordinates() {
 
     const activePlayerData = {
@@ -388,6 +426,7 @@ export default class Game {
         }
         const currentCardsInHandBox =
           currentPlayer.cardsInHandGrid.getBoxes()[currentCardsInHandBoxIndex];
+        currentCardsInHandBox.setCard(currentEventCard);
 
         currentEventCard.setXCoordinate(currentCardsInHandBox.getXCoordinate());
         currentEventCard.setYCoordinate(currentCardsInHandBox.getYCoordinate());
@@ -408,6 +447,7 @@ export default class Game {
           currentPlayer.minionsInPlayGrid.getBoxes()[
             currentBattlefieldBoxIndex
           ];
+        currentBattlefieldBox.setCard(currentMinionCard);
 
         currentMinionCard.setXCoordinate(
           currentBattlefieldBox.getXCoordinate()
@@ -437,14 +477,15 @@ export default class Game {
       this.#currentPlayer = this.#turns[this.#currentPlayer].changeTurn(
         this.#currentPlayer
       );
-
-      this.#setCardsCoordinates();
     }
 
     this.#turns[this.#currentPlayer].execute();
     this.#skipPhase();
 
     this.#executeEvent();
+
+    this.#lookForCardThatIsntHoveredAnymore();
+    this.#lookForHoveredCard();
 
     this.#updatePlayersTotalHP();
 
@@ -494,32 +535,63 @@ export default class Game {
 
   #setCardsCoordinates() {
     
+    this.#updateDamageMessages();
+  }
+
+  #lookForCardThatIsntHoveredAnymore() {
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+      const currentDeck = this.#deckContainer.getDecks()[i];
+
+      const notHoveredCard = currentDeck.lookForCardThatIsntHoveredAnymore(
+        this.#mouseInput
+      );
+
+      if (notHoveredCard) {
+        notHoveredCard.setState(CardState.PLACED);
+      }
+    }
+  }
+
+  #lookForHoveredCard() {
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+      const currentDeck = this.#deckContainer.getDecks()[i];
+
+      const hoveredCard = currentDeck.lookForHoveredCard(this.#mouseInput);
+
+      if (hoveredCard && hoveredCard.getState() === CardState.PLACED) {
+        hoveredCard.setState(CardState.HOVERED);
+      }
+    }
   }
 
   #updatePlayersTotalHP() {
     // PLAYER 1
 
-    const player1MinionsDeck =
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS];
+    // (!) UNCOMMENT AFTER TURNING DEMO (SPRINT 3) IN
+    /* const player1MinionsDeck =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS]; */
     const player1MinionsInPlayDeck =
       this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
 
     const player1 = this.#players[PlayerID.PLAYER_1];
     const player1UpdatedTotalHP =
       // this.#sumMinionsHP(player1MinionsDeck) +
+      /* this.#sumMinionsHP(player1MinionsDeck) + */
       this.#sumMinionsHP(player1MinionsInPlayDeck);
     player1.setTotalHP(player1UpdatedTotalHP);
 
     // PLAYER 2
 
-    const player2MinionsDeck =
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
+    // (!) UNCOMMENT AFTER TURNING DEMO (SPRINT 3) IN
+    /* const player2MinionsDeck =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS]; */
     const player2MinionsInPlayDeck =
       this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
 
     const player2 = this.#players[PlayerID.PLAYER_2];
     const player2UpdatedTotalHP =
       // this.#sumMinionsHP(player2MinionsDeck) +
+      /* this.#sumMinionsHP(player2MinionsDeck) + */
       this.#sumMinionsHP(player2MinionsInPlayDeck);
     player2.setTotalHP(player2UpdatedTotalHP);
   }
@@ -545,26 +617,50 @@ export default class Game {
       let event = this.#events[i];
       event.execute();
 
-      if(!event.isActive()) {
+      if (!event.isActive()) {
         this.#events.splice(i, 1);
         i--;
+    this.#checkIfGameOver();
       }
     }
   }
 
+  // (!) THIS METHOD WILL BE CHANGED IN A FUTURE SO THAT A WINNER IS ASSIGNED WHEN THE OTHER PLAYER GETS TO 0 TOTAL HIT-POINTS
+  #checkIfGameOver() {
+    const player1MinionsInPlay =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
+    const player2MinionsInPlay =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
+
+    const decksToCheck = [player1MinionsInPlay, player2MinionsInPlay];
+
+    for (let i = 0; i < decksToCheck.length; i++) {
+      const currentDeck = decksToCheck[i];
+
+      if (currentDeck.getCards().length === 0) {
+        if (currentDeck === player1MinionsInPlay) {
+          globals.gameWinner = this.#players[PlayerID.PLAYER_2];
+        } else {
+          globals.gameWinner = this.#players[PlayerID.PLAYER_1];
+        }
+
+        globals.gameState = GameState.OVER;
+      }
+    }
+  }
 
   #render() {
     // CLEAR SCREEN
     globals.ctx.clearRect(0, 0, globals.canvas.width, globals.canvas.height);
 
-    this.#renderBoard();
-
     switch (globals.gameState) {
       case GameState.PLAYING:
-        this.#renderGrids();
         this.#renderGame();
         break;
 
+      case GameState.OVER:
+        this.#renderGameOver();
+        break;
     }
   }
 
@@ -603,6 +699,10 @@ export default class Game {
       }
     }
   }
+  #renderGame() {
+    this.#renderBoard();
+    this.#renderCards();
+  }
 
   #renderBoard() {
     globals.ctx.drawImage(
@@ -619,12 +719,15 @@ export default class Game {
   }
 
   #renderGame() {
+    this.#renderBoard();
+    this.#renderGrids();
     this.#renderPlayersInfo();
-    this.#renderPhasesButtons();
+    this.#renderPhaseButtons();
     this.#renderActiveEventsTable();
     this.#renderMessages();
     this.#renderCardsReverse();
     this.#renderCards();
+    this.#renderDamageMesagges();
   }
 
   #renderPlayersInfo() {
@@ -680,42 +783,73 @@ export default class Game {
     );
   }
 
-  #renderPhasesButtons() {
-    const phaseName = ["Skip", "Prepare Event", "Perform Event", "Move", "Attack"];
-    for (let i = 0; i < phaseName.length; i++) {
-        const x = this.#board.getGrids()[4].getBoxes()[0].getXCoordinate(); 
-        const y = this.#board.getGrids()[4].getBoxes()[i].getYCoordinate() + 5;
-        const width = 200;
-        const height = 40;
-        const radius = 10;
-  
-        const buttonData = [x, y, width, height, phaseName[i]];
-        globals.buttonDataGlobal.push(buttonData);
-  
-        globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-        globals.ctx.shadowBlur = 10;
-        globals.ctx.shadowOffsetX = 4;
-        globals.ctx.shadowOffsetY = 4;
-  
-        globals.ctx.fillStyle = 'darkcyan';
-        globals.ctx.beginPath();
-        globals.ctx.moveTo(buttonData[0] + 10, buttonData[1]);
-        globals.ctx.lineTo(buttonData[0] + buttonData[2] - 10, buttonData[1]);
-        globals.ctx.quadraticCurveTo(buttonData[0] + buttonData[2], buttonData[1], buttonData[0] + buttonData[2], buttonData[1] + 10);
-        globals.ctx.lineTo(buttonData[0] + buttonData[2], buttonData[1] + buttonData[3] - 10);
-        globals.ctx.quadraticCurveTo(buttonData[0] + buttonData[2], buttonData[1] + buttonData[3], buttonData[0] + buttonData[2] - 10, buttonData[1] + buttonData[3]);
-        globals.ctx.lineTo(buttonData[0] + 10, buttonData[1] + buttonData[3]);
-        globals.ctx.quadraticCurveTo(buttonData[0], buttonData[1] + buttonData[3], buttonData[0], buttonData[1] + buttonData[3] - 10);
-        globals.ctx.lineTo(buttonData[0], buttonData[1] + 10);
-        globals.ctx.quadraticCurveTo(buttonData[0], buttonData[1], buttonData[0] + 10, buttonData[1]);
-        globals.ctx.closePath();
-        globals.ctx.fill();
-  
-        globals.ctx.fillStyle = 'white';
-        globals.ctx.font = '18px MedievalSharp';
-        globals.ctx.textAlign = 'center';
-        globals.ctx.textBaseline = 'middle';
-        globals.ctx.fillText(buttonData[4], buttonData[0] + buttonData[2] / 2, buttonData[1] + buttonData[3] / 2);
+  #renderPhaseButtons() {
+    const BUTTON_X = 0;
+    const BUTTON_Y = 1;
+    const BUTTON_WIDTH = 2;
+    const BUTTON_HEIGHT = 3;
+    const BUTTON_NAME = 4;
+
+    for (let i = 0; i < globals.buttonDataGlobal.length; i++) {
+      const currentButton = globals.buttonDataGlobal[i];
+
+      globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      globals.ctx.shadowBlur = 10;
+      globals.ctx.shadowOffsetX = 4;
+      globals.ctx.shadowOffsetY = 4;
+
+      globals.ctx.fillStyle = "darkcyan";
+      globals.ctx.beginPath();
+      globals.ctx.moveTo(currentButton[BUTTON_X] + 10, currentButton[BUTTON_Y]);
+      globals.ctx.lineTo(
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH] - 10,
+        currentButton[BUTTON_Y]
+      );
+      globals.ctx.quadraticCurveTo(
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH],
+        currentButton[BUTTON_Y],
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH],
+        currentButton[BUTTON_Y] + 10
+      );
+      globals.ctx.lineTo(
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH],
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT] - 10
+      );
+      globals.ctx.quadraticCurveTo(
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH],
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT],
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH] - 10,
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT]
+      );
+      globals.ctx.lineTo(
+        currentButton[BUTTON_X] + 10,
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT]
+      );
+      globals.ctx.quadraticCurveTo(
+        currentButton[BUTTON_X],
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT],
+        currentButton[BUTTON_X],
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT] - 10
+      );
+      globals.ctx.lineTo(currentButton[BUTTON_X], currentButton[BUTTON_Y] + 10);
+      globals.ctx.quadraticCurveTo(
+        currentButton[BUTTON_X],
+        currentButton[BUTTON_Y],
+        currentButton[BUTTON_X] + 10,
+        currentButton[BUTTON_Y]
+      );
+      globals.ctx.closePath();
+      globals.ctx.fill();
+
+      globals.ctx.fillStyle = "white";
+      globals.ctx.font = "18px MedievalSharp";
+      globals.ctx.textAlign = "center";
+      globals.ctx.textBaseline = "middle";
+      globals.ctx.fillText(
+        currentButton[BUTTON_NAME],
+        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH] / 2,
+        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT] / 2
+      );
     }
   }
 
@@ -762,11 +896,11 @@ export default class Game {
       globals.ctx.stroke();
     }
 
-      let lineY = tableY + (tableHeight/ 4) * 1;
-      globals.ctx.beginPath();
-      globals.ctx.moveTo(tableX, lineY);
-      globals.ctx.lineTo(tableX + tableWidth, lineY);
-      globals.ctx.stroke();
+    let lineY = tableY + (tableHeight / 4) * 1;
+    globals.ctx.beginPath();
+    globals.ctx.moveTo(tableX, lineY);
+    globals.ctx.lineTo(tableX + tableWidth, lineY);
+    globals.ctx.stroke();
 
     globals.ctx.fillStyle = "white";
     globals.ctx.font = "18px MedievalSharp";
@@ -1819,177 +1953,265 @@ export default class Game {
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
   }
 
+  #renderGameOver() {
+    // BACKGROUND IMAGE
+    globals.ctx.drawImage(
+      globals.gameOverBackgroundImage,
+      0,
+      0,
+      1792,
+      1024,
+      0,
+      0,
+      globals.canvas.width,
+      globals.canvas.height
+    );
 
-// #renderPlayer1MinionActiveCards() {
-//   const player1MinionsInPlayDeck = this.#deckContainer.getDecks()[5].getCards();
-//   const battlefieldBot = this.#board.getGrids()[8].getBoxes();
-//   const battlefieldTop = this.#board.getGrids()[13].getBoxes();
+    // TEXT
 
-// let fixedPositions = [];
-// if(globals.currentPlayer === 1)
-// {
-// fixedPositions = [
+    const gameWinnerName = globals.gameWinner.getName().toUpperCase();
 
-//   { x: battlefieldBot[1].getXCoordinate(), y: battlefieldBot[1].getYCoordinate() },
-//   { x: battlefieldBot[8].getXCoordinate(), y: battlefieldBot[8].getYCoordinate() },
-//   { x: battlefieldBot[3].getXCoordinate(), y: battlefieldBot[3].getYCoordinate() },
+    globals.ctx.fillStyle = "white";
 
-// ];
-// }
-// else
-// {
-// fixedPositions = [
+    globals.ctx.font = "140px MedievalSharp";
+    globals.ctx.fillText(gameWinnerName, 50, 165);
 
-//     { x: battlefieldTop[1].getXCoordinate(), y: battlefieldTop[1].getYCoordinate() },
-//     { x: battlefieldTop[8].getXCoordinate(), y: battlefieldTop[8].getYCoordinate() },
-//     { x: battlefieldTop[3].getXCoordinate(), y: battlefieldTop[3].getYCoordinate() },
+    globals.ctx.font = "100px MedievalSharp";
+    globals.ctx.fillText("WON", 50, 300);
+  }
 
-//   ];
-// }
+  #applyCardViewToAllCards() {
+    const updatedDecks = [];
 
-//   for (let i = 0; i < player1MinionsInPlayDeck.length && i < fixedPositions.length; i++) {
-//     const currentCard = player1MinionsInPlayDeck[i];
-//     const { x, y } = fixedPositions[i];
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+      const currentDeck = this.#deckContainer.getDecks()[i];
 
-//     let smallSizeX = 110;
-//     let smallSizeY = 110;
+      const updatedDeck = new Deck(i, []);
+      updatedDecks.push(updatedDeck);
 
-//     this.#renderCard(currentCard, x, y, smallSizeX, smallSizeY);
-//     this.#renderSmallTemplate(currentCard, x, y, smallSizeX, smallSizeY);
-//     this.#renderIcons(currentCard, x, y);
-//     this.#renderAttributesMinions(currentCard, x, y);
-//   }
-// }
+      for (let j = 0; j < currentDeck.getCards().length; j++) {
+        let currentCard = currentDeck.getCards()[j];
 
-// #renderPlayer2MinionActiveCards() {
-//   const player2MinionsInPlayDeck = this.#deckContainer.getDecks()[11].getCards();
-//   const battlefieldBot = this.#board.getGrids()[8].getBoxes();
-//   const battlefieldTop = this.#board.getGrids()[13].getBoxes();
+        // CREATION OF OBJECTS FOR THE CURRENT CARD'S IMAGESET
 
-//   let fixedPositions = [];
-//   if(globals.currentPlayer === 1)
-//   {
-//     fixedPositions = [
+        let cardImage;
+        let smallVersionTemplateImage;
+        let bigVersionTemplateImage;
+        let iconsImages = {
+          smallVersion: [
+            globals.cardsIconsImages[IconID.EVENT_EFFECT_DIAMOND],
+            globals.cardsIconsImages[IconID.EVENT_PREP_TIME_DIAMOND],
+            globals.cardsIconsImages[IconID.EVENT_DURATION_DIAMOND],
+          ],
+          bigVersion: [
+            globals.cardsIconsImages[IconID.EVENT_PREP_TIME],
+            globals.cardsIconsImages[IconID.EVENT_DURATION],
+          ],
+        };
+        let cardTypeIcon;
 
-//       { x: battlefieldTop[1].getXCoordinate(), y: battlefieldTop[1].getYCoordinate() },
-//       { x: battlefieldTop[8].getXCoordinate(), y: battlefieldTop[8].getYCoordinate() },
-//       { x: battlefieldTop[3].getXCoordinate(), y: battlefieldTop[3].getYCoordinate() },
+        if (currentCard.getCategory() === CardCategory.MAIN_CHARACTER) {
+          cardImage = globals.cardsImages.main_characters[currentCard.getID()];
 
-//     ];
-//     }
-//     else
-//     {
-//     fixedPositions = [
+          smallVersionTemplateImage =
+            globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_SMALL];
 
-//         { x: battlefieldBot[1].getXCoordinate(), y: battlefieldBot[1].getYCoordinate() },
-//         { x: battlefieldBot[8].getXCoordinate(), y: battlefieldBot[8].getYCoordinate() },
-//         { x: battlefieldBot[3].getXCoordinate(), y: battlefieldBot[3].getYCoordinate() },
-//       ];
-//   }
+          if (currentCard.getID() === MainCharacterID.JOSEPH) {
+            bigVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.JOSEPH_BIG];
+          } else {
+            bigVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_BIG];
+          }
 
-//   for (let i = 0; i < player2MinionsInPlayDeck.length && i < fixedPositions.length; i++) {
-//     const currentCard = player2MinionsInPlayDeck[i];
-//     const { x, y } = fixedPositions[i];
+          iconsImages = {};
+        } else {
+          smallVersionTemplateImage =
+            globals.cardsTemplatesImages[TemplateID.MINIONS_AND_EVENTS_SMALL];
 
-//     let smallSizeX = 110;
-//     let smallSizeY = 110;
+          if (currentCard.getCategory() === CardCategory.MINION) {
+            cardImage = globals.cardsImages.minions[currentCard.getID()];
 
-//     this.#renderCard(currentCard, x, y, smallSizeX, smallSizeY);
-//     this.#renderSmallTemplate(currentCard, x, y, smallSizeX, smallSizeY);
-//     this.#renderIcons(currentCard, x, y);
-//     this.#renderAttributesMinions(currentCard, x, y);
-//   }
-// }
+            iconsImages = {
+              smallVersion: [
+                globals.cardsIconsImages[IconID.ATTACK_DAMAGE_DIAMOND],
+                globals.cardsIconsImages[IconID.MINION_HP_DIAMOND],
+                globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
+              ],
+              bigVersion: [
+                globals.cardsIconsImages[IconID.MINION_HP],
+                globals.cardsIconsImages[IconID.MINION_MADNESS],
+                globals.cardsIconsImages[IconID.MINION_ATTACK],
+                globals.cardsIconsImages[IconID.MINION_DEFENSE],
+              ],
+            };
 
-// #renderEventHandPlayer1Cards() {
+            if (currentCard.getMinionType() === MinionType.SPECIAL) {
+              bigVersionTemplateImage =
+                globals.cardsTemplatesImages[TemplateID.MINIONS_SPECIAL_BIG];
 
-//     const MinionPlayer1 = this.#deckContainer.getDecks()[3];
+              cardTypeIcon =
+                globals.cardsIconsImages[IconID.MINION_SPECIAL_TYPE];
+            } else if (currentCard.getMinionType() === MinionType.WARRIOR) {
+              bigVersionTemplateImage =
+                globals.cardsTemplatesImages[TemplateID.MINIONS_WARRIORS_BIG];
 
-//     for(let i = 0; i < MinionPlayer1.getCards().length ; i++)
-//     {
-//       const currentCard = MinionPlayer1.getCards()[i];
-//       let xCoordinate = this.#board.getGrids()[7].getBoxes()[i].getXCoordinate();
-//       let yCoordinate = this.#board.getGrids()[7].getBoxes()[i].getYCoordinate();
-//       let smallSizeX = 110;
-//       let smallSizeY = 110;
-//       this.#renderCard(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
-//       this.#renderSmallTemplate(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
-//       this.#renderIcons(currentCard, xCoordinate, yCoordinate);
-//       this.#renderAttributesWeaponns(currentCard, xCoordinate, yCoordinate);
-//       this.#renderEventHandPlayer2Reverse();
-//     }
+              cardTypeIcon =
+                globals.cardsIconsImages[IconID.MINION_WARRIOR_TYPE];
+            } else {
+              bigVersionTemplateImage =
+                globals.cardsTemplatesImages[TemplateID.MINIONS_WIZARDS_BIG];
 
-//     globals.ctx.font = "20px MedievalSharp";
-//     globals.ctx.fillStyle = "yellow";
-//     globals.ctx.fillText("Player 1", 580, 990);
+              cardTypeIcon =
+                globals.cardsIconsImages[IconID.MINION_WIZARD_TYPE];
+            }
+          } else if (currentCard.getCategory() === CardCategory.WEAPON) {
+            cardImage = globals.cardsImages.weapons[currentCard.getID()];
 
-// }
+            bigVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.WEAPONS_BIG];
 
-// #renderEventHandPlayer2Reverse(){
-//   const EventPlayer2 = this.#deckContainer.getDecks()[9].getCards();
-//   const xCoordinate = this.#board.getGrids()[12].getBoxes()[0].getXCoordinate() - 3;
-//   const yCoordinate = this.#board.getGrids()[12].getBoxes()[0].getYCoordinate() - 2;
-//   for( let i = 0; i < EventPlayer2.length; i++)
-//   {
-//     globals.ctx.drawImage(
-//       globals.cardsReverseImage,
-//       0,
-//       0,
-//       425,
-//       587,
-//       xCoordinate +  i*135,
-//       yCoordinate,
-//       115,
-//       115
-//     );
-//   }
+            iconsImages = {
+              smallVersion: [
+                globals.cardsIconsImages[IconID.ATTACK_DAMAGE_DIAMOND],
+                globals.cardsIconsImages[IconID.EVENT_PREP_TIME_DIAMOND],
+                globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
+              ],
+              bigVersion: [
+                globals.cardsIconsImages[IconID.WEAPON_DAMAGE],
+                globals.cardsIconsImages[IconID.WEAPON_ARMOR_DURABILITY],
+                globals.cardsIconsImages[IconID.EVENT_PREP_TIME],
+              ],
+            };
 
-// }
+            if (currentCard.getWeaponType() === WeaponType.MELEE) {
+              cardTypeIcon = globals.cardsIconsImages[IconID.WEAPON_MELEE_TYPE];
+            } else if (currentCard.getWeaponType() === WeaponType.MISSILE) {
+              cardTypeIcon =
+                globals.cardsIconsImages[IconID.WEAPON_MISSILE_TYPE];
+            } else {
+              cardTypeIcon =
+                globals.cardsIconsImages[IconID.WEAPON_HYBRID_TYPE];
+            }
+          } else if (currentCard.getCategory() === CardCategory.ARMOR) {
+            cardImage = globals.cardsImages.armor[currentCard.getID()];
 
-// #renderEventHandPlayer2Cards() {
+            bigVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.ARMOR_LIGHT_HEAVY_BIG];
 
-//     const EventPlayer2 = this.#deckContainer.getDecks()[9].getCards();
-//     //console.log(this.#board.getGrids()[7].getBoxes()[0]);
+            iconsImages = {
+              smallVersion: [
+                globals.cardsIconsImages[IconID.EVENT_EFFECT_DIAMOND],
+                globals.cardsIconsImages[IconID.EVENT_PREP_TIME_DIAMOND],
+                globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
+              ],
+              bigVersion: [
+                globals.cardsIconsImages[IconID.WEAPON_ARMOR_DURABILITY],
+                globals.cardsIconsImages[IconID.EVENT_PREP_TIME],
+              ],
+            };
 
-//     for(let i = 0; i < EventPlayer2.length ; i++)
-//     {
-//       const currentCard = EventPlayer2[i];
-//       let xCoordinate = this.#board.getGrids()[7].getBoxes()[i].getXCoordinate();
-//       let yCoordinate = this.#board.getGrids()[7].getBoxes()[i].getYCoordinate();
-//       let smallSizeX = 110;
-//       let smallSizeY = 110;
-//       this.#renderCard(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
-//       this.#renderSmallTemplate(currentCard, xCoordinate, yCoordinate, smallSizeX, smallSizeY);
-//       this.#renderIcons(currentCard, xCoordinate, yCoordinate);
-//       this.#renderAttributesWeaponns(currentCard, xCoordinate, yCoordinate);
-//       this.#renderEventHandPlayer1Reverse();
-//     }
+            if (currentCard.getArmorType() === ArmorType.LIGHT) {
+              cardTypeIcon = globals.cardsIconsImages[IconID.ARMOR_LIGHT_TYPE];
+            } else if (currentCard.getArmorType() === ArmorType.MEDIUM) {
+              bigVersionTemplateImage =
+                globals.cardsTemplatesImages[TemplateID.ARMOR_MEDIUM_BIG];
 
-//     globals.ctx.font = "20px MedievalSharp";
-//     globals.ctx.fillStyle = "yellow";
-//     globals.ctx.fillText("Player 2", 580, 990);
-// }
+              cardTypeIcon = globals.cardsIconsImages[IconID.ARMOR_MEDIUM_TYPE];
+            } else {
+              cardTypeIcon = globals.cardsIconsImages[IconID.ARMOR_HEAVY_TYPE];
+            }
+          } else if (currentCard.getCategory() === CardCategory.SPECIAL) {
+            cardImage = globals.cardsImages.special[currentCard.getID()];
 
-// #renderEventHandPlayer1Reverse(){
-//   const EventPlayer1 = this.#deckContainer.getDecks()[3].getCards();
-//   console.log(this.#board.getGrids()[12].getBoxes()[0]);
+            bigVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.SPECIAL_EVENTS_BIG];
 
-//   const xCoordinate = this.#board.getGrids()[12].getBoxes()[0].getXCoordinate() - 3;
-//   const yCoordinate = this.#board.getGrids()[12].getBoxes()[0].getYCoordinate() - 2;
-//   for( let i = 0; i < EventPlayer1.length; i++)
-//   {
-//     globals.ctx.drawImage(
-//       globals.cardsReverseImage,
-//       0,
-//       0,
-//       425,
-//       587,
-//       xCoordinate +  i*135,
-//       yCoordinate,
-//       115,
-//       115
-//     );
-//   }
+            cardTypeIcon = globals.cardsIconsImages[IconID.SPECIAL_TYPE];
+          } else {
+            cardImage = globals.cardsImages.rare[currentCard.getID()];
 
-// }
+            bigVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.RARE_EVENTS_BIG];
+
+            cardTypeIcon = globals.cardsIconsImages[IconID.RARE_TYPE];
+          }
+        }
+
+        if (cardTypeIcon) {
+          for (const cardVersion in iconsImages) {
+            iconsImages[cardVersion].unshift(cardTypeIcon);
+
+            if (
+              currentCard.getCategory() !== CardCategory.MAIN_CHARACTER &&
+              currentCard.getCategory() !== CardCategory.MINION
+            ) {
+              iconsImages[cardVersion].unshift(
+                globals.cardsIconsImages[IconID.EVENT_TYPE_CIRCLE]
+              );
+            }
+          }
+        }
+
+        const imageSet = new ImageSet(
+          globals.cardsReverseImage,
+          cardImage,
+          smallVersionTemplateImage,
+          bigVersionTemplateImage,
+          iconsImages
+        );
+
+        currentCard = new CardView(currentCard, 0, 0, imageSet);
+
+        updatedDeck.insertCard(currentCard);
+      }
+    }
+
+    this.#deckContainer.setDecks(updatedDecks);
+  }
+
+  #renderDamageMesagges()
+  {
+    for(let i = 0; i < globals.damageMessages.length; i++)
+    {
+      let message = globals.damageMessages[i]
+      let duration = message.getDuration()
+
+      console.log(duration)
+
+      let fontSize = globals.damageFontSize / duration  
+      if(fontSize >= 100)
+      {
+        fontSize = 100;
+      }
+      
+
+      globals.ctx.font = `${fontSize}px MedievalSharp`;
+      globals.ctx.fillStyle = "red";
+      globals.ctx.fillText(
+        message.getContent(),
+        message.getXPosition(),
+        message.getYPosition(),
+      )
+    }
+  }
+  
+
+  #updateDamageMessages()
+  {
+
+    for(let i = 0; i < globals.damageMessages.length; i++)
+    {
+      let message = globals.damageMessages[i]
+
+      let isFisished = message.execute()
+      if(isFisished)
+      {
+        globals.damageMessages.splice(i,1)
+      }
+
+
+    }
+  }
 }
+

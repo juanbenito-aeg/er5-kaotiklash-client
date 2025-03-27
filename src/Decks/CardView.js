@@ -175,6 +175,10 @@ export default class CardView {
     return this.#card;
   }
 
+  setCurrentHP(newHP) {
+    this.#card.setCurrentHP(newHP);
+  }
+
   setCurrenPrepTimeInRounds(newPrepTimeInRounds) {
     this.#card.setCurrenPrepTimeInRounds(newPrepTimeInRounds);
   }
