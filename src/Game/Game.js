@@ -479,6 +479,7 @@ export default class Game {
     this.#lookForHoveredCard();
 
     this.#updatePlayersTotalHP();
+    this.#updateDamageMessages();
   }
 
   #lookForCardThatIsntHoveredAnymore() {
@@ -635,7 +636,7 @@ export default class Game {
     this.#renderMessages();
     this.#renderCardsReverse();
     this.#renderCards();
-    this.#renderPrueba();
+    this.#renderDamageMesagges();
   }
 
   #renderPlayersInfo() {
@@ -1852,13 +1853,37 @@ export default class Game {
 
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
   }
-   
-  #renderPrueba()
+
+  #renderDamageMesagges()
   {
-    globals.ctx.font = "50px MedievalSharp";
-    globals.ctx.fillStyle = "white"
+    for(let i = 0; i < globals.damageMessages.length; i++)
+    {
+      let message = globals.damageMessages[i]
 
-    globals.ctx.fillText("hola", 100, globals.canvas.height /2);
+      globals.ctx.font = "100px MedievalSharp";
+      globals.ctx.fillStyle = "red";
+      globals.ctx.fillText(
+        message.getContent(),
+        message.getXPosition(),
+        message.getYPosition(),
+      )
+    }
+  }
 
+  #updateDamageMessages()
+  {
+
+    for(let i = 0; i < globals.damageMessages.length; i++)
+    {
+      let message = globals.damageMessages[i]
+
+      let isFisished = message.execute()
+      if(isFisished)
+      {
+        globals.damageMessages.splice(i,1)
+      }
+
+
+    }
   }
 }

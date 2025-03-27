@@ -1,5 +1,6 @@
 import Game from "./Game/Game.js";
 import { GameState, FPS } from "./Game/constants.js";
+import DamageMessages from "./Messages/DamageMessage.js";
 
 // GLOBAL VARIABLES CREATION
 const globals = {
@@ -30,6 +31,7 @@ const globals = {
   language: 0,
   isCurrentTurnFinished: false,
   buttonDataGlobal: [],
+  damageMessages: [],
 };
 
 window.onload = initStartGameScreen;
