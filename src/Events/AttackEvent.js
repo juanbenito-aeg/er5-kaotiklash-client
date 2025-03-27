@@ -1,5 +1,7 @@
 import Event from "./Event.js";
 import { WeaponType, CardState, BattlefieldArea } from "../Game/constants.js";
+import DamageMessages from "../Messages/DamageMessage.js";
+import { globals } from "../index.js";
 
 export default class AttackEvent extends Event {
   #attacker;
@@ -73,6 +75,12 @@ export default class AttackEvent extends Event {
       targetNewCurrentHP = 0;
     }
     console.log(`Total damage ${damageToInflict}`)
+    if(damageToInflict > 0)
+    {
+      damageToInflict = damageToInflict * -1
+    }
+    const DamageMessage = new DamageMessages(damageToInflict,4,targetBox.getCard().getXCoordinate() + 55,targetBox.getCard().getYCoordinate() + 55)
+    globals.damageMessages.push(DamageMessage)
     this.#target.setCurrentHP(targetNewCurrentHP);
 
     wasTheAttackPerformed = true;

@@ -5,32 +5,57 @@ export default class DamageMessages extends Message {
   #content;
   #duration;
   #startTime;
+  #xPosition;
+  #yPosition;
 
-  constructor(content, duration) {
+  constructor(content, duration, xPosition, yPosition) {
     super();
     this.#content = content;
     this.#duration = duration;
+    this.#xPosition = xPosition;
+    this.#yPosition = yPosition;
+
+
   }
 
-  static create(damage, duration) {
-    const content = this.#getContent(damage);
-    duration = 2000;
-    const message = new DamageMessages(content, duration);
+  static create(damage, duration, xPosition, yPosition) {
+
+    duration = 2;
+    const message = new DamageMessages(damage, duration, xPosition, yPosition);
+    globals.damageMessages.push(message);
     return message;
-  }
-
-  static #getContent(damage) {
-
   }
 
   execute() {
     if (this.#startTime === null) {
       this.#startTime = globals.deltaTime;
     }
-    if (globals.deltaTime - this.#startTime >= this.#duration) {
-
-        return true; //MESSAGE IS OVER
+    if (this.#duration <= 0) {
+      return true; //MESSAGE IS OVER
     }
+    this.#duration -= globals.deltaTime;
+
     return false; // MESSAGE IS ACTIVE
   }
+
+  getContent()
+  {
+    return this.#content
+  }
+
+  getDuration()
+  {
+    return this,this.#duration
+  }
+
+  getXPosition()
+  {
+    return this.#xPosition
+  }
+
+  getYPosition()
+  {
+    return this.#yPosition
+  }
+
 }

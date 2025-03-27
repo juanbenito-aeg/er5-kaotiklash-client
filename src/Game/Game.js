@@ -480,6 +480,7 @@ export default class Game {
     this.#lookForHoveredCard();
 
     this.#updatePlayersTotalHP();
+    this.#updateDamageMessages();
   }
 
   #lookForCardThatIsntHoveredAnymore() {
@@ -669,6 +670,7 @@ export default class Game {
     this.#renderMessages();
     this.#renderCardsReverse();
     this.#renderCards();
+    this.#renderDamageMesagges();
   }
 
   #renderPlayersInfo() {
@@ -2102,4 +2104,49 @@ export default class Game {
 
     this.#deckContainer.setDecks(updatedDecks);
   }
+
+  #renderDamageMesagges()
+  {
+    for(let i = 0; i < globals.damageMessages.length; i++)
+    {
+      let message = globals.damageMessages[i]
+      let duration = message.getDuration()
+
+      console.log(duration)
+
+      let fontSize = globals.damageFontSize / duration  
+      if(fontSize >= 100)
+      {
+        fontSize = 100;
+      }
+      
+
+      globals.ctx.font = `${fontSize}px MedievalSharp`;
+      globals.ctx.fillStyle = "red";
+      globals.ctx.fillText(
+        message.getContent(),
+        message.getXPosition(),
+        message.getYPosition(),
+      )
+    }
+  }
+  
+
+  #updateDamageMessages()
+  {
+
+    for(let i = 0; i < globals.damageMessages.length; i++)
+    {
+      let message = globals.damageMessages[i]
+
+      let isFisished = message.execute()
+      if(isFisished)
+      {
+        globals.damageMessages.splice(i,1)
+      }
+
+
+    }
+  }
 }
+
