@@ -30,6 +30,7 @@ export default class Game {
   #turns;
   #mouseInput;
   #events;
+  #phasesMenssages;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -41,7 +42,10 @@ export default class Game {
     game.#players = [player1, player2];
 
     // RANDOMLY ASSIGN PLAYER THAT STARTS PLAYING
-    game.#currentPlayer = Math.floor(Math.random() * 2);
+    game.#currentPlayer = game.#players[Math.floor(Math.random() * 2)];
+
+    // (!!!!!) DELETE AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
+    globals.firstActivePlayerID = game.#currentPlayer.getID();
 
     // MAIN DECK CONFIGURATION FILE LOAD
     const url = "./src/mainDeck.json";
@@ -67,21 +71,31 @@ export default class Game {
     game.#mouseInput = new MouseInput();
     game.#mouseInput.addMouseEventListeners();
 
+    // EVENTS CREATION
+    game.#events = [];
+
+    //PHASES MESSAGES
+    game.#phasesMenssages = [];
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
       game.#board,
       game.#mouseInput,
-      game.#players[PlayerID.PLAYER_1]
+      game.#players[PlayerID.PLAYER_1],
+      game.#events,
+      game.#phasesMenssages
     );
-    turnPlayer1.fillPhases();
+    turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
       game.#deckContainer,
       game.#board,
       game.#mouseInput,
-      game.#players[PlayerID.PLAYER_2]
+      game.#players[PlayerID.PLAYER_2],
+      game.#events,
+      game.#phasesMenssages
     );
-    turnPlayer2.fillPhases();
+    turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
 
     game.#createPhaseButtons();
@@ -346,7 +360,7 @@ export default class Game {
     inactivePlayerData.minionsInPlayGrid =
       this.#board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
 
-    if (this.#currentPlayer === PlayerID.PLAYER_1) {
+    if (this.#currentPlayer === this.#players[PlayerID.PLAYER_1]) {
       // SET (PART OF) THE ACTIVE PLAYER'S DATA
       activePlayerData.mainCharacter = this.#deckContainer
         .getDecks()
@@ -466,14 +480,17 @@ export default class Game {
     if (globals.isCurrentTurnFinished) {
       globals.isCurrentTurnFinished = false;
 
-      this.#currentPlayer = this.#turns[this.#currentPlayer].changeTurn(
-        this.#currentPlayer
-      );
+      const newCurrentPlayerID = this.#turns[
+        this.#currentPlayer.getID()
+      ].changeTurn(this.#currentPlayer);
+
+      this.#currentPlayer = this.#players[newCurrentPlayerID];
     }
 
-    this.#turns[this.#currentPlayer].execute();
+    this.#turns[this.#currentPlayer.getID()].execute();
 
     this.#executeEvent();
+    this.#executeMessage();
 
     this.#lookForCardThatIsntHoveredAnymore();
     this.#lookForHoveredCard();
@@ -549,10 +566,6 @@ export default class Game {
     return totalHP;
   }
 
-  addEventToQueue(event) {
-    this.#events.push(event);
-  }
-
   #executeEvent() {
     for (let i = 0; i < this.#events.length; i++) {
       let event = this.#events[i];
@@ -565,6 +578,13 @@ export default class Game {
     }
   }
 
+  #executeMessage() {
+    for (let i = 0; i < this.#phasesMenssages.length; i++) {
+      let phaseMessage = this.#phasesMenssages[i];
+      phaseMessage.execute();
+    }
+  }
+
   #render() {
     // CLEAR SCREEN
     globals.ctx.clearRect(0, 0, globals.canvas.width, globals.canvas.height);
@@ -574,6 +594,31 @@ export default class Game {
         this.#renderGame();
         break;
     }
+  }
+
+  #renderGame() {
+    this.#renderBoard();
+    this.#renderGrids();
+    this.#renderPlayersInfo();
+    this.#renderPhaseButtons();
+    this.#renderActiveEventsTable();
+    this.#renderMessages();
+    this.#renderCardsReverse();
+    this.#renderCards();
+  }
+
+  #renderBoard() {
+    globals.ctx.drawImage(
+      globals.boardImage,
+      0,
+      0,
+      3584,
+      2048,
+      0,
+      0,
+      globals.canvas.width,
+      globals.canvas.height
+    );
   }
 
   #renderGrids() {
@@ -612,31 +657,6 @@ export default class Game {
     }
   }
 
-  #renderBoard() {
-    globals.ctx.drawImage(
-      globals.boardImage,
-      0,
-      0,
-      3584,
-      2048,
-      0,
-      0,
-      globals.canvas.width,
-      globals.canvas.height
-    );
-  }
-
-  #renderGame() {
-    this.#renderBoard();
-    this.#renderGrids();
-    this.#renderPlayersInfo();
-    this.#renderPhaseButtons();
-    this.#renderActiveEventsTable();
-    this.#renderMessages();
-    this.#renderCardsReverse();
-    this.#renderCards();
-  }
-
   #renderPlayersInfo() {
     const activePlayerX = this.#board
       .getGrids()
@@ -658,7 +678,11 @@ export default class Game {
 
     let player1X, player1Y, player2X, player2Y;
 
-    if (this.#currentPlayer === PlayerID.PLAYER_1) {
+    // (!!!!!) MODIFY AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
+    if (
+      /* this.#currentPlayer.getID() */ globals.firstActivePlayerID ===
+      PlayerID.PLAYER_1
+    ) {
       player1X = activePlayerX + 100;
       player1Y = activePlayerY + 225;
       player2X = inactivePlayerX + 100;
@@ -696,6 +720,15 @@ export default class Game {
     const BUTTON_WIDTH = 2;
     const BUTTON_HEIGHT = 3;
     const BUTTON_NAME = 4;
+
+    const totalPhases = 5;
+    const phaseText =
+      "Phase: " + globals.executedPhasesCount + "/" + totalPhases;
+    globals.ctx.fillStyle = "white";
+    globals.ctx.font = "24px MedievalSharp";
+    globals.ctx.textAlign = "center";
+    globals.ctx.textBaseline = "middle";
+    globals.ctx.fillText(phaseText, 500, 675);
 
     for (let i = 0; i < globals.buttonDataGlobal.length; i++) {
       const currentButton = globals.buttonDataGlobal[i];
@@ -878,8 +911,17 @@ export default class Game {
     globals.ctx.font = "20px MedievalSharp";
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
+
+    const phaseMessages = this.#phasesMenssages;
+    let messageText = "Select a Phase to start";
+
+    if (phaseMessages.length > 0) {
+      const currentMessage = phaseMessages[0];
+      messageText = currentMessage.content;
+    }
+
     globals.ctx.fillText(
-      "COMING SOON",
+      messageText,
       messageBoxX + messageBoxWidth / 2,
       messageBoxY + messageBoxHeight / 2
     );
@@ -950,10 +992,10 @@ export default class Game {
       const currentDeck = this.#deckContainer.getDecks()[i];
 
       const isDeckCardsInHandOfInactivePlayer =
-        (this.#currentPlayer === PlayerID.PLAYER_1 &&
+        (this.#currentPlayer.getID() === PlayerID.PLAYER_1 &&
           currentDeck ===
             this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND]) ||
-        (this.#currentPlayer === PlayerID.PLAYER_2 &&
+        (this.#currentPlayer.getID() === PlayerID.PLAYER_2 &&
           currentDeck ===
             this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND]);
 

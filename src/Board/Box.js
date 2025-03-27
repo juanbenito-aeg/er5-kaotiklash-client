@@ -40,6 +40,14 @@ export default class Box {
     return this.#yCoordinate;
   }
 
+  setXCoordinate(newXCoordinate) {
+    return (this.#xCoordinate = newXCoordinate);
+  }
+
+  setYCoordinate(newYCoordinate) {
+    return (this.#yCoordinate = newYCoordinate);
+  }
+
   getWidth() {
     return this.#width;
   }
@@ -73,8 +81,12 @@ export default class Box {
   }
 
   setCard(card) {
-    if (this.#state === BoxState.AVAILABLE) {
+    if (
+      this.#state === BoxState.AVAILABLE ||
+      this.#state === BoxState.SELECTED
+    ) {
       this.#card = card;
+
       this.setState(BoxState.OCCUPIED);
     }
   }

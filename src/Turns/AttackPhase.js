@@ -20,14 +20,14 @@ export default class AttackPhase extends Phase {
     state,
     mouseInput,
     enemyMovementGridDeck,
-    currentPLayerMovementGridDeck,
+    currentPlayerMovementGridDeck,
     enemyMovementGrid,
     currentPlayerMovementGrid
   ) {
     super(state, mouseInput);
 
     this.#enemyMovementGridDeck = enemyMovementGridDeck;
-    this.#currentPlayerMovementGridDeck = currentPLayerMovementGridDeck;
+    this.#currentPlayerMovementGridDeck = currentPlayerMovementGridDeck;
     this.#enemyMovementGrid = enemyMovementGrid;
     this.#currentPlayerMovementGrid = currentPlayerMovementGrid;
   }

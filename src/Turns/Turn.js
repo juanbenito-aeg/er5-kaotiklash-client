@@ -13,6 +13,7 @@ import {
   PhaseButton,
   EquipWeaponState,
   CardCategory,
+  GridType,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 import EquipWeaponEvent from "../Events/EquipWeaponEvent.js";
@@ -26,9 +27,10 @@ export default class Turn {
   #board;
   #mouseInput;
   #player;
+  #events;
   #equipWeaponState;
 
-  constructor(deckContainer, board, mouseInput, player) {
+  constructor(deckContainer, board, mouseInput, player, events) {
     this.#isCurrentPhaseFinished = false;
     this.#currentPhase = PhaseType.INVALID;
     this.#numOfExecutedPhases = 0;
@@ -37,10 +39,11 @@ export default class Turn {
     this.#board = board;
     this.#mouseInput = mouseInput;
     this.#player = player;
+    this.#events = events;
     this.#equipWeaponState = EquipWeaponState.OFF;
   }
 
-  fillPhases() {
+  fillPhases(currentPlayer) {
     if (this.#player.getID() === PlayerID.PLAYER_1) {
       const initialPhase = new InitialPhase(this.#deckContainer);
       initialPhase.execute();
@@ -60,7 +63,9 @@ export default class Turn {
         this.#player,
         this.#deckContainer,
         this.#board,
-        this.#mouseInput
+        this.#mouseInput,
+        this.#events,
+        currentPlayer
       );
 
       this.#phases.push(currentPhase);
@@ -68,12 +73,107 @@ export default class Turn {
   }
 
   changeTurn(currentPlayer) {
+    globals.executedPhasesCount = 0;
+
     this.#numOfExecutedPhases = 0;
 
-    if (currentPlayer === 0) {
-      return 1;
+    /*   this.#swapTurnPosition(); */
+
+    if (currentPlayer.getID() === PlayerID.PLAYER_1) {
+      return PlayerID.PLAYER_2;
     } else {
-      return 0;
+      return PlayerID.PLAYER_1;
+    }
+  }
+
+  #swapTurnPosition() {
+    this.#swapDeckPosition();
+    this.#swapGridPosition();
+  }
+
+  #swapDeckPosition() {
+    const player1Decks = [
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_ACTIVE_EVENTS],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MAIN_CHARACTER],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY],
+    ];
+    const player2Decks = [
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_ACTIVE_EVENTS],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MAIN_CHARACTER],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY],
+    ];
+
+    //SWAP DECK POSITIONS FROM PLAYER 1 TO PLAYER 2 AND VICE VERSA
+    for (let i = 0; i < player1Decks.length; i++) {
+      this.#swapDeckPositions(player1Decks[i], player2Decks[i]);
+    }
+  }
+
+  #swapDeckPositions(deckPlayer1, deckPlayer2) {
+    for (let i = 0; i < deckPlayer1.getCards().length; i++) {
+      for (let j = 0; j < deckPlayer2.getCards().length; j++) {
+        const card1 = deckPlayer1.getCards()[i];
+        const card2 = deckPlayer2.getCards()[j];
+        const tempX = card1.getXCoordinate();
+        const tempY = card1.getYCoordinate();
+
+        if (card1 && card2) {
+          //PLAYER 1 CARDS
+          card1.setXCoordinate(card2.getXCoordinate());
+          card1.setYCoordinate(card2.getYCoordinate());
+
+          //PLAYER 2 CARDS
+          card2.setXCoordinate(tempX);
+          card2.setYCoordinate(tempY);
+        }
+      }
+    }
+  }
+
+  #swapGridPosition() {
+    const player1Grids = [
+      this.#board.getGrids()[GridType.PLAYER_1_BATTLEFIELD],
+      this.#board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND],
+      this.#board.getGrids()[GridType.PLAYER_1_MAIN_CHARACTER],
+      this.#board.getGrids()[GridType.PLAYER_1_MINIONS_DECK],
+      this.#board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT],
+    ];
+
+    const player2Grids = [
+      this.#board.getGrids()[GridType.PLAYER_2_BATTLEFIELD],
+      this.#board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND],
+      this.#board.getGrids()[GridType.PLAYER_2_MAIN_CHARACTER],
+      this.#board.getGrids()[GridType.PLAYER_2_MINIONS_DECK],
+      this.#board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT],
+    ];
+
+    for (let i = 0; i < player1Grids.length; i++) {
+      this.#swapGridPositions(player1Grids[i], player2Grids[i]);
+    }
+  }
+
+  #swapGridPositions(player1Grid, player2Grid) {
+    for (let i = 0; i < player1Grid.getBoxes().length; i++) {
+      for (let j = 0; j < player2Grid.getBoxes().length; j++) {
+        const player1Box = player1Grid.getBoxes()[i];
+        const player2Box = player2Grid.getBoxes()[j];
+        const tempX = player1Box.getXCoordinate();
+        const tempY = player1Box.getYCoordinate();
+
+        //PLAYER 1 BOXES
+        player1Box.setXCoordinate(player2Box.getXCoordinate());
+        player1Box.setYCoordinate(player2Box.getYCoordinate());
+
+        //PLAYER 2 BOXES
+        player2Box.setXCoordinate(tempX);
+        player2Box.setYCoordinate(tempY);
+      }
     }
   }
 
@@ -95,9 +195,10 @@ export default class Turn {
           this.#isCurrentPhaseFinished = false;
           this.#currentPhase = PhaseType.INVALID;
           this.#numOfExecutedPhases++;
+          globals.executedPhasesCount++;
         }
 
-        if (this.#numOfExecutedPhases === 5) {
+        if (this.#numOfExecutedPhases === 3) {
           globals.isCurrentTurnFinished = true;
         }
       }
