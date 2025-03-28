@@ -30,7 +30,8 @@ export default class Game {
   #turns;
   #mouseInput;
   #events;
-  #phasesMenssages;
+  #currentPhase;
+  #phaseMessage;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -42,7 +43,7 @@ export default class Game {
     game.#players = [player1, player2];
 
     // RANDOMLY ASSIGN PLAYER THAT STARTS PLAYING
-    game.#currentPlayer = Math.floor(Math.random() * 2);
+    game.#currentPlayer = Math.floor(Math.random() * 1);
 
     // MAIN DECK CONFIGURATION FILE LOAD
     const url = "./src/mainDeck.json";
@@ -71,8 +72,7 @@ export default class Game {
     // EVENTS CREATION
     game.#events = [];
 
-    //PHASES MESSAGES
-    game.#phasesMenssages = [];
+    game.#phaseMessage = {};
 
     // TURNS CREATION
     const turnPlayer1 = new Turn(
@@ -81,7 +81,7 @@ export default class Game {
       game.#mouseInput,
       game.#players[PlayerID.PLAYER_1],
       game.#events,
-      game.#phasesMenssages
+      game.#phaseMessage
     );
     turnPlayer1.fillPhases();
     const turnPlayer2 = new Turn(
@@ -90,7 +90,7 @@ export default class Game {
       game.#mouseInput,
       game.#players[PlayerID.PLAYER_2],
       game.#events,
-      game.#phasesMenssages
+      game.#phaseMessage
     );
     turnPlayer2.fillPhases();
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -471,6 +471,7 @@ export default class Game {
 
   #update() {
     if (globals.isCurrentTurnFinished) {
+      console.log(this.#currentPlayer);
       globals.isCurrentTurnFinished = false;
       this.#currentPlayer = this.#turns[this.#currentPlayer].changeTurn(
         this.#currentPlayer
@@ -478,16 +479,44 @@ export default class Game {
       this.#setCardsCoordinates();
       console.log("cambio");
     }
-
-    this.#turns[this.#currentPlayer].execute();
-    this.#executeMessage();
     this.#executeEvent();
+    this.#turns[this.#currentPlayer].execute();
+
+    /* this.#phaseMessage.execute(); */
 
     this.#updatePlayersTotalHP();
   }
 
   #setCardsCoordinates() {
     // TODO
+    /*     //DECK PREPARATE EVENT
+    const prepareEventDeck =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION];
+    const preparationEventGrid =
+      this.#board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
+    for (let i = 0; i < prepareEventDeck.getCards().length; i++) {
+      for (let j = 0; j < preparationEventGrid.getBoxes().length; j++) {
+        const cards = prepareEventDeck.getCards()[i];
+        const boxes = preparationEventGrid.getBoxes()[j];
+
+        cards.setXCoordinate(boxes.getXCoordinate());
+        cards.setYCoordinate(boxes.getYCoordinate());
+      }
+    }
+
+    //DECK HAND
+    const handCardDeck =
+    this.#deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION];
+    const preparationEventGrid =
+      this.#board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
+    for (let i = 0; i < prepareEventDeck.getCards().length; i++) {
+      for (let j = 0; j < preparationEventGrid.getBoxes().length; j++) {
+        const cards = prepareEventDeck.getCards()[i];
+        const boxes = preparationEventGrid.getBoxes()[j];
+
+        cards.setXCoordinate(boxes.getXCoordinate());
+        cards.setYCoordinate(boxes.getYCoordinate());
+      } */
   }
 
   #updatePlayersTotalHP() {
@@ -533,19 +562,12 @@ export default class Game {
   #executeEvent() {
     for (let i = 0; i < this.#events.length; i++) {
       let event = this.#events[i];
-      event.execute();
+      event.execute(this.#currentPlayer);
 
       if (!event.isActive()) {
         this.#events.splice(i, 1);
         i--;
       }
-    }
-  }
-
-  #executeMessage() {
-    for (let i = 0; i < this.#phasesMenssages.length; i++) {
-      let phaseMessage = this.#phasesMenssages[i];
-      phaseMessage.execute();
     }
   }
 
@@ -873,12 +895,9 @@ export default class Game {
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
 
-    const phaseMessages = this.#phasesMenssages;
     let messageText = "Select a Phase to start";
-
-    if (phaseMessages.length > 0) {
-      const currentMessage = phaseMessages[0];
-      messageText = currentMessage.content;
+    if (this.#phaseMessage && this.#phaseMessage.isActive) {
+      messageText = this.#phaseMessage.content;
     }
 
     globals.ctx.fillText(

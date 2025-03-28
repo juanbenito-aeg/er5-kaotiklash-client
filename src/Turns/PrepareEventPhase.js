@@ -11,6 +11,7 @@ import {
 } from "../Game/constants.js";
 import PrepareEvent from "../Events/PrepareEvent.js";
 import PhasesMessages from "../Messages/PhasesMessages.js";
+import { globals } from "../index.js";
 
 export default class PrepareEventPhase extends Phase {
   #decksRelevants;
@@ -38,9 +39,9 @@ export default class PrepareEventPhase extends Phase {
     this.#selectedGrid = null;
     this.#events = events;
     this.#currentPlayer = currentPlayer;
+    this.#phaseMessage = phaseMessage;
     this._state = PrepareEventState.INIT;
     this.#isPhaseFinished = false;
-    this.#phaseMessage = phaseMessage;
   }
 
   static create(
@@ -83,11 +84,11 @@ export default class PrepareEventPhase extends Phase {
   execute() {
     this.#isPhaseFinished = false;
 
-    const phaseMessage = PhasesMessages.create(
+    this.#phaseMessage = PhasesMessages.create(
       PhaseType.PREPARE_EVENT,
       Language.ENGLISH
     );
-    this.#phaseMessage.push(phaseMessage);
+
     switch (this._state) {
       case PrepareEventState.INIT:
         this.#initializePhase();
@@ -103,6 +104,7 @@ export default class PrepareEventPhase extends Phase {
 
       case PrepareEventState.END:
         this.#finalizePhase();
+        this.#createEvent();
         break;
 
       default:
@@ -113,6 +115,7 @@ export default class PrepareEventPhase extends Phase {
 
   #initializePhase() {
     this._state = PrepareEventState.SELECT_HAND_CARD;
+    this.#selectedCard = CardState.INACTIVE;
   }
 
   #selectCardFromHand() {
@@ -166,6 +169,9 @@ export default class PrepareEventPhase extends Phase {
     for (let i = 0; i < boxes.length; i++) {
       const box = boxes[i];
       this._mouseInput.isMouseOverBox(box);
+      if (box.getState() === BoxState.OCCUPIED) {
+        return;
+      }
       if (this._mouseInput.isMouseOverBox(box)) {
         box.setState(BoxState.HOVERED);
       }
@@ -184,7 +190,6 @@ export default class PrepareEventPhase extends Phase {
     if (!this.#selectedCard || !this.#selectedGrid) {
       return;
     }
-    console.log(this.#currentPlayer);
     if (
       this.#selectedCard.getState() === CardState.SELECTED &&
       this.#selectedGrid.getState() === BoxState.SELECTED
@@ -199,17 +204,26 @@ export default class PrepareEventPhase extends Phase {
 
       this.#selectedCard.setState(CardState.PLACED);
       this.#selectedGrid.setState(BoxState.OCCUPIED);
-
-      const prepareEvent = PrepareEvent.create(
-        this.#decksRelevants[1],
-        this.#currentPlayer
-      );
-
-      this.#events.push(prepareEvent);
-      this.#selectedCard = null;
-      this.#selectedGrid = null;
-      this._state = PrepareEventState.INIT;
-      this.#isPhaseFinished = true;
     }
+  }
+
+  #createEvent() {
+    let playerActive;
+    if (this.#currentPlayer === 0) {
+      playerActive = 0;
+    } else {
+      playerActive = 1;
+    }
+
+    const prepareEvent = PrepareEvent.create(
+      this.#decksRelevants[1],
+      playerActive
+    );
+
+    this.#events.push(prepareEvent);
+    this.#selectedCard = null;
+    this.#selectedGrid = null;
+    this._state = PrepareEventState.INIT;
+    this.#isPhaseFinished = true;
   }
 }
