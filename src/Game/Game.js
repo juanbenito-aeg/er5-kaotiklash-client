@@ -101,8 +101,6 @@ export default class Game {
 
     game.#setInitialCardsCoordinates();
 
-    game.#events = [];
-
     return game;
   }
 
@@ -505,8 +503,6 @@ export default class Game {
 
     this.#turns[this.#currentPlayer.getID()].execute();
 
-    // this.#skipPhase();
-
     this.#executeEvent();
 
     this.#executeMessage();
@@ -520,8 +516,12 @@ export default class Game {
 
     this.#updatePlayersTotalHP();
     this.#updateMessages();
-  }
+  
 
+
+
+    this.#checkIfGameOver();
+  }
 
   #updatePlayersTotalHP() {
     // PLAYER 1
@@ -583,7 +583,6 @@ export default class Game {
       if (!event.isActive()) {
         this.#events.splice(i, 1);
         i--;
-        this.#checkIfGameOver();
       }
     }
   }
@@ -617,6 +616,7 @@ export default class Game {
       let phaseMessage = globals.phasesMessages[i];
     }
     /*  for (let i = 0; i < this.#phasesMenssages.length; i++) {
+    /* for (let i = 0; i < this.#phasesMenssages.length; i++) {
       let phaseMessage = this.#phasesMenssages[i];
       phaseMessage.execute();
     } */
@@ -774,9 +774,11 @@ export default class Game {
     const BUTTON_HEIGHT = 3;
     const BUTTON_NAME = 4;
 
-    const totalPhases = 5;
-    const phaseText =
-      "Phase: " + globals.executedPhasesCount + "/" + totalPhases;
+    const numOfExecutedPhases =
+      this.#turns[this.#currentPlayer.getID()].getNumOfExecutedPhases();
+    const TOTAL_PHASES = 5;
+
+    const phaseText = `Phase: ${numOfExecutedPhases}/${TOTAL_PHASES}`;
     globals.ctx.fillStyle = "white";
     globals.ctx.font = "24px MedievalSharp";
     globals.ctx.textAlign = "center";

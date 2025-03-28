@@ -74,11 +74,9 @@ export default class Turn {
   }
 
   changeTurn(currentPlayer) {
-    globals.executedPhasesCount = 0;
-
     this.#numOfExecutedPhases = 0;
 
-    /*   this.#swapTurnPosition(); */
+    /* this.#swapTurnPosition(); */
 
     if (currentPlayer.getID() === PlayerID.PLAYER_1) {
       return PlayerID.PLAYER_2;
@@ -87,7 +85,7 @@ export default class Turn {
     }
   }
 
-  #swapTurnPosition() {
+  /* #swapTurnPosition() {
     this.#swapDeckPosition();
     this.#swapGridPosition();
   }
@@ -176,7 +174,7 @@ export default class Turn {
         player2Box.setYCoordinate(tempY);
       }
     }
-  }
+  } */
 
   execute() {
     const isAnyCardExpanded = this.#expandCard();
@@ -207,10 +205,9 @@ export default class Turn {
         this.#isCurrentPhaseFinished = false;
         this.#currentPhase = PhaseType.INVALID;
         this.#numOfExecutedPhases++;
-        globals.executedPhasesCount++;
       }
 
-      if (this.#numOfExecutedPhases === 3) {
+      if (this.#numOfExecutedPhases === 5) {
         globals.isCurrentTurnFinished = true;
       }
     }
@@ -294,12 +291,8 @@ export default class Turn {
     }
   }
 
-  getnumOfExecutedPhases() {
+  getNumOfExecutedPhases() {
     return this.#numOfExecutedPhases;
-  }
-
-  setnumOfExecutedPhases() {
-    this.#numOfExecutedPhases++;
   }
 
   #equipWeapon() {
@@ -438,7 +431,6 @@ export default class Turn {
         ) {
           if (i === PhaseButton.SKIP) {
             this.#numOfExecutedPhases++;
-            globals.executedPhasesCount++;
           } else {
             this.#currentPhase = i;
           }

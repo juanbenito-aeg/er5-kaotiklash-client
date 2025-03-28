@@ -41,7 +41,6 @@ const globals = {
   gameWinner: {},
   damageMessages: [],
   damageFontSize: 75,
-  executedPhasesCount: 0,
 };
 
 window.onload = initStartGameScreen;
