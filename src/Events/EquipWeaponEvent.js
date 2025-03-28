@@ -1,4 +1,6 @@
 import Event from "./Event.js";
+import { globals } from "../index.js";
+import { PhaseType } from "../Game/constants.js";
 
 export default class EquipWeaponEvent extends Event {
   #weapon;
@@ -20,6 +22,7 @@ export default class EquipWeaponEvent extends Event {
   }
 
   execute() {
+
     this.#minionToEquipWeaponOn.setWeapon(this.#weapon);
     console.log(this.#minionToEquipWeaponOn);
   }

@@ -196,11 +196,10 @@ export default class Turn {
         globals.phaseType = PhaseType.INVALID
         globals.currentPhase = PhaseType.INVALID;
         console.log(globals.phasesMessages)
-        // let message = new PhasesMessages(PhaseType.INVALID,null,300)
+        let message = new PhasesMessages(PhaseType.INVALID,null,300)
 
-        // globals.phasesMessages.push(message);
-        console.log(globals.phasesMessages)
-        console.log(globals.phasesMessages[0].getContent(globals.phaseType,"ENG"))
+        globals.phasesMessages.push(message);
+
 
         this.#isCurrentPhaseFinished = false;
         this.#currentPhase = PhaseType.INVALID;
@@ -345,6 +344,8 @@ export default class Turn {
 
       // SELECT MINION TO EQUIP WEAPON ON
       case EquipWeaponState.SELECT_MINION:
+        globals.currentPhase = PhaseType.EQUIP_WEAPON
+
         console.log("MINION SELECTION");
 
         weapon = playerXEventsInPreparationDeck.lookForSelectedCard();
@@ -393,6 +394,7 @@ export default class Turn {
         playerXEventsInPreparationDeck.removeCard(weapon);
 
         this.#equipWeaponState = EquipWeaponState.SELECT_WEAPON;
+        globals.currentPhase = PhaseType.INVALID
 
         break;
     }

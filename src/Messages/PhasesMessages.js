@@ -46,7 +46,12 @@ export default class PhasesMessages extends Message {
       [PhaseType.SKIP]: {
         ENG: "You have skiped a phase.",
         EUS: ".",
-      }
+      },
+      [PhaseType.EQUIP_WEAPON]: {
+        ENG: "Select a minion to equip the weapon.",
+        EUS: ".",
+      },
+
     };
     if (messages[phaseType]) {
       if (messages[phaseType][language] !== undefined) {

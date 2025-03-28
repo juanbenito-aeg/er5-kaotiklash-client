@@ -989,6 +989,10 @@ export default class Game {
       {
         globals.phaseType = PhaseType.MOVE
       }
+      else if(globals.currentPhase === PhaseType.EQUIP_WEAPON)
+      {
+        globals.phaseType = PhaseType.EQUIP_WEAPON
+      }
   
   
   

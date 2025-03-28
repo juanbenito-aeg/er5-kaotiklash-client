@@ -210,6 +210,7 @@ const PhaseType = {
   ATTACK: 4,
   DISCARD_CARD: 5,
   SKIP: 6,
+  EQUIP_WEAPON: 7,
 };
 
 const PhaseButton = {
