@@ -30,7 +30,8 @@ export default class Game {
   #turns;
   #mouseInput;
   #events;
-  #phasesMenssages;
+  #currentPhase;
+  #phaseMessage;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -74,8 +75,7 @@ export default class Game {
     // EVENTS CREATION
     game.#events = [];
 
-    //PHASES MESSAGES
-    game.#phasesMenssages = [];
+    game.#phaseMessage = {};
 
     // TURNS CREATION
     const turnPlayer1 = new Turn(
@@ -83,7 +83,8 @@ export default class Game {
       game.#board,
       game.#mouseInput,
       game.#players[PlayerID.PLAYER_1],
-      game.#events
+      game.#events,
+      game.#phaseMessage
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -91,7 +92,8 @@ export default class Game {
       game.#board,
       game.#mouseInput,
       game.#players[PlayerID.PLAYER_2],
-      game.#events
+      game.#events,
+      game.#phaseMessage
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -492,6 +494,7 @@ export default class Game {
 
   #update() {
     if (globals.isCurrentTurnFinished) {
+      console.log(this.#currentPlayer);
       globals.isCurrentTurnFinished = false;
 
       const newCurrentPlayerID = this.#turns[
@@ -626,7 +629,7 @@ export default class Game {
   #executeEvent() {
     for (let i = 0; i < this.#events.length; i++) {
       let event = this.#events[i];
-      event.execute();
+      event.execute(this.#currentPlayer);
 
       if (!event.isActive()) {
         this.#events.splice(i, 1);
@@ -661,10 +664,10 @@ export default class Game {
   }
 
   #executeMessage() {
-    for (let i = 0; i < this.#phasesMenssages.length; i++) {
+    /*  for (let i = 0; i < this.#phasesMenssages.length; i++) {
       let phaseMessage = this.#phasesMenssages[i];
       phaseMessage.execute();
-    }
+    } */
   }
 
   #updateDamageMessages() {
@@ -1010,12 +1013,9 @@ export default class Game {
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
 
-    const phaseMessages = this.#phasesMenssages;
     let messageText = "Select a Phase to start";
-
-    if (phaseMessages.length > 0) {
-      const currentMessage = phaseMessages[0];
-      messageText = currentMessage.content;
+    if (this.#phaseMessage && this.#phaseMessage.isActive) {
+      messageText = this.#phaseMessage.content;
     }
 
     globals.ctx.fillText(
