@@ -31,6 +31,8 @@ const globals = {
   isCurrentTurnFinished: false,
   buttonDataGlobal: [],
   executedPhasesCount: 0,
+  // (!!!!!) DELETE AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
+  firstActivePlayerID: -1,
 };
 
 window.onload = initStartGameScreen;

@@ -24,11 +24,10 @@ export default class Turn {
   #mouseInput;
   #player;
   #events;
-  #phaseMessage;
 
-  constructor(deckContainer, board, mouseInput, player, events, phaseMessage) {
-    this.#currentPhase = PhaseType.INVALID;
+  constructor(deckContainer, board, mouseInput, player, events) {
     this.#isCurrentPhaseFinished = false;
+    this.#currentPhase = PhaseType.INVALID;
     this.#numOfExecutedPhases = 0;
     this.#phases = [];
     this.#deckContainer = deckContainer;
@@ -36,10 +35,9 @@ export default class Turn {
     this.#mouseInput = mouseInput;
     this.#player = player;
     this.#events = events;
-    this.#phaseMessage = phaseMessage;
   }
 
-  fillPhases() {
+  fillPhases(currentPlayer) {
     if (this.#player.getID() === PlayerID.PLAYER_1) {
       const initialPhase = new InitialPhase(this.#deckContainer);
       initialPhase.execute();
@@ -61,7 +59,7 @@ export default class Turn {
         this.#board,
         this.#mouseInput,
         this.#events,
-        this.#phaseMessage
+        currentPlayer
       );
 
       this.#phases.push(currentPhase);
@@ -70,21 +68,24 @@ export default class Turn {
 
   changeTurn(currentPlayer) {
     globals.executedPhasesCount = 0;
+
     this.#numOfExecutedPhases = 0;
-    /* this.#swapTurnPosition(); */
-    if (currentPlayer === 0) {
-      return 1;
+
+    /*   this.#swapTurnPosition(); */
+
+    if (currentPlayer.getID() === PlayerID.PLAYER_1) {
+      return PlayerID.PLAYER_2;
     } else {
-      return 0;
+      return PlayerID.PLAYER_1;
     }
   }
 
   #swapTurnPosition() {
-    this.#sawpDeckPosition();
+    this.#swapDeckPosition();
     this.#swapGridPosition();
   }
 
-  #sawpDeckPosition() {
+  #swapDeckPosition() {
     const player1Decks = [
       this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS],
       this.#deckContainer.getDecks()[DeckType.PLAYER_1_ACTIVE_EVENTS],
@@ -171,26 +172,29 @@ export default class Turn {
   }
 
   execute() {
-    this.#expandCard();
+    const isAnyCardExpanded = this.#expandCard();
 
-    if (this.#currentPhase === PhaseType.INVALID) {
-      this.#checkButtonClick();
-    } else if (!this.#isCurrentPhaseFinished) {
-      this.#isCurrentPhaseFinished = this.#phases[this.#currentPhase].execute();
-    }
+    if (!isAnyCardExpanded) {
+      if (this.#currentPhase === PhaseType.INVALID) {
+        this.#checkButtonClick();
+      } else if (!this.#isCurrentPhaseFinished) {
+        this.#isCurrentPhaseFinished =
+          this.#phases[this.#currentPhase].execute();
+      }
 
-    if (this.#isCurrentPhaseFinished) {
-      this.#currentPhase = PhaseType.INVALID;
-      this.#isCurrentPhaseFinished = false;
-      console.log(this.#numOfExecutedPhases);
-      this.#numOfExecutedPhases++;
-      globals.executedPhasesCount++;
-    }
+      if (this.#isCurrentPhaseFinished) {
+        this.#currentPhase = PhaseType.INVALID;
+        this.#isCurrentPhaseFinished = false;
+        console.log(this.#numOfExecutedPhases);
+        this.#numOfExecutedPhases++;
+        globals.executedPhasesCount++;
+      }
 
-    if (this.#numOfExecutedPhases === 1) {
-      console.log("-----------------");
-      console.log(this.#numOfExecutedPhases);
-      globals.isCurrentTurnFinished = true;
+      if (this.#numOfExecutedPhases === 1) {
+        console.log("-----------------");
+        console.log(this.#numOfExecutedPhases);
+        globals.isCurrentTurnFinished = true;
+      }
     }
   }
 
@@ -222,6 +226,9 @@ export default class Turn {
     this.#lookForCardThatIsntHoveredAnymore(decksToCheck);
 
     this.#lookForRightClickedCard(decksToCheck, hoveredCard);
+
+    const isAnyCardExpanded = this.#checkIfAnyCardIsExpanded(decksToCheck);
+    return isAnyCardExpanded;
   }
 
   #lookForHoveredCard(decksToCheck) {
