@@ -335,7 +335,6 @@ export default class Turn {
             console.log("WEAPON SELECTED");
 
             weapon.setState(CardState.SELECTED);
-            weapon.setIsLeftClicked(false);
 
             this.#equipWeaponState = EquipWeaponState.SELECT_MINION;
           }
@@ -430,7 +429,8 @@ export default class Turn {
           mouseY <= buttonYCoordinate + buttonHeight
         ) {
           if (i === PhaseButton.SKIP) {
-            // TODO: INSERT METHOD THAT SKIPS CURRENT PHASE
+            this.#numOfExecutedPhases++;
+            globals.executedPhasesCount++;
           } else {
             this.#currentPhase = i;
           }

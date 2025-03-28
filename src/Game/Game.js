@@ -503,10 +503,13 @@ export default class Game {
 
     this.#turns[this.#currentPlayer.getID()].execute();
 
-    this.#skipPhase();
+    // this.#skipPhase();
 
     this.#executeEvent();
+
     this.#executeMessage();
+
+    this.#updateDamageMessages();
 
     this.#mouseInput.resetIsLeftClicked(this.#deckContainer);
     this.#mouseInput.detectMouseOverCard(this.#deckContainer);
@@ -516,65 +519,65 @@ export default class Game {
     this.#updatePlayersTotalHP();
   }
 
-  #skipPhase() {
-    if (this.#currentPlayer.getID() === PlayerID.PLAYER_1) {
-      // console.log(this.#turns[0].getnumOfExecutedPhases())
-      // console.log(` mouse x: ${this.#mouseInput.getMouseXCoordinate()}, mouse y: ${this.#mouseInput.getMouseYCoordinate()}`);
-      let mouseX = this.#mouseInput.getMouseXCoordinate();
-      let mouseY = this.#mouseInput.getMouseYCoordinate();
-      let skipButtonX = this.#board
-        .getGrids()[4]
-        .getBoxes()[0]
-        .getXCoordinate();
-      let skipButtonY = this.#board
-        .getGrids()[4]
-        .getBoxes()[0]
-        .getYCoordinate();
-      let skipButtonWidth = 200;
-      let skipButtonHeight = 40;
-      if (
-        mouseX >= skipButtonX &&
-        mouseX <= skipButtonX + skipButtonWidth &&
-        mouseY >= skipButtonY &&
-        mouseY <= skipButtonY + skipButtonHeight &&
-        this.#mouseInput.isLeftButtonPressed() === true
-      ) {
-        console.log("player 1 skipped a phase");
-        this.#turns[0].setnumOfExecutedPhases();
-        console.log(`player1: ${this.#turns[0].getnumOfExecutedPhases()}`);
-      }
-    } else {
-      // console.log(this.#turns[0].getnumOfExecutedPhases())
-      // console.log(` mouse x: ${this.#mouseInput.getMouseXCoordinate()}, mouse y: ${this.#mouseInput.getMouseYCoordinate()}`);
-      let mouseX = this.#mouseInput.getMouseXCoordinate();
-      let mouseY = this.#mouseInput.getMouseYCoordinate();
-      let skipButtonX = this.#board
-        .getGrids()[4]
-        .getBoxes()[0]
-        .getXCoordinate();
-      let skipButtonY = this.#board
-        .getGrids()[4]
-        .getBoxes()[0]
-        .getYCoordinate();
-      let skipButtonWidth = 200;
-      let skipButtonHeight = 40;
-      if (
-        mouseX >= skipButtonX &&
-        mouseX <= skipButtonX + skipButtonWidth &&
-        mouseY >= skipButtonY &&
-        mouseY <= skipButtonY + skipButtonHeight &&
-        this.#mouseInput.isLeftButtonPressed() === true
-      ) {
-        console.log("player 2 skipped a phase");
-        this.#turns[1].setnumOfExecutedPhases();
-        console.log(`player2: ${this.#turns[1].getnumOfExecutedPhases()}`);
-      }
-    }
-  }
+  // #skipPhase() {
+  //   if (this.#currentPlayer.getID() === PlayerID.PLAYER_1) {
+  //     // console.log(this.#turns[0].getnumOfExecutedPhases())
+  //     // console.log(` mouse x: ${this.#mouseInput.getMouseXCoordinate()}, mouse y: ${this.#mouseInput.getMouseYCoordinate()}`);
+  //     let mouseX = this.#mouseInput.getMouseXCoordinate();
+  //     let mouseY = this.#mouseInput.getMouseYCoordinate();
+  //     let skipButtonX = this.#board
+  //       .getGrids()[4]
+  //       .getBoxes()[0]
+  //       .getXCoordinate();
+  //     let skipButtonY = this.#board
+  //       .getGrids()[4]
+  //       .getBoxes()[0]
+  //       .getYCoordinate();
+  //     let skipButtonWidth = 200;
+  //     let skipButtonHeight = 40;
+  //     if (
+  //       mouseX >= skipButtonX &&
+  //       mouseX <= skipButtonX + skipButtonWidth &&
+  //       mouseY >= skipButtonY &&
+  //       mouseY <= skipButtonY + skipButtonHeight &&
+  //       this.#mouseInput.isLeftButtonPressed() === true
+  //     ) {
+  //       console.log("player 1 skipped a phase");
+  //       this.#turns[0].setnumOfExecutedPhases();
+  //       console.log(`player1: ${this.#turns[0].getnumOfExecutedPhases()}`);
+  //     }
+  //   } else {
+  //     // console.log(this.#turns[0].getnumOfExecutedPhases())
+  //     // console.log(` mouse x: ${this.#mouseInput.getMouseXCoordinate()}, mouse y: ${this.#mouseInput.getMouseYCoordinate()}`);
+  //     let mouseX = this.#mouseInput.getMouseXCoordinate();
+  //     let mouseY = this.#mouseInput.getMouseYCoordinate();
+  //     let skipButtonX = this.#board
+  //       .getGrids()[4]
+  //       .getBoxes()[0]
+  //       .getXCoordinate();
+  //     let skipButtonY = this.#board
+  //       .getGrids()[4]
+  //       .getBoxes()[0]
+  //       .getYCoordinate();
+  //     let skipButtonWidth = 200;
+  //     let skipButtonHeight = 40;
+  //     if (
+  //       mouseX >= skipButtonX &&
+  //       mouseX <= skipButtonX + skipButtonWidth &&
+  //       mouseY >= skipButtonY &&
+  //       mouseY <= skipButtonY + skipButtonHeight &&
+  //       this.#mouseInput.isLeftButtonPressed() === true
+  //     ) {
+  //       console.log("player 2 skipped a phase");
+  //       this.#turns[1].setnumOfExecutedPhases();
+  //       console.log(`player2: ${this.#turns[1].getnumOfExecutedPhases()}`);
+  //     }
+  //   }
+  // }
 
-  #setCardsCoordinates() {
-    this.#updateDamageMessages();
-  }
+  // #setCardsCoordinates() {
+  //   this.#updateDamageMessages();
+  // }
 
   #updatePlayersTotalHP() {
     // PLAYER 1
@@ -661,6 +664,17 @@ export default class Game {
     for (let i = 0; i < this.#phasesMenssages.length; i++) {
       let phaseMessage = this.#phasesMenssages[i];
       phaseMessage.execute();
+    }
+  }
+
+  #updateDamageMessages() {
+    for (let i = 0; i < globals.damageMessages.length; i++) {
+      let message = globals.damageMessages[i];
+
+      let isFisished = message.execute();
+      if (isFisished) {
+        globals.damageMessages.splice(i, 1);
+      }
     }
   }
 
@@ -2050,7 +2064,7 @@ export default class Game {
       let message = globals.damageMessages[i];
       let duration = message.getDuration();
 
-      console.log(duration);
+      // console.log(duration);
 
       let fontSize = globals.damageFontSize / duration;
       if (fontSize >= 100) {
@@ -2064,17 +2078,6 @@ export default class Game {
         message.getXPosition(),
         message.getYPosition()
       );
-    }
-  }
-
-  #updateDamageMessages() {
-    for (let i = 0; i < globals.damageMessages.length; i++) {
-      let message = globals.damageMessages[i];
-
-      let isFisished = message.execute();
-      if (isFisished) {
-        globals.damageMessages.splice(i, 1);
-      }
     }
   }
 }

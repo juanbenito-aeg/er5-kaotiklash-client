@@ -120,7 +120,7 @@ export default class InitialPhase {
       const currentCard = eventCards[i];
 
       if (currentCard.getCategory() === CardCategory.WEAPON) {
-        if (currentCard.getID() !== WeaponType.HYBRID) {
+        if (currentCard.getWeaponType() === WeaponType.MELEE) {
           eventWeapon.push(currentCard);
         }
       }
