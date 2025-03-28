@@ -1,6 +1,7 @@
 import Game from "./Game/Game.js";
 import { GameState, FPS } from "./Game/constants.js";
 import PhasesMessages from "./Messages/PhasesMessages.js";
+import DamageMessages from "./Messages/DamageMessage.js";
 
 // GLOBAL VARIABLES CREATION
 const globals = {
@@ -23,6 +24,7 @@ const globals = {
   },
   cardsTemplatesImages: [],
   cardsIconsImages: [],
+  gameOverBackgroundImage: {},
   imagesDestinationSizes: {},
   assetsToLoad: [], // HOLDS THE ELEMENTS TO LOAD
   assetsLoaded: 0, // INDICATES THE NUMBER OF ELEMENTS THAT HAVE BEEN LOADED SO FAR
@@ -31,12 +33,15 @@ const globals = {
   language: 0,
   isCurrentTurnFinished: false,
   buttonDataGlobal: [],
-  executedPhasesCount: 0,
   // (!!!!!) DELETE AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
   firstActivePlayerID: -1,
   phasesMessages: [],
   currentPhase: 0,
   phaseType: -1,
+  gameWinner: {},
+  damageMessages: [],
+  damageFontSize: 75,
+  executedPhasesCount: 0,
 };
 
 window.onload = initStartGameScreen;
@@ -297,12 +302,17 @@ function loadAssets() {
   ];
 
   createAndStoreImageObjs(icons, globals.cardsIconsImages);
+
+  // LOAD GAME OVER BACKGROUND IMAGE
+  globals.gameOverBackgroundImage = new Image();
+  globals.gameOverBackgroundImage.addEventListener("load", loadHandler, false);
+  globals.gameOverBackgroundImage.src = "../images/game_over.jpeg";
+  globals.assetsToLoad.push(globals.gameOverBackgroundImage);
 }
 
 // CODE BLOCK TO CALL EACH TIME AN ASSET IS LOADED
 async function loadHandler() {
   globals.assetsLoaded++;
-
   if (globals.assetsLoaded === globals.assetsToLoad.length) {
     globals.gameState = GameState.PLAYING;
 

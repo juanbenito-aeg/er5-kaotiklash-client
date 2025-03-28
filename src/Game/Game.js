@@ -8,6 +8,7 @@ import MouseInput from "./MouseInput.js";
 import {
   GameState,
   CardCategory,
+  DeckType,
   WeaponType,
   ArmorType,
   MinionType,
@@ -16,7 +17,6 @@ import {
   PlayerID,
   CardState,
   MainCharacterID,
-  DeckType,
   GridType,
   PhaseType,
 } from "./constants.js";
@@ -31,6 +31,8 @@ export default class Game {
   #turns;
   #mouseInput;
   #events;
+  #currentPhase;
+  #phaseMessage;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -80,7 +82,8 @@ export default class Game {
       game.#board,
       game.#mouseInput,
       game.#players[PlayerID.PLAYER_1],
-      game.#events
+      game.#events,
+      game.#phaseMessage
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -88,7 +91,8 @@ export default class Game {
       game.#board,
       game.#mouseInput,
       game.#players[PlayerID.PLAYER_2],
-      game.#events
+      game.#events,
+      game.#phaseMessage
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -469,6 +473,15 @@ export default class Game {
         currentMinionCard.setYCoordinate(
           currentBattlefieldBox.getYCoordinate()
         );
+        //ERROR: esto da problemas, como setea la carta a esta posicion se queda ahi, da igual que la imagen se mueva
+        if (
+          currentMinionCard.getXCoordinate() ===
+            currentBattlefieldBox.getXCoordinate() &&
+          currentMinionCard.getYCoordinate() ===
+            currentBattlefieldBox.getYCoordinate()
+        ) {
+          currentBattlefieldBox.setCard(currentMinionCard);
+        }
       }
     }
   }
@@ -480,6 +493,7 @@ export default class Game {
 
   #update() {
     if (globals.isCurrentTurnFinished) {
+      console.log(this.#currentPlayer);
       globals.isCurrentTurnFinished = false;
 
       const newCurrentPlayerID = this.#turns[
@@ -491,8 +505,13 @@ export default class Game {
 
     this.#turns[this.#currentPlayer.getID()].execute();
 
+    // this.#skipPhase();
+
     this.#executeEvent();
+
     this.#executeMessage();
+
+    this.#updateDamageMessages();
 
     this.#mouseInput.resetIsLeftClicked(this.#deckContainer);
     this.#mouseInput.detectMouseOverCard(this.#deckContainer);
@@ -502,6 +521,66 @@ export default class Game {
     this.#updatePlayersTotalHP();
     this.#updateMessages();
   }
+
+  // #skipPhase() {
+  //   if (this.#currentPlayer.getID() === PlayerID.PLAYER_1) {
+  //     // console.log(this.#turns[0].getnumOfExecutedPhases())
+  //     // console.log(` mouse x: ${this.#mouseInput.getMouseXCoordinate()}, mouse y: ${this.#mouseInput.getMouseYCoordinate()}`);
+  //     let mouseX = this.#mouseInput.getMouseXCoordinate();
+  //     let mouseY = this.#mouseInput.getMouseYCoordinate();
+  //     let skipButtonX = this.#board
+  //       .getGrids()[4]
+  //       .getBoxes()[0]
+  //       .getXCoordinate();
+  //     let skipButtonY = this.#board
+  //       .getGrids()[4]
+  //       .getBoxes()[0]
+  //       .getYCoordinate();
+  //     let skipButtonWidth = 200;
+  //     let skipButtonHeight = 40;
+  //     if (
+  //       mouseX >= skipButtonX &&
+  //       mouseX <= skipButtonX + skipButtonWidth &&
+  //       mouseY >= skipButtonY &&
+  //       mouseY <= skipButtonY + skipButtonHeight &&
+  //       this.#mouseInput.isLeftButtonPressed() === true
+  //     ) {
+  //       console.log("player 1 skipped a phase");
+  //       this.#turns[0].setnumOfExecutedPhases();
+  //       console.log(`player1: ${this.#turns[0].getnumOfExecutedPhases()}`);
+  //     }
+  //   } else {
+  //     // console.log(this.#turns[0].getnumOfExecutedPhases())
+  //     // console.log(` mouse x: ${this.#mouseInput.getMouseXCoordinate()}, mouse y: ${this.#mouseInput.getMouseYCoordinate()}`);
+  //     let mouseX = this.#mouseInput.getMouseXCoordinate();
+  //     let mouseY = this.#mouseInput.getMouseYCoordinate();
+  //     let skipButtonX = this.#board
+  //       .getGrids()[4]
+  //       .getBoxes()[0]
+  //       .getXCoordinate();
+  //     let skipButtonY = this.#board
+  //       .getGrids()[4]
+  //       .getBoxes()[0]
+  //       .getYCoordinate();
+  //     let skipButtonWidth = 200;
+  //     let skipButtonHeight = 40;
+  //     if (
+  //       mouseX >= skipButtonX &&
+  //       mouseX <= skipButtonX + skipButtonWidth &&
+  //       mouseY >= skipButtonY &&
+  //       mouseY <= skipButtonY + skipButtonHeight &&
+  //       this.#mouseInput.isLeftButtonPressed() === true
+  //     ) {
+  //       console.log("player 2 skipped a phase");
+  //       this.#turns[1].setnumOfExecutedPhases();
+  //       console.log(`player2: ${this.#turns[1].getnumOfExecutedPhases()}`);
+  //     }
+  //   }
+  // }
+
+  // #setCardsCoordinates() {
+  //   this.#updateDamageMessages();
+  // }
 
   #updatePlayersTotalHP() {
     // PLAYER 1
@@ -514,6 +593,7 @@ export default class Game {
 
     const player1 = this.#players[PlayerID.PLAYER_1];
     const player1UpdatedTotalHP =
+      // this.#sumMinionsHP(player1MinionsDeck) +
       /* this.#sumMinionsHP(player1MinionsDeck) + */
       this.#sumMinionsHP(player1MinionsInPlayDeck);
     player1.setTotalHP(player1UpdatedTotalHP);
@@ -528,6 +608,7 @@ export default class Game {
 
     const player2 = this.#players[PlayerID.PLAYER_2];
     const player2UpdatedTotalHP =
+      // this.#sumMinionsHP(player2MinionsDeck) +
       /* this.#sumMinionsHP(player2MinionsDeck) + */
       this.#sumMinionsHP(player2MinionsInPlayDeck);
     player2.setTotalHP(player2UpdatedTotalHP);
@@ -560,11 +641,36 @@ export default class Game {
   #executeEvent() {
     for (let i = 0; i < this.#events.length; i++) {
       let event = this.#events[i];
-      event.execute();
+      event.execute(this.#currentPlayer);
 
       if (!event.isActive()) {
         this.#events.splice(i, 1);
         i--;
+        this.#checkIfGameOver();
+      }
+    }
+  }
+
+  // (!) THIS METHOD WILL BE CHANGED IN A FUTURE SO THAT A WINNER IS ASSIGNED WHEN THE OTHER PLAYER GETS TO 0 TOTAL HIT-POINTS
+  #checkIfGameOver() {
+    const player1MinionsInPlay =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
+    const player2MinionsInPlay =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
+
+    const decksToCheck = [player1MinionsInPlay, player2MinionsInPlay];
+
+    for (let i = 0; i < decksToCheck.length; i++) {
+      const currentDeck = decksToCheck[i];
+
+      if (currentDeck.getCards().length === 0) {
+        if (currentDeck === player1MinionsInPlay) {
+          globals.gameWinner = this.#players[PlayerID.PLAYER_2];
+        } else {
+          globals.gameWinner = this.#players[PlayerID.PLAYER_1];
+        }
+
+        globals.gameState = GameState.OVER;
       }
     }
   }
@@ -572,7 +678,21 @@ export default class Game {
   #executeMessage() {
     for (let i = 0; i < globals.phasesMessages.length; i++) {
       let phaseMessage = globals.phasesMessages[i];
+    }
+    /*  for (let i = 0; i < this.#phasesMenssages.length; i++) {
+      let phaseMessage = this.#phasesMenssages[i];
       phaseMessage.execute();
+    } */
+  }
+
+  #updateDamageMessages() {
+    for (let i = 0; i < globals.damageMessages.length; i++) {
+      let message = globals.damageMessages[i];
+
+      let isFisished = message.execute();
+      if (isFisished) {
+        globals.damageMessages.splice(i, 1);
+      }
     }
   }
 
@@ -583,6 +703,10 @@ export default class Game {
     switch (globals.gameState) {
       case GameState.PLAYING:
         this.#renderGame();
+        break;
+
+      case GameState.OVER:
+        this.#renderGameOver();
         break;
     }
   }
@@ -596,6 +720,7 @@ export default class Game {
     this.#renderMessages();
     this.#renderCardsReverse();
     this.#renderCards();
+    this.#renderDamageMessages();
   }
 
   #renderBoard() {
@@ -1001,6 +1126,14 @@ export default class Game {
 
   #renderCards() {
     let expandedCard;
+    const player1Deck =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
+    for (let i = 0; i < player1Deck.getCards().length; i++) {
+      const currentCard = player1Deck.getCards()[i];
+      if (currentCard.getState() === CardState.EXPANDED) {
+        expandedCard = currentCard;
+      }
+    }
 
     for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
       const currentDeck = this.#deckContainer.getDecks()[i];
@@ -1940,5 +2073,52 @@ export default class Game {
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
   }
 
+  #renderGameOver() {
+    // BACKGROUND IMAGE
+    globals.ctx.drawImage(
+      globals.gameOverBackgroundImage,
+      0,
+      0,
+      1792,
+      1024,
+      0,
+      0,
+      globals.canvas.width,
+      globals.canvas.height
+    );
 
+    // TEXT
+
+    const gameWinnerName = globals.gameWinner.getName().toUpperCase();
+
+    globals.ctx.fillStyle = "white";
+
+    globals.ctx.font = "140px MedievalSharp";
+    globals.ctx.fillText(gameWinnerName, 50, 165);
+
+    globals.ctx.font = "100px MedievalSharp";
+    globals.ctx.fillText("WON", 50, 300);
+  }
+
+  #renderDamageMessages() {
+    for (let i = 0; i < globals.damageMessages.length; i++) {
+      let message = globals.damageMessages[i];
+      let duration = message.getDuration();
+
+      // console.log(duration);
+
+      let fontSize = globals.damageFontSize / duration;
+      if (fontSize >= 100) {
+        fontSize = 100;
+      }
+
+      globals.ctx.font = `${fontSize}px MedievalSharp`;
+      globals.ctx.fillStyle = "red";
+      globals.ctx.fillText(
+        message.getContent(),
+        message.getXPosition(),
+        message.getYPosition()
+      );
+    }
+  }
 }

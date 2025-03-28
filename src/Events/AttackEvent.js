@@ -1,5 +1,7 @@
 import Event from "./Event.js";
 import { WeaponType, CardState, BattlefieldArea } from "../Game/constants.js";
+import DamageMessages from "../Messages/DamageMessage.js";
+import { globals } from "../index.js";
 
 export default class AttackEvent extends Event {
   #attacker;
@@ -39,16 +41,17 @@ export default class AttackEvent extends Event {
     if (
       (!this.#attacker.getWeapon() ||
         this.#attacker.getMinionWeaponType() === WeaponType.MELEE) &&
-      attackerBox.getBattlefieldAreaItBelongsTo() ===
-        /* BattlefieldArea.FRONT (!!!!!) TO UNCOMMENT BEFORE SHOWING DEMO */ BattlefieldArea.REAR &&
-      targetBox.getBattlefieldAreaItBelongsTo() ===
-        /* BattlefieldArea.FRONT (!!!!!) TO UNCOMMENT BEFORE SHOWING DEMO */ BattlefieldArea.REAR
+      attackerBox.getBattlefieldAreaItBelongsTo() === BattlefieldArea.FRONT &&
+      targetBox.getBattlefieldAreaItBelongsTo() === BattlefieldArea.FRONT
     ) {
       // THE (MELEE) ATTACK CAN BE PERFORMED AS BOTH MINIONS ARE POSITIONED IN THEIR MOVEMENT GRID'S FRONT AREA
       if (!this.#attacker.getWeapon()) {
         // ATTACK USING FISTS
         damageToInflict =
           this.#attacker.getCurrentAttack() - this.#target.getCurrentDefense();
+
+        console.log(`Attacker damage ${this.#attacker.getCurrentAttack()}`);
+        console.log(`Target defense ${this.#target.getCurrentDefense()}`);
       } else {
         // ATTACK USING A MELEE WEAPON
         damageToInflict =
@@ -71,6 +74,20 @@ export default class AttackEvent extends Event {
     if (targetNewCurrentHP < 0) {
       targetNewCurrentHP = 0;
     }
+
+    console.log(`Total damage ${damageToInflict}`);
+
+    if (damageToInflict > 0) {
+      damageToInflict = damageToInflict * -1;
+    }
+
+    const DamageMessage = new DamageMessages(
+      damageToInflict,
+      4,
+      targetBox.getCard().getXCoordinate() + 55,
+      targetBox.getCard().getYCoordinate() + 55
+    );
+    globals.damageMessages.push(DamageMessage);
 
     this.#target.setCurrentHP(targetNewCurrentHP);
 

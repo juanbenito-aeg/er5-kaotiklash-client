@@ -294,6 +294,14 @@ export default class Turn {
     }
   }
 
+  getnumOfExecutedPhases() {
+    return this.#numOfExecutedPhases;
+  }
+
+  setnumOfExecutedPhases() {
+    this.#numOfExecutedPhases++;
+  }
+
   #equipWeapon() {
     let playerXEventsInPreparationDeck, playerXMinionsInPlayDeck;
 
@@ -332,13 +340,11 @@ export default class Turn {
             weapon.setState(CardState.HOVERED);
           } else if (
             weapon.getCategory() === CardCategory.WEAPON &&
-            weapon.getCurrentPrepTimeInRounds() /* === (!!!!!) TO UNCOMMENT BEFORE SHOWING DEMO */ >
-              0
+            weapon.getCurrentPrepTimeInRounds() === 0
           ) {
             console.log("WEAPON SELECTED");
 
             weapon.setState(CardState.SELECTED);
-            weapon.setIsLeftClicked(false);
 
             this.#equipWeaponState = EquipWeaponState.SELECT_MINION;
           }
@@ -433,7 +439,8 @@ export default class Turn {
           mouseY <= buttonYCoordinate + buttonHeight
         ) {
           if (i === PhaseButton.SKIP) {
-            // TODO: INSERT METHOD THAT SKIPS CURRENT PHASE
+            this.#numOfExecutedPhases++;
+            globals.executedPhasesCount++;
           } else {
             this.#currentPhase = i;
           }

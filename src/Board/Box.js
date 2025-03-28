@@ -91,6 +91,11 @@ export default class Box {
     }
   }
 
+  resetCard() {
+    this.#card = null;
+    this.setState(BoxState.AVAILABLE);
+  }
+
   isOccupied() {
     return this.#card !== null;
   }
