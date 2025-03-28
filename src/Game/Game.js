@@ -503,8 +503,6 @@ export default class Game {
 
     this.#turns[this.#currentPlayer.getID()].execute();
 
-    // this.#skipPhase();
-
     this.#executeEvent();
 
     this.#executeMessage();
@@ -517,67 +515,9 @@ export default class Game {
     this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
 
     this.#updatePlayersTotalHP();
+
+    this.#checkIfGameOver();
   }
-
-  // #skipPhase() {
-  //   if (this.#currentPlayer.getID() === PlayerID.PLAYER_1) {
-  //     // console.log(this.#turns[0].getnumOfExecutedPhases())
-  //     // console.log(` mouse x: ${this.#mouseInput.getMouseXCoordinate()}, mouse y: ${this.#mouseInput.getMouseYCoordinate()}`);
-  //     let mouseX = this.#mouseInput.getMouseXCoordinate();
-  //     let mouseY = this.#mouseInput.getMouseYCoordinate();
-  //     let skipButtonX = this.#board
-  //       .getGrids()[4]
-  //       .getBoxes()[0]
-  //       .getXCoordinate();
-  //     let skipButtonY = this.#board
-  //       .getGrids()[4]
-  //       .getBoxes()[0]
-  //       .getYCoordinate();
-  //     let skipButtonWidth = 200;
-  //     let skipButtonHeight = 40;
-  //     if (
-  //       mouseX >= skipButtonX &&
-  //       mouseX <= skipButtonX + skipButtonWidth &&
-  //       mouseY >= skipButtonY &&
-  //       mouseY <= skipButtonY + skipButtonHeight &&
-  //       this.#mouseInput.isLeftButtonPressed() === true
-  //     ) {
-  //       console.log("player 1 skipped a phase");
-  //       this.#turns[0].setnumOfExecutedPhases();
-  //       console.log(`player1: ${this.#turns[0].getnumOfExecutedPhases()}`);
-  //     }
-  //   } else {
-  //     // console.log(this.#turns[0].getnumOfExecutedPhases())
-  //     // console.log(` mouse x: ${this.#mouseInput.getMouseXCoordinate()}, mouse y: ${this.#mouseInput.getMouseYCoordinate()}`);
-  //     let mouseX = this.#mouseInput.getMouseXCoordinate();
-  //     let mouseY = this.#mouseInput.getMouseYCoordinate();
-  //     let skipButtonX = this.#board
-  //       .getGrids()[4]
-  //       .getBoxes()[0]
-  //       .getXCoordinate();
-  //     let skipButtonY = this.#board
-  //       .getGrids()[4]
-  //       .getBoxes()[0]
-  //       .getYCoordinate();
-  //     let skipButtonWidth = 200;
-  //     let skipButtonHeight = 40;
-  //     if (
-  //       mouseX >= skipButtonX &&
-  //       mouseX <= skipButtonX + skipButtonWidth &&
-  //       mouseY >= skipButtonY &&
-  //       mouseY <= skipButtonY + skipButtonHeight &&
-  //       this.#mouseInput.isLeftButtonPressed() === true
-  //     ) {
-  //       console.log("player 2 skipped a phase");
-  //       this.#turns[1].setnumOfExecutedPhases();
-  //       console.log(`player2: ${this.#turns[1].getnumOfExecutedPhases()}`);
-  //     }
-  //   }
-  // }
-
-  // #setCardsCoordinates() {
-  //   this.#updateDamageMessages();
-  // }
 
   #updatePlayersTotalHP() {
     // PLAYER 1
@@ -631,7 +571,6 @@ export default class Game {
       if (!event.isActive()) {
         this.#events.splice(i, 1);
         i--;
-        this.#checkIfGameOver();
       }
     }
   }
@@ -819,9 +758,11 @@ export default class Game {
     const BUTTON_HEIGHT = 3;
     const BUTTON_NAME = 4;
 
-    const totalPhases = 5;
-    const phaseText =
-      "Phase: " + globals.executedPhasesCount + "/" + totalPhases;
+    const numOfExecutedPhases =
+      this.#turns[this.#currentPlayer.getID()].getNumOfExecutedPhases();
+    const TOTAL_PHASES = 5;
+
+    const phaseText = `Phase: ${numOfExecutedPhases}/${TOTAL_PHASES}`;
     globals.ctx.fillStyle = "white";
     globals.ctx.font = "24px MedievalSharp";
     globals.ctx.textAlign = "center";
