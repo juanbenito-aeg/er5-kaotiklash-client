@@ -209,6 +209,7 @@ const PhaseType = {
   MOVE: 3,
   ATTACK: 4,
   DISCARD_CARD: 5,
+  SKIP: 6,
 };
 
 const PhaseButton = {

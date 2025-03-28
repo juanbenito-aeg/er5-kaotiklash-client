@@ -6,7 +6,9 @@ import {
   PlayerID,
   DeckType,
   GridType,
+  PhaseType
 } from "../Game/constants.js";
+import { globals } from "../index.js";
 
 export default class MovePhase extends Phase {
   #state;
@@ -92,6 +94,8 @@ export default class MovePhase extends Phase {
   }
 
   #initializePhase() {
+    globals.phaseType = PhaseType.MOVE;
+    globals.currentPhase = PhaseType.MOVE;
     this._state = MovePhaseState.SELECT_CARD;
   }
 

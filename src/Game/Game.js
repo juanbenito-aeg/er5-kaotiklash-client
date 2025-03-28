@@ -522,65 +522,6 @@ export default class Game {
     this.#updateMessages();
   }
 
-  // #skipPhase() {
-  //   if (this.#currentPlayer.getID() === PlayerID.PLAYER_1) {
-  //     // console.log(this.#turns[0].getnumOfExecutedPhases())
-  //     // console.log(` mouse x: ${this.#mouseInput.getMouseXCoordinate()}, mouse y: ${this.#mouseInput.getMouseYCoordinate()}`);
-  //     let mouseX = this.#mouseInput.getMouseXCoordinate();
-  //     let mouseY = this.#mouseInput.getMouseYCoordinate();
-  //     let skipButtonX = this.#board
-  //       .getGrids()[4]
-  //       .getBoxes()[0]
-  //       .getXCoordinate();
-  //     let skipButtonY = this.#board
-  //       .getGrids()[4]
-  //       .getBoxes()[0]
-  //       .getYCoordinate();
-  //     let skipButtonWidth = 200;
-  //     let skipButtonHeight = 40;
-  //     if (
-  //       mouseX >= skipButtonX &&
-  //       mouseX <= skipButtonX + skipButtonWidth &&
-  //       mouseY >= skipButtonY &&
-  //       mouseY <= skipButtonY + skipButtonHeight &&
-  //       this.#mouseInput.isLeftButtonPressed() === true
-  //     ) {
-  //       console.log("player 1 skipped a phase");
-  //       this.#turns[0].setnumOfExecutedPhases();
-  //       console.log(`player1: ${this.#turns[0].getnumOfExecutedPhases()}`);
-  //     }
-  //   } else {
-  //     // console.log(this.#turns[0].getnumOfExecutedPhases())
-  //     // console.log(` mouse x: ${this.#mouseInput.getMouseXCoordinate()}, mouse y: ${this.#mouseInput.getMouseYCoordinate()}`);
-  //     let mouseX = this.#mouseInput.getMouseXCoordinate();
-  //     let mouseY = this.#mouseInput.getMouseYCoordinate();
-  //     let skipButtonX = this.#board
-  //       .getGrids()[4]
-  //       .getBoxes()[0]
-  //       .getXCoordinate();
-  //     let skipButtonY = this.#board
-  //       .getGrids()[4]
-  //       .getBoxes()[0]
-  //       .getYCoordinate();
-  //     let skipButtonWidth = 200;
-  //     let skipButtonHeight = 40;
-  //     if (
-  //       mouseX >= skipButtonX &&
-  //       mouseX <= skipButtonX + skipButtonWidth &&
-  //       mouseY >= skipButtonY &&
-  //       mouseY <= skipButtonY + skipButtonHeight &&
-  //       this.#mouseInput.isLeftButtonPressed() === true
-  //     ) {
-  //       console.log("player 2 skipped a phase");
-  //       this.#turns[1].setnumOfExecutedPhases();
-  //       console.log(`player2: ${this.#turns[1].getnumOfExecutedPhases()}`);
-  //     }
-  //   }
-  // }
-
-  // #setCardsCoordinates() {
-  //   this.#updateDamageMessages();
-  // }
 
   #updatePlayersTotalHP() {
     // PLAYER 1
@@ -616,10 +557,6 @@ export default class Game {
 
   #updateMessages()
   {
-    if(globals.phasesMessages.length > 0)
-    {
-    
-    }
     if(globals.phasesMessages.length > 1)
     {
       globals.phasesMessages.slice(0,1)
@@ -1028,34 +965,30 @@ export default class Game {
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
 
-    // const phaseMessages = globals.phasesMessages;
-    // let messageText = "Select a Phase to start";
-
-    // if (phaseMessages.length > 0) {
-    //   const currentMessage = phaseMessages[0];
-    //   messageText = currentMessage.content;
-    // }
-
-    // globals.ctx.fillText(
-    //   messageText,
-    //   messageBoxX + messageBoxWidth / 2,
-    //   messageBoxY + messageBoxHeight / 2
-    // );
 
     for(let i = 0; i < globals.phasesMessages.length; i++)
     {
 
       let messages = globals.phasesMessages[i]
-      if(globals.currentPhase === PhaseType.PREPARE_EVENT)
-      {
-        globals.phaseType = PhaseType.PREPARE_EVENT
-      }
       if(globals.currentPhase === PhaseType.INVALID)
       {
 
         globals.phaseType = PhaseType.INVALID
-
       }
+      else if(globals.currentPhase === PhaseType.PREPARE_EVENT)
+      {
+        globals.phaseType = PhaseType.PREPARE_EVENT
+      }
+      else if(globals.currentPhase === PhaseType.ATTACK)
+      {
+        globals.phaseType = PhaseType.ATTACK
+      }
+      else if(globals.currentPhase === PhaseType.MOVE)
+      {
+        globals.phaseType = PhaseType.MOVE
+      }
+  
+  
   
       globals.ctx.fillText(
         messages.getContent(globals.phaseType,"ENG"),

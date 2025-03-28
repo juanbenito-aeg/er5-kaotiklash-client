@@ -31,12 +31,12 @@ export default class PhasesMessages extends Message {
         ENG: "Select a card to prepare.",
         EUS: "",
       },
-      [PhaseType.PERFORM_eVENT]: {
+      [PhaseType.PERFORM_EVENT]: {
         ENG: "An event is happening...",
         EUS: "",
       },
       [PhaseType.MOVE]: {
-        ENG: "Select a cell to move.",
+        ENG: "Select a minion to move.",
         EUS: "",
       },
       [PhaseType.ATTACK]: {

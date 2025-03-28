@@ -198,9 +198,9 @@ export default class Turn {
         globals.phaseType = PhaseType.INVALID
         globals.currentPhase = PhaseType.INVALID;
         console.log(globals.phasesMessages)
-        let message = new PhasesMessages(PhaseType.INVALID,null,300)
+        // let message = new PhasesMessages(PhaseType.INVALID,null,300)
 
-        globals.phasesMessages.push(message);
+        // globals.phasesMessages.push(message);
         console.log(globals.phasesMessages)
         console.log(globals.phasesMessages[0].getContent(globals.phaseType,"ENG"))
 
@@ -331,8 +331,6 @@ export default class Turn {
     switch (this.#equipWeaponState) {
       // SELECT WEAPON TO EQUIP ON A MINION
       case EquipWeaponState.SELECT_WEAPON:
-        console.log("WEAPON SELECTION");
-
         weapon = playerXEventsInPreparationDeck.lookForHoveredCard();
 
         if (weapon) {

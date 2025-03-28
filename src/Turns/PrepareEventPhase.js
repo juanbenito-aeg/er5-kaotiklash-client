@@ -116,9 +116,9 @@ export default class PrepareEventPhase extends Phase {
   }
 
   #initializePhase() {
-    let prepareEventMessage = new PhasesMessages(PhaseType.PREPARE_EVENT, null, 300)
+    // let prepareEventMessage = new PhasesMessages(PhaseType.PREPARE_EVENT, null, 300)
     globals.currentPhase = PhaseType.PREPARE_EVENT;
-    globals.phasesMessages.push(prepareEventMessage)
+    // globals.phasesMessages.push(prepareEventMessage)
     this._state = PrepareEventState.SELECT_HAND_CARD;
     this.#selectedCard = CardState.INACTIVE;
   }

@@ -6,7 +6,10 @@ import {
   DeckType,
   GridType,
   AttackPhaseState,
+  PhaseType
 } from "../Game/constants.js";
+import { globals } from "../index.js";
+import PhasesMessages from "../Messages/PhasesMessages.js";
 
 export default class AttackPhase extends Phase {
   #enemyMovementGridDeck;
@@ -78,10 +81,13 @@ export default class AttackPhase extends Phase {
       currentPlayerMovementGrid
     );
 
+
+
     return attackPhase;
   }
 
   execute() {
+
     let isPhaseFinished = false;
 
     let attacker;
@@ -89,6 +95,10 @@ export default class AttackPhase extends Phase {
     switch (this._state) {
       // PHASE INITIALIZATION
       case AttackPhaseState.INIT:
+        // let message = new PhasesMessages(PhaseType.ATTACK,null,300)
+        globals.currentPhase = PhaseType.ATTACK
+        // console.log(message)
+        // globals.phasesMessages.push(message.getContent(globals.currentPhase,"ENG"))
         console.log("INIT");
 
         this.#resetRelevantCardsStates([
