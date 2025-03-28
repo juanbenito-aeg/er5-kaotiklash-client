@@ -11,6 +11,7 @@ import PrepareEvent from "../Events/PrepareEvent.js";
 
 export default class PrepareEventPhase extends Phase {
   #player;
+  // #currentPlayer;
   #decksRelevants;
   #gridsRelevants;
   #selectedCard;
@@ -111,7 +112,6 @@ export default class PrepareEventPhase extends Phase {
 
   #initializePhase() {
     this._state = PrepareEventState.SELECT_HAND_CARD;
-    this.#selectedCard = CardState.INACTIVE;
   }
 
   #selectCardFromHand() {
@@ -141,6 +141,7 @@ export default class PrepareEventPhase extends Phase {
 
     for (let i = 0; i < boxes.length; i++) {
       const box = boxes[i];
+
       if (this._mouseInput.isMouseOverBox(box)) {
         box.setState(BoxState.HOVERED);
       }

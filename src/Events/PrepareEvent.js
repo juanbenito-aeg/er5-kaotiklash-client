@@ -32,15 +32,11 @@ export default class PrepareEvent extends Event {
       case "INITIALIZED":
         // ONLY ACT ON PLAYER CHANGE
         if (currentPlayer !== this.#lastPlayer) {
-          console.log("hey");
-
           // REDUCE TIME WHEN RETURNING TO EXECUTING PLAYER FROM OTHER PLAYER
           if (
-            currentPlayer !== this.#executedByPlayer &&
+            currentPlayer === this.#executedByPlayer &&
             this.#lastPlayer !== this.#executedByPlayer
           ) {
-            console.log(currentPlayer);
-            console.log("mamaamamam");
             this.#reducePreparationTime();
           }
           this.#lastPlayer = currentPlayer; // UPDATE LAST PLAYER
@@ -52,7 +48,6 @@ export default class PrepareEvent extends Event {
   }
 
   #reducePreparationTime() {
-    console.log("time--");
     let cards = this.#preparationEventDeck.getCards();
     let reductionOccurred = false;
 

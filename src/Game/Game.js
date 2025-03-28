@@ -102,8 +102,6 @@ export default class Game {
 
     game.#setInitialCardsCoordinates();
 
-    game.#events = [];
-
     return game;
   }
 
@@ -520,6 +518,8 @@ export default class Game {
     this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
 
     this.#updatePlayersTotalHP();
+
+    this.#checkIfGameOver();
   }
 
   // #skipPhase() {
@@ -634,7 +634,6 @@ export default class Game {
       if (!event.isActive()) {
         this.#events.splice(i, 1);
         i--;
-        this.#checkIfGameOver();
       }
     }
   }
@@ -664,7 +663,7 @@ export default class Game {
   }
 
   #executeMessage() {
-    /*  for (let i = 0; i < this.#phasesMenssages.length; i++) {
+    /* for (let i = 0; i < this.#phasesMenssages.length; i++) {
       let phaseMessage = this.#phasesMenssages[i];
       phaseMessage.execute();
     } */
