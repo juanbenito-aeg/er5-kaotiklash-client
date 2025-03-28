@@ -5,21 +5,18 @@ import { globals } from "../index.js";
 export default class PhasesMessages extends Message {
   #type;
   #content;
-  #duration;
-  #startTime;
+  #targetPhase;
 
-  constructor(type, content, duration) {
+  constructor(type, content, targetPhase) {
     super();
     this.#type = type;
     this.#content = content;
-    this.#duration = duration;
+    this.#targetPhase = targetPhase;
   }
 
-  static create(phaseType, language, duration) {
+  static create(phaseType, language) {
     const content = this.#getContent(phaseType, language);
-    duration = 3000;
-    const message = new PhasesMessages(phaseType, content, duration);
-    return message;
+    return new PhasesMessages(phaseType, content);
   }
 
   static #getContent(phaseType, language) {
@@ -28,7 +25,7 @@ export default class PhasesMessages extends Message {
         ENG: "Select a card to prepare.",
         EUS: "",
       },
-      [PhaseType.PERFORM_EVENT]: {
+      [PhaseType.PERFORM_eVENT]: {
         ENG: "An event is happening...",
         EUS: "",
       },
@@ -48,14 +45,7 @@ export default class PhasesMessages extends Message {
     }
   }
 
-  execute() {
-    if (this.#startTime === null) {
-      this.#startTime = globals.deltaTime;
-    }
-    if (globals.deltaTime - this.#startTime >= this.#duration) {
-      console.log("armagedon.");
-      return true; //MESSAGE IS OVER
-    }
-    return false; // MESSAGE IS ACTIVE
+  execute(currentPhase) {
+    return currentPhase !== this.#targetPhase;
   }
 }

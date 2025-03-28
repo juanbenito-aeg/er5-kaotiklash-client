@@ -11,6 +11,7 @@ import PrepareEvent from "../Events/PrepareEvent.js";
 
 export default class PrepareEventPhase extends Phase {
   #player;
+  // #currentPlayer;
   #decksRelevants;
   #gridsRelevants;
   #selectedCard;
