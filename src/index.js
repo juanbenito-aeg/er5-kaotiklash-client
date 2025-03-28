@@ -1,5 +1,6 @@
 import Game from "./Game/Game.js";
 import { GameState, FPS } from "./Game/constants.js";
+import PhasesMessages from "./Messages/PhasesMessages.js";
 
 // GLOBAL VARIABLES CREATION
 const globals = {
@@ -33,6 +34,9 @@ const globals = {
   executedPhasesCount: 0,
   // (!!!!!) DELETE AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
   firstActivePlayerID: -1,
+  phasesMessages: [],
+  currentPhase: 0,
+  phaseType: -1,
 };
 
 window.onload = initStartGameScreen;

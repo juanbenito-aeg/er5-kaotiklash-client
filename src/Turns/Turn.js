@@ -17,6 +17,7 @@ import {
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 import EquipWeaponEvent from "../Events/EquipWeaponEvent.js";
+import PhasesMessages from "../Messages/PhasesMessages.js";
 
 export default class Turn {
   #isCurrentPhaseFinished;
@@ -193,6 +194,16 @@ export default class Turn {
       }
 
       if (this.#isCurrentPhaseFinished) {
+        console.log("hloa")
+        globals.phaseType = PhaseType.INVALID
+        globals.currentPhase = PhaseType.INVALID;
+        console.log(globals.phasesMessages)
+        let message = new PhasesMessages(PhaseType.INVALID,null,300)
+
+        globals.phasesMessages.push(message);
+        console.log(globals.phasesMessages)
+        console.log(globals.phasesMessages[0].getContent(globals.phaseType,"ENG"))
+
         this.#isCurrentPhaseFinished = false;
         this.#currentPhase = PhaseType.INVALID;
         this.#numOfExecutedPhases++;

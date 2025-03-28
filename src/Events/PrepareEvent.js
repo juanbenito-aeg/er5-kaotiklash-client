@@ -1,4 +1,8 @@
+import PhasesMessages from "../Messages/PhasesMessages.js";
 import Event from "./Event.js";
+import { globals } from "../index.js";
+import { PhaseType } from "../Game/constants.js";
+
 
 export default class PrepareEvent extends Event {
   #preparationEventDeck;
@@ -14,7 +18,9 @@ export default class PrepareEvent extends Event {
   }
 
   static create(preparationEventDeck, executedByPlayer) {
+
     return new PrepareEvent(preparationEventDeck, executedByPlayer);
+
   }
 
   execute() {
@@ -33,6 +39,8 @@ export default class PrepareEvent extends Event {
         console.log("aaaaaa");
         this.#eventIsActive = false;
       }
+
+
     }
   }
 

@@ -18,6 +18,7 @@ import {
   MainCharacterID,
   DeckType,
   GridType,
+  PhaseType,
 } from "./constants.js";
 import { globals } from "../index.js";
 import ImageSet from "./ImageSet.js";
@@ -30,7 +31,6 @@ export default class Game {
   #turns;
   #mouseInput;
   #events;
-  #phasesMenssages;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -73,9 +73,6 @@ export default class Game {
 
     // EVENTS CREATION
     game.#events = [];
-
-    //PHASES MESSAGES
-    game.#phasesMenssages = [];
 
     // TURNS CREATION
     const turnPlayer1 = new Turn(
@@ -503,6 +500,7 @@ export default class Game {
     this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
 
     this.#updatePlayersTotalHP();
+    this.#updateMessages();
   }
 
   #updatePlayersTotalHP() {
@@ -535,6 +533,18 @@ export default class Game {
     player2.setTotalHP(player2UpdatedTotalHP);
   }
 
+  #updateMessages()
+  {
+    if(globals.phasesMessages.length > 0)
+    {
+    
+    }
+    if(globals.phasesMessages.length > 1)
+    {
+      globals.phasesMessages.slice(0,1)
+    }
+  }
+
   #sumMinionsHP(minionsDeck) {
     let totalHP = 0;
 
@@ -560,8 +570,8 @@ export default class Game {
   }
 
   #executeMessage() {
-    for (let i = 0; i < this.#phasesMenssages.length; i++) {
-      let phaseMessage = this.#phasesMenssages[i];
+    for (let i = 0; i < globals.phasesMessages.length; i++) {
+      let phaseMessage = globals.phasesMessages[i];
       phaseMessage.execute();
     }
   }
@@ -893,19 +903,42 @@ export default class Game {
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
 
-    const phaseMessages = this.#phasesMenssages;
-    let messageText = "Select a Phase to start";
+    // const phaseMessages = globals.phasesMessages;
+    // let messageText = "Select a Phase to start";
 
-    if (phaseMessages.length > 0) {
-      const currentMessage = phaseMessages[0];
-      messageText = currentMessage.content;
+    // if (phaseMessages.length > 0) {
+    //   const currentMessage = phaseMessages[0];
+    //   messageText = currentMessage.content;
+    // }
+
+    // globals.ctx.fillText(
+    //   messageText,
+    //   messageBoxX + messageBoxWidth / 2,
+    //   messageBoxY + messageBoxHeight / 2
+    // );
+
+    for(let i = 0; i < globals.phasesMessages.length; i++)
+    {
+
+      let messages = globals.phasesMessages[i]
+      if(globals.currentPhase === PhaseType.PREPARE_EVENT)
+      {
+        globals.phaseType = PhaseType.PREPARE_EVENT
+      }
+      if(globals.currentPhase === PhaseType.INVALID)
+      {
+
+        globals.phaseType = PhaseType.INVALID
+
+      }
+  
+      globals.ctx.fillText(
+        messages.getContent(globals.phaseType,"ENG"),
+        messageBoxX + messageBoxWidth / 2,
+        messageBoxY + messageBoxHeight / 2
+      )
+      // console.log(globals.phasesMessages[0].getContent())
     }
-
-    globals.ctx.fillText(
-      messageText,
-      messageBoxX + messageBoxWidth / 2,
-      messageBoxY + messageBoxHeight / 2
-    );
   }
 
   #renderCardsReverse() {
@@ -1906,4 +1939,6 @@ export default class Game {
 
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
   }
+
+
 }

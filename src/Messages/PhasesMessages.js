@@ -16,14 +16,19 @@ export default class PhasesMessages extends Message {
   }
 
   static create(phaseType, language, duration) {
-    const content = this.#getContent(phaseType, language);
+    const content = this.getContent(phaseType, language);
+    console.log(globals.phasesMessages)
     duration = 3000;
     const message = new PhasesMessages(phaseType, content, duration);
     return message;
   }
 
-  static #getContent(phaseType, language) {
+  getContent(phaseType, language) {
     const messages = {
+      [PhaseType.INVALID]: {
+        ENG: "Select a phase.",
+        EUS: "",
+      },
       [PhaseType.PREPARE_EVENT]: {
         ENG: "Select a card to prepare.",
         EUS: "",
@@ -40,6 +45,10 @@ export default class PhasesMessages extends Message {
         ENG: "Select a minion to attack.",
         EUS: ".",
       },
+      [PhaseType.SKIP]: {
+        ENG: "You have skiped a phase.",
+        EUS: ".",
+      }
     };
     if (messages[phaseType]) {
       if (messages[phaseType][language] !== undefined) {
