@@ -41,10 +41,8 @@ export default class AttackEvent extends Event {
     if (
       (!this.#attacker.getWeapon() ||
         this.#attacker.getMinionWeaponType() === WeaponType.MELEE) &&
-      attackerBox.getBattlefieldAreaItBelongsTo() ===
-        /* BattlefieldArea.FRONT (!!!!!) TO UNCOMMENT BEFORE SHOWING DEMO */ BattlefieldArea.REAR &&
-      targetBox.getBattlefieldAreaItBelongsTo() ===
-        /* BattlefieldArea.FRONT (!!!!!) TO UNCOMMENT BEFORE SHOWING DEMO */ BattlefieldArea.REAR
+      attackerBox.getBattlefieldAreaItBelongsTo() === BattlefieldArea.FRONT &&
+      targetBox.getBattlefieldAreaItBelongsTo() === BattlefieldArea.FRONT
     ) {
       // THE (MELEE) ATTACK CAN BE PERFORMED AS BOTH MINIONS ARE POSITIONED IN THEIR MOVEMENT GRID'S FRONT AREA
       if (!this.#attacker.getWeapon()) {

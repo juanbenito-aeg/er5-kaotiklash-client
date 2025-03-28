@@ -329,8 +329,7 @@ export default class Turn {
             weapon.setState(CardState.HOVERED);
           } else if (
             weapon.getCategory() === CardCategory.WEAPON &&
-            weapon.getCurrentPrepTimeInRounds() /* === (!!!!!) TO UNCOMMENT BEFORE SHOWING DEMO */ >
-              0
+            weapon.getCurrentPrepTimeInRounds() === 0
           ) {
             console.log("WEAPON SELECTED");
 
