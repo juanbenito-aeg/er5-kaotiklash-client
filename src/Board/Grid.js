@@ -7,6 +7,10 @@ export default class Grid {
     this.#boxes = boxes;
   }
 
+  getGridType() {
+    return this.#gridType;
+  }
+
   getBoxes() {
     return this.#boxes;
   }

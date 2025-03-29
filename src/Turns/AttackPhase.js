@@ -6,7 +6,8 @@ import {
   DeckType,
   GridType,
   AttackPhaseState,
-  PhaseType
+  PhaseType,
+  WeaponType,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 import PhasesMessages from "../Messages/PhasesMessages.js";
@@ -81,13 +82,10 @@ export default class AttackPhase extends Phase {
       currentPlayerMovementGrid
     );
 
-
-
     return attackPhase;
   }
 
   execute() {
-
     let isPhaseFinished = false;
 
     let attacker;
@@ -95,11 +93,12 @@ export default class AttackPhase extends Phase {
     switch (this._state) {
       // PHASE INITIALIZATION
       case AttackPhaseState.INIT:
+        console.log("INIT");
+
+        globals.currentPhase = PhaseType.ATTACK;
         // let message = new PhasesMessages(PhaseType.ATTACK,null,300)
-        globals.currentPhase = PhaseType.ATTACK
         // console.log(message)
         // globals.phasesMessages.push(message.getContent(globals.currentPhase,"ENG"))
-        console.log("INIT");
 
         this.#resetRelevantCardsStates([
           this.#enemyMovementGridDeck,
@@ -145,11 +144,28 @@ export default class AttackPhase extends Phase {
         } else {
           target = this.#enemyMovementGridDeck.lookForHoveredCard();
           if (target) {
-            if (!target.isLeftClicked()) {
-              target.setState(CardState.HOVERED);
-            } else {
-              target.setState(CardState.SELECTED);
-              this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
+            const attackerBox = attacker.getBoxIsPositionedIn(
+              this.#currentPlayerMovementGrid,
+              attacker
+            );
+            const targetBox = target.getBoxIsPositionedIn(
+              this.#enemyMovementGrid,
+              target
+            );
+
+            let isTargetWithinReach = this.#checkIfTargetIsWithinReach(
+              attacker,
+              attackerBox,
+              targetBox
+            );
+
+            if (isTargetWithinReach) {
+              if (!target.isLeftClicked()) {
+                target.setState(CardState.HOVERED);
+              } else {
+                target.setState(CardState.SELECTED);
+                this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
+              }
             }
           }
         }
@@ -163,22 +179,15 @@ export default class AttackPhase extends Phase {
         attacker = this.#currentPlayerMovementGridDeck.lookForSelectedCard();
         target = this.#enemyMovementGridDeck.lookForSelectedCard();
 
-        console.log(`${attacker.getName()} attacked ${target.getName()}`);
-
         const attackEvent = AttackEvent.create(
           attacker,
           target,
           this.#currentPlayerMovementGrid,
           this.#enemyMovementGrid
         );
+        attackEvent.execute();
 
-        const wasTheAttackPerformed = attackEvent.execute();
-
-        if (wasTheAttackPerformed) {
-          this._state = AttackPhaseState.END;
-        } else {
-          this._state = AttackPhaseState.SELECT_TARGET;
-        }
+        this._state = AttackPhaseState.END;
 
         break;
 
@@ -210,6 +219,50 @@ export default class AttackPhase extends Phase {
         currentCard.setState(CardState.PLACED);
       }
     }
+  }
+
+  #checkIfTargetIsWithinReach(attacker, attackerBox, targetBox) {
+    let isTargetWithinReach = false;
+
+    if (
+      !attacker.getWeapon() ||
+      attacker.getMinionWeaponType() === WeaponType.MELEE
+    ) {
+      const targetMinXCoordinate =
+        attackerBox.getXCoordinate() - 135 - attackerBox.getWidth();
+      const targetMaxXCoordinate =
+        attackerBox.getXCoordinate() + 135 + attackerBox.getWidth();
+
+      let isYCoordinateLimitExceeded = true;
+      if (
+        this.#currentPlayerMovementGrid.getGridType() ===
+        GridType.PLAYER_1_BATTLEFIELD
+      ) {
+        const targetMinYCoordinate =
+          attackerBox.getYCoordinate() - 135 - attackerBox.getHeight();
+
+        if (targetBox.getYCoordinate() >= targetMinYCoordinate) {
+          isYCoordinateLimitExceeded = false;
+        }
+      } else {
+        const targetMaxYCoordinate =
+          attackerBox.getYCoordinate() + 135 + attackerBox.getHeight();
+
+        if (targetBox.getYCoordinate() <= targetMaxYCoordinate) {
+          isYCoordinateLimitExceeded = false;
+        }
+      }
+
+      if (
+        targetBox.getXCoordinate() >= targetMinXCoordinate &&
+        targetBox.getXCoordinate() <= targetMaxXCoordinate &&
+        !isYCoordinateLimitExceeded
+      ) {
+        isTargetWithinReach = true;
+      }
+    }
+
+    return isTargetWithinReach;
   }
 
   #updateDecks(decksToCheck) {
