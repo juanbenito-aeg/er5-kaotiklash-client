@@ -502,7 +502,9 @@ export default class Game {
       this.#currentPlayer = this.#players[newCurrentPlayerID];
     }
 
-    this.#turns[this.#currentPlayer.getID()].execute();
+    if (!globals.gameWinner) {
+      this.#turns[this.#currentPlayer.getID()].execute();
+    }
 
     this.#executeEvent();
 
@@ -516,6 +518,7 @@ export default class Game {
     this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
 
     this.#updatePlayersTotalHP();
+
     this.#updateMessages();
 
     this.#checkIfGameOver();
@@ -524,39 +527,29 @@ export default class Game {
   #updatePlayersTotalHP() {
     // PLAYER 1
 
-    // (!) UNCOMMENT AFTER TURNING DEMO (SPRINT 3) IN
-    /* const player1MinionsDeck =
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS]; */
+    const player1MinionsDeck =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS];
     const player1MinionsInPlayDeck =
       this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
 
     const player1 = this.#players[PlayerID.PLAYER_1];
     const player1UpdatedTotalHP =
-      // this.#sumMinionsHP(player1MinionsDeck) +
-      /* this.#sumMinionsHP(player1MinionsDeck) + */
+      this.#sumMinionsHP(player1MinionsDeck) +
       this.#sumMinionsHP(player1MinionsInPlayDeck);
     player1.setTotalHP(player1UpdatedTotalHP);
 
     // PLAYER 2
 
-    // (!) UNCOMMENT AFTER TURNING DEMO (SPRINT 3) IN
-    /* const player2MinionsDeck =
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS]; */
+    const player2MinionsDeck =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
     const player2MinionsInPlayDeck =
       this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
 
     const player2 = this.#players[PlayerID.PLAYER_2];
     const player2UpdatedTotalHP =
-      // this.#sumMinionsHP(player2MinionsDeck) +
-      /* this.#sumMinionsHP(player2MinionsDeck) + */
+      this.#sumMinionsHP(player2MinionsDeck) +
       this.#sumMinionsHP(player2MinionsInPlayDeck);
     player2.setTotalHP(player2UpdatedTotalHP);
-  }
-
-  #updateMessages() {
-    if (globals.phasesMessages.length > 1) {
-      globals.phasesMessages.slice(0, 1);
-    }
   }
 
   #sumMinionsHP(minionsDeck) {
@@ -571,6 +564,12 @@ export default class Game {
     return totalHP;
   }
 
+  #updateMessages() {
+    if (globals.phasesMessages.length > 1) {
+      globals.phasesMessages.slice(0, 1);
+    }
+  }
+
   #executeEvent() {
     for (let i = 0; i < this.#events.length; i++) {
       let event = this.#events[i];
@@ -583,26 +582,12 @@ export default class Game {
     }
   }
 
-  // (!) THIS METHOD WILL BE CHANGED IN A FUTURE SO THAT A WINNER IS ASSIGNED WHEN THE OTHER PLAYER GETS TO 0 TOTAL HIT-POINTS
   #checkIfGameOver() {
-    const player1MinionsInPlay =
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
-    const player2MinionsInPlay =
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
+    for (let i = 0; i < this.#players.length; i++) {
+      const currentPlayer = this.#players[i];
 
-    const decksToCheck = [player1MinionsInPlay, player2MinionsInPlay];
-
-    for (let i = 0; i < decksToCheck.length; i++) {
-      const currentDeck = decksToCheck[i];
-
-      if (currentDeck.getCards().length === 0) {
-        if (currentDeck === player1MinionsInPlay) {
-          globals.gameWinner = this.#players[PlayerID.PLAYER_2];
-        } else {
-          globals.gameWinner = this.#players[PlayerID.PLAYER_1];
-        }
-
-        globals.gameState = GameState.OVER;
+      if (currentPlayer.getTotalHP() === 0) {
+        globals.gameWinner = this.#players[1 - i];
       }
     }
   }
@@ -636,10 +621,11 @@ export default class Game {
     switch (globals.gameState) {
       case GameState.PLAYING:
         this.#renderGame();
-        break;
 
-      case GameState.OVER:
-        this.#renderGameOver();
+        if (globals.gameWinner) {
+          this.#renderGameWinner();
+        }
+
         break;
     }
   }
@@ -2011,31 +1997,38 @@ export default class Game {
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
   }
 
-  #renderGameOver() {
-    // BACKGROUND IMAGE
-    globals.ctx.drawImage(
-      globals.gameOverBackgroundImage,
-      0,
-      0,
-      1792,
-      1024,
-      0,
-      0,
-      globals.canvas.width,
-      globals.canvas.height
-    );
+  #renderGameWinner() {
+    globals.ctx.globalAlpha = 0.35;
+    globals.ctx.fillStyle = "black";
+    globals.ctx.fillRect(0, 0, globals.canvas.width, globals.canvas.height);
+    globals.ctx.globalAlpha = 1;
 
-    // TEXT
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+    const canvasHeightDividedBy2 = globals.canvas.height / 2;
+    globals.ctx.textAlign = "center";
 
-    const gameWinnerName = globals.gameWinner.getName().toUpperCase();
-
+    globals.ctx.shadowBlur = 20;
+    globals.ctx.shadowColor = "black";
     globals.ctx.fillStyle = "white";
 
+    const gameWinnerName = globals.gameWinner.getName().toUpperCase();
     globals.ctx.font = "140px MedievalSharp";
-    globals.ctx.fillText(gameWinnerName, 50, 165);
+    for (let i = 0; i < 6; i++) {
+      globals.ctx.fillText(
+        gameWinnerName,
+        canvasWidthDividedBy2,
+        canvasHeightDividedBy2 - 50
+      );
+    }
 
     globals.ctx.font = "100px MedievalSharp";
-    globals.ctx.fillText("WON", 50, 300);
+    for (let i = 0; i < 3; i++) {
+      globals.ctx.fillText(
+        "WON",
+        canvasWidthDividedBy2,
+        canvasHeightDividedBy2 + 100
+      );
+    }
   }
 
   #renderDamageMessages() {
