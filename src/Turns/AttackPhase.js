@@ -293,4 +293,8 @@ export default class AttackPhase extends Phase {
       }
     }
   }
+
+  reset() {
+    this._state = AttackPhaseState.INIT;
+  }
 }

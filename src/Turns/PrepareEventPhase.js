@@ -14,7 +14,6 @@ import PrepareEvent from "../Events/PrepareEvent.js";
 
 export default class PrepareEventPhase extends Phase {
   #player;
-  // #currentPlayer;
   #decksRelevants;
   #gridsRelevants;
   #selectedCard;
@@ -79,7 +78,7 @@ export default class PrepareEventPhase extends Phase {
       events
     );
 
-    let message = new PhasesMessages(PhaseType.INVALID,null,300)
+    let message = new PhasesMessages(PhaseType.INVALID, null, 300);
     globals.phasesMessages.push(message);
 
     return prepareEventPhase;
@@ -188,6 +187,13 @@ export default class PrepareEventPhase extends Phase {
     this.#selectedGrid = null;
     this._state = PrepareEventState.INIT;
     this.#isPhaseFinished = true;
-    globals.phasesMessages.splice(0,1)
+    globals.phasesMessages.splice(0, 1);
+  }
+
+  reset() {
+    this._state = PrepareEventState.INIT;
+
+    this.#selectedCard = null;
+    this.#selectedGrid = null;
   }
 }
