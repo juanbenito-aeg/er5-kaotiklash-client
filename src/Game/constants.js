@@ -228,6 +228,11 @@ const EquipWeaponState = {
   END: 3,
 };
 
+const EventCooldownState = {
+  UNINITIALIZED: 0,
+  INITIALIZED: 1,
+};
+
 export {
   GameState,
   FPS,
@@ -254,4 +259,5 @@ export {
   PhaseType,
   PhaseButton,
   EquipWeaponState,
+  EventCooldownState,
 };

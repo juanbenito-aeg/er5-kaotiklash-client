@@ -1,7 +1,7 @@
 import Phase from "./Phase.js";
 import { globals } from "../index.js";
 import PhasesMessages from "../Messages/PhasesMessages.js";
-import { PhaseType } from "../Game/constants.js";
+import { Language, PhaseType } from "../Game/constants.js";
 import {
   PrepareEventState,
   CardState,
@@ -79,7 +79,11 @@ export default class PrepareEventPhase extends Phase {
       events
     );
 
-    let message = new PhasesMessages(PhaseType.INVALID,null,300)
+    let message = PhasesMessages.create(
+      PhaseType.PREPARE_EVENT,
+      PrepareEventState.INIT,
+      Language.ENGLISH
+    );
     globals.phasesMessages.push(message);
 
     return prepareEventPhase;
@@ -117,9 +121,15 @@ export default class PrepareEventPhase extends Phase {
   }
 
   #initializePhase() {
-    // let prepareEventMessage = new PhasesMessages(PhaseType.PREPARE_EVENT, null, 300)
     globals.currentPhase = PhaseType.PREPARE_EVENT;
-    // globals.phasesMessages.push(prepareEventMessage)
+    globals.currentState = PrepareEventState.SELECT_HAND_CARD;
+    let message = PhasesMessages.create(
+      PhaseType.PREPARE_EVENT,
+      PrepareEventState.INIT,
+      Language.ENGLISH
+    );
+    globals.phasesMessages.push(message);
+
     this._state = PrepareEventState.SELECT_HAND_CARD;
   }
 
@@ -136,6 +146,14 @@ export default class PrepareEventPhase extends Phase {
           card.setState(CardState.SELECTED);
 
           this.#selectedCard = card;
+
+          globals.currentState = PrepareEventState.SELECT_TARGET_GRID;
+          let message = PhasesMessages.create(
+            PhaseType.PREPARE_EVENT,
+            PrepareEventState.SELECT_HAND_CARD,
+            Language.ENGLISH
+          );
+          globals.phasesMessages.push(message);
 
           this._state = PrepareEventState.SELECT_TARGET_GRID;
         }
@@ -161,6 +179,14 @@ export default class PrepareEventPhase extends Phase {
       ) {
         box.setState(BoxState.SELECTED);
         this.#selectedGrid = box;
+        globals.currentState = PrepareEventState.END;
+        let message = PhasesMessages.create(
+          PhaseType.PREPARE_EVENT,
+          PrepareEventState.SELECT_TARGET_GRID,
+          Language.ENGLISH
+        );
+        globals.phasesMessages.push(message);
+
         this._state = PrepareEventState.END;
       }
     }
@@ -188,6 +214,13 @@ export default class PrepareEventPhase extends Phase {
     this.#selectedGrid = null;
     this._state = PrepareEventState.INIT;
     this.#isPhaseFinished = true;
-    globals.phasesMessages.splice(0,1)
+    let newMessage = PhasesMessages.create(
+      PhaseType.PREPARE_EVENT,
+      PrepareEventState.END,
+      globals.language,
+      5000
+    );
+    globals.phasesMessages.push(newMessage);
+    globals.phasesMessages.splice(0, globals.phasesMessages.length);
   }
 }
