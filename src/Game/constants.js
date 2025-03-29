@@ -214,11 +214,19 @@ const PhaseType = {
 };
 
 const PhaseButton = {
-  SKIP: 0,
+  SKIP_OR_CANCEL: 0,
   PREPARE_EVENT: 1,
   PERFORM_EVENT: 2,
   MOVE: 3,
   ATTACK: 4,
+};
+
+const PhaseButtonData = {
+  X_COORDINATE: 0,
+  Y_COORDINATE: 1,
+  WIDTH: 2,
+  HEIGHT: 3,
+  NAME: 4,
 };
 
 const EquipWeaponState = {
@@ -253,5 +261,6 @@ export {
   DrawCardState,
   PhaseType,
   PhaseButton,
+  PhaseButtonData,
   EquipWeaponState,
 };

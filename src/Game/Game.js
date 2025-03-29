@@ -19,6 +19,7 @@ import {
   MainCharacterID,
   GridType,
   PhaseType,
+  PhaseButtonData,
 } from "./constants.js";
 import { globals } from "../index.js";
 import ImageSet from "./ImageSet.js";
@@ -471,7 +472,7 @@ export default class Game {
         currentMinionCard.setYCoordinate(
           currentBattlefieldBox.getYCoordinate()
         );
-        //ERROR: esto da problemas, como setea la carta a esta posicion se queda ahi, da igual que la imagen se mueva
+
         if (
           currentMinionCard.getXCoordinate() ===
             currentBattlefieldBox.getXCoordinate() &&
@@ -763,12 +764,6 @@ export default class Game {
   }
 
   #renderPhaseButtons() {
-    const BUTTON_X = 0;
-    const BUTTON_Y = 1;
-    const BUTTON_WIDTH = 2;
-    const BUTTON_HEIGHT = 3;
-    const BUTTON_NAME = 4;
-
     const numOfExecutedPhases =
       this.#turns[this.#currentPlayer.getID()].getNumOfExecutedPhases();
     const TOTAL_PHASES = 5;
@@ -790,43 +785,65 @@ export default class Game {
 
       globals.ctx.fillStyle = "darkcyan";
       globals.ctx.beginPath();
-      globals.ctx.moveTo(currentButton[BUTTON_X] + 10, currentButton[BUTTON_Y]);
-      globals.ctx.lineTo(
-        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH] - 10,
-        currentButton[BUTTON_Y]
-      );
-      globals.ctx.quadraticCurveTo(
-        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH],
-        currentButton[BUTTON_Y],
-        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH],
-        currentButton[BUTTON_Y] + 10
+      globals.ctx.moveTo(
+        currentButton[PhaseButtonData.X_COORDINATE] + 10,
+        currentButton[PhaseButtonData.Y_COORDINATE]
       );
       globals.ctx.lineTo(
-        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH],
-        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT] - 10
+        currentButton[PhaseButtonData.X_COORDINATE] +
+          currentButton[PhaseButtonData.WIDTH] -
+          10,
+        currentButton[PhaseButtonData.Y_COORDINATE]
       );
       globals.ctx.quadraticCurveTo(
-        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH],
-        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT],
-        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH] - 10,
-        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT]
+        currentButton[PhaseButtonData.X_COORDINATE] +
+          currentButton[PhaseButtonData.WIDTH],
+        currentButton[PhaseButtonData.Y_COORDINATE],
+        currentButton[PhaseButtonData.X_COORDINATE] +
+          currentButton[PhaseButtonData.WIDTH],
+        currentButton[PhaseButtonData.Y_COORDINATE] + 10
       );
       globals.ctx.lineTo(
-        currentButton[BUTTON_X] + 10,
-        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT]
+        currentButton[PhaseButtonData.X_COORDINATE] +
+          currentButton[PhaseButtonData.WIDTH],
+        currentButton[PhaseButtonData.Y_COORDINATE] +
+          currentButton[PhaseButtonData.HEIGHT] -
+          10
       );
       globals.ctx.quadraticCurveTo(
-        currentButton[BUTTON_X],
-        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT],
-        currentButton[BUTTON_X],
-        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT] - 10
+        currentButton[PhaseButtonData.X_COORDINATE] +
+          currentButton[PhaseButtonData.WIDTH],
+        currentButton[PhaseButtonData.Y_COORDINATE] +
+          currentButton[PhaseButtonData.HEIGHT],
+        currentButton[PhaseButtonData.X_COORDINATE] +
+          currentButton[PhaseButtonData.WIDTH] -
+          10,
+        currentButton[PhaseButtonData.Y_COORDINATE] +
+          currentButton[PhaseButtonData.HEIGHT]
       );
-      globals.ctx.lineTo(currentButton[BUTTON_X], currentButton[BUTTON_Y] + 10);
+      globals.ctx.lineTo(
+        currentButton[PhaseButtonData.X_COORDINATE] + 10,
+        currentButton[PhaseButtonData.Y_COORDINATE] +
+          currentButton[PhaseButtonData.HEIGHT]
+      );
       globals.ctx.quadraticCurveTo(
-        currentButton[BUTTON_X],
-        currentButton[BUTTON_Y],
-        currentButton[BUTTON_X] + 10,
-        currentButton[BUTTON_Y]
+        currentButton[PhaseButtonData.X_COORDINATE],
+        currentButton[PhaseButtonData.Y_COORDINATE] +
+          currentButton[PhaseButtonData.HEIGHT],
+        currentButton[PhaseButtonData.X_COORDINATE],
+        currentButton[PhaseButtonData.Y_COORDINATE] +
+          currentButton[PhaseButtonData.HEIGHT] -
+          10
+      );
+      globals.ctx.lineTo(
+        currentButton[PhaseButtonData.X_COORDINATE],
+        currentButton[PhaseButtonData.Y_COORDINATE] + 10
+      );
+      globals.ctx.quadraticCurveTo(
+        currentButton[PhaseButtonData.X_COORDINATE],
+        currentButton[PhaseButtonData.Y_COORDINATE],
+        currentButton[PhaseButtonData.X_COORDINATE] + 10,
+        currentButton[PhaseButtonData.Y_COORDINATE]
       );
       globals.ctx.closePath();
       globals.ctx.fill();
@@ -836,9 +853,11 @@ export default class Game {
       globals.ctx.textAlign = "center";
       globals.ctx.textBaseline = "middle";
       globals.ctx.fillText(
-        currentButton[BUTTON_NAME],
-        currentButton[BUTTON_X] + currentButton[BUTTON_WIDTH] / 2,
-        currentButton[BUTTON_Y] + currentButton[BUTTON_HEIGHT] / 2
+        currentButton[PhaseButtonData.NAME],
+        currentButton[PhaseButtonData.X_COORDINATE] +
+          currentButton[PhaseButtonData.WIDTH] / 2,
+        currentButton[PhaseButtonData.Y_COORDINATE] +
+          currentButton[PhaseButtonData.HEIGHT] / 2
       );
     }
   }

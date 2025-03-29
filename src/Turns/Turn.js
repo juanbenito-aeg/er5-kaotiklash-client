@@ -5,6 +5,8 @@ import MovePhase from "./MovePhase.js";
 import PrepareEventPhase from "./PrepareEventPhase.js";
 import PerformEventPhase from "./PerformEventPhase.js";
 import DiscardCardPhase from "./DiscardCardPhase.js";
+import EquipWeaponEvent from "../Events/EquipWeaponEvent.js";
+import PhasesMessages from "../Messages/PhasesMessages.js";
 import {
   PlayerID,
   CardState,
@@ -14,12 +16,12 @@ import {
   EquipWeaponState,
   CardCategory,
   GridType,
+  PhaseButtonData,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
-import EquipWeaponEvent from "../Events/EquipWeaponEvent.js";
-import PhasesMessages from "../Messages/PhasesMessages.js";
 
 export default class Turn {
+  #isCurrentPhaseCanceled;
   #isCurrentPhaseFinished;
   #currentPhase;
   #numOfExecutedPhases;
@@ -32,6 +34,7 @@ export default class Turn {
   #equipWeaponState;
 
   constructor(deckContainer, board, mouseInput, player, events) {
+    this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
     this.#currentPhase = PhaseType.INVALID;
     this.#numOfExecutedPhases = 0;
@@ -182,28 +185,34 @@ export default class Turn {
     if (!isAnyCardExpanded) {
       if (this.#currentPhase === PhaseType.INVALID) {
         this.#equipWeapon();
-
-        if (this.#equipWeaponState === EquipWeaponState.SELECT_WEAPON) {
-          this.#checkButtonClick();
-        }
-      } else if (!this.#isCurrentPhaseFinished) {
+      } else {
         this.#isCurrentPhaseFinished =
           this.#phases[this.#currentPhase].execute();
       }
 
-      if (this.#isCurrentPhaseFinished) {
-        console.log("hloa")
-        globals.phaseType = PhaseType.INVALID
-        globals.currentPhase = PhaseType.INVALID;
-        console.log(globals.phasesMessages)
-        let message = new PhasesMessages(PhaseType.INVALID,null,300)
+      if (this.#equipWeaponState === EquipWeaponState.SELECT_WEAPON) {
+        this.#checkButtonClick();
+      }
 
+      if (this.#isCurrentPhaseCanceled || this.#isCurrentPhaseFinished) {
+        globals.phaseType = PhaseType.INVALID;
+        globals.currentPhase = PhaseType.INVALID;
+        console.log(globals.phasesMessages);
+        let message = new PhasesMessages(PhaseType.INVALID, null, 300);
         globals.phasesMessages.push(message);
 
-
-        this.#isCurrentPhaseFinished = false;
         this.#currentPhase = PhaseType.INVALID;
-        this.#numOfExecutedPhases++;
+
+        if (this.#isCurrentPhaseCanceled) {
+          this.#isCurrentPhaseCanceled = false;
+        } else {
+          this.#isCurrentPhaseFinished = false;
+          this.#numOfExecutedPhases++;
+        }
+
+        globals.buttonDataGlobal[PhaseButton.SKIP_OR_CANCEL][
+          PhaseButtonData.NAME
+        ] = "Skip";
       }
 
       if (this.#numOfExecutedPhases === 5) {
@@ -344,7 +353,7 @@ export default class Turn {
 
       // SELECT MINION TO EQUIP WEAPON ON
       case EquipWeaponState.SELECT_MINION:
-        globals.currentPhase = PhaseType.EQUIP_WEAPON
+        globals.currentPhase = PhaseType.EQUIP_WEAPON;
 
         console.log("MINION SELECTION");
 
@@ -394,7 +403,7 @@ export default class Turn {
         playerXEventsInPreparationDeck.removeCard(weapon);
 
         this.#equipWeaponState = EquipWeaponState.SELECT_WEAPON;
-        globals.currentPhase = PhaseType.INVALID
+        globals.currentPhase = PhaseType.INVALID;
 
         break;
     }
@@ -431,10 +440,22 @@ export default class Turn {
           mouseY >= buttonYCoordinate &&
           mouseY <= buttonYCoordinate + buttonHeight
         ) {
-          if (i === PhaseButton.SKIP) {
-            this.#numOfExecutedPhases++;
+          if (this.#currentPhase === PhaseType.INVALID) {
+            if (i === PhaseButton.SKIP_OR_CANCEL) {
+              this.#numOfExecutedPhases++;
+            } else {
+              this.#currentPhase = i;
+
+              globals.buttonDataGlobal[PhaseButton.SKIP_OR_CANCEL][
+                PhaseButtonData.NAME
+              ] = "Cancel";
+            }
           } else {
-            this.#currentPhase = i;
+            if (i === PhaseButton.SKIP_OR_CANCEL) {
+              this.#phases[this.#currentPhase].reset();
+
+              this.#isCurrentPhaseCanceled = true;
+            }
           }
         }
       }
