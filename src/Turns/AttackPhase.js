@@ -221,6 +221,21 @@ export default class AttackPhase extends Phase {
 
         if (currentCard.getCurrentHP() === 0) {
           currentDeck.removeCard(currentCard);
+
+          // MAKE THE BOX THE NOW DEAD MINION WAS POSITIONED IN AVAILABLE
+
+          let gridWhereToLookForBox;
+          if (currentDeck === this.#currentPlayerMovementGridDeck) {
+            gridWhereToLookForBox = this.#currentPlayerMovementGrid;
+          } else {
+            gridWhereToLookForBox = this.#enemyMovementGrid;
+          }
+
+          const currentCardBox = currentCard.getBoxIsPositionedIn(
+            gridWhereToLookForBox,
+            currentCard
+          );
+          currentCardBox.resetCard();
         }
       }
     }
