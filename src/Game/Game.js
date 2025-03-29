@@ -1237,9 +1237,9 @@ export default class Game {
       );
     }
 
-    let numOfIconsToRender = iconsPositions.length - 1;
+    let numOfIconsToRender = iconsPositions.length;
 
-    for (let i = 0; i <= numOfIconsToRender; i++) {
+    for (let i = 0; i < numOfIconsToRender; i++) {
       const { x, y, width, height } = iconsPositions[i];
       globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
     }
@@ -1250,16 +1250,39 @@ export default class Game {
     globals.ctx.font = "14px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText(
-      card.getCurrentAttack(),
-      xCoordinate,
-      yCoordinate + 59
-    );
+    // CURRENT HP
     globals.ctx.fillText(
       card.getCurrentHP(),
       xCoordinate + 55,
       yCoordinate + 111
     );
+
+    // CURRENT ATTACK
+
+    let numOfTimesToFillText = 1;
+
+    let currentAttackToRender = card.getCurrentAttack();
+
+    if (card.getWeapon()) {
+      numOfTimesToFillText = 7;
+
+      currentAttackToRender += card.getWeaponCurrentDamage();
+      globals.ctx.shadowBlur = 5;
+      globals.ctx.shadowColor = "rgb(255 0 0 / 0.25)";
+    }
+
+    for (let i = 0; i < numOfTimesToFillText; i++) {
+      globals.ctx.fillText(
+        currentAttackToRender,
+        xCoordinate,
+        yCoordinate + 59
+      );
+    }
+
+    globals.ctx.shadowBlur = 0;
+    globals.ctx.shadowColor = "transparent";
+
+    // CURRENT DEFENSE
     globals.ctx.fillText(
       card.getCurrentDefense(),
       xCoordinate + 110,
