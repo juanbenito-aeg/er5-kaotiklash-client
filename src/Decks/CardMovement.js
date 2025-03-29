@@ -232,4 +232,8 @@ export default class CardMovement {
   setIsLeftClicked(isLeftClicked) {
     this.#card.setIsLeftClicked(isLeftClicked);
   }
+
+  getBoxIsPositionedIn(gridWhereToLookForBox, minion) {
+    return this.#card.getBoxIsPositionedIn(gridWhereToLookForBox, minion);
+  }
 }

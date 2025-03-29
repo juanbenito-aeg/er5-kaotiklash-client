@@ -516,9 +516,6 @@ export default class Game {
 
     this.#updatePlayersTotalHP();
     this.#updateMessages();
-  
-
-
 
     this.#checkIfGameOver();
   }
@@ -555,11 +552,9 @@ export default class Game {
     player2.setTotalHP(player2UpdatedTotalHP);
   }
 
-  #updateMessages()
-  {
-    if(globals.phasesMessages.length > 1)
-    {
-      globals.phasesMessages.slice(0,1)
+  #updateMessages() {
+    if (globals.phasesMessages.length > 1) {
+      globals.phasesMessages.slice(0, 1);
     }
   }
 
@@ -967,40 +962,25 @@ export default class Game {
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
 
+    for (let i = 0; i < globals.phasesMessages.length; i++) {
+      let messages = globals.phasesMessages[i];
+      if (globals.currentPhase === PhaseType.INVALID) {
+        globals.phaseType = PhaseType.INVALID;
+      } else if (globals.currentPhase === PhaseType.PREPARE_EVENT) {
+        globals.phaseType = PhaseType.PREPARE_EVENT;
+      } else if (globals.currentPhase === PhaseType.ATTACK) {
+        globals.phaseType = PhaseType.ATTACK;
+      } else if (globals.currentPhase === PhaseType.MOVE) {
+        globals.phaseType = PhaseType.MOVE;
+      } else if (globals.currentPhase === PhaseType.EQUIP_WEAPON) {
+        globals.phaseType = PhaseType.EQUIP_WEAPON;
+      }
 
-    for(let i = 0; i < globals.phasesMessages.length; i++)
-    {
-
-      let messages = globals.phasesMessages[i]
-      if(globals.currentPhase === PhaseType.INVALID)
-      {
-
-        globals.phaseType = PhaseType.INVALID
-      }
-      else if(globals.currentPhase === PhaseType.PREPARE_EVENT)
-      {
-        globals.phaseType = PhaseType.PREPARE_EVENT
-      }
-      else if(globals.currentPhase === PhaseType.ATTACK)
-      {
-        globals.phaseType = PhaseType.ATTACK
-      }
-      else if(globals.currentPhase === PhaseType.MOVE)
-      {
-        globals.phaseType = PhaseType.MOVE
-      }
-      else if(globals.currentPhase === PhaseType.EQUIP_WEAPON)
-      {
-        globals.phaseType = PhaseType.EQUIP_WEAPON
-      }
-  
-  
-  
       globals.ctx.fillText(
-        messages.getContent(globals.phaseType,"ENG"),
+        messages.getContent(globals.phaseType, "ENG"),
         messageBoxX + messageBoxWidth / 2,
         messageBoxY + messageBoxHeight / 2
-      )
+      );
       // console.log(globals.phasesMessages[0].getContent())
     }
   }

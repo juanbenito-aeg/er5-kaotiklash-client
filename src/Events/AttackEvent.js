@@ -88,20 +88,5 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getYCoordinate() + 55
     );
     globals.damageMessages.push(DamageMessage);
-
-    this.#target.setCurrentHP(targetNewCurrentHP);
-
-    wasTheAttackPerformed = true;
-    return wasTheAttackPerformed;
-  }
-
-  #getBoxOfNMinion(gridWhereToLookForBox, minion) {
-    for (let i = 0; i < gridWhereToLookForBox.getBoxes().length; i++) {
-      const currentBox = gridWhereToLookForBox.getBoxes()[i];
-
-      if (currentBox.getCard() === minion) {
-        return currentBox;
-      }
-    }
   }
 }
