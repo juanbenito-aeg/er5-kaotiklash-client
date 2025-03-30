@@ -6,7 +6,8 @@ import {
   DeckType,
   GridType,
   AttackPhaseState,
-  PhaseType
+  PhaseType,
+  Language,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 import PhasesMessages from "../Messages/PhasesMessages.js";
@@ -81,13 +82,17 @@ export default class AttackPhase extends Phase {
       currentPlayerMovementGrid
     );
 
-
+    let message = PhasesMessages.create(
+      PhaseType.ATTACK,
+      AttackPhaseState.INIT,
+      Language.ENGLISH
+    );
+    globals.phasesMessages.push(message);
 
     return attackPhase;
   }
 
   execute() {
-
     let isPhaseFinished = false;
 
     let attacker;
@@ -96,7 +101,8 @@ export default class AttackPhase extends Phase {
       // PHASE INITIALIZATION
       case AttackPhaseState.INIT:
         // let message = new PhasesMessages(PhaseType.ATTACK,null,300)
-        globals.currentPhase = PhaseType.ATTACK
+        globals.currentPhase = PhaseType.ATTACK;
+        globals.currentState = AttackPhaseState.SELECT_ATTACKER;
         // console.log(message)
         // globals.phasesMessages.push(message.getContent(globals.currentPhase,"ENG"))
         console.log("INIT");
@@ -124,6 +130,14 @@ export default class AttackPhase extends Phase {
 
             attacker.setState(CardState.SELECTED);
 
+            globals.currentState = AttackPhaseState.SELECT_TARGET;
+            let selectAttackerMessage = PhasesMessages.create(
+              PhaseType.ATTACK,
+              AttackPhaseState.SELECT_ATTACKER,
+              Language.ENGLISH
+            );
+            globals.phasesMessages.push(selectAttackerMessage);
+
             this._state = AttackPhaseState.SELECT_TARGET;
           }
         }
@@ -149,6 +163,14 @@ export default class AttackPhase extends Phase {
               target.setState(CardState.HOVERED);
             } else {
               target.setState(CardState.SELECTED);
+
+              globals.currentState = AttackPhaseState.CALC_AND_APPLY_DMG;
+              let selectAttackerMessage = PhasesMessages.create(
+                PhaseType.ATTACK,
+                AttackPhaseState.CALC_AND_APPLY_DMG,
+                Language.ENGLISH
+              );
+              globals.phasesMessages.push(selectAttackerMessage);
               this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
             }
           }
@@ -176,6 +198,13 @@ export default class AttackPhase extends Phase {
 
         if (wasTheAttackPerformed) {
           this._state = AttackPhaseState.END;
+          globals.currentState = AttackPhaseState.END;
+          let selectAttackerMessage = PhasesMessages.create(
+            PhaseType.ATTACK,
+            AttackPhaseState.END,
+            Language.ENGLISH
+          );
+          globals.phasesMessages.push(selectAttackerMessage);
         } else {
           this._state = AttackPhaseState.SELECT_TARGET;
         }
@@ -194,6 +223,7 @@ export default class AttackPhase extends Phase {
         isPhaseFinished = true;
 
         this._state = AttackPhaseState.INIT;
+        globals.phasesMessages.splice(0, globals.phasesMessages.length);
 
         break;
     }

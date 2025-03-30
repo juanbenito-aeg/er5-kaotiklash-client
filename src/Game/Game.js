@@ -970,7 +970,7 @@ export default class Game {
         globals.currentState,
         "ENG"
       );
-
+      console.log(messageContent);
       globals.ctx.fillText(
         messageContent,
         messageBoxX + messageBoxWidth / 2,

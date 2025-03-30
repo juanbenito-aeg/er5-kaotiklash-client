@@ -85,6 +85,7 @@ export default class PrepareEventPhase extends Phase {
       Language.ENGLISH
     );
     globals.phasesMessages.push(message);
+    console.log("aaaa", message);
 
     return prepareEventPhase;
   }
@@ -182,7 +183,7 @@ export default class PrepareEventPhase extends Phase {
         globals.currentState = PrepareEventState.END;
         let message = PhasesMessages.create(
           PhaseType.PREPARE_EVENT,
-          PrepareEventState.SELECT_TARGET_GRID,
+          PrepareEventState.END,
           Language.ENGLISH
         );
         globals.phasesMessages.push(message);
@@ -214,13 +215,6 @@ export default class PrepareEventPhase extends Phase {
     this.#selectedGrid = null;
     this._state = PrepareEventState.INIT;
     this.#isPhaseFinished = true;
-    let newMessage = PhasesMessages.create(
-      PhaseType.PREPARE_EVENT,
-      PrepareEventState.END,
-      globals.language,
-      5000
-    );
-    globals.phasesMessages.push(newMessage);
     globals.phasesMessages.splice(0, globals.phasesMessages.length);
   }
 }

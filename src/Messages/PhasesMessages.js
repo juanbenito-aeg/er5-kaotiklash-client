@@ -5,9 +5,7 @@ import {
   MovePhaseState,
   AttackPhaseState,
   EquipWeaponState,
-  Language,
 } from "../Game/constants.js";
-import { globals } from "../index.js";
 
 export default class PhasesMessages extends Message {
   #type;
@@ -24,12 +22,7 @@ export default class PhasesMessages extends Message {
   }
 
   static create(phaseType, phaseState, language, duration) {
-    const messageInstance = new PhasesMessages(
-      phaseType,
-      phaseState,
-      Language.ENGLISH,
-      duration
-    );
+    const messageInstance = new PhasesMessages(phaseType, phaseState, language);
     const content = messageInstance.getContent(phaseType, phaseState, language);
     duration = 3000;
     const message = new PhasesMessages(
@@ -88,7 +81,7 @@ export default class PhasesMessages extends Message {
           EUS: "",
         },
         [AttackPhaseState.SELECT_TARGET]: {
-          ENG: "Choose a target to attack.",
+          ENG: "Choose a minion to attack.",
           EUS: "",
         },
         [AttackPhaseState.CALC_AND_APPLY_DMG]: {
@@ -120,11 +113,20 @@ export default class PhasesMessages extends Message {
         },
       },
     };
-    if (messages[phaseType] && messages[phaseType][phaseState]) {
-      if (messages[phaseType][phaseState][language] !== undefined) {
-        return messages[phaseType][phaseState][language];
-      }
+    //FIRST TRY TO GET THE SPECIFIC PHASE AND STATE
+    if (
+      messages[phaseType] &&
+      messages[phaseType][phaseState] &&
+      messages[phaseType][phaseState][language] !== undefined
+    ) {
+      return messages[phaseType][phaseState][language];
     }
+    //FIRST TRY TO GET THE SPECIFIC PHASE WITHOUT THE STATE
+    if (messages[phaseType] && messages[phaseType][language] !== undefined) {
+      return messages[phaseType][language];
+    }
+    //IF NOTHING FOUND, RETURN THE INVALID MESSAGE AS DEFAULT
+    return messages[PhaseType.INVALID][PhaseType.INVALID][language];
   }
 
   execute(currentPhase) {

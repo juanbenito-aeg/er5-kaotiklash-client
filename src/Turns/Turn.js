@@ -14,6 +14,7 @@ import {
   EquipWeaponState,
   CardCategory,
   GridType,
+  Language,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 import EquipWeaponEvent from "../Events/EquipWeaponEvent.js";
@@ -191,23 +192,21 @@ export default class Turn {
           this.#phases[this.#currentPhase].execute();
       }
 
-      let timer = 0;
-
       if (this.#isCurrentPhaseFinished) {
         console.log("hloa");
-
-        this.#isCurrentPhaseFinished = false;
         this.#currentPhase = PhaseType.INVALID;
         let message = PhasesMessages.create(
           this.#currentPhase,
           this.#currentPhase,
-          "ENG",
-          3000
+          "ENG"
         );
         globals.phasesMessages.push(message);
 
+        globals.currentPhase = PhaseType.INVALID;
+        globals.currentState = PhaseType.INVALID;
         console.log(globals.phasesMessages);
 
+        this.#isCurrentPhaseFinished = false;
         this.#numOfExecutedPhases++;
       }
 
@@ -341,6 +340,14 @@ export default class Turn {
 
             weapon.setState(CardState.SELECTED);
 
+            globals.currentState = EquipWeaponState.SELECT_MINION;
+            let message = PhasesMessages.create(
+              PhaseType.EQUIP_WEAPON,
+              EquipWeaponState.SELECT_MINION,
+              Language.ENGLISH
+            );
+            globals.phasesMessages.push(message);
+
             this.#equipWeaponState = EquipWeaponState.SELECT_MINION;
           }
         }
@@ -369,6 +376,15 @@ export default class Turn {
               minion.setState(CardState.HOVERED);
             } else if (!minion.getWeapon()) {
               minion.setState(CardState.SELECTED);
+
+              globals.currentState = EquipWeaponState.SELECT_MINION;
+              let message = PhasesMessages.create(
+                PhaseType.EQUIP_WEAPON,
+                EquipWeaponState.SELECT_MINION,
+                Language.ENGLISH
+              );
+              globals.phasesMessages.push(message);
+
               this.#equipWeaponState = EquipWeaponState.EQUIP_WEAPON;
             }
           }
@@ -384,6 +400,14 @@ export default class Turn {
 
         minion = playerXMinionsInPlayDeck.lookForSelectedCard();
 
+        globals.currentState = EquipWeaponState.EQUIP_WEAPON;
+        let message = PhasesMessages.create(
+          PhaseType.EQUIP_WEAPON,
+          EquipWeaponState.EQUIP_WEAPON,
+          Language.ENGLISH
+        );
+        globals.phasesMessages.push(message);
+
         const equipWeaponEvent = new EquipWeaponEvent(weapon, minion);
         equipWeaponEvent.execute();
 
@@ -398,7 +422,16 @@ export default class Turn {
         weapon = playerXEventsInPreparationDeck.lookForSelectedCard();
         playerXEventsInPreparationDeck.removeCard(weapon);
 
+        globals.currentState = EquipWeaponState.END;
+        let endMessage = PhasesMessages.create(
+          PhaseType.EQUIP_WEAPON,
+          EquipWeaponState.END,
+          Language.ENGLISH
+        );
+        globals.phasesMessages.push(endMessage);
+
         this.#equipWeaponState = EquipWeaponState.SELECT_WEAPON;
+        globals.phasesMessages.splice(0, globals.phasesMessages.length);
         globals.currentPhase = PhaseType.INVALID;
 
         break;
