@@ -186,6 +186,8 @@ export default class MovePhase extends Phase {
         this.#selectedCard = null;
         console.log(this.#selectedCard);
       }
+      this.#selectedGrid.setCard(this.#selectedCard);
+      this.#selectedCard.setState(CardState.PLACED);
       this.#selectedCard = null;
       this.#selectedGrid = null;
       this.#previousBox = null;

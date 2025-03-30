@@ -197,7 +197,6 @@ export default class Turn {
       if (this.#isCurrentPhaseCanceled || this.#isCurrentPhaseFinished) {
         globals.phaseType = PhaseType.INVALID;
         globals.currentPhase = PhaseType.INVALID;
-        console.log(globals.phasesMessages);
         let message = new PhasesMessages(PhaseType.INVALID, null, 300);
         globals.phasesMessages.push(message);
 
@@ -332,6 +331,8 @@ export default class Turn {
     switch (this.#equipWeaponState) {
       // SELECT WEAPON TO EQUIP ON A MINION
       case EquipWeaponState.SELECT_WEAPON:
+
+
         weapon = playerXEventsInPreparationDeck.lookForHoveredCard();
 
         if (weapon) {
@@ -353,6 +354,7 @@ export default class Turn {
 
       // SELECT MINION TO EQUIP WEAPON ON
       case EquipWeaponState.SELECT_MINION:
+        minion = null; 
         globals.currentPhase = PhaseType.EQUIP_WEAPON;
 
         console.log("MINION SELECTION");
@@ -387,7 +389,7 @@ export default class Turn {
         weapon = playerXEventsInPreparationDeck.lookForSelectedCard();
 
         minion = playerXMinionsInPlayDeck.lookForSelectedCard();
-
+        minion.setState(CardState.PLACED)
         const equipWeaponEvent = new EquipWeaponEvent(weapon, minion);
         equipWeaponEvent.execute();
 
