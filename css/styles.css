@@ -15,6 +15,73 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  background: url("../images/entrance_door.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#register-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+#register-box {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 30px;
+  border-radius: 10px;
+  width: 400px;
+  color: white;
+  text-align: left;
+  /*  border: 2px solid white; */
+}
+
+h2 {
+  margin-bottom: 30px;
+  text-align: center;
+  font-size: 2rem;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 12px 0;
+  border: none;
+  border-bottom: 2px solid white;
+  background: transparent;
+  color: white;
+  font-size: 1rem;
+}
+
+input:focus {
+  outline: none;
+  border-bottom: 2px solid lightblue;
+}
+
+#register-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  border: none;
+  background: white;
+  color: black;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#register-btn:hover {
+  text-decoration: underline;
+  color: #ddd1d1af;
+}
+
+p {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  text-align: center;
 }
 
 #start-game-btn {

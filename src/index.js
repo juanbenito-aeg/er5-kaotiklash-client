@@ -43,7 +43,31 @@ const globals = {
   damageFontSize: 75,
 };
 
-window.onload = initStartGameScreen;
+window.onload = initRegisterScreen;
+
+function initRegisterScreen() {
+  document.getElementById("start-game-btn").style.display = "none";
+  const registerForm = document.getElementById("register-form");
+  registerForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirm-password").value;
+
+    if (!username || !password || !confirmPassword) {
+      alert("Please complete all fields");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Error the password dont match");
+      return;
+    }
+
+    alert("Successful registration");
+    initGameScreen();
+  });
+}
 
 function initStartGameScreen() {
   const btn = document.getElementById("start-game-btn");
