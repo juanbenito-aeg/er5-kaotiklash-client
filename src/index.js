@@ -36,6 +36,7 @@ const globals = {
   firstActivePlayerID: -1,
   phasesMessages: [],
   currentPhase: 0,
+  currentState: 0,
   phaseType: -1,
   gameWinner: null,
   damageMessages: [],
