@@ -50,11 +50,12 @@ function initRegisterScreen() {
   const registerForm = document.getElementById("register-form");
   registerForm.addEventListener("submit", function (event) {
     event.preventDefault();
-    const username = document.getElementById("username").value;
+    const username = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
     const confirmPassword = document.getElementById("confirm-password").value;
 
-    if (!username || !password || !confirmPassword) {
+    if (!username || !email || !password || !confirmPassword) {
       alert("Please complete all fields");
       return;
     }
@@ -65,8 +66,35 @@ function initRegisterScreen() {
     }
 
     alert("Successful registration");
-    initGameScreen();
+    registerPlayer(username, email, password);
   });
+}
+
+async function registerPlayer(username, email, password) {
+  const url = "https://er5-kaotiklash-server.onrender.com/api/players";
+  const playerData = {
+    username: username,
+    email: email,
+    password: password,
+  };
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(playerData),
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    alert("Registration successful!");
+    console.log(data);
+    initGameScreen();
+  } else {
+    const errorData = await response.json();
+    alert(`Error: ${errorData.message || response.statusText}`);
+  }
 }
 
 function initStartGameScreen() {
