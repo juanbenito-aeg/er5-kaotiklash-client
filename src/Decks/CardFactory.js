@@ -45,7 +45,9 @@ export default class CardFactory {
 
     const chaoticEventID = Math.floor(Math.random() * 4);
     const gottenChaoticEvent =
-      globals.cardsData.joseph_chaotic_events[chaoticEventID];
+      globals.cardsData.mainCharacters[MainCharacterID.JOSEPH].chaotic_events[
+        chaoticEventID
+      ];
     let chaoticEventName = gottenChaoticEvent.name_eng;
     let chaoticEventDescription = gottenChaoticEvent.description_eng;
 
@@ -72,10 +74,12 @@ export default class CardFactory {
   #createMinion(rawCard) {
     let rawCardName = rawCard.name_eng;
     let rawCardDescription = rawCard.description_eng;
+    let rawCardTypeName = rawCard.category.name_eng;
 
     if (globals.language === Language.BASQUE) {
       rawCardName = rawCard.name_eus;
       rawCardDescription = rawCard.description_eus;
+      rawCardTypeName = rawCard.category.name_eus;
     }
 
     const processedCard = new Minion(
@@ -84,6 +88,7 @@ export default class CardFactory {
       rawCardName,
       rawCardDescription,
       rawCard.category_id - 1,
+      rawCardTypeName,
       rawCard.hp,
       rawCard.madness,
       rawCard.strength,
@@ -214,7 +219,7 @@ export default class CardFactory {
 
     switch (cardCategory) {
       case "main_characters":
-        rawCard = globals.cardsData.main_characters[cardID];
+        rawCard = globals.cardsData.mainCharacters[cardID];
         if (cardID !== MainCharacterID.JOSEPH) {
           processedCard = this.#createMainCharacter(rawCard);
         } else {
@@ -238,12 +243,12 @@ export default class CardFactory {
         break;
 
       case "special":
-        rawCard = globals.cardsData.special[cardID];
+        rawCard = globals.cardsData.specialEvents[cardID];
         processedCard = this.#createSpecial(rawCard);
         break;
 
       case "rare":
-        rawCard = globals.cardsData.rare[cardID];
+        rawCard = globals.cardsData.rareEvents[cardID];
         processedCard = this.#createRare(rawCard);
         break;
     }

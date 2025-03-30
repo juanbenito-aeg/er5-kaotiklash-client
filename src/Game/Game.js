@@ -11,7 +11,7 @@ import {
   DeckType,
   WeaponType,
   ArmorType,
-  MinionType,
+  MinionTypeID,
   IconID,
   TemplateID,
   PlayerID,
@@ -178,13 +178,13 @@ export default class Game {
               ],
             };
 
-            if (currentCard.getMinionType() === MinionType.SPECIAL) {
+            if (currentCard.getMinionTypeID() === MinionTypeID.SPECIAL) {
               bigVersionTemplateImage =
                 globals.cardsTemplatesImages[TemplateID.MINIONS_SPECIAL_BIG];
 
               cardTypeIcon =
                 globals.cardsIconsImages[IconID.MINION_SPECIAL_TYPE];
-            } else if (currentCard.getMinionType() === MinionType.WARRIOR) {
+            } else if (currentCard.getMinionTypeID() === MinionTypeID.WARRIOR) {
               bigVersionTemplateImage =
                 globals.cardsTemplatesImages[TemplateID.MINIONS_WARRIORS_BIG];
 

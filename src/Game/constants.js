@@ -70,7 +70,7 @@ const CardCategory = {
   RARE: 5,
 };
 
-const MinionType = {
+const MinionTypeID = {
   SPECIAL: 0,
   WARRIOR: 1,
   WIZARD: 2,
@@ -243,7 +243,7 @@ export {
   TemplateID,
   IconID,
   CardCategory,
-  MinionType,
+  MinionTypeID,
   WeaponType,
   ArmorType,
   DeckType,

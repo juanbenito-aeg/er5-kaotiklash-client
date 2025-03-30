@@ -1,7 +1,8 @@
 import Card from "./Card.js";
 
 export default class Minion extends Card {
-  #minionType;
+  #minionTypeID;
+  #minionTypeName;
   #initialHP;
   #currentHP;
   #initialMadness;
@@ -21,7 +22,8 @@ export default class Minion extends Card {
     id,
     name,
     description,
-    minionType,
+    minionTypeID,
+    minionTypeName,
     initialHP,
     initialMadness,
     initialStrength,
@@ -31,7 +33,8 @@ export default class Minion extends Card {
   ) {
     super(category, id, name, description);
 
-    this.#minionType = minionType;
+    this.#minionTypeID = minionTypeID;
+    this.#minionTypeName = minionTypeName;
     this.#initialHP = this.#currentHP = initialHP;
     this.#initialMadness = this.#currentMadness = initialMadness;
     this.#initialStrength = this.#currentStrength = initialStrength;
@@ -41,8 +44,8 @@ export default class Minion extends Card {
     this.#weapon = null;
   }
 
-  getMinionType() {
-    return this.#minionType;
+  getMinionTypeID() {
+    return this.#minionTypeID;
   }
 
   getInitialHP() {
