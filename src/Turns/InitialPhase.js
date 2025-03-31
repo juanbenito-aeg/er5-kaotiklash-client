@@ -102,17 +102,16 @@ export default class InitialPhase {
 
     for (let i = 0; i < eventCards.length; i++) {
       const currentCard = eventCards[i];
-
       if (currentCard.getCategory() === CardCategory.WEAPON) {
-        if (currentCard.getWeaponTypeID() === WeaponTypeID.MELEE) {
+
           eventWeapon.push(currentCard);
-        }
+
       }
     }
 
     this.#shuffleDeck(eventWeapon);
 
-    this.#selectAndInsertCards(eventWeapon, player1CardsInHand, 3);
-    this.#selectAndInsertCards(eventWeapon, player2CardsInHand, 3);
+    this.#selectAndInsertCards(eventWeapon, player1CardsInHand, 5);
+    this.#selectAndInsertCards(eventWeapon, player2CardsInHand, 5);
   }
 }

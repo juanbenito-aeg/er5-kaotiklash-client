@@ -431,7 +431,7 @@ export default class Game {
       const currentPlayer = bothPlayersData[i];
 
       // SET COORDINATES OF CARDS IN HAND
-      for (let j = 0; j < 3; j++) {
+      for (let j = 0; j < 5; j++) {
         const currentEventCard = currentPlayer.cardsInHandDeck.getCards()[j];
 
         let currentCardsInHandBoxIndex = j;
@@ -439,7 +439,7 @@ export default class Game {
           currentPlayer.cardsInHandGrid ===
           this.#board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND]
         ) {
-          currentCardsInHandBoxIndex = j + 3;
+          currentCardsInHandBoxIndex = j;
         }
         const currentCardsInHandBox =
           currentPlayer.cardsInHandGrid.getBoxes()[currentCardsInHandBoxIndex];
@@ -1073,7 +1073,6 @@ export default class Game {
       ) {
         for (let j = 0; j < currentDeck.getCards().length; j++) {
           const currentCard = currentDeck.getCards()[j];
-
           if (isDeckCardsInHandOfInactivePlayer) {
             this.#renderCardReverse(
               currentCard.getXCoordinate(),
