@@ -9,8 +9,8 @@ import {
   GameState,
   CardCategory,
   DeckType,
-  WeaponType,
-  ArmorType,
+  WeaponTypeID,
+  ArmorTypeID,
   MinionTypeID,
   IconID,
   TemplateID,
@@ -136,7 +136,7 @@ export default class Game {
         let cardTypeIcon;
 
         if (currentCard.getCategory() === CardCategory.MAIN_CHARACTER) {
-          cardImage = globals.cardsImages.main_characters[currentCard.getID()];
+          cardImage = globals.cardsImages.mainCharacters[currentCard.getID()];
 
           smallVersionTemplateImage =
             globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_SMALL];
@@ -216,9 +216,9 @@ export default class Game {
               ],
             };
 
-            if (currentCard.getWeaponType() === WeaponType.MELEE) {
+            if (currentCard.getWeaponTypeID() === WeaponTypeID.MELEE) {
               cardTypeIcon = globals.cardsIconsImages[IconID.WEAPON_MELEE_TYPE];
-            } else if (currentCard.getWeaponType() === WeaponType.MISSILE) {
+            } else if (currentCard.getWeaponTypeID() === WeaponTypeID.MISSILE) {
               cardTypeIcon =
                 globals.cardsIconsImages[IconID.WEAPON_MISSILE_TYPE];
             } else {
@@ -243,9 +243,9 @@ export default class Game {
               ],
             };
 
-            if (currentCard.getArmorType() === ArmorType.LIGHT) {
+            if (currentCard.getArmorTypeID() === ArmorTypeID.LIGHT) {
               cardTypeIcon = globals.cardsIconsImages[IconID.ARMOR_LIGHT_TYPE];
-            } else if (currentCard.getArmorType() === ArmorType.MEDIUM) {
+            } else if (currentCard.getArmorTypeID() === ArmorTypeID.MEDIUM) {
               bigVersionTemplateImage =
                 globals.cardsTemplatesImages[TemplateID.ARMOR_MEDIUM_BIG];
 
@@ -254,14 +254,14 @@ export default class Game {
               cardTypeIcon = globals.cardsIconsImages[IconID.ARMOR_HEAVY_TYPE];
             }
           } else if (currentCard.getCategory() === CardCategory.SPECIAL) {
-            cardImage = globals.cardsImages.special[currentCard.getID()];
+            cardImage = globals.cardsImages.specialEvents[currentCard.getID()];
 
             bigVersionTemplateImage =
               globals.cardsTemplatesImages[TemplateID.SPECIAL_EVENTS_BIG];
 
             cardTypeIcon = globals.cardsIconsImages[IconID.SPECIAL_TYPE];
           } else {
-            cardImage = globals.cardsImages.rare[currentCard.getID()];
+            cardImage = globals.cardsImages.rareEvents[currentCard.getID()];
 
             bigVersionTemplateImage =
               globals.cardsTemplatesImages[TemplateID.RARE_EVENTS_BIG];
@@ -1869,10 +1869,10 @@ export default class Game {
 
     let descriptionXCoordinate = 640;
 
-    if (card.getArmorType() !== ArmorType.MEDIUM) {
+    if (card.getArmorTypeID() !== ArmorTypeID.MEDIUM) {
       let specialEffectUsableBy;
 
-      if (card.getArmorType() === ArmorType.HEAVY) {
+      if (card.getArmorTypeID() === ArmorTypeID.HEAVY) {
         specialEffectUsableBy = "Warriors";
       } else {
         specialEffectUsableBy = "Wizards";

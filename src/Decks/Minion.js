@@ -84,8 +84,8 @@ export default class Minion extends Card {
     return this.#weapon;
   }
 
-  getWeaponType() {
-    return this.#weapon.getWeaponType();
+  getWeaponTypeID() {
+    return this.#weapon.getWeaponTypeID();
   }
 
   getWeaponCurrentDamage() {

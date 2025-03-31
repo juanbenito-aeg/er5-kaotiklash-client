@@ -7,7 +7,7 @@ import {
   GridType,
   AttackPhaseState,
   PhaseType,
-  WeaponType,
+  WeaponTypeID,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 import PhasesMessages from "../Messages/PhasesMessages.js";
@@ -226,7 +226,7 @@ export default class AttackPhase extends Phase {
 
     if (
       !attacker.getWeapon() ||
-      attacker.getMinionWeaponType() === WeaponType.MELEE
+      attacker.getMinionWeaponTypeID() === WeaponTypeID.MELEE
     ) {
       const targetMinXCoordinate =
         attackerBox.getXCoordinate() - 135 - attackerBox.getWidth();

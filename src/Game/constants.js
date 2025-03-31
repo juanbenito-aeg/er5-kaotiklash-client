@@ -76,13 +76,13 @@ const MinionTypeID = {
   WIZARD: 2,
 };
 
-const WeaponType = {
+const WeaponTypeID = {
   MELEE: 0,
   MISSILE: 1,
   HYBRID: 2,
 };
 
-const ArmorType = {
+const ArmorTypeID = {
   LIGHT: 0,
   MEDIUM: 1,
   HEAVY: 2,
@@ -244,8 +244,8 @@ export {
   IconID,
   CardCategory,
   MinionTypeID,
-  WeaponType,
-  ArmorType,
+  WeaponTypeID,
+  ArmorTypeID,
   DeckType,
   MainCharacterID,
   ChaoticEventID,
