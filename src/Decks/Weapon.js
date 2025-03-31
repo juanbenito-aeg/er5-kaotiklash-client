@@ -1,7 +1,8 @@
 import Card from "./Card.js";
 
 export default class Weapon extends Card {
-  #weaponType;
+  #weaponTypeID;
+  #weaponTypeName;
   #initialDamage;
   #currentDamage;
   #initialDurability;
@@ -14,22 +15,24 @@ export default class Weapon extends Card {
     id,
     name,
     description,
-    weaponType,
+    weaponTypeID,
+    weaponTypeName,
     initialDamage,
     initialDurability,
     initialPrepTimeInRounds
   ) {
     super(category, id, name, description);
 
-    this.#weaponType = weaponType;
+    this.#weaponTypeID = weaponTypeID;
+    this.#weaponTypeName = weaponTypeName;
     this.#initialDamage = this.#currentDamage = initialDamage;
     this.#initialDurability = this.#currentDurability = initialDurability;
     this.#initialPrepTimeInRounds = this.#currentPrepTimeInRounds =
       initialPrepTimeInRounds;
   }
 
-  getWeaponType() {
-    return this.#weaponType;
+  getWeaponTypeID() {
+    return this.#weaponTypeID;
   }
 
   getInitialDamage() {

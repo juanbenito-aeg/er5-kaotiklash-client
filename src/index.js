@@ -15,12 +15,12 @@ const globals = {
   cardsData: {},
   cardsReverseImage: {},
   cardsImages: {
-    main_characters: [],
+    mainCharacters: [],
     minions: [],
     weapons: [],
     armor: [],
-    special: [],
-    rare: [],
+    specialEvents: [],
+    rareEvents: [],
   },
   cardsTemplatesImages: [],
   cardsIconsImages: [],
@@ -43,7 +43,7 @@ const globals = {
   damageFontSize: 75,
 };
 
-window.onload = initRegisterScreen;
+window.onload = /* initRegisterScreen */ initStartGameScreen;
 
 function initRegisterScreen() {
   const registerForm = document.getElementById("register-form");
@@ -96,15 +96,16 @@ async function registerPlayer(username, email, password) {
 }
 
 function initStartGameScreen() {
+  const startGameScreen = document.getElementById("start-game-screen");
+  startGameScreen.style.display = "block";
+
   const btn = document.getElementById("start-game-btn");
   btn.addEventListener("click", initGameScreen);
 }
 
 async function initGameScreen() {
-  const registerForm = document.getElementById("register-form");
-  registerForm.style.display = "none";
-  const startGameScreen = document.getElementById("start-game-screen");
-  startGameScreen.style.display = "none";
+  // const registerForm = document.getElementById("register-form");
+  // registerForm.style.display = "none";
 
   initVars();
 
@@ -140,18 +141,29 @@ function initVars() {
 }
 
 async function loadDBCardsDataAndAssets() {
-  // RELATIVE PATH TO THE FILE CONTAINING THE CARDS DATA
-  const url = "./src/cardsData.json";
+  // API ENDPOINTS TO RETRIEVE CARDS DATA FROM THE DATABASE
+  const urls = {
+    mainCharacters:
+      "https://er5-kaotiklash-server.onrender.com/api/main-characters/",
+    minions: "https://er5-kaotiklash-server.onrender.com/api/minions/",
+    weapons: "https://er5-kaotiklash-server.onrender.com/api/weapons/",
+    armor: "https://er5-kaotiklash-server.onrender.com/api/armor/",
+    specialEvents:
+      "https://er5-kaotiklash-server.onrender.com/api/special-events/",
+    rareEvents: "https://er5-kaotiklash-server.onrender.com/api/rare-events/",
+  };
 
-  const response = await fetch(url);
+  for (const urlName in urls) {
+    const response = await fetch(urls[urlName]);
 
-  if (response.ok) {
-    globals.cardsData = await response.json();
-
-    loadAssets();
-  } else {
-    alert(`Communication error: ${response.statusText}`);
+    if (response.ok) {
+      globals.cardsData[urlName] = await response.json();
+    } else {
+      alert(`Communication error: ${response.statusText}`);
+    }
   }
+
+  loadAssets();
 }
 
 function loadAssets() {
@@ -169,19 +181,10 @@ function loadAssets() {
 
   // LOAD CARDS IMAGES
   for (const cardCategory in globals.cardsData) {
-    if (
-      cardCategory === "main_characters" ||
-      cardCategory === "minions" ||
-      cardCategory === "weapons" ||
-      cardCategory === "armor" ||
-      cardCategory === "special" ||
-      cardCategory === "rare"
-    ) {
-      createAndStoreImageObjs(
-        globals.cardsData[cardCategory],
-        globals.cardsImages[cardCategory]
-      );
-    }
+    createAndStoreImageObjs(
+      globals.cardsData[cardCategory],
+      globals.cardsImages[cardCategory]
+    );
   }
 
   // LOAD CARDS TEMPLATES

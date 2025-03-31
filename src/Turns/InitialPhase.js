@@ -4,7 +4,7 @@ import {
   CardCategory,
   CardState,
   DeckType,
-  WeaponType,
+  WeaponTypeID,
 } from "../Game/constants.js";
 
 export default class InitialPhase {
@@ -120,7 +120,7 @@ export default class InitialPhase {
       const currentCard = eventCards[i];
 
       if (currentCard.getCategory() === CardCategory.WEAPON) {
-        if (currentCard.getWeaponType() === WeaponType.MELEE) {
+        if (currentCard.getWeaponTypeID() === WeaponTypeID.MELEE) {
           eventWeapon.push(currentCard);
         }
       }

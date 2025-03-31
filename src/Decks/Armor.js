@@ -1,7 +1,8 @@
 import Card from "./Card.js";
 
 export default class Armor extends Card {
-  #armorType;
+  #armorTypeID;
+  #armorTypeName;
   #specialEffect;
   #initialDurability;
   #currentDurability;
@@ -13,22 +14,24 @@ export default class Armor extends Card {
     id,
     name,
     description,
-    armorType,
+    armorTypeID,
+    armorTypeName,
     specialEffect,
     initialDurability,
     initialPrepTimeInRounds
   ) {
     super(category, id, name, description);
 
-    this.#armorType = armorType;
+    this.#armorTypeID = armorTypeID;
+    this.#armorTypeName = armorTypeName;
     this.#specialEffect = specialEffect;
     this.#initialDurability = this.#currentDurability = initialDurability;
     this.#initialPrepTimeInRounds = this.#currentPrepTimeInRounds =
       initialPrepTimeInRounds;
   }
 
-  getArmorType() {
-    return this.#armorType;
+  getArmorTypeID() {
+    return this.#armorTypeID;
   }
 
   getSpecialEffect() {

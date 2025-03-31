@@ -15,17 +15,17 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#register-screen {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: url("../images/entrance_door.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-}
-
-#register-screen {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
 }
 
 #register-box {
@@ -35,7 +35,6 @@ body {
   width: 400px;
   color: white;
   text-align: left;
-  /*  border: 2px solid white; */
 }
 
 h2 {
@@ -84,10 +83,13 @@ p {
   text-align: left;
 }
 
+#start-game-screen {
+  display: none;
+}
+
 #start-game-btn {
   padding: 0.5em 1.25em;
   font-size: 1.25rem;
-  display: none;
 }
 
 #game-screen {

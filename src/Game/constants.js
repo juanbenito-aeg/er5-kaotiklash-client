@@ -70,19 +70,19 @@ const CardCategory = {
   RARE: 5,
 };
 
-const MinionType = {
+const MinionTypeID = {
   SPECIAL: 0,
   WARRIOR: 1,
   WIZARD: 2,
 };
 
-const WeaponType = {
+const WeaponTypeID = {
   MELEE: 0,
   MISSILE: 1,
   HYBRID: 2,
 };
 
-const ArmorType = {
+const ArmorTypeID = {
   LIGHT: 0,
   MEDIUM: 1,
   HEAVY: 2,
@@ -248,9 +248,9 @@ export {
   TemplateID,
   IconID,
   CardCategory,
-  MinionType,
-  WeaponType,
-  ArmorType,
+  MinionTypeID,
+  WeaponTypeID,
+  ArmorTypeID,
   DeckType,
   MainCharacterID,
   ChaoticEventID,

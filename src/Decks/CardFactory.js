@@ -10,8 +10,8 @@ import {
   Language,
   CardCategory,
   MainCharacterID,
-  WeaponType,
-  ArmorType,
+  WeaponTypeID,
+  ArmorTypeID,
 } from "../Game/constants.js";
 
 export default class CardFactory {
@@ -28,7 +28,7 @@ export default class CardFactory {
 
     const processedCard = new MainCharacter(
       CardCategory.MAIN_CHARACTER,
-      rawCard.id - 1,
+      rawCard.main_character_id - 1,
       rawCardName,
       rawCardDescription,
       rawCardSpecialSkill
@@ -45,7 +45,9 @@ export default class CardFactory {
 
     const chaoticEventID = Math.floor(Math.random() * 4);
     const gottenChaoticEvent =
-      globals.cardsData.joseph_chaotic_events[chaoticEventID];
+      globals.cardsData.mainCharacters[MainCharacterID.JOSEPH].chaotic_events[
+        chaoticEventID
+      ];
     let chaoticEventName = gottenChaoticEvent.name_eng;
     let chaoticEventDescription = gottenChaoticEvent.description_eng;
 
@@ -58,7 +60,7 @@ export default class CardFactory {
 
     const processedCard = new Joseph(
       CardCategory.MAIN_CHARACTER,
-      rawCard.id - 1,
+      rawCard.main_character_id - 1,
       rawCardName,
       rawCardDescription,
       chaoticEventID,
@@ -72,18 +74,21 @@ export default class CardFactory {
   #createMinion(rawCard) {
     let rawCardName = rawCard.name_eng;
     let rawCardDescription = rawCard.description_eng;
+    let rawCardTypeName = rawCard.category.name_eng;
 
     if (globals.language === Language.BASQUE) {
       rawCardName = rawCard.name_eus;
       rawCardDescription = rawCard.description_eus;
+      rawCardTypeName = rawCard.category.name_eus;
     }
 
     const processedCard = new Minion(
       CardCategory.MINION,
-      rawCard.id - 1,
+      rawCard.minion_id - 1,
       rawCardName,
       rawCardDescription,
       rawCard.category_id - 1,
+      rawCardTypeName,
       rawCard.hp,
       rawCard.madness,
       rawCard.strength,
@@ -98,19 +103,12 @@ export default class CardFactory {
   #createWeapon(rawCard) {
     let rawCardName = rawCard.name_eng;
     let rawCardDescription = rawCard.description_eng;
+    let rawCardTypeName = rawCard.type.name_eng;
 
     if (globals.language === Language.BASQUE) {
       rawCardName = rawCard.name_eus;
       rawCardDescription = rawCard.description_eus;
-    }
-
-    let weaponType;
-    if (rawCard.type_id === 1) {
-      weaponType = WeaponType.MELEE;
-    } else if (rawCard.type_id === 2) {
-      weaponType = WeaponType.MISSILE;
-    } else {
-      weaponType = WeaponType.HYBRID;
+      rawCardTypeName = rawCard.type.name_eus;
     }
 
     const processedCard = new Weapon(
@@ -118,7 +116,8 @@ export default class CardFactory {
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
-      weaponType,
+      rawCard.type_id - 1,
+      rawCardTypeName,
       rawCard.damage,
       rawCard.durability,
       rawCard.prep_time_in_rounds
@@ -130,21 +129,14 @@ export default class CardFactory {
   #createArmor(rawCard) {
     let rawCardName = rawCard.name_eng;
     let rawCardDescription = rawCard.description_eng;
+    let rawCardTypeName = rawCard.type.name_eng;
     let rawCardSpecialEffect = rawCard.special_effect_eng;
 
     if (globals.language === Language.BASQUE) {
       rawCardName = rawCard.name_eus;
       rawCardDescription = rawCard.description_eus;
+      rawCardTypeName = rawCard.type.name_eus;
       rawCardSpecialEffect = rawCard.special_effect_eus;
-    }
-
-    let armorType;
-    if (rawCard.type_id === 1) {
-      armorType = ArmorType.LIGHT;
-    } else if (rawCard.type_id === 2) {
-      armorType = ArmorType.MEDIUM;
-    } else {
-      armorType = ArmorType.HEAVY;
     }
 
     const processedCard = new Armor(
@@ -152,7 +144,8 @@ export default class CardFactory {
       rawCard.id - 1,
       rawCardName,
       rawCardDescription,
-      armorType,
+      rawCard.type_id - 1,
+      rawCardTypeName,
       rawCardSpecialEffect,
       rawCard.durability,
       rawCard.prep_time_in_rounds
@@ -174,7 +167,7 @@ export default class CardFactory {
 
     const processedCard = new Special(
       CardCategory.SPECIAL,
-      rawCard.id - 1,
+      rawCard.special_event_id - 1,
       rawCardName,
       rawCardDescription,
       rawCardEffect,
@@ -198,7 +191,7 @@ export default class CardFactory {
 
     const processedCard = new Rare(
       CardCategory.RARE,
-      rawCard.id - 1,
+      rawCard.rare_event_id - 1,
       rawCardName,
       rawCardDescription,
       rawCardEffect,
@@ -214,7 +207,7 @@ export default class CardFactory {
 
     switch (cardCategory) {
       case "main_characters":
-        rawCard = globals.cardsData.main_characters[cardID];
+        rawCard = globals.cardsData.mainCharacters[cardID];
         if (cardID !== MainCharacterID.JOSEPH) {
           processedCard = this.#createMainCharacter(rawCard);
         } else {
@@ -238,12 +231,12 @@ export default class CardFactory {
         break;
 
       case "special":
-        rawCard = globals.cardsData.special[cardID];
+        rawCard = globals.cardsData.specialEvents[cardID];
         processedCard = this.#createSpecial(rawCard);
         break;
 
       case "rare":
-        rawCard = globals.cardsData.rare[cardID];
+        rawCard = globals.cardsData.rareEvents[cardID];
         processedCard = this.#createRare(rawCard);
         break;
     }
