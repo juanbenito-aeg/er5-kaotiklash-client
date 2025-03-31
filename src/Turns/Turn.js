@@ -197,7 +197,6 @@ export default class Turn {
 
       if (this.#isCurrentPhaseCanceled || this.#isCurrentPhaseFinished) {
         this.#currentPhase = PhaseType.INVALID;
-        console.log("hloa");
         this.#currentPhase = PhaseType.INVALID;
         let message = PhasesMessages.create(
           this.#currentPhase,
@@ -208,7 +207,6 @@ export default class Turn {
 
         globals.currentPhase = PhaseType.INVALID;
         globals.currentState = PhaseType.INVALID;
-        console.log(globals.phasesMessages);
 
         if (this.#isCurrentPhaseCanceled) {
           this.#isCurrentPhaseCanceled = false;
@@ -221,9 +219,24 @@ export default class Turn {
           PhaseButtonData.NAME
         ] = "Skip";
       }
+      
+      let playerDeck;
+      let playerGrid;
+      if(this.#player.getID() === 0) {
+        playerDeck = this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
+        playerGrid = this.#board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND]
+      } else
+      {
+        playerDeck = this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND];
+        playerGrid = this.#board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND]
+      }
 
-      if (this.#numOfExecutedPhases === 5) {
+      if (this.#numOfExecutedPhases === 5 && playerDeck.getCards().length < 2) {
         globals.isCurrentTurnFinished = true;
+      } else if (this.#numOfExecutedPhases > 5 && playerDeck.getCards().length >= 2){
+        this.#numOfExecutedPhases = 5
+        this.#currentPhase = PhaseType.DISCARD_CARD
+        console.log("please discard a card")
       }
     }
   }

@@ -492,7 +492,6 @@ export default class Game {
 
   #update() {
     if (globals.isCurrentTurnFinished) {
-      console.log(this.#currentPlayer);
       globals.isCurrentTurnFinished = false;
 
       const newCurrentPlayerID = this.#turns[
@@ -961,7 +960,6 @@ export default class Game {
         globals.currentState,
         "ENG"
       );
-      console.log(messageContent);
       globals.ctx.fillText(
         messageContent,
         messageBoxX + messageBoxWidth / 2,

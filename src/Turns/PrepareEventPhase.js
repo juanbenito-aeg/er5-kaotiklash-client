@@ -84,7 +84,6 @@ export default class PrepareEventPhase extends Phase {
       Language.ENGLISH
     );
     globals.phasesMessages.push(message);
-    console.log("aaaa", message);
 
     return prepareEventPhase;
   }
