@@ -46,7 +46,6 @@ const globals = {
 window.onload = initRegisterScreen;
 
 function initRegisterScreen() {
-  document.getElementById("start-game-btn").style.display = "none";
   const registerForm = document.getElementById("register-form");
   registerForm.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -64,17 +63,16 @@ function initRegisterScreen() {
       alert("Error the password dont match");
       return;
     }
-
-    alert("Successful registration");
     registerPlayer(username, email, password);
+    alert("Successful registration");
   });
 }
 
 async function registerPlayer(username, email, password) {
   const url = "https://er5-kaotiklash-server.onrender.com/api/players";
   const playerData = {
-    username: username,
-    email: email,
+    name: username,
+    email_address: email,
     password: password,
   };
 
@@ -103,6 +101,8 @@ function initStartGameScreen() {
 }
 
 async function initGameScreen() {
+  const registerForm = document.getElementById("register-form");
+  registerForm.style.display = "none";
   const startGameScreen = document.getElementById("start-game-screen");
   startGameScreen.style.display = "none";
 

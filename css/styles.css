@@ -81,12 +81,13 @@ input:focus {
 p {
   margin-top: 20px;
   font-size: 1.2rem;
-  text-align: center;
+  text-align: left;
 }
 
 #start-game-btn {
   padding: 0.5em 1.25em;
   font-size: 1.25rem;
+  display: none;
 }
 
 #game-screen {
