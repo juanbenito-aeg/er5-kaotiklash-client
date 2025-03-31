@@ -62,4 +62,14 @@ export default class Weapon extends Card {
   setCurrenPrepTimeInRounds(newPrepTimeInRounds) {
     this.#currentPrepTimeInRounds = newPrepTimeInRounds;
   }
+
+  getBoxIsPositionedIn(gridWhereToLookForBox, weapon) {
+    for (let i = 0; i < gridWhereToLookForBox.getBoxes().length; i++) {
+      const currentBox = gridWhereToLookForBox.getBoxes()[i];
+
+      if (currentBox.getCard() === weapon) {
+        return currentBox;
+      }
+    }
+  }
 }
