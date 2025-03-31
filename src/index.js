@@ -100,10 +100,13 @@ function initStartGameScreen() {
   startGameScreen.style.display = "block";
 
   const btn = document.getElementById("start-game-btn");
+
   btn.addEventListener("click", initGameScreen);
 }
 
 async function initGameScreen() {
+  const btn = document.getElementById("start-game-btn");
+  btn.style.display = "none";
   // const registerForm = document.getElementById("register-form");
   // registerForm.style.display = "none";
 
