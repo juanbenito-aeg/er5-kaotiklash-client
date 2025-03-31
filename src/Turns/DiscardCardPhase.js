@@ -1,69 +1,139 @@
 import Phase from "./Phase.js";
-import { DiscardCardState, CardState, BoxState } from "../Game/constants.js";
+import { DiscardCardState, CardState, BoxState, GridType, PlayerID, PhaseType, DeckType} from "../Game/constants.js";
+import { globals } from "../index.js";
 
 export default class DiscardCardPhase extends Phase {
-  // #cardsInHandDeck;
-  // #cardsInHandGrid;
-  // #eventsDeck;
-  // #eventDeckGrid;
-  // #state;
-  // #skipButtonPressed;
+  #state;
+  #decksRelevants;
+  #gridsRelevants;
+  #selectedCard;
+  #selectedGrid;
+  #skipButtonPressed;
 
-  constructor(
-    /* cardsInHandDeck,
-    cardsInHandGrid,
-    eventsDeck,
-    eventDeckGrid,
-    skipButtonPressed */
+  constructor(state, decksRelevants, gridsRelevants, mouseInput
+  ) {
+    super(state, mouseInput);
 
-    state,
+    this.#decksRelevants = decksRelevants;
+    this.#gridsRelevants = gridsRelevants;
+    this.#selectedCard = null;
+    this.#selectedGrid = null;
+
+
+  }
+
+  static create(
+    player,
     deckContainer,
     board,
-    mouseInput
+    mouseInput,
+    events,
+    currentPlayer
   ) {
-    // this.#cardsInHandDeck = cardsInHandDeck;
-    // this.#cardsInHandGrid = cardsInHandGrid;
-    // this.#eventsDeck = eventsDeck;
-    // this.#eventDeckGrid = eventDeckGrid;
-    // this.#skipButtonPressed = skipButtonPressed;
-    // this.#state = DiscardCardState.INIT;
 
-    super(state, deckContainer, board, mouseInput);
+    let deckRelevants;
+    let gridRelevants;
+
+    if (player === currentPlayer) {
+      gridRelevants = 
+        board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND];
+        
+    } else {
+      gridRelevants = 
+      board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND];
+    }
+
+    if (player.getID() === PlayerID.PLAYER_1) {
+      deckRelevants = [
+        deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND],
+        deckContainer.getDecks()[DeckType.EVENTS],
+      ]
+    } else {
+      deckRelevants = [
+        deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND],
+        deckContainer.getDecks()[DeckType.EVENTS],
+    ]
+    }
+
+    const discardPhase = new DiscardCardPhase(
+      DiscardCardState.INIT,
+      deckRelevants,
+      gridRelevants,
+      mouseInput
+    );
+
+    return discardPhase;
   }
 
   execute() {
-    // if (this.#state === DiscardCardState.INIT) {
-    //   // SKIP PHASE
-    //   if (this.#skipButtonPressed) {
-    //     this.#state = DiscardCardState.END;
-    //     return;
-    //   }
-    //   this.#state = DiscardCardState.SELECT_CARD_TO_DISCARD;
-    // }
-    // if (this.#state === DiscardCardState.SELECT_CARD_TO_DISCARD) {
-    //   for (let i = 0; i < this.#cardsInHandGrid.boxes.length; i++) {
-    //     let box = this.#cardsInHandGrid.boxes[i];
-    //     if (box.isClicked && box.state === BoxState.OCCUPIED) {
-    //       let cardToDiscard = null;
-    //       for (let j = 0; j < this.#cardsInHandDeck.length; j++) {
-    //         if (this.#cardsInHandDeck[j].box === box) {
-    //           cardToDiscard = this.#cardsInHandDeck[j];
-    //         }
-    //       }
-    //       if (cardToDiscard) {
-    //         cardToDiscard.state = CardState.DISCARDED;
-    //         this.#eventsDeck.push(cardToDiscard);
-    //         box.state = BoxState.EMPTY;
-    //         for (let k = 0; k < this.#cardsInHandDeck.length; k++) {
-    //           if (this.#cardsInHandDeck[k] === cardToDiscard) {
-    //             this.#cardsInHandDeck.splice(k, 1);
-    //             return;
-    //           }
-    //         }
-    //         this.#state = DiscardCardState.END;
-    //       }
-    //     }
-    //   }
-    // }
+    let isPhaseFinished = false;
+    switch (this._state) {
+      case DiscardCardState.INIT:
+        this.#initializePhase();
+        break;
+
+      case DiscardCardState.SELECT_CARD_TO_DISCARD:
+        this.#selectCardToDiscard();
+        break;
+
+      case DiscardCardState.END:
+        this.#finalizePhase();
+        isPhaseFinished = true;
+        break;
+
+      default:
+        console.error("Discard Event State Fail");
+    }
+    return isPhaseFinished;
   }
+
+  #initializePhase() {
+    globals.currentPhase = PhaseType.DISCARD_CARD;
+    globals.currentState = DiscardCardState.SELECT_CARD_TO_DISCARD;
+    this._state = DiscardCardState.SELECT_CARD_TO_DISCARD;
+  }
+
+  #selectCardToDiscard() {
+    console.log("select card phase");
+    const handGrid = this.#gridsRelevants;
+    for (let i = 0; i < handGrid.getBoxes().length; i++) {
+      let box = handGrid.getBoxes()[i];
+      if (
+        this._mouseInput.isMouseOverBox(box) &&
+        box.isOccupied() &&
+        this._mouseInput.isLeftButtonPressed()
+      ) {
+        console.log("selected card");
+        this.#selectedCard = box.getCard();
+        this.#selectedCard.setState(CardState.SELECTED);
+        console.log(this.#selectedCard.getName());
+      }
+    }
+    if (this.#selectedCard) {
+      let cardBox = this.#selectedCard.getBoxIsPositionedIn(handGrid, this.#selectedCard)
+      for (let i = 0; i < handGrid.getBoxes().length; i++) {
+        let box = handGrid.getBoxes()[i];
+        if(cardBox === box)
+        {
+          
+          this.#decksRelevants[0].getCards().splice(i,1)
+          console.log(this.#decksRelevants[1].getCards().length)
+          this.#decksRelevants[1].getCards().push(this.#selectedCard)
+          console.log(this.#decksRelevants[1].getCards().length)
+          this._state = DiscardCardState.END;
+        }
+      }
+    }
+  }
+
+  #finalizePhase() {
+    console.log("finish phase");
+
+      this.#selectedCard = null;
+      this.#selectedGrid = null;
+      this._state = DiscardCardState.INIT;
+      
+
+  }
+
 }
