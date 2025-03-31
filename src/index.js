@@ -43,16 +43,27 @@ const globals = {
   damageFontSize: 75,
 };
 
-window.onload = initStartGameScreen;
+window.onload = initLogInScreen;
+
+function initLogInScreen() {
+
+  const btn = document.getElementById("submit-btn");
+  btn.addEventListener("click", initStartGameScreen);
+}
 
 function initStartGameScreen() {
+  const logInScreen = document.getElementById("log-in-screen");
+  logInScreen.style.display = "none";
+  const startGameScreen = document.getElementById("start-game-screen");
+  startGameScreen.style.display = "block";
   const btn = document.getElementById("start-game-btn");
   btn.addEventListener("click", initGameScreen);
 }
 
 async function initGameScreen() {
+
   const startGameScreen = document.getElementById("start-game-screen");
-  startGameScreen.style.display = "none";
+  startGameScreen.style.display = "none"; 
 
   initVars();
 

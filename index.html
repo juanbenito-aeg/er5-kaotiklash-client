@@ -14,9 +14,24 @@
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
+    <div id="log-in-screen">
+      <button type="button" id="eus-btn"></button>
+      <button type="button" id="eng-btn"></button>
+
+      <form id="log-in">
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email"><br>
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" ><br><br>
+        <input type="submit" id="log-in-btn" value="Log in">    
+        <input type="reset" id="reset" value="Reset">
+      </form> 
+    </div>
+    
     <div id="start-game-screen">
       <button type="button" id="start-game-btn">Start Game</button>
     </div>
+
 
     <canvas id="game-screen" width="2380" height="1120"></canvas>
 
