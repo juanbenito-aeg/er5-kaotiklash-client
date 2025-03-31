@@ -14,29 +14,49 @@
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
-    <!-- Registration Form -->
-    <!-- <div id="register-box">
-      <h2>REGISTER</h2>
-      <form id="register-form">
-        <label for="name">Name</label>
-        <input type="text" id="name" required />
+    <!-- REGISTRATION FORM -->
+    <div id="register-screen">
+      <div id="register-box">
+        <h2>REGISTER</h2>
+        <form id="register-form">
+          <label for="name">Name</label>
+          <input type="text" id="name" required />
 
-        <label for="email">Email</label>
-        <input type="email" id="email" required />
+          <label for="email">Email</label>
+          <input type="email" id="email" required />
 
-        <label for="password">Password</label>
-        <input type="password" id="password" required />
+          <label for="password">Password</label>
+          <input type="password" id="password" required />
 
-        <label for="confirm-password">Confirm Password</label>
-        <input type="password" id="confirm-password" required />
+          <label for="confirm-password">Confirm Password</label>
+          <input type="password" id="confirm-password" required />
 
-        <button type="submit" id="register-btn">Register</button>
-        <p>Already got an account? <a href="#">Log in</a></p>
-      </form>
-    </div> -->
+          <button type="submit" id="register-btn">Register</button>
+          <p id="register-para">
+            Already got an account? <a href="#">Log in</a>
+          </p>
+        </form>
+      </div>
+    </div>
 
-    <div id="start-game-screen">
-      <button type="button" id="start-game-btn">Start Game</button>
+    <!-- PLAYER SESSION SCREEN -->
+    <div id="player-session-screen">
+      <div id="player-session-container">
+        <p id="player-data"></p>
+
+        <button type="button" id="log-out-btn">Log out</button>
+
+        <div id="opponent-select-container">
+          <label for="opponent-select">Choose an opponent:</label>
+
+          <select name="opponents" id="opponent-select">
+            <option value="">Please, choose an option</option>
+            <hr />
+          </select>
+        </div>
+
+        <button type="button" id="start-game-btn" disabled>START GAME</button>
+      </div>
     </div>
 
     <canvas id="game-screen" width="2380" height="1120"></canvas>

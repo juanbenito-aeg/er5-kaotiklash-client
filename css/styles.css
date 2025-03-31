@@ -19,7 +19,8 @@ body {
 
 #register-screen {
   width: 100%;
-  display: flex;
+  min-height: 100vh;
+  display: none;
   justify-content: center;
   align-items: center;
   background: url("../images/entrance_door.png");
@@ -77,17 +78,55 @@ input:focus {
   color: #ddd1d1af;
 }
 
-p {
+#register-para {
   margin-top: 20px;
   font-size: 1.2rem;
   text-align: left;
 }
 
-#start-game-screen {
-  display: none;
+#player-session-screen {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url("../images/player_session_background.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#player-session-container {
+  width: 500px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-areas:
+    "data     log-out"
+    "opp-sel  opp-sel"
+    "start    start";
+  gap: 2em;
+  padding: 2.5em;
+  border-radius: 16px;
+  background-color: rgb(0 0 0 / 0.8);
+  color: white;
+}
+
+#player-data {
+  grid-area: data;
+}
+
+#log-out-btn {
+  grid-area: log-out;
+}
+
+#opponent-select-container {
+  grid-area: opp-sel;
+  display: flex;
+  flex-direction: column;
 }
 
 #start-game-btn {
+  grid-area: start;
   padding: 0.5em 1.25em;
   font-size: 1.25rem;
 }
