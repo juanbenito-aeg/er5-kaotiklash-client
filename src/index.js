@@ -47,28 +47,49 @@ window.onload = initLogInScreen;
 
 function initLogInScreen() {
   const logInForm = document.getElementById("log-in-form");
-  let lastRegisteredMail = localStorage.getItem("email");
-  logInForm.addEventListener("click" , deletelocalstorage())
-  if(!lastRegisteredMail) {
-    logInForm.addEventListener("submit", function (event) {
-      event.preventDefault();
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      
-      localStorage.setItem("email", email);
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const checkbox = document.getElementById("localStorage-checkbox");
 
-      console.log(lastRegisteredMail)      
-      logInPlayer(email, password);  
-      }
-    );
+  const savedEmail = localStorage.getItem("email");
+  const isChecked = localStorage.getItem("checkboxState") === "true";
+
+  if (savedEmail) {
+    emailInput.value = savedEmail;
+    checkbox.checked = isChecked;
+    initStartGameScreen(); // Saltar el login y proceder al juego
+
   }
-  console.log(lastRegisteredMail)   
-}
 
-function deletelocalstorage()
-{
-  console.log("local storage deleted")
-  localStorage.clear();
+  checkbox.addEventListener("change", function () {
+    if (checkbox.checked) {
+      localStorage.setItem("checkboxState", "true");
+      if (emailInput.value.trim()) {
+        localStorage.setItem("email", emailInput.value.trim().toLowerCase());
+      }
+    } else {
+      localStorage.removeItem("checkboxState");
+      localStorage.removeItem("email");
+    }
+  });
+
+  logInForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    let email = emailInput.value.trim().toLowerCase();
+    let password = passwordInput.value.trim();
+
+    if (!email || !password) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+
+    if (checkbox.checked) {
+      localStorage.setItem("email", email);
+    }
+
+    logInPlayer(email, password);
+  });
 }
 
 async function logInPlayer(email, password) {
@@ -83,31 +104,72 @@ async function logInPlayer(email, password) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(playerData),
   });
 
   if (response.ok) {
     const data = await response.json();
-    alert("Log in successful!");
-    console.log(data);
-    initGameScreen();
+    let loginSuccessful = false;
+
+    // Primero verificamos si el email existe
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].email_address === playerData.email) {
+        // Si el email es correcto, verificamos la contraseña
+        if (data[i].password === playerData.password) {
+          loginSuccessful = true;
+          alert("Log in successful!");
+
+          // Guardar el nombre del jugador
+          localStorage.setItem("playerName", data[i].name);
+
+          initGameScreen();
+          break; // Si encontramos una coincidencia, salimos del bucle
+        } else {
+          alert("Incorrect password!");
+          break; // Si la contraseña no es correcta, salimos del bucle
+        }
+      }
+    }
+
+    if (!loginSuccessful) {
+      alert("Email not found!");
+    }
   } else {
     const errorData = await response.json();
     alert(`Error: ${errorData.message || response.statusText}`);
   }
 }
 
+
+
 function initStartGameScreen() {
   const logInScreen = document.getElementById("log-in-screen");
   logInScreen.style.display = "none";
+  const logInform = document.getElementById("log-in-form");
+  logInform.style.display = "none";
   const startGameScreen = document.getElementById("start-game-screen");
   startGameScreen.style.display = "block";
+  
   const btn = document.getElementById("start-game-btn");
   btn.addEventListener("click", initGameScreen);
+  
+  // Botón de log off
+  const logoffbtn = document.getElementById("log-off-btn");
+  logoffbtn.style.display = "block";  // Asegurarse de que el botón de log off sea visible
+  
+  logoffbtn.addEventListener("click", function () {
+    localStorage.clear(); // Borrar localStorage para cerrar la sesión
+    console.log("Log off successful!");
+
+    // Redirigir a la pantalla de login
+    window.location.reload(); // Recarga la página para asegurar que el mail no se quede guardado
+  });
 }
 
-async function initGameScreen() {
 
+
+async function initGameScreen() {
+  const logInScreen = document.getElementById("log-in-screen");
+  logInScreen.style.display = "none";
   const startGameScreen = document.getElementById("start-game-screen");
   startGameScreen.style.display = "none"; 
 
