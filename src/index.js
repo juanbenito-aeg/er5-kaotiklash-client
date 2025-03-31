@@ -46,9 +46,55 @@ const globals = {
 window.onload = initLogInScreen;
 
 function initLogInScreen() {
+  const logInForm = document.getElementById("log-in-form");
+  let lastRegisteredMail = localStorage.getItem("email");
+  logInForm.addEventListener("click" , deletelocalstorage())
+  if(!lastRegisteredMail) {
+    logInForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      
+      localStorage.setItem("email", email);
 
-  const btn = document.getElementById("submit-btn");
-  btn.addEventListener("click", initStartGameScreen);
+      console.log(lastRegisteredMail)      
+      logInPlayer(email, password);  
+      }
+    );
+  }
+  console.log(lastRegisteredMail)   
+}
+
+function deletelocalstorage()
+{
+  console.log("local storage deleted")
+  localStorage.clear();
+}
+
+async function logInPlayer(email, password) {
+  const url = "https://er5-kaotiklash-server.onrender.com/api/players";
+  const playerData = {
+    email: email,
+    password: password,
+  };
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(playerData),
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    alert("Log in successful!");
+    console.log(data);
+    initGameScreen();
+  } else {
+    const errorData = await response.json();
+    alert(`Error: ${errorData.message || response.statusText}`);
+  }
 }
 
 function initStartGameScreen() {
