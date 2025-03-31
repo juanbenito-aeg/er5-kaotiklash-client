@@ -135,9 +135,11 @@ const CardState = {
 const BoxState = {
   INACTIVE: 0,
   AVAILABLE: 1,
-  HOVERED: 2,
-  SELECTED: 3,
-  OCCUPIED: 4,
+  INACTIVE_HOVERED: 2,
+  HOVERED: 3,
+  INACTIVE_SELECTED: 4,
+  SELECTED: 5,
+  OCCUPIED: 6,
 };
 
 const AttackPhaseState = {
