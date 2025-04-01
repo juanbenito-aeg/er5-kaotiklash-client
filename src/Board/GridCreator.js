@@ -246,6 +246,7 @@ export default class GridCreator {
 
     // PLAYER 2 CARDS IN HANDS BOXES AND GRID
     const player2CardsInHandBoxes = [];
+    //THE PLAYER 2 CARDS IN HAND GRID NOW CREATES FROM RIGHT TO LEFT, INSTEAD OF LEFT TO RIGHT
     let player2CardsInHandBoxXCoordinate = 1355;
     for (let i = 0; i < 6; i++) {
       const player2CardsInHandBox = new Box(

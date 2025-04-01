@@ -231,9 +231,9 @@ export default class Turn {
         playerGrid = this.#board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND]
       }
 
-      if (this.#numOfExecutedPhases === 5 && playerDeck.getCards().length < 5) {
+      if (this.#numOfExecutedPhases === 5 && playerDeck.getCards().length < 6) {
         globals.isCurrentTurnFinished = true;
-      } else if (this.#numOfExecutedPhases > 5 && playerDeck.getCards().length >= 5){
+      } else if (this.#numOfExecutedPhases > 5 && playerDeck.getCards().length >= 6){
         this.#numOfExecutedPhases = 5
         this.#currentPhase = PhaseType.DISCARD_CARD
         console.log("please discard a card")

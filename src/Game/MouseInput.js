@@ -1,4 +1,4 @@
-import { CardCategory, CardState } from "./constants.js";
+import { CardCategory, CardState, BoxState } from "./constants.js";
 import { globals } from "../index.js";
 
 export default class MouseInput {
@@ -98,6 +98,49 @@ export default class MouseInput {
       this.#mouseYCoordinate <= boxY + boxHeight;
 
     return isOverBox;
+  }
+
+  detectMouseOverBox(boxes) {
+    for (let i = 0; i < boxes.length; i++) {
+      const box = boxes[i];
+      if (this.isMouseOverBox(box)) {
+        box.setIsMouseOver(true);
+        if (box.getState() === BoxState.INACTIVE) {
+          box.setState(BoxState.INACTIVE_HOVERED);
+        } else if (box.getState() === BoxState.AVAILABLE) {
+          box.setState(BoxState.HOVERED);
+        }
+      }
+    }
+  }
+
+  detectBoxThatIsntHoveredAnymore(boxes) {
+    for (let i = 0; i < boxes.length; i++) {
+      const box = boxes[i];
+      if (!this.isMouseOverBox(box) && box.isMouseOver()) {
+        box.setIsMouseOver(false);
+        if (box.getState() === BoxState.INACTIVE_HOVERED) {
+          box.setState(BoxState.INACTIVE);
+        } else if (box.getState() === BoxState.HOVERED) {
+          box.setState(BoxState.AVAILABLE);
+        }
+      }
+    }
+  }
+
+  detectLeftClickOnBox(boxes) {
+    if (this.isLeftButtonPressed()) {
+      for (let i = 0; i < boxes.length; i++) {
+        const box = boxes[i];
+        if (box.isMouseOver()) {
+          box.setIsLeftClicked(true);
+          if (box.getState() === BoxState.HOVERED) {
+            box.setState(BoxState.SELECTED);
+          }
+        }
+      }
+      this.setLeftButtonPressedFalse();
+    }
   }
 
   detectMouseOverCard(deckContainer) {

@@ -1,6 +1,8 @@
 const GameState = {
   INVALID: -1,
-  PLAYING: 0,
+  LOG_IN: 0,
+  START: 1,
+  PLAYING: 2,
 };
 
 // FPS (FRAMES PER SECOND)
@@ -135,9 +137,11 @@ const CardState = {
 const BoxState = {
   INACTIVE: 0,
   AVAILABLE: 1,
-  HOVERED: 2,
-  SELECTED: 3,
-  OCCUPIED: 4,
+  INACTIVE_HOVERED: 2,
+  HOVERED: 3,
+  INACTIVE_SELECTED: 4,
+  SELECTED: 5,
+  OCCUPIED: 6,
 };
 
 const AttackPhaseState = {
