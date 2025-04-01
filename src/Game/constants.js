@@ -150,7 +150,7 @@ const AttackPhaseState = {
 
 const DiscardCardState = {
   INIT: 0,
-  SELECT_CARD_TO_DISCARD: 1,
+  CARD_DISCARD: 1,
   END: 2,
 };
 

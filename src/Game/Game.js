@@ -439,7 +439,7 @@ export default class Game {
           currentPlayer.cardsInHandGrid ===
           this.#board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND]
         ) {
-          currentCardsInHandBoxIndex = j + 3;
+          currentCardsInHandBoxIndex = j;
         }
         const currentCardsInHandBox =
           currentPlayer.cardsInHandGrid.getBoxes()[currentCardsInHandBoxIndex];

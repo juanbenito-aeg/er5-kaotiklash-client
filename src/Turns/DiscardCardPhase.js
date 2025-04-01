@@ -9,15 +9,16 @@ export default class DiscardCardPhase extends Phase {
   #selectedCard;
   #selectedGrid;
   #skipButtonPressed;
+  #activePlayer;
 
-  constructor(state, decksRelevants, gridsRelevants, mouseInput
-  ) {
+  constructor(state, decksRelevants, gridsRelevants, mouseInput, activePlayer) {
     super(state, mouseInput);
 
     this.#decksRelevants = decksRelevants;
     this.#gridsRelevants = gridsRelevants;
     this.#selectedCard = null;
     this.#selectedGrid = null;
+    this.#activePlayer = activePlayer;
 
 
   }
@@ -33,7 +34,7 @@ export default class DiscardCardPhase extends Phase {
 
     let deckRelevants;
     let gridRelevants;
-
+    let activePlayer;
     if (player === currentPlayer) {
       gridRelevants = 
         board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND];
@@ -44,22 +45,27 @@ export default class DiscardCardPhase extends Phase {
     }
 
     if (player.getID() === PlayerID.PLAYER_1) {
+      activePlayer = PlayerID.PLAYER_1
+
       deckRelevants = [
         deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND],
         deckContainer.getDecks()[DeckType.EVENTS],
       ]
     } else {
+      activePlayer = PlayerID.PLAYER_2
+
       deckRelevants = [
         deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND],
         deckContainer.getDecks()[DeckType.EVENTS],
     ]
     }
-
+    console.log(activePlayer)
     const discardPhase = new DiscardCardPhase(
       DiscardCardState.INIT,
       deckRelevants,
       gridRelevants,
-      mouseInput
+      mouseInput,
+      activePlayer
     );
 
     return discardPhase;
@@ -67,13 +73,17 @@ export default class DiscardCardPhase extends Phase {
 
   execute() {
     let isPhaseFinished = false;
+    console.log(this.#activePlayer)
     switch (this._state) {
       case DiscardCardState.INIT:
+
         this.#initializePhase();
         break;
 
-      case DiscardCardState.SELECT_CARD_TO_DISCARD:
-        this.#selectCardToDiscard();
+      case DiscardCardState.CARD_DISCARD:
+
+          this.#CardDiscard();
+
         break;
 
       case DiscardCardState.END:
@@ -89,51 +99,51 @@ export default class DiscardCardPhase extends Phase {
 
   #initializePhase() {
     globals.currentPhase = PhaseType.DISCARD_CARD;
-    globals.currentState = DiscardCardState.SELECT_CARD_TO_DISCARD;
-    this._state = DiscardCardState.SELECT_CARD_TO_DISCARD;
+    globals.currentState = DiscardCardState.CARD_DISCARD;
+    this._state = DiscardCardState.CARD_DISCARD;
   }
 
-  #selectCardToDiscard() {
-    console.log("select card phase");
+  #CardDiscard() {
+    console.log("discard card phase");
     const handGrid = this.#gridsRelevants;
-    for (let i = 0; i < handGrid.getBoxes().length; i++) {
-      let box = handGrid.getBoxes()[i];
-      if (
-        this._mouseInput.isMouseOverBox(box) &&
-        box.isOccupied() &&
-        this._mouseInput.isLeftButtonPressed()
-      ) {
-        console.log("selected card");
-        this.#selectedCard = box.getCard();
-        this.#selectedCard.setState(CardState.SELECTED);
-        console.log(this.#selectedCard.getName());
-      }
-    }
+    let index = this.#decksRelevants[0].getCards().length - 1;
+
+
+        
+
+    
+    let box = handGrid.getBoxes()[index];
+    console.log(handGrid)
+    this.#selectedCard = box.getCard();
+
     if (this.#selectedCard) {
-      let cardBox = this.#selectedCard.getBoxIsPositionedIn(handGrid, this.#selectedCard)
-      for (let i = 0; i < handGrid.getBoxes().length; i++) {
-        let box = handGrid.getBoxes()[i];
-        if(cardBox === box)
-        {
-          
-          console.log(this.#decksRelevants[1].getCards().length)
+      console.log("selected card");
+
+
+
           this.#decksRelevants[1].insertCard(this.#selectedCard)
-          console.log(this.#decksRelevants[1].getCards().length)
           this.#decksRelevants[0].removeCard(this.#selectedCard)
-          this._state = DiscardCardState.END;
+          console.log(this.#decksRelevants[0])
+          if(this.#decksRelevants[0].getCards().length < 6)
+          {
+            console.log("all needed cards discarded")
+            this._state = DiscardCardState.END;
+          } else {
+            console.log("card discarded but not yet")
+            this.#selectedCard = null;
+            this.#selectedGrid = null;
+            this._state = DiscardCardState.INIT
+          }
         }
-      }
     }
-  }
+
 
   #finalizePhase() {
     console.log("finish phase");
-
+    
       this.#selectedCard = null;
       this.#selectedGrid = null;
       this._state = DiscardCardState.INIT;
-      
 
   }
-
 }
