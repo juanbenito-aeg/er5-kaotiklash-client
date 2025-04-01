@@ -1,7 +1,5 @@
 import Game from "./Game/Game.js";
 import { GameState, FPS } from "./Game/constants.js";
-import PhasesMessages from "./Messages/PhasesMessages.js";
-import DamageMessages from "./Messages/DamageMessage.js";
 
 // GLOBAL VARIABLES CREATION
 const globals = {
@@ -107,7 +105,7 @@ function initLogInScreen() {
   if (savedEmail) {
     emailInput.value = savedEmail;
     checkbox.checked = isChecked;
-    initStartGameScreen(); // Saltar el login y proceder al juego
+    initPlayerSessionScreen(); // Saltar el login y proceder al juego
 
   }
 
@@ -160,22 +158,19 @@ async function logInPlayer(email, password) {
     const data = await response.json();
     let loginSuccessful = false;
 
-    // Primero verificamos si el email existe
     for (let i = 0; i < data.length; i++) {
       if (data[i].email_address === playerData.email) {
-        // Si el email es correcto, verificamos la contraseña
         if (data[i].password === playerData.password) {
           loginSuccessful = true;
           alert("Log in successful!");
 
-          // Guardar el nombre del jugador
           localStorage.setItem("playerName", data[i].name);
 
           initPlayerSessionScreen();
-          break; // Si encontramos una coincidencia, salimos del bucle
+          break; 
         } else {
           alert("Incorrect password!");
-          break; // Si la contraseña no es correcta, salimos del bucle
+          break; 
         }
       }
     }
@@ -189,7 +184,74 @@ async function logInPlayer(email, password) {
   }
 }
 
+async function initPlayerSessionScreen() {
+  // GET THE LOGGED IN PLAYER'S DATA & INSERT IT INTO A PARAGRAPH ELEMENT
+
+  const playerEmail = localStorage.getItem("email");
+  const playerName = localStorage.getItem("playerName");
+
+  const playerDataParagraph = document.getElementById("player-data");
+  playerDataParagraph.innerHTML = `${playerEmail}<br>Hi, ${playerName}!`;
+
+  // TERMINATE THE CURRENT SESSION WHEN THE "Log out" BUTTON IS PRESSED
+  const logOutBtn = document.getElementById("log-out-btn");
+  logOutBtn.addEventListener("click", clearLocalStorageAndShowLogInScreen);
+
+  // GET OPPONENTS' DATA & USE THEM TO CREATE HTML ELEMENTS
+  const opponentSelect = document.getElementById("opponent-select");
+  createOpponentsSelOptions(playerEmail, opponentSelect);
+
+  // ACTIVATE THE "Start Game" BUTTON WHEN AN OPPONENT IS SELECTED & DISABLE IT WHEN THE DEFAULT OPTION IS SELECTED AGAIN
+  opponentSelect.addEventListener("change", activateOrDisableStartGameBtn);
+
+  // START THE GAME WHEN THE CORRESPONDING BUTTON IS PRESSED
+  const startGameBtn = document.getElementById("start-game-btn");
+  startGameBtn.addEventListener("click", initGameScreen);
+}
+
+function clearLocalStorageAndShowLogInScreen() {
+  localStorage.clear();
+
+  const playerSessionScreen = document.getElementById("player-session-screen");
+  playerSessionScreen.style.display = "none";
+
+  const logInScreen = document.getElementById("log-in-screen");
+  logInScreen.style.display = "block";
+}
+
+async function createOpponentsSelOptions(playerEmail, opponentSelect) {
+  const url = "https://er5-kaotiklash-server.onrender.com/api/players";
+  const response = await fetch(url);
+
+  let opponentsData;
+  if (response.ok) {
+    opponentsData = await response.json();
+  } else {
+    alert(`Communication error: ${response.statusText}`);
+  }
+
+  for (let i = 0; i < opponentsData.length; i++) {
+    if (opponentsData[i].email_address !== playerEmail) {
+      const currentOpponentName = opponentsData[i].name;
+      const currentOpponentSelOption = new Option(currentOpponentName);
+      opponentSelect.appendChild(currentOpponentSelOption);
+    }
+  }
+}
+
+function activateOrDisableStartGameBtn(e) {
+  const startGameBtn = document.getElementById("start-game-btn");
+
+  if (e.target.value) {
+    startGameBtn.disabled = false;
+  } else {
+    startGameBtn.disabled = true;
+  }
+}
+
 async function initGameScreen() {
+  const playerSessionScreen = document.getElementById("player-session-screen");
+  playerSessionScreen.style.display = "none";
 
   initVars();
 
