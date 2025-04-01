@@ -1,3 +1,5 @@
+import { BoxState } from "../Game/constants.js";
+
 export default class Grid {
   #gridType;
   #boxes;
@@ -30,6 +32,16 @@ export default class Grid {
       const currentBox = this.getBoxes()[i];
 
       if (currentBox.isLeftClicked()) {
+        return currentBox;
+      }
+    }
+  }
+
+  lookForSelectedBox() {
+    for (let i = 0; i < this.getBoxes().length; i++) {
+      const currentBox = this.getBoxes()[i];
+
+      if (currentBox.getState() === BoxState.SELECTED) {
         return currentBox;
       }
     }

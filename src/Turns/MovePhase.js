@@ -74,6 +74,7 @@ export default class MovePhase extends Phase {
 
   execute() {
     let isPhaseFinished = false;
+
     switch (this._state) {
       case MovePhaseState.INIT:
         this.#initializePhase();
@@ -95,23 +96,22 @@ export default class MovePhase extends Phase {
         this.#finalizePhase();
         isPhaseFinished = true;
         break;
-
-      default:
-        console.error("Move Event State Fail");
     }
+
     return isPhaseFinished;
   }
 
   #initializePhase() {
     globals.currentPhase = PhaseType.MOVE;
     globals.currentState = MovePhaseState.SELECT_CARD;
+
     let message = PhasesMessages.create(
       PhaseType.MOVE,
       MovePhaseState.SELECT_CARD,
       Language.ENGLISH
     );
     globals.phasesMessages.push(message);
-    console.log(globals.phasesMessages);
+
     this._state = MovePhaseState.SELECT_CARD;
   }
 
@@ -128,7 +128,6 @@ export default class MovePhase extends Phase {
         console.log("selected card");
         this.#selectedCard = box.getCard();
         this.#selectedCard.setState(CardState.SELECTED);
-        console.log(this.#selectedCard.getName());
       }
     }
     if (this.#selectedCard) {
@@ -221,7 +220,6 @@ export default class MovePhase extends Phase {
         this.#selectedGrid.setCard(this.#selectedCard);
         this.#selectedCard.setState(CardState.PLACED);
         this.#selectedCard = null;
-        console.log(this.#selectedCard);
       }
       this.#selectedCard = null;
       this.#selectedGrid = null;

@@ -492,7 +492,6 @@ export default class Game {
 
   #update() {
     if (globals.isCurrentTurnFinished) {
-      console.log(this.#currentPlayer);
       globals.isCurrentTurnFinished = false;
 
       const newCurrentPlayerID = this.#turns[
@@ -967,7 +966,7 @@ export default class Game {
         globals.currentState,
         "ENG"
       );
-      console.log(messageContent);
+
       globals.ctx.fillText(
         messageContent,
         messageBoxX + messageBoxWidth / 2,
@@ -2059,8 +2058,6 @@ export default class Game {
     for (let i = 0; i < globals.damageMessages.length; i++) {
       let message = globals.damageMessages[i];
       let duration = message.getDuration();
-
-      // console.log(duration);
 
       let fontSize = globals.damageFontSize / duration;
       if (fontSize >= 100) {

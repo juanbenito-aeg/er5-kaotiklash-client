@@ -17,7 +17,6 @@ export default class PrepareEventPhase extends Phase {
   #decksRelevants;
   #gridsRelevants;
   #events;
-  #isPhaseFinished;
 
   constructor(
     state,
@@ -33,7 +32,6 @@ export default class PrepareEventPhase extends Phase {
     this.#decksRelevants = decksRelevants;
     this.#gridsRelevants = gridRelevants;
     this.#events = events;
-    this.#isPhaseFinished = false;
   }
 
   static create(
@@ -80,13 +78,12 @@ export default class PrepareEventPhase extends Phase {
       Language.ENGLISH
     );
     globals.phasesMessages.push(message);
-    console.log("aaaa", message);
 
     return prepareEventPhase;
   }
 
   execute() {
-    this.#isPhaseFinished = false;
+    let isPhaseFinished = false;
 
     switch (this._state) {
       case PrepareEventState.INIT:
@@ -107,13 +104,11 @@ export default class PrepareEventPhase extends Phase {
       case PrepareEventState.END:
         console.log("end");
         this.#finalizePhase();
+        isPhaseFinished = true;
         break;
-
-      default:
-        console.error("Prepare Event State Fail");
     }
 
-    return this.#isPhaseFinished;
+    return isPhaseFinished;
   }
 
   #initializePhase() {
@@ -159,7 +154,7 @@ export default class PrepareEventPhase extends Phase {
       selectedCard.setState(CardState.PLACED);
       this._state = PrepareEventState.SELECT_HAND_CARD;
     } else {
-      const hoveredBox = this.#gridsRelevants[0].lookForHoveredBox();
+      const hoveredBox = this.#gridsRelevants.lookForHoveredBox();
       if (hoveredBox) {
         if (!hoveredBox.isLeftClicked()) {
           hoveredBox.setState(BoxState.HOVERED);
@@ -185,7 +180,7 @@ export default class PrepareEventPhase extends Phase {
     this.#decksRelevants[1].insertCard(selectedCard);
     this.#decksRelevants[0].removeCard(selectedCard);
 
-    const selectedBox = this.#gridsRelevants[0].lookForSelectedBox();
+    const selectedBox = this.#gridsRelevants.lookForSelectedBox();
     selectedBox.setCard(selectedCard);
 
     selectedCard.setXCoordinate(selectedBox.getXCoordinate());
@@ -202,7 +197,7 @@ export default class PrepareEventPhase extends Phase {
     this.#events.push(prepareEvent);
 
     this._state = PrepareEventState.INIT;
-    this.#isPhaseFinished = true;
+
     globals.phasesMessages.splice(0, globals.phasesMessages.length);
   }
 

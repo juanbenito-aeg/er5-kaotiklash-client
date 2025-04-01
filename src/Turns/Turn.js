@@ -197,8 +197,7 @@ export default class Turn {
 
       if (this.#isCurrentPhaseCanceled || this.#isCurrentPhaseFinished) {
         this.#currentPhase = PhaseType.INVALID;
-        console.log("hloa");
-        this.#currentPhase = PhaseType.INVALID;
+
         let message = PhasesMessages.create(
           this.#currentPhase,
           this.#currentPhase,
@@ -208,7 +207,6 @@ export default class Turn {
 
         globals.currentPhase = PhaseType.INVALID;
         globals.currentState = PhaseType.INVALID;
-        console.log(globals.phasesMessages);
 
         if (this.#isCurrentPhaseCanceled) {
           this.#isCurrentPhaseCanceled = false;

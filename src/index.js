@@ -41,7 +41,7 @@ const globals = {
   damageFontSize: 75,
 };
 
-window.onload = initLogInScreen;
+window.onload = initGameScreen;
 
 function initRegisterScreen() {
   const registerForm = document.getElementById("register-form");
@@ -106,7 +106,6 @@ function initLogInScreen() {
     emailInput.value = savedEmail;
     checkbox.checked = isChecked;
     initPlayerSessionScreen(); // Saltar el login y proceder al juego
-
   }
 
   checkbox.addEventListener("change", function () {
@@ -167,10 +166,10 @@ async function logInPlayer(email, password) {
           localStorage.setItem("playerName", data[i].name);
 
           initPlayerSessionScreen();
-          break; 
+          break;
         } else {
           alert("Incorrect password!");
-          break; 
+          break;
         }
       }
     }
