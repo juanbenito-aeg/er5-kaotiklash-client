@@ -116,10 +116,10 @@ export default class DiscardCardPhase extends Phase {
         if(cardBox === box)
         {
           
-          this.#decksRelevants[0].getCards().splice(i,1)
           console.log(this.#decksRelevants[1].getCards().length)
-          this.#decksRelevants[1].getCards().push(this.#selectedCard)
+          this.#decksRelevants[1].insertCard(this.#selectedCard)
           console.log(this.#decksRelevants[1].getCards().length)
+          this.#decksRelevants[0].removeCard(this.#selectedCard)
           this._state = DiscardCardState.END;
         }
       }
