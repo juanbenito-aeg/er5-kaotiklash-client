@@ -117,81 +117,80 @@ export default class MovePhase extends Phase {
 
   #selectCard() {
     console.log("select card phase");
-    const battlefieldGrid = this.#gridsRelevants;
-    for (let i = 0; i < battlefieldGrid.getBoxes().length; i++) {
-      let box = battlefieldGrid.getBoxes()[i];
-      if (
-        this._mouseInput.isMouseOverBox(box) &&
-        box.isOccupied() &&
-        this._mouseInput.isLeftButtonPressed()
-      ) {
-        console.log("selected card");
-        this.#selectedCard = box.getCard();
-        this.#selectedCard.setState(CardState.SELECTED);
+
+    const hoveredCard = this.#decksRelevants.lookForHoveredCard();
+
+    if (hoveredCard) {
+      if (!hoveredCard.isLeftClicked()) {
+        hoveredCard.setState(CardState.HOVERED);
+      } else {
+        hoveredCard.setState(CardState.SELECTED);
+
+        globals.currentState = MovePhaseState.SELECT_TARGET;
+        let message = PhasesMessages.create(
+          PhaseType.MOVE,
+          MovePhaseState.SELECT_TARGET,
+          Language.ENGLISH
+        );
+        globals.phasesMessages.push(message);
+
+        this._state = MovePhaseState.SELECT_TARGET;
       }
-    }
-    if (this.#selectedCard) {
-      globals.currentState = MovePhaseState.SELECT_TARGET;
-      let message = PhasesMessages.create(
-        PhaseType.MOVE,
-        MovePhaseState.SELECT_TARGET,
-        Language.ENGLISH
-      );
-      globals.phasesMessages.push(message);
-      this._state = MovePhaseState.SELECT_TARGET;
     }
   }
 
   #selectTargetGrid() {
     console.log("select target phase");
 
-    const battlefieldGrid = this.#gridsRelevants;
+    const selectedCard = this.#decksRelevants.lookForSelectedCard();
 
-    for (let i = 0; i < battlefieldGrid.getBoxes().length; i++) {
+    let selectedBox;
+    for (let i = 0; i < this.#gridsRelevants.getBoxes().length; i++) {
       if (
-        this.#selectedCard.getXCoordinate() ===
-          battlefieldGrid.getBoxes()[i].getXCoordinate() &&
-        this.#selectedCard.getYCoordinate() ===
-          battlefieldGrid.getBoxes()[i].getYCoordinate()
+        selectedCard.getXCoordinate() ===
+          this.#gridsRelevants.getBoxes()[i].getXCoordinate() &&
+        selectedCard.getYCoordinate() ===
+          this.#gridsRelevants.getBoxes()[i].getYCoordinate()
       ) {
-        this.#previousBox = battlefieldGrid.getBoxes()[i];
-      }
-      const box = battlefieldGrid.getBoxes()[i];
-      const targetBoxX = this.#selectedCard.getXCoordinate() - 135;
-      const targetBoxY = this.#selectedCard.getYCoordinate() - 135;
-      const targetBoxHeight = box.getHeight();
-      const targetBoxWidth = box.getWidth();
-      const targetSizeX = targetBoxX + targetBoxWidth * 3 + 50;
-      const targetSizeY = targetBoxY + targetBoxHeight * 3 + 50;
-
-      const isMouseOnAvailableArea =
-        this._mouseInput.getMouseXCoordinate() >= targetBoxX &&
-        this._mouseInput.getMouseXCoordinate() <= targetSizeX &&
-        this._mouseInput.getMouseYCoordinate() >= targetBoxY &&
-        this._mouseInput.getMouseYCoordinate() <= targetSizeY;
-
-      if (
-        this._mouseInput.isMouseOverBox(box) &&
-        !box.isOccupied() &&
-        this._mouseInput.isLeftButtonPressed() &&
-        isMouseOnAvailableArea
-      ) {
-        this.#selectedGrid = box;
-        box.setCard(this.#selectedCard);
-        this.#previousBox.setState(BoxState.AVAILABLE);
-        this.#previousBox.resetCard();
-        box.setState(BoxState.SELECTED);
+        selectedBox = this.#gridsRelevants.getBoxes()[i];
       }
     }
-    if (this.#selectedGrid) {
-      globals.currentState = MovePhaseState.MOVE_CARD;
-      let message = PhasesMessages.create(
-        PhaseType.MOVE,
-        MovePhaseState.MOVE_CARD,
-        Language.ENGLISH
-      );
-      globals.phasesMessages.push(message);
-      this._state = MovePhaseState.MOVE_CARD;
+
+    const targetBoxX = selectedCard.getXCoordinate() - 135;
+    const targetBoxY = selectedCard.getYCoordinate() - 135;
+    const targetBoxHeight = selectedBox.getHeight();
+    const targetBoxWidth = selectedBox.getWidth();
+    const targetSizeX = targetBoxX + targetBoxWidth * 3 + 50;
+    const targetSizeY = targetBoxY + targetBoxHeight * 3 + 50;
+
+    const isMouseOnAvailableArea =
+      this._mouseInput.getMouseXCoordinate() >= targetBoxX &&
+      this._mouseInput.getMouseXCoordinate() <= targetSizeX &&
+      this._mouseInput.getMouseYCoordinate() >= targetBoxY &&
+      this._mouseInput.getMouseYCoordinate() <= targetSizeY;
+
+    if (isMouseOnAvailableArea) {
+      const hoveredTargetBox = this.#gridsRelevants.lookForHoveredBox();
+      if (hoveredTargetBox && !hoveredTargetBox.isOccupied()) {
+        if (!hoveredTargetBox.isLeftClicked()) {
+          hoveredTargetBox.setState(BoxState.HOVERED);
+        } else {
+          hoveredTargetBox.setState(BoxState.SELECTED);
+          hoveredTargetBox.setCard(selectedCard);
+
+          selectedBox.resetCard();
+
+          globals.currentState = MovePhaseState.MOVE_CARD;
+          let message = PhasesMessages.create(
+            PhaseType.MOVE,
+            MovePhaseState.MOVE_CARD,
+            Language.ENGLISH
+          );
+          globals.phasesMessages.push(message);
+
+          this._state = MovePhaseState.MOVE_CARD;
+        }
+      }
     }
   }
 
