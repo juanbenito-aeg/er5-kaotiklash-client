@@ -507,9 +507,15 @@ export default class Game {
     }
 
     this.#executeEvent();
+
     this.#updateDamageMessages();
 
-    this.#mouseInput.resetIsLeftClicked(this.#deckContainer);
+    this.#mouseInput.resetIsLeftClickedOnBoxes(this.#board);
+    this.#mouseInput.detectMouseOverBox(this.#board);
+    this.#mouseInput.detectBoxThatIsntHoveredAnymore(this.#board);
+    this.#mouseInput.detectLeftClickOnBox(this.#board);
+
+    this.#mouseInput.resetIsLeftClickedOnCards(this.#deckContainer);
     this.#mouseInput.detectMouseOverCard(this.#deckContainer);
     this.#mouseInput.detectCardThatIsntHoveredAnymore(this.#deckContainer);
     this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
