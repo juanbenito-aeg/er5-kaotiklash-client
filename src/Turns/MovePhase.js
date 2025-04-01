@@ -7,8 +7,10 @@ import {
   DeckType,
   GridType,
   PhaseType,
+  Language,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
+import PhasesMessages from "../Messages/PhasesMessages.js";
 
 export default class MovePhase extends Phase {
   #state;
@@ -60,6 +62,13 @@ export default class MovePhase extends Phase {
       mouseInput
     );
 
+    let message = PhasesMessages.create(
+      PhaseType.MOVE,
+      MovePhaseState.INIT,
+      Language.ENGLISH
+    );
+    globals.phasesMessages.push(message);
+
     return movePhase;
   }
 
@@ -94,8 +103,15 @@ export default class MovePhase extends Phase {
   }
 
   #initializePhase() {
-    globals.phaseType = PhaseType.MOVE;
     globals.currentPhase = PhaseType.MOVE;
+    globals.currentState = MovePhaseState.SELECT_CARD;
+    let message = PhasesMessages.create(
+      PhaseType.MOVE,
+      MovePhaseState.SELECT_CARD,
+      Language.ENGLISH
+    );
+    globals.phasesMessages.push(message);
+    console.log(globals.phasesMessages);
     this._state = MovePhaseState.SELECT_CARD;
   }
 
@@ -116,6 +132,13 @@ export default class MovePhase extends Phase {
       }
     }
     if (this.#selectedCard) {
+      globals.currentState = MovePhaseState.SELECT_TARGET;
+      let message = PhasesMessages.create(
+        PhaseType.MOVE,
+        MovePhaseState.SELECT_TARGET,
+        Language.ENGLISH
+      );
+      globals.phasesMessages.push(message);
       this._state = MovePhaseState.SELECT_TARGET;
     }
   }
@@ -162,6 +185,13 @@ export default class MovePhase extends Phase {
       }
     }
     if (this.#selectedGrid) {
+      globals.currentState = MovePhaseState.MOVE_CARD;
+      let message = PhasesMessages.create(
+        PhaseType.MOVE,
+        MovePhaseState.MOVE_CARD,
+        Language.ENGLISH
+      );
+      globals.phasesMessages.push(message);
       this._state = MovePhaseState.MOVE_CARD;
     }
   }
@@ -172,6 +202,13 @@ export default class MovePhase extends Phase {
       this.#selectedCard.setYCoordinate(this.#selectedGrid.getYCoordinate());
       this.#selectedCard.state = CardState.PLACED;
       this.#selectedGrid.state = BoxState.OCCUPIED;
+      globals.currentState = MovePhaseState.END;
+      let message = PhasesMessages.create(
+        PhaseType.MOVE,
+        MovePhaseState.END,
+        Language.ENGLISH
+      );
+      globals.phasesMessages.push(message);
       this._state = MovePhaseState.END;
     }
   }
@@ -192,6 +229,7 @@ export default class MovePhase extends Phase {
       this.#selectedGrid = null;
       this.#previousBox = null;
       this._state = MovePhaseState.INIT;
+      globals.phasesMessages.splice(0, globals.phasesMessages.length);
     }
   }
 

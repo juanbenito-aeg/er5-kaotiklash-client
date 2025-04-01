@@ -1,7 +1,5 @@
 import Game from "./Game/Game.js";
 import { GameState, FPS } from "./Game/constants.js";
-import PhasesMessages from "./Messages/PhasesMessages.js";
-import DamageMessages from "./Messages/DamageMessage.js";
 
 // GLOBAL VARIABLES CREATION
 const globals = {
@@ -15,12 +13,12 @@ const globals = {
   cardsData: {},
   cardsReverseImage: {},
   cardsImages: {
-    main_characters: [],
+    mainCharacters: [],
     minions: [],
     weapons: [],
     armor: [],
-    special: [],
-    rare: [],
+    specialEvents: [],
+    rareEvents: [],
   },
   cardsTemplatesImages: [],
   cardsIconsImages: [],
@@ -36,22 +34,276 @@ const globals = {
   firstActivePlayerID: -1,
   phasesMessages: [],
   currentPhase: 0,
+  currentState: 0,
   phaseType: -1,
   gameWinner: null,
   damageMessages: [],
   damageFontSize: 75,
 };
 
-window.onload = initStartGameScreen;
+window.onload = initLogInScreen;
 
-function initStartGameScreen() {
-  const btn = document.getElementById("start-game-btn");
-  btn.addEventListener("click", initGameScreen);
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelector("#log-in-para a").addEventListener("click", function (event) {
+      event.preventDefault(); 
+      initRegisterScreen(); 
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelector("#register-para a").addEventListener("click", function (event) {
+    event.preventDefault();
+    initLogInScreen(); 
+  });
+});
+
+function initLogInScreen() {
+  const loginScreen = document.getElementById("login-screen");
+  loginScreen.style.display = "block";
+
+  const registerScreen = document.getElementById("register-screen");
+  registerScreen.style.display = "none"; 
+  const logInForm = document.getElementById("login-form");
+  const emailInput = document.getElementById("login-email");
+  const passwordInput = document.getElementById("login-password");
+  const checkbox = document.getElementById("localStorage-checkbox");
+
+  const savedEmail = localStorage.getItem("email");
+  const isChecked = localStorage.getItem("checkboxState") === "true";
+
+  if (savedEmail) {
+    emailInput.value = savedEmail;
+    checkbox.checked = isChecked;
+    initPlayerSessionScreen(); // Saltar el login y proceder al juego
+  }
+
+  checkbox.addEventListener("change", function () {
+    if (checkbox.checked) {
+      localStorage.setItem("checkboxState", "true");
+      if (emailInput.value.trim()) {
+        localStorage.setItem("email", emailInput.value.trim().toLowerCase());
+      }
+    } else {
+      localStorage.removeItem("checkboxState");
+      localStorage.removeItem("email");
+    }
+});
+
+logInForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  let email = emailInput.value.trim().toLowerCase();
+  let password = passwordInput.value.trim();
+
+  if (!email || !password) {
+    alert("Por favor, completa todos los campos.");
+    return;
+  }
+
+  if (checkbox.checked) {
+    localStorage.setItem("email", email);
+  }
+
+  logInPlayer(email, password);
+});
+}
+
+
+async function logInPlayer(email, password) {
+  const url = "https://er5-kaotiklash-server.onrender.com/api/players";
+  const playerData = {
+    email: email,
+    password: password,
+  };
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    let loginSuccessful = false;
+
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].email_address === playerData.email) {
+        if (data[i].password === playerData.password) {
+          loginSuccessful = true;
+          alert("Log in successful!");
+
+          localStorage.setItem("playerName", data[i].name);
+
+          hideLoginScreen();
+
+          initPlayerSessionScreen();
+          break;
+        } else {
+          alert("Incorrect password!");
+          break;
+        }
+      }
+    }
+
+    if (!loginSuccessful) {
+      alert("Email not found!");
+    }
+  } else {
+    const errorData = await response.json();
+    alert(`Error: ${errorData.message || response.statusText}`);
+  }
+}
+
+function hideLoginScreen() {
+  const loginScreen = document.getElementById("login-screen");
+  loginScreen.style.display = "none";
+}
+
+function initRegisterScreen() {
+  const loginScreen = document.getElementById("login-screen");
+  loginScreen.style.display = "none"; // Ocultar login
+
+  const registerScreen = document.getElementById("register-screen");
+  registerScreen.style.display = "block"; // Mostrar registro
+
+  const registerForm = document.getElementById("register-form");
+  registerForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    
+    const username = document.getElementById("name").value;
+    const email = document.getElementById("register-email").value;
+    const password = document.getElementById("register-password").value;
+    const confirmPassword = document.getElementById("confirm-password").value;
+
+    if (!username || !email || !password || !confirmPassword) {
+      alert("Please complete all fields");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Error: The passwords don't match");
+      return;
+    }
+
+    registerPlayer(username, email, password);
+    alert("Successful registration");
+    initLogInScreen(); // Redirigir automáticamente al login después de registrarse
+  });
+}
+
+
+async function registerPlayer(username, email, password) {
+  const url = "https://er5-kaotiklash-server.onrender.com/api/players";
+  const playerData = {
+    name: username,
+    email_address: email,
+    password: password,
+  };
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(playerData),
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    alert("Registration successful!");
+    console.log(data);
+    initGameScreen();
+  } else {
+    const errorData = await response.json();
+    alert(`Error: ${errorData.message || response.statusText}`);
+  }
+}
+
+async function initPlayerSessionScreen() {
+  hideLoginScreen()
+  showPlayerSessionScreen();
+
+  // GET THE LOGGED IN PLAYER'S DATA & INSERT IT INTO A PARAGRAPH ELEMENT
+
+  const playerEmail = localStorage.getItem("email");
+  const playerName = localStorage.getItem("playerName");
+
+  const playerDataParagraph = document.getElementById("player-data");
+  playerDataParagraph.innerHTML = `${playerEmail}<br>Hi, ${playerName}!`;
+
+  // TERMINATE THE CURRENT SESSION WHEN THE "Log out" BUTTON IS PRESSED
+  const logOutBtn = document.getElementById("log-out-btn");
+  logOutBtn.addEventListener("click", clearLocalStorageAndShowLogInScreen);
+
+  // GET OPPONENTS' DATA & USE THEM TO CREATE HTML ELEMENTS
+  const opponentSelect = document.getElementById("opponent-select");
+  createOpponentsSelOptions(playerEmail, opponentSelect);
+
+  // ACTIVATE THE "Start Game" BUTTON WHEN AN OPPONENT IS SELECTED & DISABLE IT WHEN THE DEFAULT OPTION IS SELECTED AGAIN
+  opponentSelect.addEventListener("change", activateOrDisableStartGameBtn);
+
+  // START THE GAME WHEN THE CORRESPONDING BUTTON IS PRESSED
+  const startGameBtn = document.getElementById("start-game-btn");
+  startGameBtn.addEventListener("click", initGameScreen);
+}
+
+function showPlayerSessionScreen() {
+  const playerSessionScreen = document.getElementById("player-session-screen");
+  playerSessionScreen.style.display = "flex";
+}
+
+function clearLocalStorageAndShowLogInScreen() {
+  localStorage.clear();
+
+  hidePlayerSessionScreen();
+
+  showLoginScreen();
+}
+
+function hidePlayerSessionScreen() {
+  const playerSessionScreen = document.getElementById("player-session-screen");
+  playerSessionScreen.style.display = "none";
+}
+
+function showLoginScreen() {
+  const logInScreen = document.getElementById("login-screen");
+  logInScreen.style.display = "block";
+}
+
+async function createOpponentsSelOptions(playerEmail, opponentSelect) {
+  const url = "https://er5-kaotiklash-server.onrender.com/api/players";
+  const response = await fetch(url);
+
+  let opponentsData;
+  if (response.ok) {
+    opponentsData = await response.json();
+  } else {
+    alert(`Communication error: ${response.statusText}`);
+  }
+
+  for (let i = 0; i < opponentsData.length; i++) {
+    if (opponentsData[i].email_address !== playerEmail) {
+      const currentOpponentName = opponentsData[i].name;
+      const currentOpponentSelOption = new Option(currentOpponentName);
+      opponentSelect.appendChild(currentOpponentSelOption);
+    }
+  }
+}
+
+function activateOrDisableStartGameBtn(e) {
+  const startGameBtn = document.getElementById("start-game-btn");
+
+  if (e.target.value) {
+    startGameBtn.disabled = false;
+  } else {
+    startGameBtn.disabled = true;
+  }
 }
 
 async function initGameScreen() {
-  const startGameScreen = document.getElementById("start-game-screen");
-  startGameScreen.style.display = "none";
+  const playerSessionScreen = document.getElementById("player-session-screen");
+  playerSessionScreen.style.display = "none";
 
   initVars();
 
@@ -87,18 +339,29 @@ function initVars() {
 }
 
 async function loadDBCardsDataAndAssets() {
-  // RELATIVE PATH TO THE FILE CONTAINING THE CARDS DATA
-  const url = "./src/cardsData.json";
+  // API ENDPOINTS TO RETRIEVE CARDS DATA FROM THE DATABASE
+  const urls = {
+    mainCharacters:
+      "https://er5-kaotiklash-server.onrender.com/api/main-characters/",
+    minions: "https://er5-kaotiklash-server.onrender.com/api/minions/",
+    weapons: "https://er5-kaotiklash-server.onrender.com/api/weapons/",
+    armor: "https://er5-kaotiklash-server.onrender.com/api/armor/",
+    specialEvents:
+      "https://er5-kaotiklash-server.onrender.com/api/special-events/",
+    rareEvents: "https://er5-kaotiklash-server.onrender.com/api/rare-events/",
+  };
 
-  const response = await fetch(url);
+  for (const urlName in urls) {
+    const response = await fetch(urls[urlName]);
 
-  if (response.ok) {
-    globals.cardsData = await response.json();
-
-    loadAssets();
-  } else {
-    alert(`Communication error: ${response.statusText}`);
+    if (response.ok) {
+      globals.cardsData[urlName] = await response.json();
+    } else {
+      alert(`Communication error: ${response.statusText}`);
+    }
   }
+
+  loadAssets();
 }
 
 function loadAssets() {
@@ -116,19 +379,10 @@ function loadAssets() {
 
   // LOAD CARDS IMAGES
   for (const cardCategory in globals.cardsData) {
-    if (
-      cardCategory === "main_characters" ||
-      cardCategory === "minions" ||
-      cardCategory === "weapons" ||
-      cardCategory === "armor" ||
-      cardCategory === "special" ||
-      cardCategory === "rare"
-    ) {
-      createAndStoreImageObjs(
-        globals.cardsData[cardCategory],
-        globals.cardsImages[cardCategory]
-      );
-    }
+    createAndStoreImageObjs(
+      globals.cardsData[cardCategory],
+      globals.cardsImages[cardCategory]
+    );
   }
 
   // LOAD CARDS TEMPLATES

@@ -9,9 +9,9 @@ import {
   GameState,
   CardCategory,
   DeckType,
-  WeaponType,
-  ArmorType,
-  MinionType,
+  WeaponTypeID,
+  ArmorTypeID,
+  MinionTypeID,
   IconID,
   TemplateID,
   PlayerID,
@@ -136,7 +136,7 @@ export default class Game {
         let cardTypeIcon;
 
         if (currentCard.getCategory() === CardCategory.MAIN_CHARACTER) {
-          cardImage = globals.cardsImages.main_characters[currentCard.getID()];
+          cardImage = globals.cardsImages.mainCharacters[currentCard.getID()];
 
           smallVersionTemplateImage =
             globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_SMALL];
@@ -178,13 +178,13 @@ export default class Game {
               ],
             };
 
-            if (currentCard.getMinionType() === MinionType.SPECIAL) {
+            if (currentCard.getMinionTypeID() === MinionTypeID.SPECIAL) {
               bigVersionTemplateImage =
                 globals.cardsTemplatesImages[TemplateID.MINIONS_SPECIAL_BIG];
 
               cardTypeIcon =
                 globals.cardsIconsImages[IconID.MINION_SPECIAL_TYPE];
-            } else if (currentCard.getMinionType() === MinionType.WARRIOR) {
+            } else if (currentCard.getMinionTypeID() === MinionTypeID.WARRIOR) {
               bigVersionTemplateImage =
                 globals.cardsTemplatesImages[TemplateID.MINIONS_WARRIORS_BIG];
 
@@ -216,9 +216,9 @@ export default class Game {
               ],
             };
 
-            if (currentCard.getWeaponType() === WeaponType.MELEE) {
+            if (currentCard.getWeaponTypeID() === WeaponTypeID.MELEE) {
               cardTypeIcon = globals.cardsIconsImages[IconID.WEAPON_MELEE_TYPE];
-            } else if (currentCard.getWeaponType() === WeaponType.MISSILE) {
+            } else if (currentCard.getWeaponTypeID() === WeaponTypeID.MISSILE) {
               cardTypeIcon =
                 globals.cardsIconsImages[IconID.WEAPON_MISSILE_TYPE];
             } else {
@@ -243,9 +243,9 @@ export default class Game {
               ],
             };
 
-            if (currentCard.getArmorType() === ArmorType.LIGHT) {
+            if (currentCard.getArmorTypeID() === ArmorTypeID.LIGHT) {
               cardTypeIcon = globals.cardsIconsImages[IconID.ARMOR_LIGHT_TYPE];
-            } else if (currentCard.getArmorType() === ArmorType.MEDIUM) {
+            } else if (currentCard.getArmorTypeID() === ArmorTypeID.MEDIUM) {
               bigVersionTemplateImage =
                 globals.cardsTemplatesImages[TemplateID.ARMOR_MEDIUM_BIG];
 
@@ -254,14 +254,14 @@ export default class Game {
               cardTypeIcon = globals.cardsIconsImages[IconID.ARMOR_HEAVY_TYPE];
             }
           } else if (currentCard.getCategory() === CardCategory.SPECIAL) {
-            cardImage = globals.cardsImages.special[currentCard.getID()];
+            cardImage = globals.cardsImages.specialEvents[currentCard.getID()];
 
             bigVersionTemplateImage =
               globals.cardsTemplatesImages[TemplateID.SPECIAL_EVENTS_BIG];
 
             cardTypeIcon = globals.cardsIconsImages[IconID.SPECIAL_TYPE];
           } else {
-            cardImage = globals.cardsImages.rare[currentCard.getID()];
+            cardImage = globals.cardsImages.rareEvents[currentCard.getID()];
 
             bigVersionTemplateImage =
               globals.cardsTemplatesImages[TemplateID.RARE_EVENTS_BIG];
@@ -431,7 +431,7 @@ export default class Game {
       const currentPlayer = bothPlayersData[i];
 
       // SET COORDINATES OF CARDS IN HAND
-      for (let j = 0; j < 3; j++) {
+      for (let j = 0; j < 5; j++) {
         const currentEventCard = currentPlayer.cardsInHandDeck.getCards()[j];
 
         let currentCardsInHandBoxIndex = j;
@@ -439,7 +439,7 @@ export default class Game {
           currentPlayer.cardsInHandGrid ===
           this.#board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND]
         ) {
-          currentCardsInHandBoxIndex = j + 3;
+          currentCardsInHandBoxIndex = j;
         }
         const currentCardsInHandBox =
           currentPlayer.cardsInHandGrid.getBoxes()[currentCardsInHandBoxIndex];
@@ -492,7 +492,6 @@ export default class Game {
 
   #update() {
     if (globals.isCurrentTurnFinished) {
-      console.log(this.#currentPlayer);
       globals.isCurrentTurnFinished = false;
 
       const newCurrentPlayerID = this.#turns[
@@ -507,9 +506,6 @@ export default class Game {
     }
 
     this.#executeEvent();
-
-    this.#executeMessage();
-
     this.#updateDamageMessages();
 
     this.#mouseInput.resetIsLeftClicked(this.#deckContainer);
@@ -590,17 +586,6 @@ export default class Game {
         globals.gameWinner = this.#players[1 - i];
       }
     }
-  }
-
-  #executeMessage() {
-    for (let i = 0; i < globals.phasesMessages.length; i++) {
-      let phaseMessage = globals.phasesMessages[i];
-    }
-    /*  for (let i = 0; i < this.#phasesMenssages.length; i++) {
-    /* for (let i = 0; i < this.#phasesMenssages.length; i++) {
-      let phaseMessage = this.#phasesMenssages[i];
-      phaseMessage.execute();
-    } */
   }
 
   #updateDamageMessages() {
@@ -969,24 +954,32 @@ export default class Game {
 
     for (let i = 0; i < globals.phasesMessages.length; i++) {
       let messages = globals.phasesMessages[i];
-      if (globals.currentPhase === PhaseType.INVALID) {
-        globals.phaseType = PhaseType.INVALID;
-      } else if (globals.currentPhase === PhaseType.PREPARE_EVENT) {
-        globals.phaseType = PhaseType.PREPARE_EVENT;
-      } else if (globals.currentPhase === PhaseType.ATTACK) {
-        globals.phaseType = PhaseType.ATTACK;
-      } else if (globals.currentPhase === PhaseType.MOVE) {
-        globals.phaseType = PhaseType.MOVE;
-      } else if (globals.currentPhase === PhaseType.EQUIP_WEAPON) {
-        globals.phaseType = PhaseType.EQUIP_WEAPON;
-      }
-
+      let phaseType = this.#getPhaseType(globals.currentPhase);
+      let messageContent = messages.getContent(
+        phaseType,
+        globals.currentState,
+        "ENG"
+      );
       globals.ctx.fillText(
-        messages.getContent(globals.phaseType, "ENG"),
+        messageContent,
         messageBoxX + messageBoxWidth / 2,
         messageBoxY + messageBoxHeight / 2
       );
-      // console.log(globals.phasesMessages[0].getContent())
+    }
+  }
+
+  #getPhaseType(currentPhase) {
+    switch (currentPhase) {
+      case PhaseType.INVALID:
+        return PhaseType.INVALID;
+      case PhaseType.PREPARE_EVENT:
+        return PhaseType.PREPARE_EVENT;
+      case PhaseType.ATTACK:
+        return PhaseType.ATTACK;
+      case PhaseType.MOVE:
+        return PhaseType.MOVE;
+      case PhaseType.EQUIP_WEAPON:
+        return PhaseType.EQUIP_WEAPON;
     }
   }
 
@@ -1078,7 +1071,6 @@ export default class Game {
       ) {
         for (let j = 0; j < currentDeck.getCards().length; j++) {
           const currentCard = currentDeck.getCards()[j];
-
           if (isDeckCardsInHandOfInactivePlayer) {
             this.#renderCardReverse(
               currentCard.getXCoordinate(),
@@ -1869,10 +1861,10 @@ export default class Game {
 
     let descriptionXCoordinate = 640;
 
-    if (card.getArmorType() !== ArmorType.MEDIUM) {
+    if (card.getArmorTypeID() !== ArmorTypeID.MEDIUM) {
       let specialEffectUsableBy;
 
-      if (card.getArmorType() === ArmorType.HEAVY) {
+      if (card.getArmorTypeID() === ArmorTypeID.HEAVY) {
         specialEffectUsableBy = "Warriors";
       } else {
         specialEffectUsableBy = "Wizards";

@@ -4,7 +4,7 @@ import {
   CardCategory,
   CardState,
   DeckType,
-  WeaponType,
+  WeaponTypeID,
 } from "../Game/constants.js";
 
 export default class InitialPhase {
@@ -51,12 +51,9 @@ export default class InitialPhase {
     const player2Minions =
       this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
 
-    this.#shuffleDeckMinions(
-      player1Minions.getCards(),
-      player2Minions.getCards()
-    );
-    //DEMO 1: FAKE FOR BOTH PLAYERS TO HAVE THE SAME MINIONS
-    // this.#shuffleDeck(player2Minions.getCards());
+
+    this.#shuffleDeck(player1Minions.getCards());
+    this.#shuffleDeck(player2Minions.getCards());
 
     this.#selectAndInsertCards(
       player1Minions.getCards(),
@@ -76,19 +73,6 @@ export default class InitialPhase {
       const temp = deck[i];
       deck[i] = deck[randomIndex];
       deck[randomIndex] = temp;
-    }
-  }
-
-  // DEMO 1: FAKE FOR BOTH PLAYERS TO HAVE THE SAME MINIONS
-  #shuffleDeckMinions(deck1, deck2) {
-    for (let i = 0; i < deck1.length; i++) {
-      const randomIndex = Math.floor(Math.random() * deck1.length);
-      const temp1 = deck1[i];
-      deck1[i] = deck1[randomIndex];
-      deck1[randomIndex] = temp1;
-      const temp2 = deck2[i];
-      deck2[i] = deck2[randomIndex];
-      deck2[randomIndex] = temp2;
     }
   }
 
@@ -118,17 +102,16 @@ export default class InitialPhase {
 
     for (let i = 0; i < eventCards.length; i++) {
       const currentCard = eventCards[i];
-
       if (currentCard.getCategory() === CardCategory.WEAPON) {
-        if (currentCard.getWeaponType() === WeaponType.MELEE) {
+
           eventWeapon.push(currentCard);
-        }
+
       }
     }
 
     this.#shuffleDeck(eventWeapon);
 
-    this.#selectAndInsertCards(eventWeapon, player1CardsInHand, 3);
-    this.#selectAndInsertCards(eventWeapon, player2CardsInHand, 3);
+    this.#selectAndInsertCards(eventWeapon, player1CardsInHand, 5);
+    this.#selectAndInsertCards(eventWeapon, player2CardsInHand, 5);
   }
 }

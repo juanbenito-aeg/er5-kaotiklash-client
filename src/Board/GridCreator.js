@@ -246,7 +246,8 @@ export default class GridCreator {
 
     // PLAYER 2 CARDS IN HANDS BOXES AND GRID
     const player2CardsInHandBoxes = [];
-    let player2CardsInHandBoxXCoordinate = 680;
+    //THE PLAYER 2 CARDS IN HAND GRID NOW CREATES FROM RIGHT TO LEFT, INSTEAD OF LEFT TO RIGHT
+    let player2CardsInHandBoxXCoordinate = 1355;
     for (let i = 0; i < 6; i++) {
       const player2CardsInHandBox = new Box(
         player2CardsInHandBoxXCoordinate,
@@ -261,7 +262,7 @@ export default class GridCreator {
 
       player2CardsInHandBoxes.push(player2CardsInHandBox);
 
-      player2CardsInHandBoxXCoordinate += 135;
+      player2CardsInHandBoxXCoordinate -= 135;
     }
     const player2CardsInHandGrid = new Grid(
       GridType.PLAYER_2_CARDS_IN_HAND,

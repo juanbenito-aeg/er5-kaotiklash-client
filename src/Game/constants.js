@@ -1,6 +1,8 @@
 const GameState = {
   INVALID: -1,
-  PLAYING: 0,
+  LOG_IN: 0,
+  START: 1,
+  PLAYING: 2,
 };
 
 // FPS (FRAMES PER SECOND)
@@ -70,19 +72,19 @@ const CardCategory = {
   RARE: 5,
 };
 
-const MinionType = {
+const MinionTypeID = {
   SPECIAL: 0,
   WARRIOR: 1,
   WIZARD: 2,
 };
 
-const WeaponType = {
+const WeaponTypeID = {
   MELEE: 0,
   MISSILE: 1,
   HYBRID: 2,
 };
 
-const ArmorType = {
+const ArmorTypeID = {
   LIGHT: 0,
   MEDIUM: 1,
   HEAVY: 2,
@@ -135,9 +137,11 @@ const CardState = {
 const BoxState = {
   INACTIVE: 0,
   AVAILABLE: 1,
-  HOVERED: 2,
-  SELECTED: 3,
-  OCCUPIED: 4,
+  INACTIVE_HOVERED: 2,
+  HOVERED: 3,
+  INACTIVE_SELECTED: 4,
+  SELECTED: 5,
+  OCCUPIED: 6,
 };
 
 const AttackPhaseState = {
@@ -150,7 +154,7 @@ const AttackPhaseState = {
 
 const DiscardCardState = {
   INIT: 0,
-  SELECT_CARD_TO_DISCARD: 1,
+  CARD_DISCARD: 1,
   END: 2,
 };
 
@@ -235,6 +239,11 @@ const EquipWeaponState = {
   END: 3,
 };
 
+const EventCooldownState = {
+  UNINITIALIZED: 0,
+  INITIALIZED: 1,
+};
+
 export {
   GameState,
   FPS,
@@ -243,9 +252,9 @@ export {
   TemplateID,
   IconID,
   CardCategory,
-  MinionType,
-  WeaponType,
-  ArmorType,
+  MinionTypeID,
+  WeaponTypeID,
+  ArmorTypeID,
   DeckType,
   MainCharacterID,
   ChaoticEventID,
@@ -262,4 +271,5 @@ export {
   PhaseButton,
   PhaseButtonData,
   EquipWeaponState,
+  EventCooldownState,
 };

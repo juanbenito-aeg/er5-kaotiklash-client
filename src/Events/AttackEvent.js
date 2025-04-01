@@ -1,6 +1,6 @@
 import Event from "./Event.js";
 import DamageMessages from "../Messages/DamageMessage.js";
-import { WeaponType } from "../Game/constants.js";
+import { WeaponTypeID } from "../Game/constants.js";
 import { globals } from "../index.js";
 
 export default class AttackEvent extends Event {
@@ -31,7 +31,7 @@ export default class AttackEvent extends Event {
       // ATTACK USING FISTS
       damageToInflict =
         this.#attacker.getCurrentAttack() - this.#target.getCurrentDefense();
-    } else if (this.#attacker.getMinionWeaponType() === WeaponType.MELEE) {
+    } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MELEE) {
       // ATTACK USING A MELEE WEAPON
       damageToInflict =
         this.#attacker.getCurrentAttack() +

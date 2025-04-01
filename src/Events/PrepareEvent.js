@@ -1,8 +1,7 @@
 import PhasesMessages from "../Messages/PhasesMessages.js";
 import Event from "./Event.js";
 import { globals } from "../index.js";
-import { PhaseType } from "../Game/constants.js";
-
+import { EventCooldownState } from "../Game/constants.js";
 
 export default class PrepareEvent extends Event {
   #preparationEventDeck;
@@ -15,27 +14,25 @@ export default class PrepareEvent extends Event {
 
     this.#preparationEventDeck = preparationEventDeck;
     this.#executedByPlayer = executedByPlayer;
-    this.#currentState = "UNINITIALIZED";
+    this.#currentState = EventCooldownState.UNINITIALIZED;
     this.#lastPlayer = null;
   }
 
   static create(preparationEventDeck, executedByPlayer) {
-
     return new PrepareEvent(preparationEventDeck, executedByPlayer);
-
   }
 
   execute(currentPlayer) {
     // INITIALIZE WHEN IT'S THE EXECUTING PLAYER'S TURN
     switch (this.#currentState) {
-      case "UNINITIALIZED":
+      case EventCooldownState.UNINITIALIZED:
         if (currentPlayer === this.#executedByPlayer) {
-          this.#currentState = "INITIALIZED";
+          this.#currentState = EventCooldownState.INITIALIZED;
           this.#lastPlayer = currentPlayer;
         }
         break;
 
-      case "INITIALIZED":
+      case EventCooldownState.INITIALIZED:
         // ONLY ACT ON PLAYER CHANGE
         if (currentPlayer !== this.#lastPlayer) {
           // REDUCE TIME WHEN RETURNING TO EXECUTING PLAYER FROM OTHER PLAYER

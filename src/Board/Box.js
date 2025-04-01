@@ -10,6 +10,8 @@ export default class Box {
   #state;
   #battlefieldAreaItBelongsTo;
   #card;
+  #isMouseOver;
+  #isLeftClicked;
 
   constructor(
     xCoordinate,
@@ -30,6 +32,8 @@ export default class Box {
     this.#state = state;
     this.#battlefieldAreaItBelongsTo = battlefieldAreaItBelongsTo;
     this.#card = null;
+    this.#isMouseOver = false;
+    this.#isLeftClicked = false;
   }
 
   getXCoordinate() {
@@ -98,5 +102,21 @@ export default class Box {
 
   isOccupied() {
     return this.#card !== null;
+  }
+
+  isMouseOver() {
+    return this.#isMouseOver;
+  }
+
+  setIsMouseOver(isMouseOver) {
+    this.#isMouseOver = isMouseOver;
+  }
+
+  isLeftClicked() {
+    return this.#isLeftClicked;
+  }
+
+  setIsLeftClicked(isLeftClicked) {
+    this.#isLeftClicked = isLeftClicked;
   }
 }

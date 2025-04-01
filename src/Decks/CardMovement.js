@@ -61,8 +61,8 @@ export default class CardMovement {
     return this.#card.getCurrentDefense();
   }
 
-  getWeaponType() {
-    return this.#card.getWeaponType();
+  getWeaponTypeID() {
+    return this.#card.getWeaponTypeID();
   }
 
   getInitialDamage() {
@@ -89,8 +89,8 @@ export default class CardMovement {
     return this.#card.getCurrentPrepTimeInRounds();
   }
 
-  getArmorType() {
-    return this.#card.getArmorType();
+  getArmorTypeID() {
+    return this.#card.getArmorTypeID();
   }
 
   getInitialDurability() {
@@ -185,8 +185,8 @@ export default class CardMovement {
     return this.#card.getWeapon();
   }
 
-  getMinionWeaponType() {
-    return this.#card.getWeapon().getWeaponType();
+  getMinionWeaponTypeID() {
+    return this.#card.getWeapon().getWeaponTypeID();
   }
 
   getWeaponCurrentDamage() {
