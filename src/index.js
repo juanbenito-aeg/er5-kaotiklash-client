@@ -43,7 +43,26 @@ const globals = {
 
 window.onload = initLogInScreen;
 
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelector("#log-in-para a").addEventListener("click", function (event) {
+      event.preventDefault(); 
+      initRegisterScreen(); 
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelector("#register-para a").addEventListener("click", function (event) {
+    event.preventDefault();
+    initLogInScreen(); 
+  });
+});
+
 function initLogInScreen() {
+  const loginScreen = document.getElementById("login-screen");
+  loginScreen.style.display = "block";
+
+  const registerScreen = document.getElementById("register-screen");
+  registerScreen.style.display = "none"; 
   const logInForm = document.getElementById("login-form");
   const emailInput = document.getElementById("login-email");
   const passwordInput = document.getElementById("login-password");
@@ -68,26 +87,27 @@ function initLogInScreen() {
       localStorage.removeItem("checkboxState");
       localStorage.removeItem("email");
     }
-  });
+});
 
-  logInForm.addEventListener("submit", function (event) {
-    event.preventDefault();
+logInForm.addEventListener("submit", function (event) {
+  event.preventDefault();
 
-    let email = emailInput.value.trim().toLowerCase();
-    let password = passwordInput.value.trim();
+  let email = emailInput.value.trim().toLowerCase();
+  let password = passwordInput.value.trim();
 
-    if (!email || !password) {
-      alert("Por favor, completa todos los campos.");
-      return;
-    }
+  if (!email || !password) {
+    alert("Por favor, completa todos los campos.");
+    return;
+  }
 
-    if (checkbox.checked) {
-      localStorage.setItem("email", email);
-    }
+  if (checkbox.checked) {
+    localStorage.setItem("email", email);
+  }
 
-    logInPlayer(email, password);
-  });
+  logInPlayer(email, password);
+});
 }
+
 
 async function logInPlayer(email, password) {
   const url = "https://er5-kaotiklash-server.onrender.com/api/players";
@@ -141,9 +161,16 @@ function hideLoginScreen() {
 }
 
 function initRegisterScreen() {
+  const loginScreen = document.getElementById("login-screen");
+  loginScreen.style.display = "none"; // Ocultar login
+
+  const registerScreen = document.getElementById("register-screen");
+  registerScreen.style.display = "block"; // Mostrar registro
+
   const registerForm = document.getElementById("register-form");
   registerForm.addEventListener("submit", function (event) {
     event.preventDefault();
+    
     const username = document.getElementById("name").value;
     const email = document.getElementById("register-email").value;
     const password = document.getElementById("register-password").value;
@@ -155,13 +182,16 @@ function initRegisterScreen() {
     }
 
     if (password !== confirmPassword) {
-      alert("Error the password dont match");
+      alert("Error: The passwords don't match");
       return;
     }
+
     registerPlayer(username, email, password);
     alert("Successful registration");
+    initLogInScreen(); // Redirigir automáticamente al login después de registrarse
   });
 }
+
 
 async function registerPlayer(username, email, password) {
   const url = "https://er5-kaotiklash-server.onrender.com/api/players";

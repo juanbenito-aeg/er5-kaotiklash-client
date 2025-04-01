@@ -88,11 +88,32 @@ input:focus {
   text-align: left;
 }
 
+#log-in-para {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
 #login-screen {
   font-size: xx-large;
+  width: 100%;
+  min-height: 100vh;
+}
+
+#login-form {
+  position: absolute;
+  margin-top: 25vh;
+  margin-left: 90vh;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 30px;
+  border-radius: 10px;
+  width: 400px;
+  color: white;
+  text-align: left;
 }
 
 #eus-btn {
+  z-index: 100;
   position: absolute;
   width: 75px;
   height: 45px;
@@ -110,6 +131,24 @@ input:focus {
   margin-left: -41vw;
   background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/1280px-Flag_of_the_United_Kingdom_%283-5%29.svg.png);
   background-size: 75px;
+}
+
+#log-in-btn, #reset-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  border: none;
+  background: white;
+  color: black;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#log-in-btn:hover, #reset-btn:hover {
+  text-decoration: underline;
+  color: #ddd1d1af;
 }
 
 #delete-ls-btn {
@@ -140,6 +179,39 @@ input:focus {
   width: 145px;
   height: 30px;
   font-size: x-large;
+}
+
+#localStorage-checkbox {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid white;
+  border-radius: 4px;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+#localStorage-checkbox:checked {
+  background-color: white;
+}
+
+#localStorage-checkbox:checked::after {
+  content: "✔";
+  font-size: 14px;
+  color: black;
+  font-weight: bold;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#localStorage-checkbox:hover {
+  border-color: lightblue;
 }
 
 #player-session-screen {
