@@ -43,7 +43,7 @@ const globals = {
   damageFontSize: 75,
 };
 
-window.onload = /* initRegisterScreen */ initStartGameScreen;
+window.onload = initLogInScreen;
 
 function initRegisterScreen() {
   const registerForm = document.getElementById("register-form");
@@ -95,20 +95,101 @@ async function registerPlayer(username, email, password) {
   }
 }
 
-function initStartGameScreen() {
-  const startGameScreen = document.getElementById("start-game-screen");
-  startGameScreen.style.display = "block";
+function initLogInScreen() {
+  const logInForm = document.getElementById("log-in-form");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const checkbox = document.getElementById("localStorage-checkbox");
 
-  const btn = document.getElementById("start-game-btn");
+  const savedEmail = localStorage.getItem("email");
+  const isChecked = localStorage.getItem("checkboxState") === "true";
 
-  btn.addEventListener("click", initGameScreen);
+  if (savedEmail) {
+    emailInput.value = savedEmail;
+    checkbox.checked = isChecked;
+    initStartGameScreen(); // Saltar el login y proceder al juego
+
+  }
+
+  checkbox.addEventListener("change", function () {
+    if (checkbox.checked) {
+      localStorage.setItem("checkboxState", "true");
+      if (emailInput.value.trim()) {
+        localStorage.setItem("email", emailInput.value.trim().toLowerCase());
+      }
+    } else {
+      localStorage.removeItem("checkboxState");
+      localStorage.removeItem("email");
+    }
+  });
+
+  logInForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    let email = emailInput.value.trim().toLowerCase();
+    let password = passwordInput.value.trim();
+
+    if (!email || !password) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+
+    if (checkbox.checked) {
+      localStorage.setItem("email", email);
+    }
+
+    logInPlayer(email, password);
+  });
+}
+
+async function logInPlayer(email, password) {
+  const url = "https://er5-kaotiklash-server.onrender.com/api/players";
+  const playerData = {
+    email: email,
+    password: password,
+  };
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    let loginSuccessful = false;
+
+    // Primero verificamos si el email existe
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].email_address === playerData.email) {
+        // Si el email es correcto, verificamos la contraseña
+        if (data[i].password === playerData.password) {
+          loginSuccessful = true;
+          alert("Log in successful!");
+
+          // Guardar el nombre del jugador
+          localStorage.setItem("playerName", data[i].name);
+
+          initPlayerSessionScreen();
+          break; // Si encontramos una coincidencia, salimos del bucle
+        } else {
+          alert("Incorrect password!");
+          break; // Si la contraseña no es correcta, salimos del bucle
+        }
+      }
+    }
+
+    if (!loginSuccessful) {
+      alert("Email not found!");
+    }
+  } else {
+    const errorData = await response.json();
+    alert(`Error: ${errorData.message || response.statusText}`);
+  }
 }
 
 async function initGameScreen() {
-  const btn = document.getElementById("start-game-btn");
-  btn.style.display = "none";
-  // const registerForm = document.getElementById("register-form");
-  // registerForm.style.display = "none";
 
   initVars();
 

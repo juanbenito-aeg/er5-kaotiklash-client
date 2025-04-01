@@ -1,6 +1,8 @@
 const GameState = {
   INVALID: -1,
-  PLAYING: 0,
+  LOG_IN: 0,
+  START: 1,
+  PLAYING: 2,
 };
 
 // FPS (FRAMES PER SECOND)
