@@ -14,6 +14,36 @@
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
+    <!-- LOGIN FORM -->
+    <div id="login-screen">
+      <button type="button" id="eus-btn"></button>
+      <button type="button" id="eng-btn"></button>
+
+      <form id="login-form">
+        <label for="login-email">Email:</label><br />
+        <input type="email" id="login-email" name="email" /><br />
+
+        <label for="login-password">Password:</label><br />
+        <input
+          type="password"
+          id="login-password"
+          name="password"
+        /><br /><br />
+
+        <input type="submit" id="login-btn" value="Log in" />
+
+        <input type="reset" id="reset" value="Reset" /><br />
+
+        <input
+          type="checkbox"
+          id="localStorage-checkbox"
+          name="localStorage-checkbox"
+          value="Boat"
+        />
+        <label for="localStorage-checkbox">Remember me</label>
+      </form>
+    </div>
+
     <!-- REGISTRATION FORM -->
     <div id="register-screen">
       <div id="register-box">
@@ -22,39 +52,22 @@
           <label for="name">Name</label>
           <input type="text" id="name" required />
 
-          <label for="email">Email</label>
-          <input type="email" id="email" required />
+          <label for="register-email">Email</label>
+          <input type="email" id="register-email" required />
 
-          <label for="password">Password</label>
-          <input type="password" id="password" required />
+          <label for="register-password">Password</label>
+          <input type="password" id="register-password" required />
 
           <label for="confirm-password">Confirm Password</label>
           <input type="password" id="confirm-password" required />
 
           <button type="submit" id="register-btn">Register</button>
+
           <p id="register-para">
             Already got an account? <a href="#">Log in</a>
           </p>
         </form>
       </div>
-    </div>
-
-    <!-- PLAYER LOG IN -->
-    <div id="log-in-screen">
-      <button type="button" id="eus-btn"></button>
-      <button type="button" id="eng-btn"></button>
-      
-      <form id="log-in-form">
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email"><br>
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" ><br><br>
-        <input type="submit" id="log-in-btn" value="Log in">    
-        <input type="reset" id="reset" value="Reset"><br>
-        <input type="checkbox" id="localStorage-checkbox" name="localStorage-checkbox" value="Boat">
-        <label for="localStorage-checkbox">Remember me</label>
-      </form> 
-      
     </div>
 
     <!-- PLAYER SESSION SCREEN -->
