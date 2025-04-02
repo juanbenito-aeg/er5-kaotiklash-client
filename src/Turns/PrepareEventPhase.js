@@ -46,9 +46,15 @@ export default class PrepareEventPhase extends Phase {
     let gridRelevants;
 
     if (player === currentPlayer) {
-      gridRelevants = board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
+      gridRelevants = [
+        board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT],
+        board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND],
+      ];
     } else {
-      gridRelevants = board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
+      gridRelevants = [
+        board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT],
+        board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND],
+      ];
     }
 
     if (player.getID() === PlayerID.PLAYER_1) {
@@ -154,7 +160,8 @@ export default class PrepareEventPhase extends Phase {
       selectedCard.setState(CardState.PLACED);
       this._state = PrepareEventState.SELECT_HAND_CARD;
     } else {
-      const hoveredBox = this.#gridsRelevants.lookForHoveredBox();
+      const hoveredBox = this.#gridsRelevants[0].lookForHoveredBox();
+
       if (hoveredBox) {
         if (!hoveredBox.isLeftClicked()) {
           hoveredBox.setState(BoxState.HOVERED);
@@ -177,10 +184,20 @@ export default class PrepareEventPhase extends Phase {
 
   #finalizePhase() {
     const selectedCard = this.#decksRelevants[0].lookForSelectedCard();
+
     this.#decksRelevants[1].insertCard(selectedCard);
     this.#decksRelevants[0].removeCard(selectedCard);
 
-    const selectedBox = this.#gridsRelevants.lookForSelectedBox();
+    const handGrid = this.#gridsRelevants[1];
+    const boxes = handGrid.getBoxes();
+    for (let i = 0; i < boxes.length; i++) {
+      if (boxes[i].getCard() === selectedCard) {
+        boxes[i].resetCard();
+        break;
+      }
+    }
+
+    const selectedBox = this.#gridsRelevants[0].lookForSelectedBox();
     selectedBox.setCard(selectedCard);
 
     selectedCard.setXCoordinate(selectedBox.getXCoordinate());

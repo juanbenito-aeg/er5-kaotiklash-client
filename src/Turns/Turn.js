@@ -181,6 +181,11 @@ export default class Turn {
   } */
 
   execute() {
+    if (this.#numOfExecutedPhases === 0) {
+      this.#isCurrentPhaseFinished =
+        this.#phases[PhaseType.DRAW_CARD].execute();
+    }
+
     const isAnyCardExpanded = this.#expandCard();
 
     if (!isAnyCardExpanded) {
@@ -243,7 +248,7 @@ export default class Turn {
         if (playerDeck.getCards().length > 5) {
           this.#numOfExecutedPhases--;
         } else {
-          this.#currentPhase = PhaseType.INVALID
+          this.#currentPhase = PhaseType.INVALID;
           globals.isCurrentTurnFinished = true;
         }
       }

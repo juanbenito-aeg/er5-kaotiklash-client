@@ -173,12 +173,6 @@ const PrepareEventState = {
   END: 3,
 };
 
-const DrawCardState = {
-  INIT: 0,
-  DRAW_CARD: 1,
-  END: 2,
-};
-
 const GridType = {
   EVENTS_DECK: 0,
   ACTIVE_EVENTS_TABLE: 1,
@@ -266,7 +260,6 @@ export {
   DiscardCardState,
   MovePhaseState,
   PrepareEventState,
-  DrawCardState,
   PhaseType,
   PhaseButton,
   PhaseButtonData,
