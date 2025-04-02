@@ -181,6 +181,11 @@ export default class Turn {
   } */
 
   execute() {
+    if (this.#numOfExecutedPhases === 0) {
+      this.#isCurrentPhaseFinished =
+        this.#phases[PhaseType.DRAW_CARD].execute();
+    }
+
     const isAnyCardExpanded = this.#expandCard();
 
     if (!isAnyCardExpanded) {
@@ -197,16 +202,15 @@ export default class Turn {
 
       if (this.#isCurrentPhaseCanceled || this.#isCurrentPhaseFinished) {
         this.#currentPhase = PhaseType.INVALID;
-        this.#currentPhase = PhaseType.INVALID;
+
+        globals.currentPhase = PhaseType.INVALID;
+        globals.currentState = PhaseType.INVALID;
         let message = PhasesMessages.create(
           this.#currentPhase,
           this.#currentPhase,
           "ENG"
         );
         globals.phasesMessages.push(message);
-
-        globals.currentPhase = PhaseType.INVALID;
-        globals.currentState = PhaseType.INVALID;
 
         if (this.#isCurrentPhaseCanceled) {
           this.#isCurrentPhaseCanceled = false;
@@ -219,24 +223,34 @@ export default class Turn {
           PhaseButtonData.NAME
         ] = "Skip";
       }
-      
+
       let playerDeck;
-      let playerGrid;
-      if(this.#player.getID() === 0) {
-        playerDeck = this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
-        playerGrid = this.#board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND]
-      } else
-      {
-        playerDeck = this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND];
-        playerGrid = this.#board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND]
+      if (this.#player.getID() === PlayerID.PLAYER_1) {
+        playerDeck =
+          this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
+      } else {
+        playerDeck =
+          this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND];
       }
 
-      if (this.#numOfExecutedPhases === 5 && playerDeck.getCards().length < 6) {
-        globals.isCurrentTurnFinished = true;
-      } else if (this.#numOfExecutedPhases > 5 && playerDeck.getCards().length >= 6){
-        this.#numOfExecutedPhases = 5
-        this.#currentPhase = PhaseType.DISCARD_CARD
-        console.log("please discard a card")
+      let playerGrid;
+      if (this.#player.getID() === globals.firstActivePlayerID) {
+        playerGrid = this.#board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND];
+      } else {
+        playerGrid = this.#board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND];
+      }
+
+      if (this.#numOfExecutedPhases === 4) {
+        this.#currentPhase = PhaseType.DISCARD_CARD;
+      }
+
+      if (this.#numOfExecutedPhases === 5) {
+        if (playerDeck.getCards().length > 5) {
+          this.#numOfExecutedPhases--;
+        } else {
+          this.#currentPhase = PhaseType.INVALID;
+          globals.isCurrentTurnFinished = true;
+        }
       }
     }
   }
@@ -352,8 +366,6 @@ export default class Turn {
     switch (this.#equipWeaponState) {
       // SELECT WEAPON TO EQUIP ON A MINION
       case EquipWeaponState.SELECT_WEAPON:
-
-
         weapon = playerXEventsInPreparationDeck.lookForHoveredCard();
 
         if (weapon) {
@@ -383,7 +395,7 @@ export default class Turn {
 
       // SELECT MINION TO EQUIP WEAPON ON
       case EquipWeaponState.SELECT_MINION:
-        minion = null; 
+        minion = null;
         globals.currentPhase = PhaseType.EQUIP_WEAPON;
 
         console.log("MINION SELECTION");
@@ -427,7 +439,7 @@ export default class Turn {
         weapon = playerXEventsInPreparationDeck.lookForSelectedCard();
 
         minion = playerXMinionsInPlayDeck.lookForSelectedCard();
-        minion.setState(CardState.PLACED)
+        minion.setState(CardState.PLACED);
 
         globals.currentState = EquipWeaponState.EQUIP_WEAPON;
         let message = PhasesMessages.create(
@@ -498,7 +510,10 @@ export default class Turn {
           mouseY >= buttonYCoordinate &&
           mouseY <= buttonYCoordinate + buttonHeight
         ) {
-          if (this.#currentPhase === PhaseType.INVALID) {
+          if (
+            this.#currentPhase === PhaseType.INVALID ||
+            this.#currentPhase === PhaseType.DISCARD_CARD
+          ) {
             if (i === PhaseButton.SKIP_OR_CANCEL) {
               this.#numOfExecutedPhases++;
             } else {

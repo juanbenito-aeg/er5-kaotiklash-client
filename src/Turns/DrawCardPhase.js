@@ -1,60 +1,119 @@
 import Phase from "./Phase.js";
-import { CardState, DrawCardState, BoxState } from "../Game/constants.js";
+import {
+  CardState,
+  DeckType,
+  PlayerID,
+  CardCategory,
+  GridType,
+} from "../Game/constants.js";
 
 export default class DrawCardPhase extends Phase {
-  // #eventsDeck;
-  // #eventsDeckGrid;
-  // #cardsInHandDeck;
-  // #cardsInHandGrid;
-  // #state;
+  #player;
+  #decksRelevants;
+  #gridsRelevants;
+  #isFirstTurn;
+  #filteredCards;
 
-  constructor(
-    /* eventsDeck, eventsDeckGrid, cardsInHandDeck, cardsInHandGrid */
+  constructor(state, mouseInput, player, decksRelevants, gridsRelevants) {
+    super(state, mouseInput);
 
-    state,
+    this.#player = player;
+    this.#decksRelevants = decksRelevants;
+    this.#gridsRelevants = gridsRelevants;
+    this.#isFirstTurn = true;
+    this.#filteredCards = [];
+  }
+
+  static create(
+    player,
     deckContainer,
     board,
-    mouseInput
+    mouseInput,
+    events,
+    currentPlayer
   ) {
-    // this.#eventsDeck = eventsDeck;
-    // this.#eventsDeckGrid = eventsDeckGrid;
-    // this.#cardsInHandDeck = cardsInHandDeck;
-    // this.#cardsInHandGrid = cardsInHandGrid;
-    // this.#state = DrawCardState.INIT;
+    let decksRelevants;
+    let gridsRelevants;
 
-    super(state, deckContainer, board, mouseInput);
+    decksRelevants = [
+      deckContainer.getDecks()[DeckType.EVENTS],
+      player.getID() === PlayerID.PLAYER_1
+        ? deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND]
+        : deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND],
+    ];
+    gridsRelevants = [
+      player === currentPlayer
+        ? board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND]
+        : board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND],
+    ];
+
+    const drawCardPhase = new DrawCardPhase(
+      0,
+      mouseInput,
+      player,
+      decksRelevants,
+      gridsRelevants
+    );
+
+    return drawCardPhase;
   }
 
   execute() {
-    //   if (this.#state === DrawCardState.INIT) {
-    //     this.#state = DrawCardState.DRAW_CARD;
-    //   }
-    //   if (this.#state === DrawCardState.DRAW_CARD) {
-    //     if (this.#eventsDeck.length > 0) {
-    //       let drawnCard = this.#eventsDeck[0];
-    //       this.#eventsDeck.splice(0, 1);
-    //       drawnCard.state = CardState.NOT_SELECTED;
-    //       let cardFoundInGrid = false;
-    //       for (let i = 0; i < this.#eventsDeckGrid.length; i++) {
-    //         let gridCard = this.#eventsDeckGrid[i];
-    //         if (gridCard === drawnCard) {
-    //           gridCard.state = CardState.NOT_SELECTED;
-    //           this.#eventsDeckGrid.splice(i, 1);
-    //           cardFoundInGrid = true;
-    //         }
-    //       }
-    //       if (cardFoundInGrid) {
-    //         for (let i = 0; i < this.#cardsInHandGrid.boxes.length; i++) {
-    //           let box = this.#cardsInHandGrid.boxes[i];
-    //           if (box.state === BoxState.EMPTY) {
-    //             this.#cardsInHandDeck.push(drawnCard);
-    //             box.state = BoxState.OCCUPIED;
-    //             drawnCard.state = CardState.PLACED;
-    //           }
-    //         }
-    //       }
-    //     }
-    //     this.#state = DrawCardState.END;
-    //   }
+    let isPhaseFinished = false;
+
+    if (this.#isFirstTurn) {
+      this.#isFirstTurn = false;
+    } else {
+      this.#filterEventDeck();
+
+      if (this.#filteredCards.length > 0) {
+        this.#assignCards();
+      }
+
+      this.#filteredCards = [];
+    }
+
+    isPhaseFinished = true;
+
+    return isPhaseFinished;
+  }
+
+  #filterEventDeck() {
+    const eventDeck = this.#decksRelevants[0];
+    const eventCards = eventDeck.getCards();
+
+    for (let i = 0; i < eventCards.length; i++) {
+      const card = eventCards[i];
+
+      if (card.getCategory() === CardCategory.WEAPON) {
+        this.#filteredCards.push(card);
+
+        eventDeck.removeCard(card);
+      }
+    }
+  }
+
+  #assignCards() {
+    const handDeck = this.#decksRelevants[1];
+    const handGrid = this.#gridsRelevants[0];
+
+    const randomIndex = Math.floor(Math.random() * this.#filteredCards.length);
+    const selectedCard = this.#filteredCards[randomIndex];
+
+    handDeck.insertCard(selectedCard);
+
+    for (let i = 0; i < handGrid.getBoxes().length; i++) {
+      const box = handGrid.getBoxes()[i];
+
+      if (!box.getCard()) {
+        selectedCard.setXCoordinate(box.getXCoordinate());
+        selectedCard.setYCoordinate(box.getYCoordinate());
+
+        selectedCard.setState(CardState.PLACED);
+        box.setCard(selectedCard);
+
+        break;
+      }
+    }
   }
 }

@@ -20,6 +20,7 @@ import {
   GridType,
   PhaseType,
   PhaseButtonData,
+  BoxState,
 } from "./constants.js";
 import { globals } from "../index.js";
 import ImageSet from "./ImageSet.js";
@@ -444,6 +445,7 @@ export default class Game {
         const currentCardsInHandBox =
           currentPlayer.cardsInHandGrid.getBoxes()[currentCardsInHandBoxIndex];
         currentCardsInHandBox.setCard(currentEventCard);
+        currentCardsInHandBox.setState(BoxState.OCCUPIED);
 
         currentEventCard.setXCoordinate(currentCardsInHandBox.getXCoordinate());
         currentEventCard.setYCoordinate(currentCardsInHandBox.getYCoordinate());
