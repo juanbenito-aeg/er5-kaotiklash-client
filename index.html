@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
-    <!-- LOGIN FORM -->
+    <!-- LOGIN SCREEN -->
     <div id="login-screen">
       <button type="button" id="eus-btn"></button>
       <button type="button" id="eng-btn"></button>
@@ -22,28 +22,30 @@
       <!-- LOGIN FORM -->
       <form id="login-form">
         <label for="login-email">Email:</label>
-        <input type="email" id="login-email" name="email" />
+        <input type="email" id="login-email" name="email" required />
 
         <label for="login-password">Password:</label>
-        <input type="password" id="login-password" name="password"/>
+        <input type="password" id="login-password" name="password" required />
 
-        <button type="submit" id="log-in-btn">Log in</button>
+        <button type="submit" id="login-btn">Log in</button>
         <button type="reset" id="reset-btn">Reset</button>
 
-        <!-- Checkbox y label en la misma línea -->
-        <label for="localStorage-checkbox">Remember me </label>
-        <input type="checkbox" id="localStorage-checkbox" name="localStorage-checkbox"/>
-
-        <p id="log-in-para">
-            Don't have an account? <br><a href="javascript:initRegisterScreen();">Register</a>
+        <p id="login-para">
+          Don't have an account? <br /><a
+            href="#"
+            id="login-screen-register-btn"
+            >Register</a
+          >
         </p>
       </form>
     </div>
 
-    <!-- REGISTRATION FORM -->
+    <!-- REGISTRATION SCREEN -->
     <div id="register-screen">
       <div id="register-box">
         <h2>REGISTER</h2>
+
+        <!-- REGISTER FORM -->
         <form id="register-form">
           <label for="name">Name</label>
           <input type="text" id="name" required />
@@ -60,7 +62,8 @@
           <button type="submit" id="register-btn">Register</button>
 
           <p id="register-para">
-            Already got an account? <a href="javascript:initLogInScreen();">Log in</a>
+            Already got an account?
+            <a href="#" id="register-screen-login-btn">Log in</a>
           </p>
         </form>
       </div>
@@ -77,7 +80,7 @@
           <label for="opponent-select">Choose an opponent:</label>
 
           <select name="opponents" id="opponent-select">
-            <option value="">Please, choose an option</option>
+            <option value="">Please choose an option</option>
             <hr />
           </select>
         </div>

@@ -88,7 +88,7 @@ input:focus {
   text-align: left;
 }
 
-#log-in-para {
+#login-para {
   margin-top: 20px;
   font-size: 1.2rem;
   text-align: center;
@@ -133,7 +133,8 @@ input:focus {
   background-size: 75px;
 }
 
-#log-in-btn, #reset-btn {
+#login-btn,
+#reset-btn {
   width: 100%;
   padding: 12px;
   margin-top: 15px;
@@ -146,7 +147,8 @@ input:focus {
   border-radius: 5px;
 }
 
-#log-in-btn:hover, #reset-btn:hover {
+#login-btn:hover,
+#reset-btn:hover {
   text-decoration: underline;
   color: #ddd1d1af;
 }
@@ -179,39 +181,6 @@ input:focus {
   width: 145px;
   height: 30px;
   font-size: x-large;
-}
-
-#localStorage-checkbox {
-  appearance: none;
-  width: 18px;
-  height: 18px;
-  border: 2px solid white;
-  border-radius: 4px;
-  background-color: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  position: relative;
-}
-
-#localStorage-checkbox:checked {
-  background-color: white;
-}
-
-#localStorage-checkbox:checked::after {
-  content: "✔";
-  font-size: 14px;
-  color: black;
-  font-weight: bold;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-#localStorage-checkbox:hover {
-  border-color: lightblue;
 }
 
 #player-session-screen {

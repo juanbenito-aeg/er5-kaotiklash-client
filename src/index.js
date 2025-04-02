@@ -30,8 +30,7 @@ const globals = {
   language: 0,
   isCurrentTurnFinished: false,
   buttonDataGlobal: [],
-  // (!!!!!) DELETE AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
-  firstActivePlayerID: -1,
+  firstActivePlayerID: -1, // (!) DELETE AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
   phasesMessages: [],
   currentPhase: 0,
   currentState: 0,
@@ -39,115 +38,133 @@ const globals = {
   gameWinner: null,
   damageMessages: [],
   damageFontSize: 75,
+  isScreenInitialized: {
+    register: false,
+    playerSession: false,
+  },
 };
 
 window.onload = initLogInScreen;
 
-document.addEventListener("DOMContentLoaded", function () {
-  document.querySelector("#log-in-para a").addEventListener("click", function (event) {
-      event.preventDefault(); 
-      initRegisterScreen(); 
-  });
-});
+// HIDE/SHOW SCREEN FUNCTIONS
 
-document.addEventListener("DOMContentLoaded", function () {
-  document.querySelector("#register-para a").addEventListener("click", function (event) {
-    event.preventDefault();
-    initLogInScreen(); 
-  });
-});
+function hideRegisterAndShowLoginScreen() {
+  hideRegisterScreen();
 
-function initLogInScreen() {
-  const loginScreen = document.getElementById("login-screen");
-  loginScreen.style.display = "block";
-
-  const registerScreen = document.getElementById("register-screen");
-  registerScreen.style.display = "none"; 
-  const logInForm = document.getElementById("login-form");
-  const emailInput = document.getElementById("login-email");
-  const passwordInput = document.getElementById("login-password");
-  const checkbox = document.getElementById("localStorage-checkbox");
-
-  const savedEmail = localStorage.getItem("email");
-  const isChecked = localStorage.getItem("checkboxState") === "true";
-
-  if (savedEmail) {
-    emailInput.value = savedEmail;
-    checkbox.checked = isChecked;
-    initPlayerSessionScreen(); // Saltar el login y proceder al juego
-  }
-
-  checkbox.addEventListener("change", function () {
-    if (checkbox.checked) {
-      localStorage.setItem("checkboxState", "true");
-      if (emailInput.value.trim()) {
-        localStorage.setItem("email", emailInput.value.trim().toLowerCase());
-      }
-    } else {
-      localStorage.removeItem("checkboxState");
-      localStorage.removeItem("email");
-    }
-});
-
-logInForm.addEventListener("submit", function (event) {
-  event.preventDefault();
-
-  let email = emailInput.value.trim().toLowerCase();
-  let password = passwordInput.value.trim();
-
-  if (!email || !password) {
-    alert("Por favor, completa todos los campos.");
-    return;
-  }
-
-  if (checkbox.checked) {
-    localStorage.setItem("email", email);
-  }
-
-  logInPlayer(email, password);
-});
+  showLoginScreen();
 }
 
+// LOGIN SCREEN
+function showLoginScreen() {
+  const logInScreen = document.getElementById("login-screen");
+  logInScreen.style.display = "block";
+}
+function hideLoginScreen() {
+  const loginScreen = document.getElementById("login-screen");
+  loginScreen.style.display = "none";
+}
+
+// REGISTER SCREEN
+function showOrInitRegisterScreen() {
+  hideLoginScreen();
+
+  if (globals.isScreenInitialized.register) {
+    showRegisterScreen();
+  } else {
+    initRegisterScreen();
+  }
+}
+function showRegisterScreen() {
+  const registerScreen = document.getElementById("register-screen");
+  registerScreen.style.display = "block";
+}
+function hideRegisterScreen() {
+  const registerScreen = document.getElementById("register-screen");
+  registerScreen.style.display = "none";
+}
+
+// PLAYER SESSION SCREEN
+function showPlayerSessionScreen() {
+  const playerSessionScreen = document.getElementById("player-session-screen");
+  playerSessionScreen.style.display = "flex";
+}
+function hidePlayerSessionScreen() {
+  const playerSessionScreen = document.getElementById("player-session-screen");
+  playerSessionScreen.style.display = "none";
+}
+
+// INITIALIZE SCREEN FUNCTIONS
+
+function initLogInScreen() {
+  const loginForm = document.getElementById("login-form");
+  loginForm.addEventListener("submit", checkFormDataAndLogIn);
+
+  const loginScreenRegisterBtn = document.getElementById(
+    "login-screen-register-btn"
+  );
+  loginScreenRegisterBtn.addEventListener("click", showOrInitRegisterScreen);
+
+  const isPlayerAlreadyLoggedIn = localStorage.getItem("email");
+  if (isPlayerAlreadyLoggedIn) {
+    hideLoginScreen();
+
+    // REDIRECT TO THE PLAYER SESSION SCREEN
+    initPlayerSessionScreen();
+  }
+}
+
+function checkFormDataAndLogIn(event) {
+  event.preventDefault();
+
+  const emailInput = document.getElementById("login-email");
+  const passwordInput = document.getElementById("login-password");
+
+  let emailInputValue = emailInput.value.trim().toLowerCase();
+  let passwordInputValue = passwordInput.value.trim();
+
+  logInPlayer(emailInputValue, passwordInputValue);
+}
 
 async function logInPlayer(email, password) {
   const url = "https://er5-kaotiklash-server.onrender.com/api/players";
-  const playerData = {
-    email: email,
-    password: password,
-  };
 
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  const response = await fetch(url);
 
   if (response.ok) {
     const data = await response.json();
+
     let loginSuccessful = false;
 
+    const playerData = {
+      email: email,
+      password: password,
+    };
+
     for (let i = 0; i < data.length; i++) {
-      if (data[i].email_address === playerData.email) {
-        if (data[i].password === playerData.password) {
-          loginSuccessful = true;
-          alert("Log in successful!");
+      if (
+        data[i].email_address === playerData.email &&
+        data[i].password === playerData.password
+      ) {
+        loginSuccessful = true;
+        alert("Login successful!");
 
-          localStorage.setItem("playerName", data[i].name);
+        localStorage.setItem("playerName", data[i].name);
+        localStorage.setItem("email", data[i].email_address);
 
-          hideLoginScreen();
-
-          initPlayerSessionScreen();
-          break;
-        } else {
-          alert("Incorrect password!");
-          break;
-        }
+        break;
       }
     }
 
-    if (!loginSuccessful) {
-      alert("Email not found!");
+    if (loginSuccessful) {
+      hideLoginScreen();
+
+      if (globals.isScreenInitialized.playerSession) {
+        showPlayerSessionScreen();
+      } else {
+        initPlayerSessionScreen();
+      }
+    } else {
+      alert("Incorrect data. Please try again");
     }
   } else {
     const errorData = await response.json();
@@ -155,46 +172,41 @@ async function logInPlayer(email, password) {
   }
 }
 
-function hideLoginScreen() {
-  const loginScreen = document.getElementById("login-screen");
-  loginScreen.style.display = "none";
-}
-
 function initRegisterScreen() {
-  const loginScreen = document.getElementById("login-screen");
-  loginScreen.style.display = "none"; // Ocultar login
+  globals.isScreenInitialized.register = true;
 
-  const registerScreen = document.getElementById("register-screen");
-  registerScreen.style.display = "block"; // Mostrar registro
+  showRegisterScreen();
 
   const registerForm = document.getElementById("register-form");
-  registerForm.addEventListener("submit", function (event) {
-    event.preventDefault();
-    
-    const username = document.getElementById("name").value;
-    const email = document.getElementById("register-email").value;
-    const password = document.getElementById("register-password").value;
-    const confirmPassword = document.getElementById("confirm-password").value;
+  registerForm.addEventListener("submit", checkFormDataAndRegister);
 
-    if (!username || !email || !password || !confirmPassword) {
-      alert("Please complete all fields");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      alert("Error: The passwords don't match");
-      return;
-    }
-
-    registerPlayer(username, email, password);
-    alert("Successful registration");
-    initLogInScreen(); // Redirigir automáticamente al login después de registrarse
-  });
+  const registerScreenLoginBtn = document.getElementById(
+    "register-screen-login-btn"
+  );
+  registerScreenLoginBtn.addEventListener(
+    "click",
+    hideRegisterAndShowLoginScreen
+  );
 }
 
+function checkFormDataAndRegister(event) {
+  event.preventDefault();
+
+  const username = document.getElementById("name").value;
+  const email = document.getElementById("register-email").value;
+  const password = document.getElementById("register-password").value;
+  const confirmPassword = document.getElementById("confirm-password").value;
+
+  if (password !== confirmPassword) {
+    alert("Error: The passwords don't match");
+  } else {
+    registerPlayer(username, email, password);
+  }
+}
 
 async function registerPlayer(username, email, password) {
   const url = "https://er5-kaotiklash-server.onrender.com/api/players";
+
   const playerData = {
     name: username,
     email_address: email,
@@ -210,18 +222,19 @@ async function registerPlayer(username, email, password) {
   });
 
   if (response.ok) {
-    const data = await response.json();
     alert("Registration successful!");
-    console.log(data);
-    initGameScreen();
+
+    // AUTOMATICALLY REDIRECT TO LOGIN SCREEN AFTER REGISTERING
+    window.location.reload();
   } else {
     const errorData = await response.json();
     alert(`Error: ${errorData.message || response.statusText}`);
   }
 }
 
-async function initPlayerSessionScreen() {
-  hideLoginScreen()
+function initPlayerSessionScreen() {
+  globals.isScreenInitialized.playerSession = true;
+
   showPlayerSessionScreen();
 
   // GET THE LOGGED IN PLAYER'S DATA & INSERT IT INTO A PARAGRAPH ELEMENT
@@ -234,7 +247,7 @@ async function initPlayerSessionScreen() {
 
   // TERMINATE THE CURRENT SESSION WHEN THE "Log out" BUTTON IS PRESSED
   const logOutBtn = document.getElementById("log-out-btn");
-  logOutBtn.addEventListener("click", clearLocalStorageAndShowLogInScreen);
+  logOutBtn.addEventListener("click", clearLocalStorageAndReload);
 
   // GET OPPONENTS' DATA & USE THEM TO CREATE HTML ELEMENTS
   const opponentSelect = document.getElementById("opponent-select");
@@ -245,30 +258,13 @@ async function initPlayerSessionScreen() {
 
   // START THE GAME WHEN THE CORRESPONDING BUTTON IS PRESSED
   const startGameBtn = document.getElementById("start-game-btn");
-  startGameBtn.addEventListener("click", initGameScreen);
+  startGameBtn.addEventListener("click", hidePlayerSessionAndInitGameScreen);
 }
 
-function showPlayerSessionScreen() {
-  const playerSessionScreen = document.getElementById("player-session-screen");
-  playerSessionScreen.style.display = "flex";
-}
-
-function clearLocalStorageAndShowLogInScreen() {
+function clearLocalStorageAndReload() {
   localStorage.clear();
 
-  hidePlayerSessionScreen();
-
-  showLoginScreen();
-}
-
-function hidePlayerSessionScreen() {
-  const playerSessionScreen = document.getElementById("player-session-screen");
-  playerSessionScreen.style.display = "none";
-}
-
-function showLoginScreen() {
-  const logInScreen = document.getElementById("login-screen");
-  logInScreen.style.display = "block";
+  window.location.reload();
 }
 
 async function createOpponentsSelOptions(playerEmail, opponentSelect) {
@@ -301,10 +297,13 @@ function activateOrDisableStartGameBtn(e) {
   }
 }
 
-async function initGameScreen() {
-  const playerSessionScreen = document.getElementById("player-session-screen");
-  playerSessionScreen.style.display = "none";
+function hidePlayerSessionAndInitGameScreen() {
+  hidePlayerSessionScreen();
 
+  initGameScreen();
+}
+
+async function initGameScreen() {
   initVars();
 
   // INITIALIZE CANVAS AND ITS CONTEXT
