@@ -16,18 +16,12 @@ export default class MovePhase extends Phase {
   #state;
   #decksRelevants;
   #gridsRelevants;
-  #selectedCard;
-  #selectedGrid;
-  #previousBox;
 
   constructor(state, decksRelevants, gridRelevants, mouseInput) {
     super(state, mouseInput);
 
     this.#decksRelevants = decksRelevants;
     this.#gridsRelevants = gridRelevants;
-    this.#selectedCard = null;
-    this.#selectedGrid = null;
-    this.#previousBox = null;
   }
 
   static create(
@@ -47,7 +41,7 @@ export default class MovePhase extends Phase {
       gridRelevants = board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
     }
 
-    if (currentPlayer.getID() === PlayerID.PLAYER_1) {
+    if (player.getID() === PlayerID.PLAYER_1) {
       deckRelevants =
         deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
     } else {
@@ -149,6 +143,7 @@ export default class MovePhase extends Phase {
       this._state = MovePhaseState.SELECT_CARD;
     } else {
       let selectedBox;
+
       for (let i = 0; i < this.#gridsRelevants.getBoxes().length; i++) {
         if (
           selectedCard.getXCoordinate() ===
@@ -224,25 +219,12 @@ export default class MovePhase extends Phase {
   #finalizePhase() {
     console.log("finish phase");
 
-    if (this.#selectedCard && this.#selectedGrid) {
-      if (!this.#selectedGrid.isOccupied()) {
-        this.#selectedGrid.setCard(this.#selectedCard);
-        this.#selectedCard.setState(CardState.PLACED);
-        this.#selectedCard = null;
-      }
-      this.#selectedCard = null;
-      this.#selectedGrid = null;
-      this.#previousBox = null;
-      this._state = MovePhaseState.INIT;
-      globals.phasesMessages.splice(0, globals.phasesMessages.length);
-    }
+    globals.phasesMessages.splice(0, globals.phasesMessages.length);
+
+    this._state = MovePhaseState.INIT;
   }
 
   reset() {
     this._state = MovePhaseState.INIT;
-
-    this.#selectedCard = null;
-    this.#selectedGrid = null;
-    this.#previousBox = null;
   }
 }
