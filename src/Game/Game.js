@@ -506,9 +506,15 @@ export default class Game {
     }
 
     this.#executeEvent();
+
     this.#updateDamageMessages();
 
-    this.#mouseInput.resetIsLeftClicked(this.#deckContainer);
+    this.#mouseInput.resetIsLeftClickedOnBoxes(this.#board);
+    this.#mouseInput.detectMouseOverBox(this.#board);
+    this.#mouseInput.detectBoxThatIsntHoveredAnymore(this.#board);
+    this.#mouseInput.detectLeftClickOnBox(this.#board);
+
+    this.#mouseInput.resetIsLeftClickedOnCards(this.#deckContainer);
     this.#mouseInput.detectMouseOverCard(this.#deckContainer);
     this.#mouseInput.detectCardThatIsntHoveredAnymore(this.#deckContainer);
     this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
@@ -739,7 +745,7 @@ export default class Game {
       this.#turns[this.#currentPlayer.getID()].getNumOfExecutedPhases();
     const TOTAL_PHASES = 5;
 
-    const phaseText = `Phase: ${numOfExecutedPhases+1}/${TOTAL_PHASES}`;
+    const phaseText = `Phase: ${numOfExecutedPhases + 1}/${TOTAL_PHASES}`;
     globals.ctx.fillStyle = "white";
     globals.ctx.font = "24px MedievalSharp";
     globals.ctx.textAlign = "center";
@@ -2050,8 +2056,6 @@ export default class Game {
     for (let i = 0; i < globals.damageMessages.length; i++) {
       let message = globals.damageMessages[i];
       let duration = message.getDuration();
-
-      // console.log(duration);
 
       let fontSize = globals.damageFontSize / duration;
       if (fontSize >= 100) {

@@ -113,8 +113,8 @@ function initLogInScreen() {
   }
 }
 
-function checkFormDataAndLogIn(event) {
-  event.preventDefault();
+function checkFormDataAndLogIn(e) {
+  e.preventDefault();
 
   const emailInput = document.getElementById("login-email");
   const passwordInput = document.getElementById("login-password");
@@ -189,8 +189,8 @@ function initRegisterScreen() {
   );
 }
 
-function checkFormDataAndRegister(event) {
-  event.preventDefault();
+function checkFormDataAndRegister(e) {
+  e.preventDefault();
 
   const username = document.getElementById("name").value;
   const email = document.getElementById("register-email").value;

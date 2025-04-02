@@ -62,10 +62,6 @@ export default class PrepareEvent extends Event {
         break;
       }
     }
-
-    if (!reductionOccurred) {
-      console.log("NO CARDS TO REDUCE");
-    }
   }
 
   isActive() {

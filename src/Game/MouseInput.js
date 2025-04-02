@@ -85,61 +85,89 @@ export default class MouseInput {
     this.#rightButtonPressed = false;
   }
 
-  isMouseOverBox(box) {
-    const boxX = box.getXCoordinate();
-    const boxY = box.getYCoordinate();
+  detectMouseOverBox(board) {
+    for (let i = 0; i < board.getGrids().length; i++) {
+      const currentGrid = board.getGrids()[i];
+
+      for (let j = 0; j < currentGrid.getBoxes().length; j++) {
+        const currentBox = currentGrid.getBoxes()[j];
+
+        const [isMouseWithinBoxWidth, isMouseWithinBoxHeight] =
+          this.#checkIfMouseWithinBoxWidthAndHeight(currentBox);
+
+        if (isMouseWithinBoxWidth && isMouseWithinBoxHeight) {
+          currentBox.setIsMouseOver(true);
+        }
+      }
+    }
+  }
+
+  #checkIfMouseWithinBoxWidthAndHeight(box) {
     const boxWidth = box.getWidth();
     const boxHeight = box.getHeight();
 
-    const isOverBox =
-      this.#mouseXCoordinate >= boxX &&
-      this.#mouseXCoordinate <= boxX + boxWidth &&
-      this.#mouseYCoordinate >= boxY &&
-      this.#mouseYCoordinate <= boxY + boxHeight;
+    const boxXCoordinate = box.getXCoordinate();
+    const boxYCoordinate = box.getYCoordinate();
 
-    return isOverBox;
+    const isMouseWithinBoxWidth =
+      this.getMouseXCoordinate() >= boxXCoordinate &&
+      this.getMouseXCoordinate() <= boxXCoordinate + boxWidth;
+
+    const isMouseWithinBoxHeight =
+      this.getMouseYCoordinate() >= boxYCoordinate &&
+      this.getMouseYCoordinate() <= boxYCoordinate + boxHeight;
+
+    return [isMouseWithinBoxWidth, isMouseWithinBoxHeight];
   }
 
-  detectMouseOverBox(boxes) {
-    for (let i = 0; i < boxes.length; i++) {
-      const box = boxes[i];
-      if (this.isMouseOverBox(box)) {
-        box.setIsMouseOver(true);
-        if (box.getState() === BoxState.INACTIVE) {
-          box.setState(BoxState.INACTIVE_HOVERED);
-        } else if (box.getState() === BoxState.AVAILABLE) {
-          box.setState(BoxState.HOVERED);
+  detectBoxThatIsntHoveredAnymore(board) {
+    for (let i = 0; i < board.getGrids().length; i++) {
+      const currentGrid = board.getGrids()[i];
+
+      for (let j = 0; j < currentGrid.getBoxes().length; j++) {
+        const currentBox = currentGrid.getBoxes()[j];
+
+        const [isMouseWithinBoxWidth, isMouseWithinBoxHeight] =
+          this.#checkIfMouseWithinBoxWidthAndHeight(currentBox);
+
+        if (
+          (!isMouseWithinBoxWidth || !isMouseWithinBoxHeight) &&
+          currentBox.isMouseOver()
+        ) {
+          currentBox.setIsMouseOver(false);
         }
       }
     }
   }
 
-  detectBoxThatIsntHoveredAnymore(boxes) {
-    for (let i = 0; i < boxes.length; i++) {
-      const box = boxes[i];
-      if (!this.isMouseOverBox(box) && box.isMouseOver()) {
-        box.setIsMouseOver(false);
-        if (box.getState() === BoxState.INACTIVE_HOVERED) {
-          box.setState(BoxState.INACTIVE);
-        } else if (box.getState() === BoxState.HOVERED) {
-          box.setState(BoxState.AVAILABLE);
-        }
+  resetIsLeftClickedOnBoxes(board) {
+    for (let i = 0; i < board.getGrids().length; i++) {
+      const currentGrid = board.getGrids()[i];
+
+      const leftClickedBox = currentGrid.lookForLeftClickedBox();
+
+      if (leftClickedBox) {
+        // SET "isLeftClicked" TO FALSE ON THE BOX THAT WAS LEFT-CLICKED IN THE PREVIOUS CYCLE
+        leftClickedBox.setIsLeftClicked(false);
       }
     }
   }
 
-  detectLeftClickOnBox(boxes) {
+  detectLeftClickOnBox(board) {
     if (this.isLeftButtonPressed()) {
-      for (let i = 0; i < boxes.length; i++) {
-        const box = boxes[i];
-        if (box.isMouseOver()) {
-          box.setIsLeftClicked(true);
-          if (box.getState() === BoxState.HOVERED) {
-            box.setState(BoxState.SELECTED);
+      for (let i = 0; i < board.getGrids().length; i++) {
+        const currentGrid = board.getGrids()[i];
+
+        const hoveredBox = currentGrid.lookForHoveredBox();
+
+        for (let j = 0; j < currentGrid.getBoxes().length; j++) {
+          const currentBox = currentGrid.getBoxes()[j];
+
+          if (currentBox === hoveredBox) {
+            currentBox.setIsLeftClicked(true);
           }
         }
       }
-      this.setLeftButtonPressedFalse();
     }
   }
 
@@ -215,7 +243,7 @@ export default class MouseInput {
     }
   }
 
-  resetIsLeftClicked(deckContainer) {
+  resetIsLeftClickedOnCards(deckContainer) {
     for (let i = 0; i < deckContainer.getDecks().length; i++) {
       const currentDeck = deckContainer.getDecks()[i];
 

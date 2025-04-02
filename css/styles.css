@@ -120,6 +120,7 @@ input:focus {
 }
 
 #eng-btn {
+  position: absolute;
   width: 75px;
   height: 45px;
   background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/1280px-Flag_of_the_United_Kingdom_%283-5%29.svg.png);
