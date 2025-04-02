@@ -59,7 +59,6 @@ export default class DiscardCardPhase extends Phase {
         deckContainer.getDecks()[DeckType.EVENTS],
     ]
     }
-    console.log(activePlayer)
     const discardPhase = new DiscardCardPhase(
       DiscardCardState.INIT,
       deckRelevants,
@@ -79,9 +78,7 @@ export default class DiscardCardPhase extends Phase {
         break;
 
       case DiscardCardState.CARD_DISCARD:
-        if(this.#decksRelevants[0].getCards().length > 5) {
-          this.#autoCardDiscard();
-        } else if(this.#decksRelevants[0].getCards().length <= 5 && this.#decksRelevants[0].getCards().length > 3) {
+        if(this.#decksRelevants[0].getCards().length > 3) {
           this.#cardDiscard();
         } else {
           this._state = DiscardCardState.END;
@@ -94,8 +91,6 @@ export default class DiscardCardPhase extends Phase {
         isPhaseFinished = true;
         break;
 
-      default:
-        console.error("Discard Event State Fail");
     }
     return isPhaseFinished;
   }
@@ -104,28 +99,6 @@ export default class DiscardCardPhase extends Phase {
     globals.currentPhase = PhaseType.DISCARD_CARD;
     globals.currentState = DiscardCardState.CARD_DISCARD;
     this._state = DiscardCardState.CARD_DISCARD;
-  }
-
-  #autoCardDiscard() {
-    console.log("discard card phase");
-    const handGrid = this.#gridsRelevants;
-    let index = this.#decksRelevants[0].getCards().length - 1;
-
-    let box = handGrid.getBoxes()[index];
-    console.log(handGrid)
-    this.#selectedCard = box.getCard();
-
-    if (this.#selectedCard) {
-
-    this.#decksRelevants[1].insertCard(this.#selectedCard)
-    this.#decksRelevants[0].removeCard(this.#selectedCard)
-    box.resetCard()
-
-    this.#selectedCard = null;
-    this.#selectedGrid = null;
-    this._state = DiscardCardState.INIT
-          
-    }
   }
 
   #cardDiscard() {
@@ -146,7 +119,6 @@ export default class DiscardCardPhase extends Phase {
         this.#decksRelevants[1].insertCard(this.#selectedCard)
         this.#decksRelevants[0].removeCard(this.#selectedCard)
         box.resetCard()
-        console.log(this.#decksRelevants[0])
         
         this.#selectedCard = null;
         this.#selectedGrid = null;

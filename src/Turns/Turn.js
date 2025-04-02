@@ -222,7 +222,7 @@ export default class Turn {
       
       let playerDeck;
       let playerGrid;
-      if(this.#player.getID() === 0) {
+      if(this.#player.getID() === PlayerID.PLAYER_1) {
         playerDeck = this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
         playerGrid = this.#board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND]
       } else
@@ -235,7 +235,12 @@ export default class Turn {
         this.#currentPhase = PhaseType.DISCARD_CARD
       } 
       if(this.#numOfExecutedPhases === 5) {
-        globals.isCurrentTurnFinished = true;
+        if(playerDeck.getCards().length > 5)
+        { 
+          this.#numOfExecutedPhases--;
+        } else {
+          globals.isCurrentTurnFinished = true;
+        }
       }
     }
   }

@@ -104,11 +104,8 @@ export default class AttackPhase extends Phase {
         console.log("INIT");
 
         globals.currentPhase = PhaseType.ATTACK;
-        // let message = new PhasesMessages(PhaseType.ATTACK,null,300)
         globals.currentPhase = PhaseType.ATTACK;
         globals.currentState = AttackPhaseState.SELECT_ATTACKER;
-        // console.log(message)
-        // globals.phasesMessages.push(message.getContent(globals.currentPhase,"ENG"))
 
         this.#resetRelevantCardsStates([
           this.#enemyMovementGridDeck,

@@ -739,7 +739,7 @@ export default class Game {
       this.#turns[this.#currentPlayer.getID()].getNumOfExecutedPhases();
     const TOTAL_PHASES = 5;
 
-    const phaseText = `Phase: ${numOfExecutedPhases}/${TOTAL_PHASES}`;
+    const phaseText = `Phase: ${numOfExecutedPhases+1}/${TOTAL_PHASES}`;
     globals.ctx.fillStyle = "white";
     globals.ctx.font = "24px MedievalSharp";
     globals.ctx.textAlign = "center";
