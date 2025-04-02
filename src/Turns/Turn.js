@@ -243,6 +243,7 @@ export default class Turn {
         if (playerDeck.getCards().length > 5) {
           this.#numOfExecutedPhases--;
         } else {
+          this.#currentPhase = PhaseType.INVALID
           globals.isCurrentTurnFinished = true;
         }
       }

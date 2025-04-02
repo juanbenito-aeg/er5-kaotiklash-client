@@ -60,7 +60,7 @@ export default class DiscardCardPhase extends Phase {
 
   execute() {
     let isPhaseFinished = false;
-
+    
     switch (this._state) {
       case DiscardCardState.INIT:
         this.#initializePhase();
