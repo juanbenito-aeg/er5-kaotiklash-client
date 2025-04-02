@@ -103,7 +103,7 @@ input:focus {
 #login-form {
   position: absolute;
   margin-top: 25vh;
-  margin-left: 90vh;
+  margin-left: 80vh;
   background: rgba(0, 0, 0, 0.8);
   padding: 30px;
   border-radius: 10px;
@@ -113,22 +113,15 @@ input:focus {
 }
 
 #eus-btn {
-  z-index: 100;
-  position: absolute;
   width: 75px;
   height: 45px;
-  margin-top: -40vh;
-  margin-left: -44vw;
   background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Flag_of_the_Basque_Country.svg/2560px-Flag_of_the_Basque_Country.svg.png);
   background-size: 75px;
 }
 
 #eng-btn {
-  position: absolute;
   width: 75px;
   height: 45px;
-  margin-top: -40vh;
-  margin-left: -41vw;
   background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/1280px-Flag_of_the_United_Kingdom_%283-5%29.svg.png);
   background-size: 75px;
 }
@@ -181,6 +174,10 @@ input:focus {
   font-size: x-large;
 }
 
+#checkbox-text {
+  margin-left: 60px;
+}
+
 #localStorage-checkbox {
   appearance: none;
   width: 18px;
@@ -189,8 +186,7 @@ input:focus {
   border-radius: 4px;
   background-color: transparent;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  left: 160px;
   cursor: pointer;
   position: relative;
 }

@@ -74,7 +74,7 @@ function initLogInScreen() {
   if (savedEmail) {
     emailInput.value = savedEmail;
     checkbox.checked = isChecked;
-    initPlayerSessionScreen(); // Saltar el login y proceder al juego
+    initPlayerSessionScreen();
   }
 
   checkbox.addEventListener("change", function () {
@@ -126,11 +126,12 @@ async function logInPlayer(email, password) {
   if (response.ok) {
     const data = await response.json();
     let loginSuccessful = false;
-
+    let correctPassword = false;
     for (let i = 0; i < data.length; i++) {
       if (data[i].email_address === playerData.email) {
+        loginSuccessful = true;
         if (data[i].password === playerData.password) {
-          loginSuccessful = true;
+          correctPassword = true
           alert("Log in successful!");
 
           localStorage.setItem("playerName", data[i].name);
@@ -139,15 +140,16 @@ async function logInPlayer(email, password) {
 
           initPlayerSessionScreen();
           break;
-        } else {
-          alert("Incorrect password!");
-          break;
         }
       }
     }
-
+    
     if (!loginSuccessful) {
       alert("Email not found!");
+    }
+    if(!correctPassword) {
+      alert("Incorrect password!");
+      
     }
   } else {
     const errorData = await response.json();
