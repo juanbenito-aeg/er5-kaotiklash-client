@@ -231,12 +231,11 @@ export default class Turn {
         playerGrid = this.#board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND]
       }
 
-      if (this.#numOfExecutedPhases === 5 && playerDeck.getCards().length < 6) {
-        globals.isCurrentTurnFinished = true;
-      } else if (this.#numOfExecutedPhases > 5 && playerDeck.getCards().length >= 6){
-        this.#numOfExecutedPhases = 5
+      if (this.#numOfExecutedPhases === 4) {
         this.#currentPhase = PhaseType.DISCARD_CARD
-        console.log("please discard a card")
+      } 
+      if(this.#numOfExecutedPhases === 5) {
+        globals.isCurrentTurnFinished = true;
       }
     }
   }
@@ -498,7 +497,7 @@ export default class Turn {
           mouseY >= buttonYCoordinate &&
           mouseY <= buttonYCoordinate + buttonHeight
         ) {
-          if (this.#currentPhase === PhaseType.INVALID) {
+          if (this.#currentPhase === PhaseType.INVALID || this.#currentPhase === PhaseType.DISCARD_CARD) {
             if (i === PhaseButton.SKIP_OR_CANCEL) {
               this.#numOfExecutedPhases++;
             } else {

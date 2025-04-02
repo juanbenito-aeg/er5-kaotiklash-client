@@ -73,16 +73,19 @@ export default class DiscardCardPhase extends Phase {
 
   execute() {
     let isPhaseFinished = false;
-    console.log(this.#activePlayer)
     switch (this._state) {
       case DiscardCardState.INIT:
-
         this.#initializePhase();
         break;
 
       case DiscardCardState.CARD_DISCARD:
-
-          this.#CardDiscard();
+        if(this.#decksRelevants[0].getCards().length > 5) {
+          this.#autoCardDiscard();
+        } else if(this.#decksRelevants[0].getCards().length <= 5 && this.#decksRelevants[0].getCards().length > 3) {
+          this.#cardDiscard();
+        } else {
+          this._state = DiscardCardState.END;
+        }
 
         break;
 
@@ -103,40 +106,54 @@ export default class DiscardCardPhase extends Phase {
     this._state = DiscardCardState.CARD_DISCARD;
   }
 
-  #CardDiscard() {
+  #autoCardDiscard() {
     console.log("discard card phase");
     const handGrid = this.#gridsRelevants;
     let index = this.#decksRelevants[0].getCards().length - 1;
 
-
-        
-
-    
     let box = handGrid.getBoxes()[index];
     console.log(handGrid)
     this.#selectedCard = box.getCard();
 
     if (this.#selectedCard) {
-      console.log("selected card");
 
+    this.#decksRelevants[1].insertCard(this.#selectedCard)
+    this.#decksRelevants[0].removeCard(this.#selectedCard)
+    box.resetCard()
 
-
-          this.#decksRelevants[1].insertCard(this.#selectedCard)
-          this.#decksRelevants[0].removeCard(this.#selectedCard)
-          console.log(this.#decksRelevants[0])
-          if(this.#decksRelevants[0].getCards().length < 6)
-          {
-            console.log("all needed cards discarded")
-            this._state = DiscardCardState.END;
-          } else {
-            console.log("card discarded but not yet")
-            this.#selectedCard = null;
-            this.#selectedGrid = null;
-            this._state = DiscardCardState.INIT
-          }
-        }
+    this.#selectedCard = null;
+    this.#selectedGrid = null;
+    this._state = DiscardCardState.INIT
+          
     }
+  }
 
+  #cardDiscard() {
+    console.log("select card to discard phase");
+    const handGrid = this.#gridsRelevants;
+    for (let i = 0; i < handGrid.getBoxes().length; i++) {
+      let box = handGrid.getBoxes()[i];
+      if (
+        this._mouseInput.isMouseOverBox(box) &&
+        box.isOccupied() &&
+        this._mouseInput.isLeftButtonPressed()
+      ) {
+        this.#selectedCard = box.getCard();
+      }
+      if (this.#selectedCard) {
+        console.log("selected card");
+        
+        this.#decksRelevants[1].insertCard(this.#selectedCard)
+        this.#decksRelevants[0].removeCard(this.#selectedCard)
+        box.resetCard()
+        console.log(this.#decksRelevants[0])
+        
+        this.#selectedCard = null;
+        this.#selectedGrid = null;
+        this._state = DiscardCardState.END
+      }
+    }
+  }
 
   #finalizePhase() {
     console.log("finish phase");
@@ -144,6 +161,12 @@ export default class DiscardCardPhase extends Phase {
       this.#selectedCard = null;
       this.#selectedGrid = null;
       this._state = DiscardCardState.INIT;
+  }
 
+  reset() {
+    this._state = DiscardCardState.INIT;
+
+    this.#selectedCard = null;
+    this.#selectedGrid = null;
   }
 }
