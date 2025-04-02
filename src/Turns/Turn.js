@@ -220,20 +220,25 @@ export default class Turn {
       }
 
       let playerDeck;
-      let playerGrid;
       if (this.#player.getID() === PlayerID.PLAYER_1) {
         playerDeck =
           this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
-        playerGrid = this.#board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND];
       } else {
         playerDeck =
           this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND];
+      }
+
+      let playerGrid;
+      if (this.#player.getID() === globals.firstActivePlayerID) {
+        playerGrid = this.#board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND];
+      } else {
         playerGrid = this.#board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND];
       }
 
       if (this.#numOfExecutedPhases === 4) {
         this.#currentPhase = PhaseType.DISCARD_CARD;
       }
+
       if (this.#numOfExecutedPhases === 5) {
         if (playerDeck.getCards().length > 5) {
           this.#numOfExecutedPhases--;

@@ -13,7 +13,6 @@ import { globals } from "../index.js";
 import PhasesMessages from "../Messages/PhasesMessages.js";
 
 export default class MovePhase extends Phase {
-  #state;
   #decksRelevants;
   #gridsRelevants;
 
