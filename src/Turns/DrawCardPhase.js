@@ -1,4 +1,5 @@
 import Phase from "./Phase.js";
+import PhaseMessage from "../Messages/PhaseMessage.js";
 import {
   CardState,
   DeckType,
@@ -6,18 +7,17 @@ import {
   CardCategory,
   GridType,
 } from "../Game/constants.js";
+import { globals } from "../index.js";
 
 export default class DrawCardPhase extends Phase {
-  #player;
   #decksRelevants;
   #gridsRelevants;
   #isFirstTurn;
   #filteredCards;
 
-  constructor(state, mouseInput, player, decksRelevants, gridsRelevants) {
-    super(state, mouseInput);
+  constructor(state, mouseInput, phaseMessage, decksRelevants, gridsRelevants) {
+    super(state, mouseInput, phaseMessage);
 
-    this.#player = player;
     this.#decksRelevants = decksRelevants;
     this.#gridsRelevants = gridsRelevants;
     this.#isFirstTurn = true;
@@ -30,7 +30,8 @@ export default class DrawCardPhase extends Phase {
     board,
     mouseInput,
     events,
-    currentPlayer
+    currentPlayer,
+    phaseMessage
   ) {
     let decksRelevants;
     let gridsRelevants;
@@ -50,7 +51,7 @@ export default class DrawCardPhase extends Phase {
     const drawCardPhase = new DrawCardPhase(
       0,
       mouseInput,
-      player,
+      phaseMessage,
       decksRelevants,
       gridsRelevants
     );
@@ -64,6 +65,10 @@ export default class DrawCardPhase extends Phase {
     if (this.#isFirstTurn) {
       this.#isFirstTurn = false;
     } else {
+      this._phaseMessage.setCurrentContent(
+        PhaseMessage.content.drawCard.subsequentDraw[globals.language]
+      );
+
       this.#filterEventDeck();
 
       if (this.#filteredCards.length > 0) {

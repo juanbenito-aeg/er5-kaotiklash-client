@@ -1,0 +1,151 @@
+import Message from "./Message.js";
+
+export default class PhaseMessage extends Message {
+  static content = {
+    invalid: [
+      // ENG
+      "Select a phase.",
+
+      // EUS
+      "",
+    ],
+
+    drawCard: {
+      initialDraw: [
+        // ENG
+        "Drawing cards from the events deck...",
+
+        // EUS
+        "",
+      ],
+      subsequentDraw: [
+        // ENG
+        "Drawing a card from the events deck...",
+
+        // EUS
+        "",
+      ],
+    },
+
+    prepareEvent: {
+      selectHandCard: [
+        // ENG
+        "Select a card from your hand.",
+
+        // EUS
+        "",
+      ],
+      selectTargetGrid: [
+        // ENG
+        "Choose a destination.",
+
+        // EUS
+        "",
+      ],
+      moveCard: [
+        // ENG
+        "Moving card...",
+
+        // EUS
+        "",
+      ],
+    },
+
+    move: {
+      selectCard: [
+        // ENG
+        "Select a minion to move.",
+
+        // EUS
+        "",
+      ],
+      selectTarget: [
+        // ENG
+        "Choose a destination.",
+
+        // EUS
+        "",
+      ],
+      moveCard: [
+        // ENG
+        "Moving minion...",
+
+        // EUS
+        "",
+      ],
+    },
+
+    attack: {
+      selectAttacker: [
+        // ENG
+        "Select the attacking minion.",
+
+        // EUS
+        "",
+      ],
+      selectTarget: [
+        // ENG
+        "Select the target.",
+
+        // EUS
+        "",
+      ],
+    },
+
+    discardCard: {
+      mandatoryDiscard: [
+        // ENG
+        "Select a card to discard to leave a box free.",
+
+        // EUS
+        "",
+      ],
+      optionalDiscard: [
+        // ENG
+        "Optionally select a card to discard.",
+
+        // EUS
+        "",
+      ],
+    },
+
+    equipWeapon: {
+      selectMinion: [
+        // ENG
+        "Choose a minion to equip.",
+
+        // EUS
+        "",
+      ],
+      equipWeapon: [
+        // ENG
+        "Equipping weapon...",
+
+        // EUS
+        "",
+      ],
+    },
+  };
+
+  #currentContent;
+
+  constructor(initialContent) {
+    super();
+
+    this.#currentContent = initialContent;
+  }
+
+  static create(initialContent) {
+    const phaseMessage = new PhaseMessage(initialContent);
+
+    return phaseMessage;
+  }
+
+  getCurrentContent() {
+    return this.#currentContent;
+  }
+
+  setCurrentContent(newContent) {
+    this.#currentContent = newContent;
+  }
+}

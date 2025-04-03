@@ -1,7 +1,6 @@
 import Phase from "./Phase.js";
-import { globals } from "../index.js";
-import PhasesMessages from "../Messages/PhasesMessages.js";
-import { Language, PhaseType } from "../Game/constants.js";
+import PhaseMessage from "../Messages/PhaseMessage.js";
+import PrepareEvent from "../Events/PrepareEvent.js";
 import {
   PrepareEventState,
   CardState,
@@ -10,7 +9,7 @@ import {
   DeckType,
   GridType,
 } from "../Game/constants.js";
-import PrepareEvent from "../Events/PrepareEvent.js";
+import { globals } from "../index.js";
 
 export default class PrepareEventPhase extends Phase {
   #player;
@@ -21,12 +20,13 @@ export default class PrepareEventPhase extends Phase {
   constructor(
     state,
     mouseInput,
+    phaseMessage,
     player,
     decksRelevants,
     gridRelevants,
     events
   ) {
-    super(state, mouseInput);
+    super(state, mouseInput, phaseMessage);
 
     this.#player = player;
     this.#decksRelevants = decksRelevants;
@@ -40,7 +40,8 @@ export default class PrepareEventPhase extends Phase {
     board,
     mouseInput,
     events,
-    currentPlayer
+    currentPlayer,
+    phaseMessage
   ) {
     let deckRelevants;
     let gridRelevants;
@@ -72,18 +73,12 @@ export default class PrepareEventPhase extends Phase {
     const prepareEventPhase = new PrepareEventPhase(
       PrepareEventState.INIT,
       mouseInput,
+      phaseMessage,
       player,
       deckRelevants,
       gridRelevants,
       events
     );
-
-    let message = PhasesMessages.create(
-      PhaseType.PREPARE_EVENT,
-      PrepareEventState.INIT,
-      Language.ENGLISH
-    );
-    globals.phasesMessages.push(message);
 
     return prepareEventPhase;
   }
@@ -118,19 +113,14 @@ export default class PrepareEventPhase extends Phase {
   }
 
   #initializePhase() {
-    globals.currentPhase = PhaseType.PREPARE_EVENT;
-    globals.currentState = PrepareEventState.SELECT_HAND_CARD;
-    let message = PhasesMessages.create(
-      PhaseType.PREPARE_EVENT,
-      PrepareEventState.INIT,
-      Language.ENGLISH
-    );
-    globals.phasesMessages.push(message);
-
     this._state = PrepareEventState.SELECT_HAND_CARD;
   }
 
   #selectCardFromHand() {
+    this._phaseMessage.setCurrentContent(
+      PhaseMessage.content.prepareEvent.selectHandCard[globals.language]
+    );
+
     const hoveredCard = this.#decksRelevants[0].lookForHoveredCard();
 
     if (hoveredCard) {
@@ -139,20 +129,16 @@ export default class PrepareEventPhase extends Phase {
       } else {
         hoveredCard.setState(CardState.SELECTED);
 
-        globals.currentState = PrepareEventState.SELECT_TARGET_GRID;
-        let message = PhasesMessages.create(
-          PhaseType.PREPARE_EVENT,
-          PrepareEventState.SELECT_HAND_CARD,
-          Language.ENGLISH
-        );
-        globals.phasesMessages.push(message);
-
         this._state = PrepareEventState.SELECT_TARGET_GRID;
       }
     }
   }
 
   #selectTargetGrid() {
+    this._phaseMessage.setCurrentContent(
+      PhaseMessage.content.prepareEvent.selectTargetGrid[globals.language]
+    );
+
     const selectedCard = this.#decksRelevants[0].lookForSelectedCard();
 
     if (selectedCard.isLeftClicked()) {
@@ -168,14 +154,6 @@ export default class PrepareEventPhase extends Phase {
         } else {
           hoveredBox.setState(BoxState.SELECTED);
 
-          globals.currentState = PrepareEventState.END;
-          let message = PhasesMessages.create(
-            PhaseType.PREPARE_EVENT,
-            PrepareEventState.END,
-            Language.ENGLISH
-          );
-          globals.phasesMessages.push(message);
-
           this._state = PrepareEventState.END;
         }
       }
@@ -183,6 +161,10 @@ export default class PrepareEventPhase extends Phase {
   }
 
   #finalizePhase() {
+    this._phaseMessage.setCurrentContent(
+      PhaseMessage.content.prepareEvent.moveCard[globals.language]
+    );
+
     const selectedCard = this.#decksRelevants[0].lookForSelectedCard();
 
     this.#decksRelevants[1].insertCard(selectedCard);
@@ -214,8 +196,6 @@ export default class PrepareEventPhase extends Phase {
     this.#events.push(prepareEvent);
 
     this._state = PrepareEventState.INIT;
-
-    globals.phasesMessages.splice(0, globals.phasesMessages.length);
   }
 
   reset() {

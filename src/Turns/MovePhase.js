@@ -1,4 +1,5 @@
 import Phase from "./Phase.js";
+import PhaseMessage from "../Messages/PhaseMessage.js";
 import {
   MovePhaseState,
   CardState,
@@ -6,18 +7,15 @@ import {
   PlayerID,
   DeckType,
   GridType,
-  PhaseType,
-  Language,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
-import PhasesMessages from "../Messages/PhasesMessages.js";
 
 export default class MovePhase extends Phase {
   #decksRelevants;
   #gridsRelevants;
 
-  constructor(state, decksRelevants, gridRelevants, mouseInput) {
-    super(state, mouseInput);
+  constructor(state, mouseInput, phaseMessage, decksRelevants, gridRelevants) {
+    super(state, mouseInput, phaseMessage);
 
     this.#decksRelevants = decksRelevants;
     this.#gridsRelevants = gridRelevants;
@@ -29,7 +27,8 @@ export default class MovePhase extends Phase {
     board,
     mouseInput,
     events,
-    currentPlayer
+    currentPlayer,
+    phaseMessage
   ) {
     let deckRelevants;
     let gridRelevants;
@@ -50,17 +49,11 @@ export default class MovePhase extends Phase {
 
     const movePhase = new MovePhase(
       MovePhaseState.INIT,
+      mouseInput,
+      phaseMessage,
       deckRelevants,
-      gridRelevants,
-      mouseInput
+      gridRelevants
     );
-
-    let message = PhasesMessages.create(
-      PhaseType.MOVE,
-      MovePhaseState.INIT,
-      Language.ENGLISH
-    );
-    globals.phasesMessages.push(message);
 
     return movePhase;
   }
@@ -95,21 +88,15 @@ export default class MovePhase extends Phase {
   }
 
   #initializePhase() {
-    globals.currentPhase = PhaseType.MOVE;
-    globals.currentState = MovePhaseState.SELECT_CARD;
-
-    let message = PhasesMessages.create(
-      PhaseType.MOVE,
-      MovePhaseState.SELECT_CARD,
-      Language.ENGLISH
-    );
-    globals.phasesMessages.push(message);
-
     this._state = MovePhaseState.SELECT_CARD;
   }
 
   #selectCard() {
     console.log("select card phase");
+
+    this._phaseMessage.setCurrentContent(
+      PhaseMessage.content.move.selectCard[globals.language]
+    );
 
     const hoveredCard = this.#decksRelevants.lookForHoveredCard();
 
@@ -119,14 +106,6 @@ export default class MovePhase extends Phase {
       } else {
         hoveredCard.setState(CardState.SELECTED);
 
-        globals.currentState = MovePhaseState.SELECT_TARGET;
-        let message = PhasesMessages.create(
-          PhaseType.MOVE,
-          MovePhaseState.SELECT_TARGET,
-          Language.ENGLISH
-        );
-        globals.phasesMessages.push(message);
-
         this._state = MovePhaseState.SELECT_TARGET;
       }
     }
@@ -134,6 +113,10 @@ export default class MovePhase extends Phase {
 
   #selectTargetGrid() {
     console.log("select target phase");
+
+    this._phaseMessage.setCurrentContent(
+      PhaseMessage.content.move.selectTarget[globals.language]
+    );
 
     const selectedCard = this.#decksRelevants.lookForSelectedCard();
     if (selectedCard.isLeftClicked()) {
@@ -177,14 +160,6 @@ export default class MovePhase extends Phase {
 
             selectedBox.resetCard();
 
-            globals.currentState = MovePhaseState.MOVE_CARD;
-            let message = PhasesMessages.create(
-              PhaseType.MOVE,
-              MovePhaseState.MOVE_CARD,
-              Language.ENGLISH
-            );
-            globals.phasesMessages.push(message);
-
             this._state = MovePhaseState.MOVE_CARD;
           }
         }
@@ -193,6 +168,10 @@ export default class MovePhase extends Phase {
   }
 
   #moveCardToBox() {
+    this._phaseMessage.setCurrentContent(
+      PhaseMessage.content.move.moveCard[globals.language]
+    );
+
     const selectedCard = this.#decksRelevants.lookForSelectedCard();
     const selectedTargetBox = this.#gridsRelevants.lookForSelectedBox();
 
@@ -204,21 +183,11 @@ export default class MovePhase extends Phase {
     selectedCard.setState(CardState.PLACED);
     selectedTargetBox.setState(BoxState.OCCUPIED);
 
-    globals.currentState = MovePhaseState.END;
-    let message = PhasesMessages.create(
-      PhaseType.MOVE,
-      MovePhaseState.END,
-      Language.ENGLISH
-    );
-    globals.phasesMessages.push(message);
-
     this._state = MovePhaseState.END;
   }
 
   #finalizePhase() {
     console.log("finish phase");
-
-    globals.phasesMessages.splice(0, globals.phasesMessages.length);
 
     this._state = MovePhaseState.INIT;
   }

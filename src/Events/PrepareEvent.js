@@ -1,6 +1,4 @@
-import PhasesMessages from "../Messages/PhasesMessages.js";
 import Event from "./Event.js";
-import { globals } from "../index.js";
 import { EventCooldownState } from "../Game/constants.js";
 
 export default class PrepareEvent extends Event {
