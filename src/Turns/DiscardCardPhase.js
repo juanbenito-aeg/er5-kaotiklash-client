@@ -106,7 +106,7 @@ export default class DiscardCardPhase extends Phase {
 
         this.#decksRelevants[1].insertCard(selectedCard);
         this.#decksRelevants[0].removeCard(selectedCard);
-
+        selectedCard.setState(CardState.INACTIVE);
         selectedBox.resetCard();
 
         this._state = DiscardCardState.END;
@@ -120,7 +120,4 @@ export default class DiscardCardPhase extends Phase {
     this._state = DiscardCardState.INIT;
   }
 
-  reset() {
-    this._state = DiscardCardState.INIT;
-  }
 }
