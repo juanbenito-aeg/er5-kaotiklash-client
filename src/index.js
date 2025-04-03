@@ -32,9 +32,6 @@ const globals = {
   buttonDataGlobal: [],
   firstActivePlayerID: -1, // (!) DELETE AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
   phaseMessage: {},
-  currentPhase: 0,
-  currentState: 0,
-  phaseType: -1,
   gameWinner: null,
   damageMessages: [],
   damageFontSize: 75,

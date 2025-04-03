@@ -5,6 +5,8 @@ import DeckCreator from "../Decks/DeckCreator.js";
 import GridCreator from "../Board/GridCreator.js";
 import Turn from "../Turns/Turn.js";
 import MouseInput from "./MouseInput.js";
+import ImageSet from "./ImageSet.js";
+import PhaseMessage from "../Messages/PhaseMessage.js";
 import {
   GameState,
   CardCategory,
@@ -18,13 +20,10 @@ import {
   CardState,
   MainCharacterID,
   GridType,
-  PhaseType,
   PhaseButtonData,
   BoxState,
 } from "./constants.js";
 import { globals } from "../index.js";
-import ImageSet from "./ImageSet.js";
-import PhaseMessage from "../Messages/PhaseMessage.js";
 
 export default class Game {
   #players;
@@ -34,7 +33,6 @@ export default class Game {
   #turns;
   #mouseInput;
   #events;
-  #currentPhase;
   #phaseMessage;
 
   static async create() {
@@ -80,7 +78,9 @@ export default class Game {
     game.#events = [];
 
     // PHASE MESSAGE OBJECT CREATION
-    const phaseMessage = PhaseMessage.create();
+    game.#phaseMessage = PhaseMessage.create(
+      PhaseMessage.content.drawCard.initialDraw[globals.language]
+    );
 
     // TURNS CREATION
     const turnPlayer1 = new Turn(
@@ -91,7 +91,7 @@ export default class Game {
       game.#events,
       game.#phaseMessage
     );
-    turnPlayer1.fillPhases(game.#currentPlayer, phaseMessage);
+    turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
       game.#deckContainer,
       game.#board,
@@ -100,7 +100,7 @@ export default class Game {
       game.#events,
       game.#phaseMessage
     );
-    turnPlayer2.fillPhases(game.#currentPlayer, phaseMessage);
+    turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
 
     game.#createPhaseButtons();
@@ -527,8 +527,6 @@ export default class Game {
 
     this.#updatePlayersTotalHP();
 
-    this.#updateMessages();
-
     this.#checkIfGameOver();
   }
 
@@ -570,12 +568,6 @@ export default class Game {
     }
 
     return totalHP;
-  }
-
-  #updateMessages() {
-    if (globals.phasesMessages.length > 1) {
-      globals.phasesMessages.slice(0, 1);
-    }
   }
 
   #executeEvent() {
@@ -633,7 +625,7 @@ export default class Game {
     this.#renderPlayersInfo();
     this.#renderPhaseButtons();
     this.#renderActiveEventsTable();
-    this.#renderMessages();
+    this.#renderPhaseMessage();
     this.#renderCardsReverse();
     this.#renderCards();
     this.#renderDamageMessages();
@@ -933,7 +925,7 @@ export default class Game {
     );
   }
 
-  #renderMessages() {
+  #renderPhaseMessage() {
     const messageBoxX = this.#board
       .getGrids()
       [GridType.MESSAGES].getBoxes()[0]
@@ -942,6 +934,7 @@ export default class Game {
       .getGrids()
       [GridType.MESSAGES].getBoxes()[0]
       .getYCoordinate();
+
     const messageBoxWidth = this.#board
       .getGrids()
       [GridType.MESSAGES].getBoxes()[0]
@@ -964,35 +957,11 @@ export default class Game {
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
 
-    for (let i = 0; i < globals.phasesMessages.length; i++) {
-      let messages = globals.phasesMessages[i];
-      let phaseType = this.#getPhaseType(globals.currentPhase);
-      let messageContent = messages.getContent(
-        phaseType,
-        globals.currentState,
-        "ENG"
-      );
-      globals.ctx.fillText(
-        messageContent,
-        messageBoxX + messageBoxWidth / 2,
-        messageBoxY + messageBoxHeight / 2
-      );
-    }
-  }
-
-  #getPhaseType(currentPhase) {
-    switch (currentPhase) {
-      case PhaseType.INVALID:
-        return PhaseType.INVALID;
-      case PhaseType.PREPARE_EVENT:
-        return PhaseType.PREPARE_EVENT;
-      case PhaseType.ATTACK:
-        return PhaseType.ATTACK;
-      case PhaseType.MOVE:
-        return PhaseType.MOVE;
-      case PhaseType.EQUIP_WEAPON:
-        return PhaseType.EQUIP_WEAPON;
-    }
+    globals.ctx.fillText(
+      this.#phaseMessage.getCurrentContent(),
+      messageBoxX + messageBoxWidth / 2,
+      messageBoxY + messageBoxHeight / 2
+    );
   }
 
   #renderCardsReverse() {

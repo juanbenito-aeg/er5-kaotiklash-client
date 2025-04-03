@@ -1,4 +1,5 @@
 import Phase from "./Phase.js";
+import PhaseMessage from "../Messages/PhaseMessage.js";
 import {
   DiscardCardState,
   CardState,
@@ -13,8 +14,8 @@ export default class DiscardCardPhase extends Phase {
   #decksRelevants;
   #gridsRelevants;
 
-  constructor(state, decksRelevants, gridsRelevants, mouseInput) {
-    super(state, mouseInput);
+  constructor(state, mouseInput, phaseMessage, decksRelevants, gridsRelevants) {
+    super(state, mouseInput, phaseMessage);
 
     this.#decksRelevants = decksRelevants;
     this.#gridsRelevants = gridsRelevants;
@@ -26,7 +27,8 @@ export default class DiscardCardPhase extends Phase {
     board,
     mouseInput,
     events,
-    currentPlayer
+    currentPlayer,
+    phaseMessage
   ) {
     let deckRelevants;
     let gridRelevants;
@@ -50,9 +52,10 @@ export default class DiscardCardPhase extends Phase {
 
     const discardPhase = new DiscardCardPhase(
       DiscardCardState.INIT,
+      mouseInput,
+      phaseMessage,
       deckRelevants,
-      gridRelevants,
-      mouseInput
+      gridRelevants
     );
 
     return discardPhase;
@@ -60,14 +63,29 @@ export default class DiscardCardPhase extends Phase {
 
   execute() {
     let isPhaseFinished = false;
-    
+
     switch (this._state) {
       case DiscardCardState.INIT:
         this.#initializePhase();
         break;
 
       case DiscardCardState.CARD_DISCARD:
-        if (this.#decksRelevants[0].getCards().length > 3) {
+        if (
+          this.#decksRelevants[0].getCards().length >= 4 &&
+          this.#decksRelevants[0].getCards().length <= 6
+        ) {
+          if (this.#decksRelevants[0].getCards().length === 6) {
+            this._phaseMessage.setCurrentContent(
+              PhaseMessage.content.discardCard.mandatoryDiscard[
+                globals.language
+              ]
+            );
+          } else {
+            this._phaseMessage.setCurrentContent(
+              PhaseMessage.content.discardCard.optionalDiscard[globals.language]
+            );
+          }
+
           this.#cardDiscard();
         } else {
           this._state = DiscardCardState.END;
@@ -84,9 +102,6 @@ export default class DiscardCardPhase extends Phase {
   }
 
   #initializePhase() {
-    globals.currentPhase = PhaseType.DISCARD_CARD;
-    globals.currentState = DiscardCardState.CARD_DISCARD;
-
     this._state = DiscardCardState.CARD_DISCARD;
   }
 

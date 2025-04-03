@@ -22,12 +22,13 @@ export default class AttackPhase extends Phase {
   constructor(
     state,
     mouseInput,
+    phaseMessage,
     enemyMovementGridDeck,
     currentPlayerMovementGridDeck,
     enemyMovementGrid,
     currentPlayerMovementGrid
   ) {
-    super(state, mouseInput);
+    super(state, mouseInput, phaseMessage);
 
     this.#enemyMovementGridDeck = enemyMovementGridDeck;
     this.#currentPlayerMovementGridDeck = currentPlayerMovementGridDeck;
@@ -41,7 +42,8 @@ export default class AttackPhase extends Phase {
     board,
     mouseInput,
     events,
-    currentPlayer
+    currentPlayer,
+    phaseMessage
   ) {
     let enemyMovementGridDeck;
     let currentPlayerMovementGridDeck;
@@ -77,18 +79,12 @@ export default class AttackPhase extends Phase {
     const attackPhase = new AttackPhase(
       AttackPhaseState.INIT,
       mouseInput,
+      phaseMessage,
       enemyMovementGridDeck,
       currentPlayerMovementGridDeck,
       enemyMovementGrid,
       currentPlayerMovementGrid
     );
-
-    let message = PhaseMessage.create(
-      PhaseType.ATTACK,
-      AttackPhaseState.INIT,
-      Language.ENGLISH
-    );
-    globals.phasesMessages.push(message);
 
     return attackPhase;
   }
@@ -103,10 +99,6 @@ export default class AttackPhase extends Phase {
       case AttackPhaseState.INIT:
         console.log("INIT");
 
-        globals.currentPhase = PhaseType.ATTACK;
-        globals.currentPhase = PhaseType.ATTACK;
-        globals.currentState = AttackPhaseState.SELECT_ATTACKER;
-
         this.#resetRelevantCardsStates([
           this.#enemyMovementGridDeck,
           this.#currentPlayerMovementGridDeck,
@@ -120,6 +112,10 @@ export default class AttackPhase extends Phase {
       case AttackPhaseState.SELECT_ATTACKER:
         console.log("ATTACKER SELECTION");
 
+        this._phaseMessage.setCurrentContent(
+          PhaseMessage.content.attack.selectAttacker[globals.language]
+        );
+
         attacker = this.#currentPlayerMovementGridDeck.lookForHoveredCard();
 
         if (attacker) {
@@ -130,14 +126,6 @@ export default class AttackPhase extends Phase {
 
             attacker.setState(CardState.SELECTED);
 
-            globals.currentState = AttackPhaseState.SELECT_TARGET;
-            let selectAttackerMessage = PhaseMessage.create(
-              PhaseType.ATTACK,
-              AttackPhaseState.SELECT_ATTACKER,
-              Language.ENGLISH
-            );
-            globals.phasesMessages.push(selectAttackerMessage);
-
             this._state = AttackPhaseState.SELECT_TARGET;
           }
         }
@@ -147,6 +135,10 @@ export default class AttackPhase extends Phase {
       // TARGET SELECTION
       case AttackPhaseState.SELECT_TARGET:
         console.log("TARGET SELECTION");
+
+        this._phaseMessage.setCurrentContent(
+          PhaseMessage.content.attack.selectTarget[globals.language]
+        );
 
         attacker = this.#currentPlayerMovementGridDeck.lookForSelectedCard();
 
@@ -179,13 +171,7 @@ export default class AttackPhase extends Phase {
                 target.setState(CardState.HOVERED);
               } else {
                 target.setState(CardState.SELECTED);
-                globals.currentState = AttackPhaseState.CALC_AND_APPLY_DMG;
-                let selectAttackerMessage = PhaseMessage.create(
-                  PhaseType.ATTACK,
-                  AttackPhaseState.CALC_AND_APPLY_DMG,
-                  Language.ENGLISH
-                );
-                globals.phasesMessages.push(selectAttackerMessage);
+
                 this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
               }
             }
@@ -208,13 +194,7 @@ export default class AttackPhase extends Phase {
           this.#enemyMovementGrid
         );
         attackEvent.execute();
-        globals.currentState = AttackPhaseState.END;
-        let selectAttackerMessage = PhaseMessage.create(
-          PhaseType.ATTACK,
-          AttackPhaseState.END,
-          Language.ENGLISH
-        );
-        globals.phasesMessages.push(selectAttackerMessage);
+
         this._state = AttackPhaseState.END;
 
         break;
@@ -231,7 +211,6 @@ export default class AttackPhase extends Phase {
         isPhaseFinished = true;
 
         this._state = AttackPhaseState.INIT;
-        globals.phasesMessages.splice(0, globals.phasesMessages.length);
 
         break;
     }
