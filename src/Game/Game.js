@@ -137,7 +137,7 @@ export default class Game {
         let cardTypeIcon;
 
         if (currentCard.getCategory() === CardCategory.MAIN_CHARACTER) {
-          cardImage = globals.cardsImages.mainCharacters[currentCard.getID()];
+          cardImage = globals.cardsImages.main_characters[currentCard.getID()];
 
           smallVersionTemplateImage =
             globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_SMALL];
@@ -255,14 +255,14 @@ export default class Game {
               cardTypeIcon = globals.cardsIconsImages[IconID.ARMOR_HEAVY_TYPE];
             }
           } else if (currentCard.getCategory() === CardCategory.SPECIAL) {
-            cardImage = globals.cardsImages.specialEvents[currentCard.getID()];
+            cardImage = globals.cardsImages.special_events[currentCard.getID()];
 
             bigVersionTemplateImage =
               globals.cardsTemplatesImages[TemplateID.SPECIAL_EVENTS_BIG];
 
             cardTypeIcon = globals.cardsIconsImages[IconID.SPECIAL_TYPE];
           } else {
-            cardImage = globals.cardsImages.rareEvents[currentCard.getID()];
+            cardImage = globals.cardsImages.rare_events[currentCard.getID()];
 
             bigVersionTemplateImage =
               globals.cardsTemplatesImages[TemplateID.RARE_EVENTS_BIG];

@@ -45,7 +45,7 @@ export default class CardFactory {
 
     const chaoticEventID = Math.floor(Math.random() * 4);
     const gottenChaoticEvent =
-      globals.cardsData.mainCharacters[MainCharacterID.JOSEPH].chaotic_events[
+      globals.cardsData.main_characters[MainCharacterID.JOSEPH].chaotic_events[
         chaoticEventID
       ];
     let chaoticEventName = gottenChaoticEvent.name_eng;
@@ -207,7 +207,7 @@ export default class CardFactory {
 
     switch (cardCategory) {
       case "main_characters":
-        rawCard = globals.cardsData.mainCharacters[cardID];
+        rawCard = globals.cardsData.main_characters[cardID];
         if (cardID !== MainCharacterID.JOSEPH) {
           processedCard = this.#createMainCharacter(rawCard);
         } else {
@@ -230,13 +230,13 @@ export default class CardFactory {
         processedCard = this.#createArmor(rawCard);
         break;
 
-      case "special":
-        rawCard = globals.cardsData.specialEvents[cardID];
+      case "special_events":
+        rawCard = globals.cardsData.special_events[cardID];
         processedCard = this.#createSpecial(rawCard);
         break;
 
-      case "rare":
-        rawCard = globals.cardsData.rareEvents[cardID];
+      case "rare_events":
+        rawCard = globals.cardsData.rare_events[cardID];
         processedCard = this.#createRare(rawCard);
         break;
     }

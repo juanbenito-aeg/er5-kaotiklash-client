@@ -13,12 +13,12 @@ const globals = {
   cardsData: {},
   cardsReverseImage: {},
   cardsImages: {
-    mainCharacters: [],
-    minions: [],
-    weapons: [],
     armor: [],
-    specialEvents: [],
-    rareEvents: [],
+    main_characters: [],
+    minions: [],
+    rare_events: [],
+    special_events: [],
+    weapons: [],
   },
   cardsTemplatesImages: [],
   cardsIconsImages: [],
@@ -339,27 +339,17 @@ function initVars() {
 
 async function loadDBCardsDataAndAssets() {
   // API ENDPOINTS TO RETRIEVE CARDS DATA FROM THE DATABASE
-  const urls = {
-    mainCharacters:
-      "https://er5-kaotiklash-server.onrender.com/api/main-characters/",
-    minions: "https://er5-kaotiklash-server.onrender.com/api/minions/",
-    weapons: "https://er5-kaotiklash-server.onrender.com/api/weapons/",
-    armor: "https://er5-kaotiklash-server.onrender.com/api/armor/",
-    specialEvents:
-      "https://er5-kaotiklash-server.onrender.com/api/special-events/",
-    rareEvents: "https://er5-kaotiklash-server.onrender.com/api/rare-events/",
-  };
+  const url = "https://er5-kaotiklash-server.onrender.com/api/cards/";
 
-  for (const urlName in urls) {
-    const response = await fetch(urls[urlName]);
+  const response = await fetch(url);
 
-    if (response.ok) {
-      globals.cardsData[urlName] = await response.json();
-    } else {
-      alert(`Communication error: ${response.statusText}`);
-    }
+  if (response.ok) {
+    const cardsData = await response.json();
+
+    globals.cardsData = cardsData;
+  } else {
+    alert(`Communication error: ${response.statusText}`);
   }
-
   loadAssets();
 }
 

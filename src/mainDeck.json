@@ -167,7 +167,7 @@
       "quantity": 3
     }
   ],
-  "special": [
+  "special_events": [
     {
       "card_id": 0,
       "name": "Hand of God",
@@ -214,7 +214,7 @@
       "quantity": 0
     }
   ],
-  "rare": [
+  "rare_events": [
     {
       "card_id": 0,
       "name": "Stolen Fate",

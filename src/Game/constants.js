@@ -1,8 +1,6 @@
 const GameState = {
   INVALID: -1,
-  LOG_IN: 0,
-  START: 1,
-  PLAYING: 2,
+  PLAYING: 0,
 };
 
 // FPS (FRAMES PER SECOND)
@@ -64,12 +62,12 @@ const IconID = {
 };
 
 const CardCategory = {
-  MAIN_CHARACTER: 0,
-  MINION: 1,
-  ARMOR: 2,
-  WEAPON: 3,
+  ARMOR: 0,
+  MAIN_CHARACTER: 1,
+  MINION: 2,
+  RARE: 3,
   SPECIAL: 4,
-  RARE: 5,
+  WEAPON: 5,
 };
 
 const MinionTypeID = {
