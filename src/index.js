@@ -126,7 +126,7 @@ function checkFormDataAndLogIn(e) {
 }
 
 async function logInPlayer(email, password) {
-  const url = "https://er5-kaotiklash-server.onrender.com/api/check-login";
+  const url = "https://er5-kaotiklash-server.onrender.com/api/login";
 
   const playerData = {
     email_address: email,
@@ -142,7 +142,10 @@ async function logInPlayer(email, password) {
   });
 
   if (response.ok) {
-    alert("Log in succsessful")
+    alert("Log in succsessful");
+    hideLoginScreen();
+    // REDIRECT TO THE PLAYER SESSION SCREEN
+    initPlayerSessionScreen();
   } else {
     const errorData = await response.json();
     alert(`Error: ${errorData.message || response.statusText}`);
