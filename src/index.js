@@ -126,46 +126,23 @@ function checkFormDataAndLogIn(e) {
 }
 
 async function logInPlayer(email, password) {
-  const url = "https://er5-kaotiklash-server.onrender.com/api/players";
+  const url = "https://er5-kaotiklash-server.onrender.com/api/check-login";
 
-  const response = await fetch(url);
+  const playerData = {
+    email_address: email,
+    password: password,
+  };
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(playerData),
+  });
 
   if (response.ok) {
-    const data = await response.json();
-
-    let loginSuccessful = false;
-
-    const playerData = {
-      email: email,
-      password: password,
-    };
-
-    for (let i = 0; i < data.length; i++) {
-      if (
-        data[i].email_address === playerData.email &&
-        data[i].password === playerData.password
-      ) {
-        loginSuccessful = true;
-        alert("Login successful!");
-
-        localStorage.setItem("playerName", data[i].name);
-        localStorage.setItem("email", data[i].email_address);
-
-        break;
-      }
-    }
-
-    if (loginSuccessful) {
-      hideLoginScreen();
-
-      if (globals.isScreenInitialized.playerSession) {
-        showPlayerSessionScreen();
-      } else {
-        initPlayerSessionScreen();
-      }
-    } else {
-      alert("Incorrect data. Please try again");
-    }
+    alert("Log in succsessful")
   } else {
     const errorData = await response.json();
     alert(`Error: ${errorData.message || response.statusText}`);
