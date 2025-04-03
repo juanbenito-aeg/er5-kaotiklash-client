@@ -6,6 +6,7 @@ import {
   PlayerID,
   PhaseType,
   DeckType,
+  BoxState,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 
@@ -60,7 +61,7 @@ export default class DiscardCardPhase extends Phase {
 
   execute() {
     let isPhaseFinished = false;
-    
+
     switch (this._state) {
       case DiscardCardState.INIT:
         this.#initializePhase();
@@ -103,11 +104,10 @@ export default class DiscardCardPhase extends Phase {
         const selectedCard = hoveredCard;
 
         const selectedBox = this.#gridsRelevants.lookForLeftClickedBox();
-
+        selectedBox.setState(BoxState.AVAILABLE);
         this.#decksRelevants[1].insertCard(selectedCard);
         this.#decksRelevants[0].removeCard(selectedCard);
-
-        selectedBox.resetCard();
+        selectedCard.setState(CardState.INACTIVE);
 
         this._state = DiscardCardState.END;
       }
