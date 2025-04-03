@@ -251,7 +251,7 @@ function initPlayerSessionScreen() {
 
   // GET OPPONENTS' DATA & USE THEM TO CREATE HTML ELEMENTS
   const opponentSelect = document.getElementById("opponent-select");
-  createOpponentsSelOptions(playerEmail, opponentSelect);
+  createOpponentsSelOptions(playerName, opponentSelect);
 
   // ACTIVATE THE "Start Game" BUTTON WHEN AN OPPONENT IS SELECTED & DISABLE IT WHEN THE DEFAULT OPTION IS SELECTED AGAIN
   opponentSelect.addEventListener("change", activateOrDisableStartGameBtn);
@@ -267,23 +267,30 @@ function clearLocalStorageAndReload() {
   window.location.reload();
 }
 
-async function createOpponentsSelOptions(playerEmail, opponentSelect) {
-  const url = "https://er5-kaotiklash-server.onrender.com/api/players";
-  const response = await fetch(url);
+async function createOpponentsSelOptions(playerName, opponentSelect) {
+  const url =
+    "https://er5-kaotiklash-server.onrender.com/api/players/opponent-names";
 
-  let opponentsData;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ playerName }),
+  });
+
+  let opponentNames;
+
   if (response.ok) {
-    opponentsData = await response.json();
+    opponentNames = await response.json();
   } else {
     alert(`Communication error: ${response.statusText}`);
   }
 
-  for (let i = 0; i < opponentsData.length; i++) {
-    if (opponentsData[i].email_address !== playerEmail) {
-      const currentOpponentName = opponentsData[i].name;
-      const currentOpponentSelOption = new Option(currentOpponentName);
-      opponentSelect.appendChild(currentOpponentSelOption);
-    }
+  for (let i = 0; i < opponentNames.length; i++) {
+    const currentOpponentName = opponentNames[i].name;
+    const currentOpponentSelOption = new Option(currentOpponentName);
+    opponentSelect.appendChild(currentOpponentSelOption);
   }
 }
 
