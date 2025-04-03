@@ -24,6 +24,7 @@ import {
 } from "./constants.js";
 import { globals } from "../index.js";
 import ImageSet from "./ImageSet.js";
+import PhaseMessage from "../Messages/PhaseMessage.js";
 
 export default class Game {
   #players;
@@ -78,6 +79,9 @@ export default class Game {
     // EVENTS CREATION
     game.#events = [];
 
+    // PHASE MESSAGE OBJECT CREATION
+    const phaseMessage = PhaseMessage.create();
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
@@ -87,7 +91,7 @@ export default class Game {
       game.#events,
       game.#phaseMessage
     );
-    turnPlayer1.fillPhases(game.#currentPlayer);
+    turnPlayer1.fillPhases(game.#currentPlayer, phaseMessage);
     const turnPlayer2 = new Turn(
       game.#deckContainer,
       game.#board,
@@ -96,7 +100,7 @@ export default class Game {
       game.#events,
       game.#phaseMessage
     );
-    turnPlayer2.fillPhases(game.#currentPlayer);
+    turnPlayer2.fillPhases(game.#currentPlayer, phaseMessage);
     game.#turns = [turnPlayer1, turnPlayer2];
 
     game.#createPhaseButtons();

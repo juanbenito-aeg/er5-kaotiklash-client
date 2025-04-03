@@ -6,7 +6,7 @@ import PrepareEventPhase from "./PrepareEventPhase.js";
 import PerformEventPhase from "./PerformEventPhase.js";
 import DiscardCardPhase from "./DiscardCardPhase.js";
 import EquipWeaponEvent from "../Events/EquipWeaponEvent.js";
-import PhasesMessages from "../Messages/PhasesMessages.js";
+import PhaseMessage from "../Messages/PhaseMessage.js";
 import {
   PlayerID,
   CardState,
@@ -48,7 +48,7 @@ export default class Turn {
     this.#equipWeaponState = EquipWeaponState.SELECT_WEAPON;
   }
 
-  fillPhases(currentPlayer) {
+  fillPhases(currentPlayer, phaseMessage) {
     if (this.#player.getID() === PlayerID.PLAYER_1) {
       const initialPhase = new InitialPhase(this.#deckContainer);
       initialPhase.execute();
@@ -70,7 +70,8 @@ export default class Turn {
         this.#board,
         this.#mouseInput,
         this.#events,
-        currentPlayer
+        currentPlayer,
+        phaseMessage
       );
 
       this.#phases.push(currentPhase);
@@ -205,7 +206,7 @@ export default class Turn {
 
         globals.currentPhase = PhaseType.INVALID;
         globals.currentState = PhaseType.INVALID;
-        let message = PhasesMessages.create(
+        let message = PhaseMessage.create(
           this.#currentPhase,
           this.#currentPhase,
           "ENG"
@@ -380,7 +381,7 @@ export default class Turn {
             weapon.setState(CardState.SELECTED);
 
             globals.currentState = EquipWeaponState.SELECT_MINION;
-            let message = PhasesMessages.create(
+            let message = PhaseMessage.create(
               PhaseType.EQUIP_WEAPON,
               EquipWeaponState.SELECT_MINION,
               Language.ENGLISH
@@ -418,7 +419,7 @@ export default class Turn {
               minion.setState(CardState.SELECTED);
 
               globals.currentState = EquipWeaponState.SELECT_MINION;
-              let message = PhasesMessages.create(
+              let message = PhaseMessage.create(
                 PhaseType.EQUIP_WEAPON,
                 EquipWeaponState.SELECT_MINION,
                 Language.ENGLISH
@@ -442,7 +443,7 @@ export default class Turn {
         minion.setState(CardState.PLACED);
 
         globals.currentState = EquipWeaponState.EQUIP_WEAPON;
-        let message = PhasesMessages.create(
+        let message = PhaseMessage.create(
           PhaseType.EQUIP_WEAPON,
           EquipWeaponState.EQUIP_WEAPON,
           Language.ENGLISH
@@ -464,7 +465,7 @@ export default class Turn {
         playerXEventsInPreparationDeck.removeCard(weapon);
 
         globals.currentState = EquipWeaponState.END;
-        let endMessage = PhasesMessages.create(
+        let endMessage = PhaseMessage.create(
           PhaseType.EQUIP_WEAPON,
           EquipWeaponState.END,
           Language.ENGLISH

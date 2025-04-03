@@ -31,7 +31,7 @@ const globals = {
   isCurrentTurnFinished: false,
   buttonDataGlobal: [],
   firstActivePlayerID: -1, // (!) DELETE AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
-  phasesMessages: [],
+  phaseMessage: {},
   currentPhase: 0,
   currentState: 0,
   phaseType: -1,

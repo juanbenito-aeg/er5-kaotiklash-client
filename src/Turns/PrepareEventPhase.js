@@ -1,6 +1,6 @@
 import Phase from "./Phase.js";
 import { globals } from "../index.js";
-import PhasesMessages from "../Messages/PhasesMessages.js";
+import PhaseMessage from "../Messages/PhaseMessage.js";
 import { Language, PhaseType } from "../Game/constants.js";
 import {
   PrepareEventState,
@@ -78,7 +78,7 @@ export default class PrepareEventPhase extends Phase {
       events
     );
 
-    let message = PhasesMessages.create(
+    let message = PhaseMessage.create(
       PhaseType.PREPARE_EVENT,
       PrepareEventState.INIT,
       Language.ENGLISH
@@ -120,7 +120,7 @@ export default class PrepareEventPhase extends Phase {
   #initializePhase() {
     globals.currentPhase = PhaseType.PREPARE_EVENT;
     globals.currentState = PrepareEventState.SELECT_HAND_CARD;
-    let message = PhasesMessages.create(
+    let message = PhaseMessage.create(
       PhaseType.PREPARE_EVENT,
       PrepareEventState.INIT,
       Language.ENGLISH
@@ -140,7 +140,7 @@ export default class PrepareEventPhase extends Phase {
         hoveredCard.setState(CardState.SELECTED);
 
         globals.currentState = PrepareEventState.SELECT_TARGET_GRID;
-        let message = PhasesMessages.create(
+        let message = PhaseMessage.create(
           PhaseType.PREPARE_EVENT,
           PrepareEventState.SELECT_HAND_CARD,
           Language.ENGLISH
@@ -169,7 +169,7 @@ export default class PrepareEventPhase extends Phase {
           hoveredBox.setState(BoxState.SELECTED);
 
           globals.currentState = PrepareEventState.END;
-          let message = PhasesMessages.create(
+          let message = PhaseMessage.create(
             PhaseType.PREPARE_EVENT,
             PrepareEventState.END,
             Language.ENGLISH

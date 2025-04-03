@@ -11,7 +11,7 @@ import {
   Language,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
-import PhasesMessages from "../Messages/PhasesMessages.js";
+import PhaseMessage from "../Messages/PhaseMessage.js";
 
 export default class AttackPhase extends Phase {
   #enemyMovementGridDeck;
@@ -83,7 +83,7 @@ export default class AttackPhase extends Phase {
       currentPlayerMovementGrid
     );
 
-    let message = PhasesMessages.create(
+    let message = PhaseMessage.create(
       PhaseType.ATTACK,
       AttackPhaseState.INIT,
       Language.ENGLISH
@@ -131,7 +131,7 @@ export default class AttackPhase extends Phase {
             attacker.setState(CardState.SELECTED);
 
             globals.currentState = AttackPhaseState.SELECT_TARGET;
-            let selectAttackerMessage = PhasesMessages.create(
+            let selectAttackerMessage = PhaseMessage.create(
               PhaseType.ATTACK,
               AttackPhaseState.SELECT_ATTACKER,
               Language.ENGLISH
@@ -180,7 +180,7 @@ export default class AttackPhase extends Phase {
               } else {
                 target.setState(CardState.SELECTED);
                 globals.currentState = AttackPhaseState.CALC_AND_APPLY_DMG;
-                let selectAttackerMessage = PhasesMessages.create(
+                let selectAttackerMessage = PhaseMessage.create(
                   PhaseType.ATTACK,
                   AttackPhaseState.CALC_AND_APPLY_DMG,
                   Language.ENGLISH
@@ -209,7 +209,7 @@ export default class AttackPhase extends Phase {
         );
         attackEvent.execute();
         globals.currentState = AttackPhaseState.END;
-        let selectAttackerMessage = PhasesMessages.create(
+        let selectAttackerMessage = PhaseMessage.create(
           PhaseType.ATTACK,
           AttackPhaseState.END,
           Language.ENGLISH

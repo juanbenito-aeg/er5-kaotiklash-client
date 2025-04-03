@@ -10,7 +10,7 @@ import {
   Language,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
-import PhasesMessages from "../Messages/PhasesMessages.js";
+import PhaseMessage from "../Messages/PhaseMessage.js";
 
 export default class MovePhase extends Phase {
   #decksRelevants;
@@ -55,7 +55,7 @@ export default class MovePhase extends Phase {
       mouseInput
     );
 
-    let message = PhasesMessages.create(
+    let message = PhaseMessage.create(
       PhaseType.MOVE,
       MovePhaseState.INIT,
       Language.ENGLISH
@@ -98,7 +98,7 @@ export default class MovePhase extends Phase {
     globals.currentPhase = PhaseType.MOVE;
     globals.currentState = MovePhaseState.SELECT_CARD;
 
-    let message = PhasesMessages.create(
+    let message = PhaseMessage.create(
       PhaseType.MOVE,
       MovePhaseState.SELECT_CARD,
       Language.ENGLISH
@@ -120,7 +120,7 @@ export default class MovePhase extends Phase {
         hoveredCard.setState(CardState.SELECTED);
 
         globals.currentState = MovePhaseState.SELECT_TARGET;
-        let message = PhasesMessages.create(
+        let message = PhaseMessage.create(
           PhaseType.MOVE,
           MovePhaseState.SELECT_TARGET,
           Language.ENGLISH
@@ -178,7 +178,7 @@ export default class MovePhase extends Phase {
             selectedBox.resetCard();
 
             globals.currentState = MovePhaseState.MOVE_CARD;
-            let message = PhasesMessages.create(
+            let message = PhaseMessage.create(
               PhaseType.MOVE,
               MovePhaseState.MOVE_CARD,
               Language.ENGLISH
@@ -205,7 +205,7 @@ export default class MovePhase extends Phase {
     selectedTargetBox.setState(BoxState.OCCUPIED);
 
     globals.currentState = MovePhaseState.END;
-    let message = PhasesMessages.create(
+    let message = PhaseMessage.create(
       PhaseType.MOVE,
       MovePhaseState.END,
       Language.ENGLISH

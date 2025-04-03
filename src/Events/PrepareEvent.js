@@ -1,4 +1,4 @@
-import PhasesMessages from "../Messages/PhasesMessages.js";
+import PhaseMessage from "../Messages/PhaseMessage.js";
 import Event from "./Event.js";
 import { globals } from "../index.js";
 import { EventCooldownState } from "../Game/constants.js";

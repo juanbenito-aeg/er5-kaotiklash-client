@@ -7,31 +7,17 @@ import {
   EquipWeaponState,
 } from "../Game/constants.js";
 
-export default class PhasesMessages extends Message {
-  #type;
-  #state;
-  #content;
-  #targetPhase;
+export default class PhaseMessage extends Message {
+  #currentMessage;
 
-  constructor(type, state, content, targetPhase) {
+  constructor() {
     super();
-    this.#type = type;
-    this.#state = state;
-    this.#content = content;
-    this.#targetPhase = targetPhase;
   }
 
-  static create(phaseType, phaseState, language, duration) {
-    const messageInstance = new PhasesMessages(phaseType, phaseState, language);
-    const content = messageInstance.getContent(phaseType, phaseState, language);
-    duration = 3000;
-    const message = new PhasesMessages(
-      phaseType,
-      phaseState,
-      content,
-      duration
-    );
-    return message;
+  static create() {
+    const phaseMessage = new PhaseMessage();
+
+    return phaseMessage;
   }
 
   getContent(phaseType, phaseState, language) {
@@ -113,19 +99,22 @@ export default class PhasesMessages extends Message {
         },
       },
     };
-    //FIRST TRY TO GET THE SPECIFIC PHASE AND STATE
+
+    // FIRST TRY TO GET THE SPECIFIC PHASE AND STATE
     if (
       messages[phaseType] &&
       messages[phaseType][phaseState] &&
-      messages[phaseType][phaseState][language] !== undefined
+      messages[phaseType][phaseState][language]
     ) {
       return messages[phaseType][phaseState][language];
     }
-    //FIRST TRY TO GET THE SPECIFIC PHASE WITHOUT THE STATE
-    if (messages[phaseType] && messages[phaseType][language] !== undefined) {
+
+    // FIRST TRY TO GET THE SPECIFIC PHASE WITHOUT THE STATE
+    if (messages[phaseType] && messages[phaseType][language]) {
       return messages[phaseType][language];
     }
-    //IF NOTHING FOUND, RETURN THE INVALID MESSAGE AS DEFAULT
+
+    // IF NOTHING FOUND, RETURN THE INVALID MESSAGE AS DEFAULT
     return messages[PhaseType.INVALID][PhaseType.INVALID][language];
   }
 
