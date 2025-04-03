@@ -229,6 +229,7 @@ export default class Turn {
       }
 
       if (this.#numOfExecutedPhases === 5) {
+        this.#currentPhase = PhaseType.INVALID;
         globals.isCurrentTurnFinished = true;
       }
     }
@@ -512,7 +513,7 @@ export default class Turn {
                 PhaseButtonData.NAME
               ] = "Cancel";
             }
-          } else if (this.#currentPhase !== PhaseType.INVALID && this.#currentPhase !== PhaseType.DISCARD_CARD) {
+          } else if (this.#currentPhase !== PhaseType.INVALID || this.#currentPhase !== PhaseType.DISCARD_CARD) {
             if (i === PhaseButton.SKIP_OR_CANCEL) {
               this.#phases[this.#currentPhase].reset();
 

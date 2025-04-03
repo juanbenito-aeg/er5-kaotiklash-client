@@ -31,7 +31,7 @@ export default class MovePhase extends Phase {
     events,
     currentPlayer
   ) {
-    let deckRelevants;
+    let decksRelevants;
     let gridRelevants;
 
     if (player === currentPlayer) {
@@ -41,16 +41,16 @@ export default class MovePhase extends Phase {
     }
 
     if (player.getID() === PlayerID.PLAYER_1) {
-      deckRelevants =
+      decksRelevants =
         deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
     } else {
-      deckRelevants =
+      decksRelevants =
         deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
     }
 
     const movePhase = new MovePhase(
       MovePhaseState.INIT,
-      deckRelevants,
+      decksRelevants,
       gridRelevants,
       mouseInput
     );
@@ -71,6 +71,11 @@ export default class MovePhase extends Phase {
     switch (this._state) {
       case MovePhaseState.INIT:
         this.#initializePhase();
+
+        this.#resetRelevantCardsStates([
+          this.#decksRelevants
+        ]);
+
         break;
 
       case MovePhaseState.SELECT_CARD:
@@ -226,4 +231,16 @@ export default class MovePhase extends Phase {
   reset() {
     this._state = MovePhaseState.INIT;
   }
+
+  #resetRelevantCardsStates(decks) {
+    for (let i = 0; i < decks.length; i++) {
+      const currentDeck = decks[i];
+
+      for (let j = 0; j < currentDeck.getCards().length; j++) {
+        const currentCard = currentDeck.getCards()[j];
+        currentCard.setState(CardState.PLACED);
+      }
+    }
+  }
+
 }

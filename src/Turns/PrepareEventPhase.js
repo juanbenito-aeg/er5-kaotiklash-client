@@ -42,7 +42,7 @@ export default class PrepareEventPhase extends Phase {
     events,
     currentPlayer
   ) {
-    let deckRelevants;
+    let decksRelevants;
     let gridRelevants;
 
     if (player === currentPlayer) {
@@ -58,12 +58,12 @@ export default class PrepareEventPhase extends Phase {
     }
 
     if (player.getID() === PlayerID.PLAYER_1) {
-      deckRelevants = [
+      decksRelevants = [
         deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND],
         deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION],
       ];
     } else {
-      deckRelevants = [
+      decksRelevants = [
         deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND],
         deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION],
       ];
@@ -73,7 +73,7 @@ export default class PrepareEventPhase extends Phase {
       PrepareEventState.INIT,
       mouseInput,
       player,
-      deckRelevants,
+      decksRelevants,
       gridRelevants,
       events
     );
@@ -95,6 +95,11 @@ export default class PrepareEventPhase extends Phase {
       case PrepareEventState.INIT:
         console.log("init");
         this.#initializePhase();
+
+        this.#resetRelevantCardsStates([
+          this.#decksRelevants[0],
+          this.#decksRelevants[1]
+        ]);
         break;
 
       case PrepareEventState.SELECT_HAND_CARD:
@@ -220,5 +225,16 @@ export default class PrepareEventPhase extends Phase {
 
   reset() {
     this._state = PrepareEventState.INIT;
+  }
+
+  #resetRelevantCardsStates(decks) {
+    for (let i = 0; i < decks.length; i++) {
+      const currentDeck = decks[i];
+
+      for (let j = 0; j < currentDeck.getCards().length; j++) {
+        const currentCard = currentDeck.getCards()[j];
+        currentCard.setState(CardState.PLACED);
+      }
+    }
   }
 }

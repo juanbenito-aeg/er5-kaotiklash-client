@@ -6,6 +6,7 @@ import {
   PlayerID,
   PhaseType,
   DeckType,
+  BoxState,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 
@@ -28,7 +29,7 @@ export default class DiscardCardPhase extends Phase {
     events,
     currentPlayer
   ) {
-    let deckRelevants;
+    let decksRelevants;
     let gridRelevants;
 
     if (player === currentPlayer) {
@@ -38,19 +39,21 @@ export default class DiscardCardPhase extends Phase {
     }
 
     if (player.getID() === PlayerID.PLAYER_1) {
-      deckRelevants = [
+      decksRelevants = [
         deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND],
+        deckContainer.getDecks()[DeckType.EVENTS]
       ];
     } else {
-      deckRelevants = [
+      decksRelevants = [
         deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND],
+        deckContainer.getDecks()[DeckType.EVENTS]
       ];
     }
-    deckRelevants.push(deckContainer.getDecks()[DeckType.EVENTS]);
+    decksRelevants.push(deckContainer.getDecks()[DeckType.EVENTS]);
 
     const discardPhase = new DiscardCardPhase(
       DiscardCardState.INIT,
-      deckRelevants,
+      decksRelevants,
       gridRelevants,
       mouseInput
     );
@@ -64,9 +67,15 @@ export default class DiscardCardPhase extends Phase {
     switch (this._state) {
       case DiscardCardState.INIT:
         this.#initializePhase();
+
+        this.#resetRelevantCardsStates([
+          this.#decksRelevants[0],
+          this.#decksRelevants[1]
+        ]);
         break;
 
       case DiscardCardState.CARD_DISCARD:
+        console.log(this.#decksRelevants[0].getCards())
         if (this.#decksRelevants[0].getCards().length > 3) {
           this.#cardDiscard();
         } else {
@@ -92,22 +101,22 @@ export default class DiscardCardPhase extends Phase {
 
   #cardDiscard() {
     console.log("select card to discard phase");
-
+    
     const hoveredCard = this.#decksRelevants[0].lookForHoveredCard();
-
+    
     if (hoveredCard) {
       if (!hoveredCard.isLeftClicked()) {
         hoveredCard.setState(CardState.HOVERED);
       } else {
         hoveredCard.setState(CardState.SELECTED);
         const selectedCard = hoveredCard;
-
+        
         const selectedBox = this.#gridsRelevants.lookForLeftClickedBox();
-
         this.#decksRelevants[1].insertCard(selectedCard);
         this.#decksRelevants[0].removeCard(selectedCard);
-        selectedCard.setState(CardState.INACTIVE);
         selectedBox.resetCard();
+        selectedBox.setState(BoxState.AVAILABLE)
+        selectedCard.setState(CardState.INACTIVE);
 
         this._state = DiscardCardState.END;
       }
@@ -116,8 +125,18 @@ export default class DiscardCardPhase extends Phase {
 
   #finalizePhase() {
     console.log("finish phase");
-
     this._state = DiscardCardState.INIT;
+  }
+
+  #resetRelevantCardsStates(decks) {
+    for (let i = 0; i < decks.length; i++) {
+      const currentDeck = decks[i];
+
+      for (let j = 0; j < currentDeck.getCards().length; j++) {
+        const currentCard = currentDeck.getCards()[j];
+        currentCard.setState(CardState.PLACED);
+      }
+    }
   }
 
 }
