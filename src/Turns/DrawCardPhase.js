@@ -98,8 +98,11 @@ export default class DrawCardPhase extends Phase {
       if (this.#filteredCards.length === 0 && eventCards.length > 0) {
         const randomIndex = Math.floor(Math.random() * eventCards.length);
         const randomCard = eventCards[randomIndex];
-        this.#filteredCards[this.#filteredCards.length] = randomCard;
-        eventDeck.removeCard(randomCard);
+
+        if (randomCard.getCategory() !== CardCategory.MAIN_CHARACTER) {
+          this.#filteredCards[this.#filteredCards.length] = randomCard;
+          eventDeck.removeCard(randomCard);
+        }
       }
     }
   }

@@ -93,7 +93,7 @@ export default class PrepareEventPhase extends Phase {
 
         this.#resetRelevantCardsStates([
           this.#decksRelevants[0],
-          this.#decksRelevants[1]
+          this.#decksRelevants[1],
         ]);
         break;
 

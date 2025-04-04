@@ -73,7 +73,7 @@ function showOrInitRegisterScreen() {
 }
 function showRegisterScreen() {
   const registerScreen = document.getElementById("register-screen");
-  registerScreen.style.display = "block";
+  registerScreen.style.display = "flex";
 }
 function hideRegisterScreen() {
   const registerScreen = document.getElementById("register-screen");

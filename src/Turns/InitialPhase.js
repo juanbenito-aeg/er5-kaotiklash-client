@@ -51,7 +51,6 @@ export default class InitialPhase {
     const player2Minions =
       this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
 
-
     this.#shuffleDeck(player1Minions.getCards());
     this.#shuffleDeck(player2Minions.getCards());
 
@@ -103,9 +102,7 @@ export default class InitialPhase {
     for (let i = 0; i < eventCards.length; i++) {
       const currentCard = eventCards[i];
       if (currentCard.getCategory() === CardCategory.WEAPON) {
-
-          eventWeapon.push(currentCard);
-
+        eventWeapon.push(currentCard);
       }
     }
 
