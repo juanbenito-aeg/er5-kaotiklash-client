@@ -1,4 +1,4 @@
-import { CardCategory, CardState, BoxState } from "./constants.js";
+import { CardCategory, CardState } from "./constants.js";
 import { globals } from "../index.js";
 
 export default class MouseInput {
@@ -271,8 +271,6 @@ export default class MouseInput {
           }
         }
       }
-
-      this.setLeftButtonPressedFalse();
     }
   }
 }

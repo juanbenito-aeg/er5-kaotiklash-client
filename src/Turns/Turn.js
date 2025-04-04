@@ -15,7 +15,6 @@ import {
   PhaseButton,
   EquipWeaponState,
   CardCategory,
-  GridType,
   PhaseButtonData,
   Language,
 } from "../Game/constants.js";
@@ -217,33 +216,13 @@ export default class Turn {
         ] = "Skip";
       }
 
-      let playerDeck;
-      if (this.#player.getID() === PlayerID.PLAYER_1) {
-        playerDeck =
-          this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
-      } else {
-        playerDeck =
-          this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND];
-      }
-
-      let playerGrid;
-      if (this.#player.getID() === globals.firstActivePlayerID) {
-        playerGrid = this.#board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND];
-      } else {
-        playerGrid = this.#board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND];
-      }
-
       if (this.#numOfExecutedPhases === 4) {
         this.#currentPhase = PhaseType.DISCARD_CARD;
       }
 
       if (this.#numOfExecutedPhases === 5) {
-        if (playerDeck.getCards().length > 5) {
-          this.#numOfExecutedPhases--;
-        } else {
-          this.#currentPhase = PhaseType.INVALID;
-          globals.isCurrentTurnFinished = true;
-        }
+        this.#currentPhase = PhaseType.INVALID;
+        globals.isCurrentTurnFinished = true;
       }
     }
   }
@@ -503,9 +482,21 @@ export default class Turn {
           mouseY >= buttonYCoordinate &&
           mouseY <= buttonYCoordinate + buttonHeight
         ) {
+          let playerXCardsInHand;
+          if (this.#player.getID() === PlayerID.PLAYER_1) {
+            playerXCardsInHand =
+              this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
+          } else {
+            playerXCardsInHand =
+              this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND];
+          }
+          const areThere6CardsInHand =
+            playerXCardsInHand.getCards().length === 6;
+
           if (
             this.#currentPhase === PhaseType.INVALID ||
-            this.#currentPhase === PhaseType.DISCARD_CARD
+            (this.#currentPhase === PhaseType.DISCARD_CARD &&
+              !areThere6CardsInHand)
           ) {
             if (i === PhaseButton.SKIP_OR_CANCEL) {
               this.#numOfExecutedPhases++;
@@ -516,7 +507,10 @@ export default class Turn {
                 PhaseButtonData.NAME
               ] = "Cancel";
             }
-          } else {
+          } else if (
+            this.#currentPhase !== PhaseType.INVALID &&
+            this.#currentPhase !== PhaseType.DISCARD_CARD
+          ) {
             if (i === PhaseButton.SKIP_OR_CANCEL) {
               this.#phases[this.#currentPhase].reset();
 

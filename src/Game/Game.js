@@ -503,14 +503,6 @@ export default class Game {
       this.#currentPlayer = this.#players[newCurrentPlayerID];
     }
 
-    if (!globals.gameWinner) {
-      this.#turns[this.#currentPlayer.getID()].execute();
-    }
-
-    this.#executeEvent();
-
-    this.#updateDamageMessages();
-
     this.#mouseInput.resetIsLeftClickedOnBoxes(this.#board);
     this.#mouseInput.detectMouseOverBox(this.#board);
     this.#mouseInput.detectBoxThatIsntHoveredAnymore(this.#board);
@@ -520,6 +512,16 @@ export default class Game {
     this.#mouseInput.detectMouseOverCard(this.#deckContainer);
     this.#mouseInput.detectCardThatIsntHoveredAnymore(this.#deckContainer);
     this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
+
+    if (!globals.gameWinner) {
+      this.#turns[this.#currentPlayer.getID()].execute();
+    }
+
+    this.#mouseInput.setLeftButtonPressedFalse();
+
+    this.#executeEvent();
+
+    this.#updateDamageMessages();
 
     this.#updatePlayersTotalHP();
 

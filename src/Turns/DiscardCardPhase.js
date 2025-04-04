@@ -6,7 +6,6 @@ import {
   PlayerID,
   PhaseType,
   DeckType,
-  BoxState,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 
@@ -30,13 +29,14 @@ export default class DiscardCardPhase extends Phase {
     currentPlayer
   ) {
     let deckRelevants;
-    let gridRelevants;
+    let gridsRelevants;
 
     if (player === currentPlayer) {
-      gridRelevants = board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND];
+      gridsRelevants = [board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND]];
     } else {
-      gridRelevants = board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND];
+      gridsRelevants = [board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND]];
     }
+    gridsRelevants.push(board.getGrids()[GridType.EVENTS_DECK]);
 
     if (player.getID() === PlayerID.PLAYER_1) {
       deckRelevants = [
@@ -52,7 +52,7 @@ export default class DiscardCardPhase extends Phase {
     const discardPhase = new DiscardCardPhase(
       DiscardCardState.INIT,
       deckRelevants,
-      gridRelevants,
+      gridsRelevants,
       mouseInput
     );
 
@@ -103,11 +103,20 @@ export default class DiscardCardPhase extends Phase {
         hoveredCard.setState(CardState.SELECTED);
         const selectedCard = hoveredCard;
 
-        const selectedBox = this.#gridsRelevants.lookForLeftClickedBox();
-        selectedBox.setState(BoxState.AVAILABLE);
+        const selectedBox = this.#gridsRelevants[0].lookForLeftClickedBox();
+
         this.#decksRelevants[1].insertCard(selectedCard);
         this.#decksRelevants[0].removeCard(selectedCard);
+
+        selectedBox.resetCard();
+
         selectedCard.setState(CardState.INACTIVE);
+        selectedCard.setXCoordinate(
+          this.#gridsRelevants[1].getBoxes()[0].getXCoordinate()
+        );
+        selectedCard.setYCoordinate(
+          this.#gridsRelevants[1].getBoxes()[0].getYCoordinate()
+        );
 
         this._state = DiscardCardState.END;
       }
