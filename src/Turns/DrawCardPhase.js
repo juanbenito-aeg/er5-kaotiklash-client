@@ -74,8 +74,6 @@ export default class DrawCardPhase extends Phase {
       if (this.#filteredCards.length > 0) {
         this.#assignCards();
       }
-
-      this.#filteredCards = [];
     }
 
     isPhaseFinished = true;
@@ -86,6 +84,7 @@ export default class DrawCardPhase extends Phase {
   #filterEventDeck() {
     const eventDeck = this.#decksRelevants[0];
     const eventCards = eventDeck.getCards();
+    this.#filteredCards = [];
 
     for (let i = 0; i < eventCards.length; i++) {
       const card = eventCards[i];
@@ -94,6 +93,13 @@ export default class DrawCardPhase extends Phase {
         this.#filteredCards.push(card);
 
         eventDeck.removeCard(card);
+      }
+
+      if (this.#filteredCards.length === 0 && eventCards.length > 0) {
+        const randomIndex = Math.floor(Math.random() * eventCards.length);
+        const randomCard = eventCards[randomIndex];
+        this.#filteredCards[this.#filteredCards.length] = randomCard;
+        eventDeck.removeCard(randomCard);
       }
     }
   }

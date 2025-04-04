@@ -15,7 +15,6 @@ import {
   PhaseButton,
   EquipWeaponState,
   CardCategory,
-  GridType,
   PhaseButtonData,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
@@ -82,7 +81,7 @@ export default class Turn {
   changeTurn(currentPlayer) {
     this.#numOfExecutedPhases = 0;
 
-    /* this.#swapTurnPosition(); */
+    /*  this.#swapTurnPosition(); */
 
     if (currentPlayer.getID() === PlayerID.PLAYER_1) {
       return PlayerID.PLAYER_2;
@@ -91,54 +90,9 @@ export default class Turn {
     }
   }
 
-  /* #swapTurnPosition() {
-    this.#swapDeckPosition();
+  /*  #swapTurnPosition() {
+    /*  this.#displayDecksAndGrids(this.#deckContainer, this.#board); 
     this.#swapGridPosition();
-  }
-
-  #swapDeckPosition() {
-    const player1Decks = [
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_ACTIVE_EVENTS],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MAIN_CHARACTER],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY],
-    ];
-    const player2Decks = [
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_ACTIVE_EVENTS],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MAIN_CHARACTER],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY],
-    ];
-
-    //SWAP DECK POSITIONS FROM PLAYER 1 TO PLAYER 2 AND VICE VERSA
-    for (let i = 0; i < player1Decks.length; i++) {
-      this.#swapDeckPositions(player1Decks[i], player2Decks[i]);
-    }
-  }
-
-  #swapDeckPositions(deckPlayer1, deckPlayer2) {
-    for (let i = 0; i < deckPlayer1.getCards().length; i++) {
-      for (let j = 0; j < deckPlayer2.getCards().length; j++) {
-        const card1 = deckPlayer1.getCards()[i];
-        const card2 = deckPlayer2.getCards()[j];
-        const tempX = card1.getXCoordinate();
-        const tempY = card1.getYCoordinate();
-
-        if (card1 && card2) {
-          //PLAYER 1 CARDS
-          card1.setXCoordinate(card2.getXCoordinate());
-          card1.setYCoordinate(card2.getYCoordinate());
-
-          //PLAYER 2 CARDS
-          card2.setXCoordinate(tempX);
-          card2.setYCoordinate(tempY);
-        }
-      }
-    }
   }
 
   #swapGridPosition() {
@@ -180,7 +134,45 @@ export default class Turn {
         player2Box.setYCoordinate(tempY);
       }
     }
-  } */
+  }
+  /*  #swapDeckPosition() {
+    const player1Decks = [
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_ACTIVE_EVENTS],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MAIN_CHARACTER],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY],
+    ];
+    const player2Decks = [
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_ACTIVE_EVENTS],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MAIN_CHARACTER],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY],
+    ];
+
+    //SWAP DECK POSITIONS FROM PLAYER 1 TO PLAYER 2 AND VICE VERSA
+    for (let i = 0; i < player1Decks.length; i++) {
+      this.#setCardsPositionsInBoxes(player1Decks[i]);
+    }
+  }
+
+  #setCardsPositionsInBoxes(deck, grid) {
+    for (let i = 0; i < deck.getCards().length; i++) {
+      for (let j = 0; j < grid.getBoxes().length; j++) {
+        const cards = deck.getCards()[i];
+        const boxes = grid.getBoxes()[j];
+
+        cards.setXCoordinate(boxes.getXCoordinate());
+        cards.setYCoordinate(boxes.getYCoordinate());
+
+        console.log("ola  ");
+      }
+    }
+  }
+ */
 
   execute() {
     if (this.#numOfExecutedPhases === 0) {
@@ -208,7 +200,7 @@ export default class Turn {
       }
 
       if (this.#equipWeaponState === EquipWeaponState.SELECT_WEAPON) {
-          this.#checkButtonClick();
+        this.#checkButtonClick();
       }
 
       if (this.#isCurrentPhaseCanceled || this.#isCurrentPhaseFinished) {
@@ -465,19 +457,21 @@ export default class Turn {
           mouseY >= buttonYCoordinate &&
           mouseY <= buttonYCoordinate + buttonHeight
         ) {
-          let playerDeck;
+          let playerXCardsInHand;
           if (this.#player.getID() === PlayerID.PLAYER_1) {
-            playerDeck =
+            playerXCardsInHand =
               this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
           } else {
-            playerDeck =
+            playerXCardsInHand =
               this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND];
           }
-          const areCardsInHandMoreThan5 = playerDeck.getCards().length > 5;
+          const areThere6CardsInHand =
+            playerXCardsInHand.getCards().length === 6;
 
           if (
             this.#currentPhase === PhaseType.INVALID ||
-            (this.#currentPhase === PhaseType.DISCARD_CARD && !areCardsInHandMoreThan5)
+            (this.#currentPhase === PhaseType.DISCARD_CARD &&
+              !areThere6CardsInHand)
           ) {
             if (i === PhaseButton.SKIP_OR_CANCEL) {
               this.#numOfExecutedPhases++;
@@ -488,7 +482,10 @@ export default class Turn {
                 PhaseButtonData.NAME
               ] = "Cancel";
             }
-          } else if (this.#currentPhase !== PhaseType.INVALID || this.#currentPhase !== PhaseType.DISCARD_CARD) {
+          } else if (
+            this.#currentPhase !== PhaseType.INVALID &&
+            this.#currentPhase !== PhaseType.DISCARD_CARD
+          ) {
             if (i === PhaseButton.SKIP_OR_CANCEL) {
               this.#phases[this.#currentPhase].reset();
 

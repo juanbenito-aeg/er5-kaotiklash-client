@@ -5,7 +5,6 @@ import {
   CardState,
   GridType,
   PlayerID,
-  PhaseType,
   DeckType,
   BoxState,
 } from "../Game/constants.js";
@@ -32,23 +31,22 @@ export default class DiscardCardPhase extends Phase {
     phaseMessage
   ) {
     let decksRelevants;
-    let gridRelevants;
+    let gridsRelevants;
 
     if (player === currentPlayer) {
-      gridRelevants = board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND];
+      gridsRelevants = [board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND]];
     } else {
-      gridRelevants = board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND];
+      gridsRelevants = [board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND]];
     }
+    gridsRelevants.push(board.getGrids()[GridType.EVENTS_DECK]);
 
     if (player.getID() === PlayerID.PLAYER_1) {
       decksRelevants = [
         deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND],
-        deckContainer.getDecks()[DeckType.EVENTS],
       ];
     } else {
       decksRelevants = [
         deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND],
-        deckContainer.getDecks()[DeckType.EVENTS],
       ];
     }
     decksRelevants.push(deckContainer.getDecks()[DeckType.EVENTS]);
@@ -58,7 +56,7 @@ export default class DiscardCardPhase extends Phase {
       mouseInput,
       phaseMessage,
       decksRelevants,
-      gridRelevants
+      gridsRelevants
     );
 
     return discardPhase;
@@ -70,11 +68,6 @@ export default class DiscardCardPhase extends Phase {
     switch (this._state) {
       case DiscardCardState.INIT:
         this.#initializePhase();
-
-        this.#resetRelevantCardsStates([
-          this.#decksRelevants[0],
-          this.#decksRelevants[1],
-        ]);
         break;
 
       case DiscardCardState.CARD_DISCARD:
@@ -110,6 +103,11 @@ export default class DiscardCardPhase extends Phase {
   }
 
   #initializePhase() {
+    this.#resetRelevantCardsStates([
+      this.#decksRelevants[0],
+      this.#decksRelevants[1],
+    ]);
+
     this._state = DiscardCardState.CARD_DISCARD;
   }
 
@@ -125,12 +123,20 @@ export default class DiscardCardPhase extends Phase {
         hoveredCard.setState(CardState.SELECTED);
         const selectedCard = hoveredCard;
 
-        const selectedBox = this.#gridsRelevants.lookForLeftClickedBox();
+        const selectedBox = this.#gridsRelevants[0].lookForLeftClickedBox();
+
         this.#decksRelevants[1].insertCard(selectedCard);
         this.#decksRelevants[0].removeCard(selectedCard);
+
         selectedBox.resetCard();
-        selectedBox.setState(BoxState.AVAILABLE);
+
         selectedCard.setState(CardState.INACTIVE);
+        selectedCard.setXCoordinate(
+          this.#gridsRelevants[1].getBoxes()[0].getXCoordinate()
+        );
+        selectedCard.setYCoordinate(
+          this.#gridsRelevants[1].getBoxes()[0].getYCoordinate()
+        );
 
         this._state = DiscardCardState.END;
       }
@@ -139,6 +145,7 @@ export default class DiscardCardPhase extends Phase {
 
   #finalizePhase() {
     console.log("finish phase");
+
     this._state = DiscardCardState.INIT;
   }
 
