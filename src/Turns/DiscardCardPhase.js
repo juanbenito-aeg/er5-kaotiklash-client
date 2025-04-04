@@ -7,6 +7,7 @@ import {
   PlayerID,
   PhaseType,
   DeckType,
+  BoxState,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 
@@ -30,7 +31,7 @@ export default class DiscardCardPhase extends Phase {
     currentPlayer,
     phaseMessage
   ) {
-    let deckRelevants;
+    let decksRelevants;
     let gridRelevants;
 
     if (player === currentPlayer) {
@@ -40,21 +41,23 @@ export default class DiscardCardPhase extends Phase {
     }
 
     if (player.getID() === PlayerID.PLAYER_1) {
-      deckRelevants = [
+      decksRelevants = [
         deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND],
+        deckContainer.getDecks()[DeckType.EVENTS],
       ];
     } else {
-      deckRelevants = [
+      decksRelevants = [
         deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND],
+        deckContainer.getDecks()[DeckType.EVENTS],
       ];
     }
-    deckRelevants.push(deckContainer.getDecks()[DeckType.EVENTS]);
+    decksRelevants.push(deckContainer.getDecks()[DeckType.EVENTS]);
 
     const discardPhase = new DiscardCardPhase(
       DiscardCardState.INIT,
       mouseInput,
       phaseMessage,
-      deckRelevants,
+      decksRelevants,
       gridRelevants
     );
 
@@ -67,6 +70,11 @@ export default class DiscardCardPhase extends Phase {
     switch (this._state) {
       case DiscardCardState.INIT:
         this.#initializePhase();
+
+        this.#resetRelevantCardsStates([
+          this.#decksRelevants[0],
+          this.#decksRelevants[1],
+        ]);
         break;
 
       case DiscardCardState.CARD_DISCARD:
@@ -118,11 +126,11 @@ export default class DiscardCardPhase extends Phase {
         const selectedCard = hoveredCard;
 
         const selectedBox = this.#gridsRelevants.lookForLeftClickedBox();
-
         this.#decksRelevants[1].insertCard(selectedCard);
         this.#decksRelevants[0].removeCard(selectedCard);
-
         selectedBox.resetCard();
+        selectedBox.setState(BoxState.AVAILABLE);
+        selectedCard.setState(CardState.INACTIVE);
 
         this._state = DiscardCardState.END;
       }
@@ -131,11 +139,17 @@ export default class DiscardCardPhase extends Phase {
 
   #finalizePhase() {
     console.log("finish phase");
-
     this._state = DiscardCardState.INIT;
   }
 
-  reset() {
-    this._state = DiscardCardState.INIT;
+  #resetRelevantCardsStates(decks) {
+    for (let i = 0; i < decks.length; i++) {
+      const currentDeck = decks[i];
+
+      for (let j = 0; j < currentDeck.getCards().length; j++) {
+        const currentCard = currentDeck.getCards()[j];
+        currentCard.setState(CardState.PLACED);
+      }
+    }
   }
 }
