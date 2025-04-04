@@ -124,37 +124,62 @@ function checkFormDataAndLogIn(e) {
 
 async function logInPlayer(email, password) {
   const url = "https://er5-kaotiklash-server.onrender.com/api/login";
+  const messageElement = document.getElementById("login-message");
+
+  messageElement.textContent = ""; // Limpiar mensaje previo
+  messageElement.style.color = "black"; // Resetear color
 
   const playerData = {
     email_address: email,
     password: password,
   };
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(playerData),
-  });
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(playerData),
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  alert(data.message);
-
-  if (response.ok) {
-    localStorage.setItem("playerName", data.player.name);
-    localStorage.setItem("email", data.player.email_address);
-
-    hideLoginScreen();
-
-    if (globals.isScreenInitialized.playerSession) {
-      showPlayerSessionScreen();
+    messageElement.textContent = data.message;
+    if (response.ok) {
+      messageElement.style.color = "green";
     } else {
-      initPlayerSessionScreen();
+      messageElement.style.color = "red";
     }
+    
+
+    if (response.ok) {
+      localStorage.setItem("playerName", data.player.name);
+      localStorage.setItem("email", data.player.email_address);
+
+      hideLoginScreen();
+
+      if (globals.isScreenInitialized.playerSession) {
+        showPlayerSessionScreen();
+      } else {
+        initPlayerSessionScreen();
+      }
+    }
+  } catch (error) {
+    messageElement.textContent = "Error connecting to the server.";
+    messageElement.style.color = "red";
   }
 }
+
+// Capturar el evento de login
+document.getElementById("login-form").addEventListener("submit", function (e) {
+  e.preventDefault(); // Evitar el envío por defecto
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-password").value;
+  logInPlayer(email, password);
+});
+
+
 
 function initRegisterScreen() {
   globals.isScreenInitialized.register = true;
