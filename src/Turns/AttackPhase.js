@@ -16,6 +16,7 @@ export default class AttackPhase extends Phase {
   #currentPlayerMovementGridDeck;
   #enemyMovementGrid;
   #currentPlayerMovementGrid;
+  #parry;
 
   constructor(
     state,
@@ -32,6 +33,7 @@ export default class AttackPhase extends Phase {
     this.#currentPlayerMovementGridDeck = currentPlayerMovementGridDeck;
     this.#enemyMovementGrid = enemyMovementGrid;
     this.#currentPlayerMovementGrid = currentPlayerMovementGrid;
+    this.#parry = false;
   }
 
   static create(
@@ -169,8 +171,12 @@ export default class AttackPhase extends Phase {
                 target.setState(CardState.HOVERED);
               } else {
                 target.setState(CardState.SELECTED);
-
-                this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
+                if(target.getWeapon() !== null) {
+                  globals.isParryMenuOpen = true;
+                  this._state = AttackPhaseState.PARRY_SELECION;
+                } else {
+                  this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
+                }
               }
             }
           }
@@ -178,18 +184,34 @@ export default class AttackPhase extends Phase {
 
         break;
 
+      // PARRY SELECTION
+      case AttackPhaseState.PARRY_SELECION:
+        console.log("PARRY SELECTION");
+        
+        let isParryActivated = this.#isMouseOnButtons();
+        if (isParryActivated) {
+          this.#parry = true;
+          this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
+        } else if (isParryActivated === false) {
+          this.#parry = false;
+          this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
+        }
+
+      break;
+
       // CALCULATION AND APPLICATION OF DAMAGE
       case AttackPhaseState.CALC_AND_APPLY_DMG:
         console.log("CALC. & APPLICATION OF DMG");
 
         attacker = this.#currentPlayerMovementGridDeck.lookForSelectedCard();
         target = this.#enemyMovementGridDeck.lookForSelectedCard();
-
+        console.log(this.#parry)
         const attackEvent = AttackEvent.create(
           attacker,
           target,
           this.#currentPlayerMovementGrid,
-          this.#enemyMovementGrid
+          this.#enemyMovementGrid,
+          this.#parry
         );
         attackEvent.execute();
 
@@ -299,6 +321,46 @@ export default class AttackPhase extends Phase {
       }
     }
   }
+
+  #isMouseOnButtons(isParryActivated) {
+    const mouseX = this._mouseInput.getMouseXCoordinate();
+    const mouseY = this._mouseInput.getMouseYCoordinate();
+
+    const buttonWidth = 150;
+    const buttonHeight = 50;
+    const buttonSpacing = 50;
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+    const buttonY = globals.canvas.height / 2 + 100;
+  
+    const buttons = [
+      { text: "YES", x: canvasWidthDividedBy2 - buttonWidth - buttonSpacing / 2, y: buttonY },
+      { text: "NO", x: canvasWidthDividedBy2 + buttonSpacing / 2, y: buttonY }
+    ];
+  
+    for (let i = 0; i < buttons.length; i++) {
+      const button = buttons[i];
+  
+      if (
+        mouseX >= button.x &&
+        mouseX <= button.x + buttonWidth &&
+        mouseY >= button.y &&
+        mouseY <= button.y + buttonHeight &&
+        this._mouseInput.isLeftButtonPressed()
+      ) {
+        if (button.text === "YES") {
+
+          globals.isParryMenuOpen = false;
+          return true;
+
+        } else if (button.text === "NO") {
+          globals.isParryMenuOpen = false;
+          return false;
+        }
+      }
+    }
+    return isParryActivated;
+  }
+  
 
   reset() {
     this._state = AttackPhaseState.INIT;

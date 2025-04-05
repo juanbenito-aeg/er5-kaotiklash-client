@@ -72,4 +72,8 @@ export default class Weapon extends Card {
       }
     }
   }
+
+  setCurrentDurability(newDurability) {
+    this.#currentDurability = newDurability;
+  }
 }
