@@ -225,10 +225,11 @@ const PhaseButtonData = {
 };
 
 const EquipWeaponState = {
-  SELECT_WEAPON: 0,
-  SELECT_MINION: 1,
-  EQUIP_WEAPON: 2,
-  END: 3,
+  INIT: 0,
+  SELECT_WEAPON: 1,
+  SELECT_MINION: 2,
+  EQUIP_WEAPON: 3,
+  END: 4,
 };
 
 const EventCooldownState = {
