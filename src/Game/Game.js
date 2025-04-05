@@ -601,7 +601,7 @@ export default class Game {
           this.#renderGameWinner();
         }
 
-        if(globals.isParryMenuOpen) {
+        if (globals.isParryMenuOpen) {
           this.#renderParryMenu();
         }
 
@@ -1028,8 +1028,7 @@ export default class Game {
 
       if (
         currentDeck.getDeckType() !== DeckType.EVENTS &&
-        currentDeck.getDeckType() !== DeckType.PLAYER_1_ACTIVE_EVENTS &&
-        currentDeck.getDeckType() !== DeckType.PLAYER_2_ACTIVE_EVENTS &&
+        currentDeck.getDeckType() !== DeckType.ACTIVE_EVENTS &&
         currentDeck.getDeckType() !== DeckType.PLAYER_1_MINIONS &&
         currentDeck.getDeckType() !== DeckType.PLAYER_2_MINIONS
       ) {
@@ -2026,7 +2025,11 @@ export default class Game {
     globals.ctx.fillStyle = "white";
 
     globals.ctx.font = "100px MedievalSharp";
-    globals.ctx.fillText("Do you want to parry?", canvasWidthDividedBy2, canvasHeightDividedBy2);
+    globals.ctx.fillText(
+      "Do you want to parry?",
+      canvasWidthDividedBy2,
+      canvasHeightDividedBy2
+    );
 
     const buttonWidth = 150;
     const buttonHeight = 50;
@@ -2034,8 +2037,12 @@ export default class Game {
     const buttonY = canvasHeightDividedBy2 + 100;
 
     const buttons = [
-      { text: "YES", x: canvasWidthDividedBy2 - buttonWidth - buttonSpacing / 2, y: buttonY },
-      { text: "NO", x: canvasWidthDividedBy2 + buttonSpacing / 2, y: buttonY }
+      {
+        text: "YES",
+        x: canvasWidthDividedBy2 - buttonWidth - buttonSpacing / 2,
+        y: buttonY,
+      },
+      { text: "NO", x: canvasWidthDividedBy2 + buttonSpacing / 2, y: buttonY },
     ];
 
     for (let i = 0; i < buttons.length; i++) {
@@ -2049,11 +2056,26 @@ export default class Game {
       globals.ctx.beginPath();
       globals.ctx.moveTo(button.x + 10, button.y);
       globals.ctx.lineTo(button.x + buttonWidth - 10, button.y);
-      globals.ctx.quadraticCurveTo(button.x + buttonWidth, button.y, button.x + buttonWidth, button.y + 10);
+      globals.ctx.quadraticCurveTo(
+        button.x + buttonWidth,
+        button.y,
+        button.x + buttonWidth,
+        button.y + 10
+      );
       globals.ctx.lineTo(button.x + buttonWidth, button.y + buttonHeight - 10);
-      globals.ctx.quadraticCurveTo(button.x + buttonWidth, button.y + buttonHeight, button.x + buttonWidth - 10, button.y + buttonHeight);
+      globals.ctx.quadraticCurveTo(
+        button.x + buttonWidth,
+        button.y + buttonHeight,
+        button.x + buttonWidth - 10,
+        button.y + buttonHeight
+      );
       globals.ctx.lineTo(button.x + 10, button.y + buttonHeight);
-      globals.ctx.quadraticCurveTo(button.x, button.y + buttonHeight, button.x, button.y + buttonHeight - 10);
+      globals.ctx.quadraticCurveTo(
+        button.x,
+        button.y + buttonHeight,
+        button.x,
+        button.y + buttonHeight - 10
+      );
       globals.ctx.lineTo(button.x, button.y + 10);
       globals.ctx.quadraticCurveTo(button.x, button.y, button.x + 10, button.y);
       globals.ctx.closePath();
@@ -2063,10 +2085,13 @@ export default class Game {
       globals.ctx.font = "24px MedievalSharp";
       globals.ctx.textAlign = "center";
       globals.ctx.textBaseline = "middle";
-      globals.ctx.fillText(button.text, button.x + buttonWidth / 2, button.y + buttonHeight / 2);
+      globals.ctx.fillText(
+        button.text,
+        button.x + buttonWidth / 2,
+        button.y + buttonHeight / 2
+      );
     }
   }
-
 
   #renderDamageMessages() {
     for (let i = 0; i < globals.damageMessages.length; i++) {

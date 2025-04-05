@@ -39,6 +39,7 @@ export default class DeckCreator {
   createAllDecks(mainDeck) {
     // CREATION OF DECKS THAT DO NOT BELONG TO ANY PARTICULAR PLAYER
     const events = new Deck(DeckType.EVENTS, []);
+    const activeEvents = new Deck(DeckType.ACTIVE_EVENTS, []);
     const joseph = new Deck(DeckType.JOSEPH, []);
 
     // CREATION OF PLAYER 1'S DECKS
@@ -53,7 +54,6 @@ export default class DeckCreator {
       DeckType.PLAYER_1_EVENTS_IN_PREPARATION,
       []
     );
-    const player1ActiveEvents = new Deck(DeckType.PLAYER_1_ACTIVE_EVENTS, []);
 
     // CREATION OF PLAYER 2'S DECKS
     const player2MainCharacter = new Deck(DeckType.PLAYER_2_MAIN_CHARACTER, []);
@@ -67,7 +67,6 @@ export default class DeckCreator {
       DeckType.PLAYER_2_EVENTS_IN_PREPARATION,
       []
     );
-    const player2ActiveEvents = new Deck(DeckType.PLAYER_2_ACTIVE_EVENTS, []);
 
     // DETERMINE WHICH MAIN CHARACTERS WILL BE DEALT TO THE PLAYERS
     const randomMainCharacterIDs = [-1, -1];
@@ -116,20 +115,20 @@ export default class DeckCreator {
 
     const deckContainer = new DeckContainer([
       events,
+      activeEvents,
       joseph,
       player1MainCharacter,
       player1CardsInHand,
       player1Minions,
       player1MinionsInPlay,
       player1EventsInPreparation,
-      player1ActiveEvents,
       player2MainCharacter,
       player2CardsInHand,
       player2Minions,
       player2MinionsInPlay,
       player2EventsInPreparation,
-      player2ActiveEvents,
     ]);
+
     return deckContainer;
   }
 }

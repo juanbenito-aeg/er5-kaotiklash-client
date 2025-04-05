@@ -238,7 +238,6 @@ export default class Turn {
 
     if (this.#player.getID() === PlayerID.PLAYER_1) {
       decksToCheck.push(
-        DeckType.PLAYER_1_ACTIVE_EVENTS,
         DeckType.PLAYER_1_CARDS_IN_HAND,
         DeckType.PLAYER_1_EVENTS_IN_PREPARATION,
         DeckType.PLAYER_1_MAIN_CHARACTER,
@@ -246,7 +245,6 @@ export default class Turn {
       );
     } else {
       decksToCheck.push(
-        DeckType.PLAYER_2_ACTIVE_EVENTS,
         DeckType.PLAYER_2_CARDS_IN_HAND,
         DeckType.PLAYER_2_EVENTS_IN_PREPARATION,
         DeckType.PLAYER_2_MAIN_CHARACTER,

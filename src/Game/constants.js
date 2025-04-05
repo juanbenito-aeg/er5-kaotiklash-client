@@ -90,20 +90,19 @@ const ArmorTypeID = {
 
 const DeckType = {
   EVENTS: 0,
-  JOSEPH: 1,
-  PLAYER_1_MAIN_CHARACTER: 2,
-  PLAYER_1_CARDS_IN_HAND: 3,
-  PLAYER_1_MINIONS: 4,
-  PLAYER_1_MINIONS_IN_PLAY: 5,
-  PLAYER_1_EVENTS_IN_PREPARATION: 6,
-  PLAYER_1_ACTIVE_EVENTS: 7,
+  ACTIVE_EVENTS: 1,
+  JOSEPH: 2,
+  PLAYER_1_MAIN_CHARACTER: 3,
+  PLAYER_1_CARDS_IN_HAND: 4,
+  PLAYER_1_MINIONS: 5,
+  PLAYER_1_MINIONS_IN_PLAY: 6,
+  PLAYER_1_EVENTS_IN_PREPARATION: 7,
   PLAYER_2_MAIN_CHARACTER: 8,
   PLAYER_2_CARDS_IN_HAND: 9,
   PLAYER_2_MINIONS: 10,
   PLAYER_2_MINIONS_IN_PLAY: 11,
   PLAYER_2_EVENTS_IN_PREPARATION: 12,
-  PLAYER_2_ACTIVE_EVENTS: 13,
-  MAIN: 14,
+  MAIN: 13,
 };
 
 const MainCharacterID = {
@@ -169,6 +168,13 @@ const PrepareEventState = {
   INIT: 0,
   SELECT_HAND_CARD: 1,
   SELECT_TARGET_GRID: 2,
+  END: 3,
+};
+
+const PerformEventState = {
+  INIT: 0,
+  SELECT_PREPARED_EVENT: 1,
+  EXECUTE_SELECTED_EVENT: 2,
   END: 3,
 };
 
@@ -260,6 +266,7 @@ export {
   DiscardCardState,
   MovePhaseState,
   PrepareEventState,
+  PerformEventState,
   PhaseType,
   PhaseButton,
   PhaseButtonData,
