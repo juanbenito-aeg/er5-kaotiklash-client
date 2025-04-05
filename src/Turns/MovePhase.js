@@ -64,9 +64,6 @@ export default class MovePhase extends Phase {
     switch (this._state) {
       case MovePhaseState.INIT:
         this.#initializePhase();
-
-        this.#resetRelevantCardsStates([this.#decksRelevants]);
-
         break;
 
       case MovePhaseState.SELECT_CARD:
@@ -91,6 +88,8 @@ export default class MovePhase extends Phase {
   }
 
   #initializePhase() {
+    this.#resetRelevantCardsStates([this.#decksRelevants]);
+
     this._state = MovePhaseState.SELECT_CARD;
   }
 

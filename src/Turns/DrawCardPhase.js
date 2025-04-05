@@ -1,7 +1,6 @@
 import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import {
-  CardState,
   DeckType,
   PlayerID,
   CardCategory,
@@ -42,6 +41,7 @@ export default class DrawCardPhase extends Phase {
         ? deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND]
         : deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND],
     ];
+
     gridsRelevants = [
       player === currentPlayer
         ? board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND]
@@ -69,10 +69,12 @@ export default class DrawCardPhase extends Phase {
         PhaseMessage.content.drawCard.subsequentDraw[globals.language]
       );
 
-      this.#filterEventDeck();
+      this.#filterEventsDeck();
 
       if (this.#filteredCards.length > 0) {
         this.#assignCards();
+
+        this.#filteredCards = [];
       }
     }
 
@@ -81,40 +83,39 @@ export default class DrawCardPhase extends Phase {
     return isPhaseFinished;
   }
 
-  #filterEventDeck() {
-    const eventDeck = this.#decksRelevants[0];
-    const eventCards = eventDeck.getCards();
-    this.#filteredCards = [];
+  #filterEventsDeck() {
+    const eventsDeck = this.#decksRelevants[0];
+    const eventCards = eventsDeck.getCards();
 
     for (let i = 0; i < eventCards.length; i++) {
       const card = eventCards[i];
 
       if (card.getCategory() === CardCategory.WEAPON) {
         this.#filteredCards.push(card);
-
-        eventDeck.removeCard(card);
       }
 
-      if (this.#filteredCards.length === 0 && eventCards.length > 0) {
-        const randomIndex = Math.floor(Math.random() * eventCards.length);
-        const randomCard = eventCards[randomIndex];
+      // if (this.#filteredCards.length === 0 && eventCards.length > 0) {
+      //   const randomIndex = Math.floor(Math.random() * eventCards.length);
+      //   const randomCard = eventCards[randomIndex];
 
-        if (randomCard.getCategory() !== CardCategory.MAIN_CHARACTER) {
-          this.#filteredCards[this.#filteredCards.length] = randomCard;
-          eventDeck.removeCard(randomCard);
-        }
-      }
+      //   if (randomCard.getCategory() !== CardCategory.MAIN_CHARACTER) {
+      //     this.#filteredCards[this.#filteredCards.length] = randomCard;
+      //     eventsDeck.removeCard(randomCard);
+      //   }
+      // }
     }
   }
 
   #assignCards() {
     const handDeck = this.#decksRelevants[1];
     const handGrid = this.#gridsRelevants[0];
+    const eventsDeck = this.#decksRelevants[0];
 
     const randomIndex = Math.floor(Math.random() * this.#filteredCards.length);
     const selectedCard = this.#filteredCards[randomIndex];
 
     handDeck.insertCard(selectedCard);
+    eventsDeck.removeCard(selectedCard);
 
     for (let i = 0; i < handGrid.getBoxes().length; i++) {
       const box = handGrid.getBoxes()[i];
@@ -123,7 +124,6 @@ export default class DrawCardPhase extends Phase {
         selectedCard.setXCoordinate(box.getXCoordinate());
         selectedCard.setYCoordinate(box.getYCoordinate());
 
-        selectedCard.setState(CardState.PLACED);
         box.setCard(selectedCard);
 
         break;
