@@ -1,4 +1,4 @@
-import { CardCategory, CardState } from "./constants.js";
+import { BoxState, CardCategory, CardState } from "./constants.js";
 import { globals } from "../index.js";
 
 export default class MouseInput {
@@ -135,6 +135,10 @@ export default class MouseInput {
           currentBox.isMouseOver()
         ) {
           currentBox.setIsMouseOver(false);
+
+          if (currentBox.getState() === BoxState.HOVERED) {
+            currentBox.setState(BoxState.AVAILABLE);
+          }
         }
       }
     }
@@ -238,6 +242,10 @@ export default class MouseInput {
           currentCard.isMouseOver()
         ) {
           currentCard.setIsMouseOver(false);
+
+          if (currentCard.getState() === CardState.HOVERED) {
+            currentCard.setState(CardState.PLACED);
+          }
         }
       }
     }
@@ -268,6 +276,39 @@ export default class MouseInput {
 
           if (currentCard === hoveredCard) {
             currentCard.setIsLeftClicked(true);
+          }
+        }
+      }
+    }
+  }
+
+  resetIsRightClickedOnCards(deckContainer) {
+    for (let i = 0; i < deckContainer.getDecks().length; i++) {
+      const currentDeck = deckContainer.getDecks()[i];
+
+      const rightClickedCard = currentDeck.lookForRightClickedCard();
+
+      if (rightClickedCard) {
+        // SET "isRightClicked" TO FALSE ON THE CARD THAT WAS RIGHT-CLICKED IN THE PREVIOUS CYCLE
+        rightClickedCard.setIsRightClicked(false);
+      }
+    }
+  }
+
+  detectRightClickOnCard(deckContainer) {
+    if (this.isRightButtonPressed()) {
+      this.setRightButtonPressedFalse();
+
+      for (let i = 0; i < deckContainer.getDecks().length; i++) {
+        const currentDeck = deckContainer.getDecks()[i];
+
+        const hoveredCard = currentDeck.lookForHoveredCard();
+
+        for (let j = 0; j < currentDeck.getCards().length; j++) {
+          const currentCard = currentDeck.getCards()[j];
+
+          if (currentCard === hoveredCard) {
+            currentCard.setIsRightClicked(true);
           }
         }
       }

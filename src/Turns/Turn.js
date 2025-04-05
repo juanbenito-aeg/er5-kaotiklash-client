@@ -16,6 +16,8 @@ import {
   EquipWeaponState,
   CardCategory,
   PhaseButtonData,
+  GridType,
+  BoxState,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 
@@ -252,38 +254,29 @@ export default class Turn {
 
     decksToCheck.push(DeckType.JOSEPH);
 
-    this.#lookForRightClickedCard(decksToCheck);
+    this.#setOrUnsetExpandedState(decksToCheck);
 
     const isAnyCardExpanded = this.#checkIfAnyCardIsExpanded(decksToCheck);
     return isAnyCardExpanded;
   }
 
-  #lookForRightClickedCard(decksToCheck) {
-    if (this.#mouseInput.isRightButtonPressed()) {
-      this.#mouseInput.setRightButtonPressedFalse();
+  #setOrUnsetExpandedState(decksToCheck) {
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+      for (let j = 0; j < decksToCheck.length; j++) {
+        if (i === decksToCheck[j]) {
+          const currentDeck = this.#deckContainer.getDecks()[i];
 
-      const isAnyCardExpanded = this.#checkIfAnyCardIsExpanded(decksToCheck);
+          const hoveredCard = currentDeck.lookForHoveredCard();
 
-      for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
-        for (let j = 0; j < decksToCheck.length; j++) {
-          if (i === decksToCheck[j]) {
-            const currentDeck = this.#deckContainer.getDecks()[i];
+          if (hoveredCard && hoveredCard.isRightClicked()) {
+            const isAnyCardExpanded =
+              this.#checkIfAnyCardIsExpanded(decksToCheck);
 
-            const hoveredCard = currentDeck.lookForHoveredCard(
-              this.#mouseInput
-            );
-
-            for (let k = 0; k < currentDeck.getCards().length; k++) {
-              const currentCard = currentDeck.getCards()[k];
-
-              if (currentCard === hoveredCard) {
-                if (!isAnyCardExpanded) {
-                  currentCard.setPreviousState(currentCard.getState());
-                  currentCard.setState(CardState.EXPANDED);
-                } else if (currentCard.getState() === CardState.EXPANDED) {
-                  currentCard.setState(currentCard.getPreviousState());
-                }
-              }
+            if (!isAnyCardExpanded) {
+              hoveredCard.setPreviousState(hoveredCard.getState());
+              hoveredCard.setState(CardState.EXPANDED);
+            } else if (hoveredCard.getState() === CardState.EXPANDED) {
+              hoveredCard.setState(hoveredCard.getPreviousState());
             }
           }
         }

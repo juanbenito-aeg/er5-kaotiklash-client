@@ -21,7 +21,6 @@ import {
   MainCharacterID,
   GridType,
   PhaseButtonData,
-  BoxState,
 } from "./constants.js";
 import { globals } from "../index.js";
 
@@ -439,17 +438,9 @@ export default class Game {
       for (let j = 0; j < 5; j++) {
         const currentEventCard = currentPlayer.cardsInHandDeck.getCards()[j];
 
-        let currentCardsInHandBoxIndex = j;
-        if (
-          currentPlayer.cardsInHandGrid ===
-          this.#board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND]
-        ) {
-          currentCardsInHandBoxIndex = j;
-        }
         const currentCardsInHandBox =
-          currentPlayer.cardsInHandGrid.getBoxes()[currentCardsInHandBoxIndex];
+          currentPlayer.cardsInHandGrid.getBoxes()[j];
         currentCardsInHandBox.setCard(currentEventCard);
-        currentCardsInHandBox.setState(BoxState.OCCUPIED);
 
         currentEventCard.setXCoordinate(currentCardsInHandBox.getXCoordinate());
         currentEventCard.setYCoordinate(currentCardsInHandBox.getYCoordinate());
@@ -478,15 +469,6 @@ export default class Game {
         currentMinionCard.setYCoordinate(
           currentBattlefieldBox.getYCoordinate()
         );
-
-        if (
-          currentMinionCard.getXCoordinate() ===
-            currentBattlefieldBox.getXCoordinate() &&
-          currentMinionCard.getYCoordinate() ===
-            currentBattlefieldBox.getYCoordinate()
-        ) {
-          currentBattlefieldBox.setCard(currentMinionCard);
-        }
       }
     }
   }
@@ -513,9 +495,11 @@ export default class Game {
     this.#mouseInput.detectLeftClickOnBox(this.#board);
 
     this.#mouseInput.resetIsLeftClickedOnCards(this.#deckContainer);
+    this.#mouseInput.resetIsRightClickedOnCards(this.#deckContainer);
     this.#mouseInput.detectMouseOverCard(this.#deckContainer);
     this.#mouseInput.detectCardThatIsntHoveredAnymore(this.#deckContainer);
     this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
+    this.#mouseInput.detectRightClickOnCard(this.#deckContainer);
 
     if (!globals.gameWinner) {
       this.#turns[this.#currentPlayer.getID()].execute();
@@ -1026,14 +1010,6 @@ export default class Game {
 
   #renderCards() {
     let expandedCard;
-    const player1Deck =
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
-    for (let i = 0; i < player1Deck.getCards().length; i++) {
-      const currentCard = player1Deck.getCards()[i];
-      if (currentCard.getState() === CardState.EXPANDED) {
-        expandedCard = currentCard;
-      }
-    }
 
     for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
       const currentDeck = this.#deckContainer.getDecks()[i];
@@ -1049,11 +1025,13 @@ export default class Game {
       if (
         currentDeck.getDeckType() !== DeckType.EVENTS &&
         currentDeck.getDeckType() !== DeckType.PLAYER_1_ACTIVE_EVENTS &&
+        currentDeck.getDeckType() !== DeckType.PLAYER_2_ACTIVE_EVENTS &&
         currentDeck.getDeckType() !== DeckType.PLAYER_1_MINIONS &&
         currentDeck.getDeckType() !== DeckType.PLAYER_2_MINIONS
       ) {
         for (let j = 0; j < currentDeck.getCards().length; j++) {
           const currentCard = currentDeck.getCards()[j];
+
           if (isDeckCardsInHandOfInactivePlayer) {
             this.#renderCardReverse(
               currentCard.getXCoordinate(),
