@@ -54,6 +54,7 @@ export default class PrepareEvent extends Event {
 
     for (let i = 0; i < cards.length; i++) {
       let remainingTime = cards[i].getCurrentPrepTimeInRounds();
+
       if (remainingTime > 0) {
         cards[i].setCurrenPrepTimeInRounds(remainingTime - 1);
         reductionOccurred = true;
@@ -64,11 +65,13 @@ export default class PrepareEvent extends Event {
 
   isActive() {
     let cards = this.#preparationEventDeck.getCards();
+
     for (let i = 0; i < cards.length; i++) {
       if (cards[i].getCurrentPrepTimeInRounds() > 0) {
         return true;
       }
     }
+
     return false;
   }
 }

@@ -21,6 +21,5 @@ export default class EquipWeaponEvent extends Event {
 
   execute() {
     this.#minionToEquipWeaponOn.setWeapon(this.#weapon);
-    this.#minionToEquipWeaponOn = null;
   }
 }

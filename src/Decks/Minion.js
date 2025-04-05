@@ -99,14 +99,4 @@ export default class Minion extends Card {
   setWeapon(weapon) {
     this.#weapon = weapon;
   }
-
-  getBoxIsPositionedIn(gridWhereToLookForBox, minion) {
-    for (let i = 0; i < gridWhereToLookForBox.getBoxes().length; i++) {
-      const currentBox = gridWhereToLookForBox.getBoxes()[i];
-
-      if (currentBox.getCard() === minion) {
-        return currentBox;
-      }
-    }
-  }
 }

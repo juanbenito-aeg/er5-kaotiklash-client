@@ -5,6 +5,7 @@ export default class Card {
   #description;
   #isMouseOver;
   #isLeftClicked;
+  #isRightClicked;
 
   constructor(category, id, name, description) {
     this.#category = category;
@@ -13,6 +14,7 @@ export default class Card {
     this.#description = description;
     this.#isMouseOver = false;
     this.#isLeftClicked = false;
+    this.#isRightClicked = false;
   }
 
   getCategory() {
@@ -45,5 +47,23 @@ export default class Card {
 
   setIsLeftClicked(isLeftClicked) {
     this.#isLeftClicked = isLeftClicked;
+  }
+
+  isRightClicked() {
+    return this.#isRightClicked;
+  }
+
+  setIsRightClicked(isRightClicked) {
+    this.#isRightClicked = isRightClicked;
+  }
+
+  getBoxIsPositionedIn(gridWhereToLookForBox, card) {
+    for (let i = 0; i < gridWhereToLookForBox.getBoxes().length; i++) {
+      const currentBox = gridWhereToLookForBox.getBoxes()[i];
+
+      if (currentBox.getCard() === card) {
+        return currentBox;
+      }
+    }
   }
 }

@@ -60,6 +60,16 @@ export default class Deck {
     }
   }
 
+  lookForRightClickedCard() {
+    for (let i = 0; i < this.getCards().length; i++) {
+      const currentCard = this.getCards()[i];
+
+      if (currentCard.isRightClicked()) {
+        return currentCard;
+      }
+    }
+  }
+
   lookForSelectedCard() {
     for (let i = 0; i < this.getCards().length; i++) {
       const currentCard = this.getCards()[i];

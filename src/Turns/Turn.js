@@ -16,6 +16,8 @@ import {
   EquipWeaponState,
   CardCategory,
   PhaseButtonData,
+  GridType,
+  BoxState,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 
@@ -45,7 +47,7 @@ export default class Turn {
     this.#player = player;
     this.#events = events;
     this.#phaseMessage = phaseMessage;
-    this.#equipWeaponState = EquipWeaponState.SELECT_WEAPON;
+    this.#equipWeaponState = EquipWeaponState.INIT;
   }
 
   fillPhases(currentPlayer) {
@@ -204,6 +206,8 @@ export default class Turn {
       }
 
       if (this.#isCurrentPhaseCanceled || this.#isCurrentPhaseFinished) {
+        this.#equipWeaponState = EquipWeaponState.INIT;
+
         this.#currentPhase = PhaseType.INVALID;
 
         if (this.#isCurrentPhaseCanceled) {
@@ -252,38 +256,29 @@ export default class Turn {
 
     decksToCheck.push(DeckType.JOSEPH);
 
-    this.#lookForRightClickedCard(decksToCheck);
+    this.#setOrUnsetExpandedState(decksToCheck);
 
     const isAnyCardExpanded = this.#checkIfAnyCardIsExpanded(decksToCheck);
     return isAnyCardExpanded;
   }
 
-  #lookForRightClickedCard(decksToCheck) {
-    if (this.#mouseInput.isRightButtonPressed()) {
-      this.#mouseInput.setRightButtonPressedFalse();
+  #setOrUnsetExpandedState(decksToCheck) {
+    for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
+      for (let j = 0; j < decksToCheck.length; j++) {
+        if (i === decksToCheck[j]) {
+          const currentDeck = this.#deckContainer.getDecks()[i];
 
-      const isAnyCardExpanded = this.#checkIfAnyCardIsExpanded(decksToCheck);
+          const hoveredCard = currentDeck.lookForHoveredCard();
 
-      for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
-        for (let j = 0; j < decksToCheck.length; j++) {
-          if (i === decksToCheck[j]) {
-            const currentDeck = this.#deckContainer.getDecks()[i];
+          if (hoveredCard && hoveredCard.isRightClicked()) {
+            const isAnyCardExpanded =
+              this.#checkIfAnyCardIsExpanded(decksToCheck);
 
-            const hoveredCard = currentDeck.lookForHoveredCard(
-              this.#mouseInput
-            );
-
-            for (let k = 0; k < currentDeck.getCards().length; k++) {
-              const currentCard = currentDeck.getCards()[k];
-
-              if (currentCard === hoveredCard) {
-                if (!isAnyCardExpanded) {
-                  currentCard.setPreviousState(currentCard.getState());
-                  currentCard.setState(CardState.EXPANDED);
-                } else if (currentCard.getState() === CardState.EXPANDED) {
-                  currentCard.setState(currentCard.getPreviousState());
-                }
-              }
+            if (!isAnyCardExpanded) {
+              hoveredCard.setPreviousState(hoveredCard.getState());
+              hoveredCard.setState(CardState.EXPANDED);
+            } else if (hoveredCard.getState() === CardState.EXPANDED) {
+              hoveredCard.setState(hoveredCard.getPreviousState());
             }
           }
         }
@@ -312,7 +307,17 @@ export default class Turn {
   }
 
   #equipWeapon() {
-    let playerXEventsInPreparationDeck, playerXMinionsInPlayDeck;
+    let playerXEventsInPreparationGrid;
+    let playerXEventsInPreparationDeck;
+    let playerXMinionsInPlayDeck;
+
+    if (this.#player.getID() === globals.firstActivePlayerID) {
+      playerXEventsInPreparationGrid =
+        this.#board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
+    } else {
+      playerXEventsInPreparationGrid =
+        this.#board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
+    }
 
     if (this.#player.getID() === PlayerID.PLAYER_1) {
       playerXEventsInPreparationDeck =
@@ -326,29 +331,36 @@ export default class Turn {
         this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
     }
 
-    // (¿?) MOVE TO THE BEGINNING OF THE execute() METHOD?
-    const notHoveredCard = this.#lookForCardThatIsntHoveredAnymore([
-      playerXEventsInPreparationDeck,
-      playerXMinionsInPlayDeck,
-    ]);
-    if (notHoveredCard) {
-      notHoveredCard.setState(CardState.PLACED);
-    }
-
     let weapon;
     let minion;
     switch (this.#equipWeaponState) {
+      case EquipWeaponState.INIT:
+        this.#resetXDeckCardsToYState(
+          playerXEventsInPreparationDeck,
+          CardState.PLACED
+        );
+        this.#resetXDeckCardsToYState(
+          playerXMinionsInPlayDeck,
+          CardState.INACTIVE
+        );
+
+        this.#resetXGridBoxesToYState(
+          playerXEventsInPreparationGrid,
+          BoxState.INACTIVE
+        );
+
+        this.#equipWeaponState = EquipWeaponState.SELECT_WEAPON;
+
+        break;
+
       // SELECT WEAPON TO EQUIP ON A MINION
       case EquipWeaponState.SELECT_WEAPON:
         weapon = playerXEventsInPreparationDeck.lookForHoveredCard();
 
-        if (weapon) {
+        if (weapon && weapon.getCategory() === CardCategory.WEAPON) {
           if (!weapon.isLeftClicked()) {
             weapon.setState(CardState.HOVERED);
-          } else if (
-            weapon.getCategory() === CardCategory.WEAPON &&
-            weapon.getCurrentPrepTimeInRounds() === 0
-          ) {
+          } else if (weapon.getCurrentPrepTimeInRounds() === 0) {
             console.log("WEAPON SELECTED");
 
             weapon.setState(CardState.SELECTED);
@@ -367,7 +379,16 @@ export default class Turn {
           PhaseMessage.content.equipWeapon.selectMinion[globals.language]
         );
 
-        minion = null;
+        this.#resetXDeckCardsToYState(
+          playerXEventsInPreparationDeck,
+          CardState.INACTIVE,
+          CardState.SELECTED
+        );
+        this.#resetXDeckCardsToYState(
+          playerXMinionsInPlayDeck,
+          CardState.PLACED,
+          CardState.HOVERED
+        );
 
         weapon = playerXEventsInPreparationDeck.lookForSelectedCard();
 
@@ -375,8 +396,7 @@ export default class Turn {
           console.log("WEAPON DESELECTED");
 
           // THE PREVIOUSLY SELECTED WEAPON WAS DESELECTED
-          weapon.setState(CardState.PLACED);
-          this.#equipWeaponState = EquipWeaponState.SELECT_WEAPON;
+          this.#equipWeaponState = EquipWeaponState.INIT;
         } else {
           minion = playerXMinionsInPlayDeck.lookForHoveredCard();
 
@@ -402,9 +422,7 @@ export default class Turn {
         );
 
         weapon = playerXEventsInPreparationDeck.lookForSelectedCard();
-
         minion = playerXMinionsInPlayDeck.lookForSelectedCard();
-        minion.setState(CardState.PLACED);
 
         const equipWeaponEvent = new EquipWeaponEvent(weapon, minion);
         equipWeaponEvent.execute();
@@ -418,22 +436,40 @@ export default class Turn {
         console.log("EVENT END");
 
         weapon = playerXEventsInPreparationDeck.lookForSelectedCard();
+        weapon.setState(CardState.INACTIVE);
         playerXEventsInPreparationDeck.removeCard(weapon);
 
-        this.#equipWeaponState = EquipWeaponState.SELECT_WEAPON;
+        const boxWeaponWasPositionedIn = weapon.getBoxIsPositionedIn(
+          playerXEventsInPreparationGrid,
+          weapon
+        );
+        boxWeaponWasPositionedIn.resetCard();
+
+        minion = playerXMinionsInPlayDeck.lookForSelectedCard();
+        minion.setState(CardState.INACTIVE);
+
+        this.#equipWeaponState = EquipWeaponState.INIT;
 
         break;
     }
   }
 
-  #lookForCardThatIsntHoveredAnymore(decksToCheck) {
-    for (let i = 0; i < decksToCheck.length; i++) {
-      const currentDeck = decksToCheck[i];
+  #resetXDeckCardsToYState(deck, stateToSet, stateNotToOverWrite = -1) {
+    for (let i = 0; i < deck.getCards().length; i++) {
+      const currentCard = deck.getCards()[i];
 
-      const notHoveredCard = currentDeck.lookForCardThatIsntHoveredAnymore();
+      if (currentCard.getState() !== stateNotToOverWrite) {
+        currentCard.setState(stateToSet);
+      }
+    }
+  }
 
-      if (notHoveredCard) {
-        return notHoveredCard;
+  #resetXGridBoxesToYState(grid, stateToSet, stateNotToOverWrite = -1) {
+    for (let i = 0; i < grid.getBoxes().length; i++) {
+      const currentBox = grid.getBoxes()[i];
+
+      if (currentBox.getState() !== stateNotToOverWrite) {
+        currentBox.setState(stateToSet);
       }
     }
   }
