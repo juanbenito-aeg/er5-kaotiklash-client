@@ -148,6 +148,7 @@ const AttackPhaseState = {
   SELECT_TARGET: 2,
   CALC_AND_APPLY_DMG: 3,
   END: 4,
+  PARRY_SELECION: 5,
 };
 
 const DiscardCardState = {

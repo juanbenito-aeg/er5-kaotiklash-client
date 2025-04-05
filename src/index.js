@@ -39,6 +39,7 @@ const globals = {
     register: false,
     playerSession: false,
   },
+  isParryMenuOpen: false
 };
 
 window.onload = initLogInScreen;
@@ -171,9 +172,8 @@ async function logInPlayer(email, password) {
   }
 }
 
-// Capturar el evento de login
 document.getElementById("login-form").addEventListener("submit", function (e) {
-  e.preventDefault(); // Evitar el envío por defecto
+  e.preventDefault();
   const email = document.getElementById("login-email").value;
   const password = document.getElementById("login-password").value;
   logInPlayer(email, password);
