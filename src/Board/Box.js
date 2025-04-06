@@ -97,7 +97,8 @@ export default class Box {
 
   resetCard() {
     this.#card = null;
-    this.setState(BoxState.INACTIVE);
+
+    this.setState(BoxState.AVAILABLE);
   }
 
   isOccupied() {

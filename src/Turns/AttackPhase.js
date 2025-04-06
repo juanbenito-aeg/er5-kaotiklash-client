@@ -12,27 +12,33 @@ import {
 import { globals } from "../index.js";
 
 export default class AttackPhase extends Phase {
-  #enemyMovementGridDeck;
-  #currentPlayerMovementGridDeck;
   #enemyMovementGrid;
   #currentPlayerMovementGrid;
+  #enemyMovementGridDeck;
+  #enemyMinionsDeck;
+  #currentPlayerMovementGridDeck;
+  #currentPlayerMinionsDeck;
   #parry;
 
   constructor(
     state,
     mouseInput,
     phaseMessage,
-    enemyMovementGridDeck,
-    currentPlayerMovementGridDeck,
     enemyMovementGrid,
-    currentPlayerMovementGrid
+    currentPlayerMovementGrid,
+    enemyMovementGridDeck,
+    enemyMinionsDeck,
+    currentPlayerMovementGridDeck,
+    currentPlayerMinionsDeck
   ) {
     super(state, mouseInput, phaseMessage);
 
-    this.#enemyMovementGridDeck = enemyMovementGridDeck;
-    this.#currentPlayerMovementGridDeck = currentPlayerMovementGridDeck;
     this.#enemyMovementGrid = enemyMovementGrid;
     this.#currentPlayerMovementGrid = currentPlayerMovementGrid;
+    this.#enemyMovementGridDeck = enemyMovementGridDeck;
+    this.#enemyMinionsDeck = enemyMinionsDeck;
+    this.#currentPlayerMovementGridDeck = currentPlayerMovementGridDeck;
+    this.#currentPlayerMinionsDeck = currentPlayerMinionsDeck;
     this.#parry = false;
   }
 
@@ -45,8 +51,6 @@ export default class AttackPhase extends Phase {
     currentPlayer,
     phaseMessage
   ) {
-    let enemyMovementGridDeck;
-    let currentPlayerMovementGridDeck;
     let enemyMovementGrid;
     let currentPlayerMovementGrid;
 
@@ -62,28 +66,41 @@ export default class AttackPhase extends Phase {
       enemyMovementGrid = board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
     }
 
+    let enemyMovementGridDeck;
+    let enemyMinionsDeck;
+    let currentPlayerMovementGridDeck;
+    let currentPlayerMinionsDeck;
+
     if (player.getID() === PlayerID.PLAYER_1) {
       currentPlayerMovementGridDeck =
         deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
+      currentPlayerMinionsDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS];
 
       enemyMovementGridDeck =
         deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
+      enemyMinionsDeck = deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
     } else {
       currentPlayerMovementGridDeck =
         deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
+      currentPlayerMinionsDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
 
       enemyMovementGridDeck =
         deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
+      enemyMinionsDeck = deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS];
     }
 
     const attackPhase = new AttackPhase(
       AttackPhaseState.INIT,
       mouseInput,
       phaseMessage,
-      enemyMovementGridDeck,
-      currentPlayerMovementGridDeck,
       enemyMovementGrid,
-      currentPlayerMovementGrid
+      currentPlayerMovementGrid,
+      enemyMovementGridDeck,
+      enemyMinionsDeck,
+      currentPlayerMovementGridDeck,
+      currentPlayerMinionsDeck
     );
 
     return attackPhase;
@@ -171,7 +188,7 @@ export default class AttackPhase extends Phase {
                 target.setState(CardState.HOVERED);
               } else {
                 target.setState(CardState.SELECTED);
-                if(target.getWeapon() !== null) {
+                if (target.getWeapon() !== null) {
                   globals.isParryMenuOpen = true;
                   this._state = AttackPhaseState.PARRY_SELECION;
                 } else {
@@ -187,7 +204,7 @@ export default class AttackPhase extends Phase {
       // PARRY SELECTION
       case AttackPhaseState.PARRY_SELECION:
         console.log("PARRY SELECTION");
-        
+
         let isParryActivated = this.#isMouseOnButtons();
         if (isParryActivated) {
           this.#parry = true;
@@ -197,7 +214,7 @@ export default class AttackPhase extends Phase {
           this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
         }
 
-      break;
+        break;
 
       // CALCULATION AND APPLICATION OF DAMAGE
       case AttackPhaseState.CALC_AND_APPLY_DMG:
@@ -205,7 +222,7 @@ export default class AttackPhase extends Phase {
 
         attacker = this.#currentPlayerMovementGridDeck.lookForSelectedCard();
         target = this.#enemyMovementGridDeck.lookForSelectedCard();
-        console.log(this.#parry)
+        console.log(this.#parry);
         const attackEvent = AttackEvent.create(
           attacker,
           target,
@@ -223,7 +240,7 @@ export default class AttackPhase extends Phase {
       case AttackPhaseState.END:
         console.log("END");
 
-        this.#updateDecks([
+        this.#updateDecksAndGrids([
           this.#enemyMovementGridDeck,
           this.#currentPlayerMovementGridDeck,
         ]);
@@ -293,7 +310,48 @@ export default class AttackPhase extends Phase {
     return isTargetWithinReach;
   }
 
-  #updateDecks(decksToCheck) {
+  #isMouseOnButtons(isParryActivated) {
+    const mouseX = this._mouseInput.getMouseXCoordinate();
+    const mouseY = this._mouseInput.getMouseYCoordinate();
+
+    const buttonWidth = 150;
+    const buttonHeight = 50;
+    const buttonSpacing = 50;
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+    const buttonY = globals.canvas.height / 2 + 100;
+
+    const buttons = [
+      {
+        text: "YES",
+        x: canvasWidthDividedBy2 - buttonWidth - buttonSpacing / 2,
+        y: buttonY,
+      },
+      { text: "NO", x: canvasWidthDividedBy2 + buttonSpacing / 2, y: buttonY },
+    ];
+
+    for (let i = 0; i < buttons.length; i++) {
+      const button = buttons[i];
+
+      if (
+        mouseX >= button.x &&
+        mouseX <= button.x + buttonWidth &&
+        mouseY >= button.y &&
+        mouseY <= button.y + buttonHeight &&
+        this._mouseInput.isLeftButtonPressed()
+      ) {
+        if (button.text === "YES") {
+          globals.isParryMenuOpen = false;
+          return true;
+        } else if (button.text === "NO") {
+          globals.isParryMenuOpen = false;
+          return false;
+        }
+      }
+    }
+    return isParryActivated;
+  }
+
+  #updateDecksAndGrids(decksToCheck) {
     for (let i = 0; i < decksToCheck.length; i++) {
       const currentDeck = decksToCheck[i];
 
@@ -306,10 +364,18 @@ export default class AttackPhase extends Phase {
           // MAKE THE BOX THE NOW DEAD MINION WAS POSITIONED IN AVAILABLE
 
           let gridWhereToLookForBox;
+          let movementGridDeckToInsertCardInto;
+          let minionsDeckToDrawCardFrom;
+
           if (currentDeck === this.#currentPlayerMovementGridDeck) {
             gridWhereToLookForBox = this.#currentPlayerMovementGrid;
+            movementGridDeckToInsertCardInto =
+              this.#currentPlayerMovementGridDeck;
+            minionsDeckToDrawCardFrom = this.#currentPlayerMinionsDeck;
           } else {
             gridWhereToLookForBox = this.#enemyMovementGrid;
+            movementGridDeckToInsertCardInto = this.#enemyMovementGridDeck;
+            minionsDeckToDrawCardFrom = this.#enemyMinionsDeck;
           }
 
           const currentCardBox = currentCard.getBoxIsPositionedIn(
@@ -317,50 +383,37 @@ export default class AttackPhase extends Phase {
             currentCard
           );
           currentCardBox.resetCard();
+
+          // REPLACE THE DEAD MINION BY A NEW ONE DRAWN FROM THE CORRESPONDING PLAYER'S MINIONS DECK
+
+          const newMinion = minionsDeckToDrawCardFrom.getCards()[0];
+
+          if (newMinion) {
+            movementGridDeckToInsertCardInto.insertCard(newMinion);
+
+            minionsDeckToDrawCardFrom.removeCard(newMinion);
+
+            this.#positionNewMinion(newMinion, gridWhereToLookForBox);
+          }
         }
       }
     }
   }
 
-  #isMouseOnButtons(isParryActivated) {
-    const mouseX = this._mouseInput.getMouseXCoordinate();
-    const mouseY = this._mouseInput.getMouseYCoordinate();
+  #positionNewMinion(newMinion, gridToPositionNewMinionIn) {
+    for (let i = 0; i < gridToPositionNewMinionIn.getBoxes().length; i++) {
+      const currentBox = gridToPositionNewMinionIn.getBoxes()[i];
 
-    const buttonWidth = 150;
-    const buttonHeight = 50;
-    const buttonSpacing = 50;
-    const canvasWidthDividedBy2 = globals.canvas.width / 2;
-    const buttonY = globals.canvas.height / 2 + 100;
-  
-    const buttons = [
-      { text: "YES", x: canvasWidthDividedBy2 - buttonWidth - buttonSpacing / 2, y: buttonY },
-      { text: "NO", x: canvasWidthDividedBy2 + buttonSpacing / 2, y: buttonY }
-    ];
-  
-    for (let i = 0; i < buttons.length; i++) {
-      const button = buttons[i];
-  
-      if (
-        mouseX >= button.x &&
-        mouseX <= button.x + buttonWidth &&
-        mouseY >= button.y &&
-        mouseY <= button.y + buttonHeight &&
-        this._mouseInput.isLeftButtonPressed()
-      ) {
-        if (button.text === "YES") {
+      if (!currentBox.isOccupied()) {
+        currentBox.setCard(newMinion);
 
-          globals.isParryMenuOpen = false;
-          return true;
+        newMinion.setXCoordinate(currentBox.getXCoordinate());
+        newMinion.setYCoordinate(currentBox.getYCoordinate());
 
-        } else if (button.text === "NO") {
-          globals.isParryMenuOpen = false;
-          return false;
-        }
+        break;
       }
     }
-    return isParryActivated;
   }
-  
 
   reset() {
     this._state = AttackPhaseState.INIT;

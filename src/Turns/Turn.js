@@ -201,7 +201,10 @@ export default class Turn {
           this.#phases[this.#currentPhase].execute();
       }
 
-      if (this.#equipWeaponState === EquipWeaponState.SELECT_WEAPON) {
+      if (
+        this.#equipWeaponState === EquipWeaponState.INIT ||
+        this.#equipWeaponState === EquipWeaponState.SELECT_WEAPON
+      ) {
         this.#checkButtonClick();
       }
 
@@ -509,7 +512,7 @@ export default class Turn {
           ) {
             if (i === PhaseButton.SKIP_OR_CANCEL) {
               this.#numOfExecutedPhases++;
-            } else {
+            } else if (this.#currentPhase === PhaseType.INVALID) {
               this.#currentPhase = i;
 
               globals.buttonDataGlobal[PhaseButton.SKIP_OR_CANCEL][
