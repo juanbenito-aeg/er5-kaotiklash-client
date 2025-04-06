@@ -90,9 +90,18 @@ export default class DrawCardPhase extends Phase {
     for (let i = 0; i < eventCards.length; i++) {
       const card = eventCards[i];
 
-      if (card.getCategory() === CardCategory.WEAPON) {
+      if (
+        card.getCategory() === CardCategory.SPECIAL &&
+        card.getID() === SpecialEventID.SUMMON_CHARACTER
+      ) {
         this.#filteredCards.push(card);
+
+        break;
       }
+
+      /* if (card.getCategory() === CardCategory.WEAPON) {
+        this.#filteredCards.push(card);
+      } */
 
       // if (this.#filteredCards.length === 0 && eventCards.length > 0) {
       //   const randomIndex = Math.floor(Math.random() * eventCards.length);

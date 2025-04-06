@@ -1,4 +1,5 @@
 import Phase from "./Phase.js";
+import SummonCharacterEvent from "../Events/SummonCharacterEvent.js";
 import {
   CardCategory,
   CardState,
@@ -6,14 +7,20 @@ import {
   PerformEventState,
   PlayerID,
   GridType,
+  SpecialEventID,
 } from "../Game/constants.js";
 
 export default class PerformEventPhase extends Phase {
   #events;
   #eventsDeck;
   #activeEventsDeck;
+  #currentPlayerMainCharacterDeck;
+  #currentPlayerCardsInHandDeck;
   #currentPlayerEventsInPrepDeck;
+  #currentPlayerMinionsInPlayDeck;
   #currentPlayerEventsInPrepGrid;
+  #currentPlayerBattlefieldGrid;
+  #enemyMinionsInPlayDeck;
 
   constructor(
     state,
@@ -22,16 +29,26 @@ export default class PerformEventPhase extends Phase {
     events,
     eventsDeck,
     activeEventsDeck,
+    currentPlayerMainCharacterDeck,
+    currentPlayerCardsInHandDeck,
     currentPlayerEventsInPrepDeck,
-    currentPlayerEventsInPrepGrid
+    currentPlayerMinionsInPlayDeck,
+    currentPlayerEventsInPrepGrid,
+    currentPlayerBattlefieldGrid,
+    enemyMinionsInPlayDeck
   ) {
     super(state, mouseInput, phaseMessage);
 
     this.#events = events;
     this.#eventsDeck = eventsDeck;
     this.#activeEventsDeck = activeEventsDeck;
+    this.#currentPlayerMainCharacterDeck = currentPlayerMainCharacterDeck;
+    this.#currentPlayerCardsInHandDeck = currentPlayerCardsInHandDeck;
     this.#currentPlayerEventsInPrepDeck = currentPlayerEventsInPrepDeck;
+    this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
     this.#currentPlayerEventsInPrepGrid = currentPlayerEventsInPrepGrid;
+    this.#currentPlayerBattlefieldGrid = currentPlayerBattlefieldGrid;
+    this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
   }
 
   static create(
@@ -45,21 +62,59 @@ export default class PerformEventPhase extends Phase {
   ) {
     const eventsDeck = deckContainer.getDecks()[DeckType.EVENTS];
     const activeEventsDeck = deckContainer.getDecks()[DeckType.ACTIVE_EVENTS];
+    let currentPlayerMainCharacterDeck;
+    let currentPlayerCardsInHandDeck;
     let currentPlayerEventsInPrepDeck;
+    let currentPlayerMinionsInPlayDeck;
+    let enemyMinionsInPlayDeck;
 
-    currentPlayerEventsInPrepDeck =
-      player.getID() === PlayerID.PLAYER_1
-        ? deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION]
-        : deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION];
+    if (player.getID() === PlayerID.PLAYER_1) {
+      currentPlayerMainCharacterDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_1_MAIN_CHARACTER];
+
+      currentPlayerCardsInHandDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
+
+      currentPlayerEventsInPrepDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION];
+
+      currentPlayerMinionsInPlayDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
+
+      enemyMinionsInPlayDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
+    } else {
+      currentPlayerMainCharacterDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_2_MAIN_CHARACTER];
+
+      currentPlayerCardsInHandDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND];
+
+      currentPlayerEventsInPrepDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION];
+
+      currentPlayerMinionsInPlayDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
+
+      enemyMinionsInPlayDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
+    }
 
     let currentPlayerEventsInPrepGrid;
+    let currentPlayerBattlefieldGrid;
 
     if (player === currentPlayer) {
       currentPlayerEventsInPrepGrid =
         board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
+
+      currentPlayerBattlefieldGrid =
+        board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
     } else {
       currentPlayerEventsInPrepGrid =
         board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
+
+      currentPlayerBattlefieldGrid =
+        board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
     }
 
     const performEventPhase = new PerformEventPhase(
@@ -69,8 +124,13 @@ export default class PerformEventPhase extends Phase {
       events,
       eventsDeck,
       activeEventsDeck,
+      currentPlayerMainCharacterDeck,
+      currentPlayerCardsInHandDeck,
       currentPlayerEventsInPrepDeck,
-      currentPlayerEventsInPrepGrid
+      currentPlayerMinionsInPlayDeck,
+      currentPlayerEventsInPrepGrid,
+      currentPlayerBattlefieldGrid,
+      enemyMinionsInPlayDeck
     );
 
     return performEventPhase;
@@ -156,7 +216,16 @@ export default class PerformEventPhase extends Phase {
     if (selectedCard.getCategory() === CardCategory.SPECIAL) {
       switch (selectedCard.getID()) {
         case SpecialEventID.SUMMON_CHARACTER:
-          // HERE A "SummonCharacterEvent" INSTANCE IS CREATED
+          selectedEventInstance = new SummonCharacterEvent(
+            this.#currentPlayerMainCharacterDeck,
+            this.#currentPlayerCardsInHandDeck,
+            this.#currentPlayerEventsInPrepDeck,
+            this.#currentPlayerMinionsInPlayDeck,
+            this.#currentPlayerEventsInPrepGrid,
+            this.#currentPlayerBattlefieldGrid,
+            this.#enemyMinionsInPlayDeck
+          );
+          selectedEventInstance.execute();
           break;
       }
     } else {
