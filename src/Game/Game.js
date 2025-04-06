@@ -482,6 +482,8 @@ export default class Game {
     if (globals.isCurrentTurnFinished) {
       globals.isCurrentTurnFinished = false;
 
+      this.#healHarmedMinions();
+
       const newCurrentPlayerID = this.#turns[
         this.#currentPlayer.getID()
       ].changeTurn(this.#currentPlayer);
@@ -514,6 +516,25 @@ export default class Game {
     this.#updatePlayersTotalHP();
 
     this.#checkIfGameOver();
+  }
+
+  #healHarmedMinions() {
+    const minionsInPlayDecks = [
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY],
+    ];
+
+    for (let i = 0; i < minionsInPlayDecks.length; i++) {
+      const currentDeck = minionsInPlayDecks[i];
+
+      for (let j = 0; j < currentDeck.getCards().length; j++) {
+        const currentCard = currentDeck.getCards()[j];
+
+        if (currentCard.getCurrentHP() < currentCard.getInitialHP()) {
+          currentCard.setCurrentHP(currentCard.getInitialHP());
+        }
+      }
+    }
   }
 
   #updatePlayersTotalHP() {
