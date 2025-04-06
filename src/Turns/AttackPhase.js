@@ -288,7 +288,20 @@ export default class AttackPhase extends Phase {
       ) {
         isTargetWithinReach = true;
       }
+    } else if (
+        !attacker.getWeapon() ||
+        attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE
+      ) {
+        if (this.#currentPlayerMovementGrid.getGridType() === GridType.PLAYER_1_BATTLEFIELD) {
+        isTargetWithinReach = true;
+        }
+      } else if (
+      !attacker.getWeapon() ||
+      attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID
+    ) {
+        isTargetWithinReach = true;
     }
+
 
     return isTargetWithinReach;
   }

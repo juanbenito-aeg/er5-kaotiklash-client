@@ -52,6 +52,28 @@ export default class AttackEvent extends Event {
       damageToInflict =
         this.#attacker.getCurrentAttack() +
         this.#attacker.getWeaponCurrentDamage()
+    } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE && this.#parry === false) {
+    // ATTACK USING A MELEE WEAPON && ENEMY IS NOT PARRYING
+    damageToInflict =
+      this.#attacker.getCurrentAttack() +
+      this.#attacker.getWeaponCurrentDamage() -
+      this.#target.getCurrentDefense();
+    } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE && this.#parry === true) {
+    // ATTACK USING A MELEE WEAPON && ENEMY IS PARRYING
+    damageToInflict =
+      this.#attacker.getCurrentAttack() +
+      this.#attacker.getWeaponCurrentDamage()
+    } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID && this.#parry === false) {
+    // ATTACK USING A MELEE WEAPON && ENEMY IS NOT PARRYING
+    damageToInflict =
+      this.#attacker.getCurrentAttack() +
+      this.#attacker.getWeaponCurrentDamage() -
+      this.#target.getCurrentDefense();
+    } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID && this.#parry === true) {
+    // ATTACK USING A MELEE WEAPON && ENEMY IS PARRYING
+    damageToInflict =
+      this.#attacker.getCurrentAttack() +
+      this.#attacker.getWeaponCurrentDamage()
     }
 
     if (damageToInflict < 0) {
