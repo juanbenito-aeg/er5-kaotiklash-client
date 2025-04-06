@@ -45,6 +45,18 @@ export default class CardMovement {
     return this.#card.getCurrentMadness();
   }
 
+  getCurrentStrength() {
+    return this.#card.getCurrentStrength();
+  }
+
+  setCurrentMadness(newMadness) {
+    this.#card.setCurrentMadness(newMadness);
+  }
+
+  setCurrentStrength(newStrength) {
+    this.#card.setCurrentStrength(newStrength);
+  }
+
   getInitialAttack() {
     return this.#card.getInitialAttack();
   }
@@ -53,6 +65,17 @@ export default class CardMovement {
     return this.#card.getCurrentAttack();
   }
 
+  getInitialConstitution() {
+    return this.#card.getInitialConstitution();
+  }
+
+  setCurrentAttack(newAttack) {
+    this.#card.setCurrentAttack(newAttack);
+  }
+
+  setCurrentDefense(newDefense) {
+    this.#card.setCurrentDefense(newDefense);
+  }
   getInitialDefense() {
     return this.#card.getInitialDefense();
   }

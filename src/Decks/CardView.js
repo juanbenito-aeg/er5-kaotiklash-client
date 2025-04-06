@@ -55,6 +55,18 @@ export default class CardView {
     return this.#card.getCurrentAttack();
   }
 
+  getInitialConstitution() {
+    return this.#card.getInitialConstitution();
+  }
+
+  setCurrentAttack(newAttack) {
+    this.#card.setCurrentAttack(newAttack);
+  }
+
+  setCurrentDefense(newDefense) {
+    this.#card.setCurrentDefense(newDefense);
+  }
+
   getInitialDefense() {
     return this.#card.getInitialDefense();
   }
