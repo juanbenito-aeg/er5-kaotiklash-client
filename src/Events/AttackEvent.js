@@ -150,7 +150,6 @@ export default class AttackEvent extends Event {
       // CRITICAL HIT
       console.log("Critical Hit");
       damageToInflict = damageToInflict * 1.75;
-      crit = true;
     } 
 
     if (damageToInflict < 0) {

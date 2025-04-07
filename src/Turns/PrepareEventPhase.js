@@ -90,11 +90,6 @@ export default class PrepareEventPhase extends Phase {
       case PrepareEventState.INIT:
         console.log("init");
         this.#initializePhase();
-
-        this.#resetRelevantCardsStates([
-          this.#decksRelevants[0],
-          this.#decksRelevants[1],
-        ]);
         break;
 
       case PrepareEventState.SELECT_HAND_CARD:
@@ -118,6 +113,11 @@ export default class PrepareEventPhase extends Phase {
   }
 
   #initializePhase() {
+    this.resetXDeckCardsToYState(this.#decksRelevants[0], CardState.PLACED);
+    this.resetXDeckCardsToYState(this.#decksRelevants[1], CardState.INACTIVE);
+
+    this.resetXGridBoxesToYState(this.#gridsRelevants[0], BoxState.INACTIVE);
+
     this._state = PrepareEventState.SELECT_HAND_CARD;
   }
 
@@ -175,14 +175,11 @@ export default class PrepareEventPhase extends Phase {
     this.#decksRelevants[1].insertCard(selectedCard);
     this.#decksRelevants[0].removeCard(selectedCard);
 
-    const handGrid = this.#gridsRelevants[1];
-    const boxes = handGrid.getBoxes();
-    for (let i = 0; i < boxes.length; i++) {
-      if (boxes[i].getCard() === selectedCard) {
-        boxes[i].resetCard();
-        break;
-      }
-    }
+    const boxEventCardWasPositionedIn = selectedCard.getBoxIsPositionedIn(
+      this.#gridsRelevants[1],
+      selectedCard
+    );
+    boxEventCardWasPositionedIn.resetCard();
 
     const selectedBox = this.#gridsRelevants[0].lookForSelectedBox();
     selectedBox.setCard(selectedCard);
@@ -191,7 +188,6 @@ export default class PrepareEventPhase extends Phase {
     selectedCard.setYCoordinate(selectedBox.getYCoordinate());
 
     selectedCard.setState(CardState.PLACED);
-    selectedBox.setState(BoxState.OCCUPIED);
 
     const prepareEvent = PrepareEvent.create(
       this.#decksRelevants[1],
@@ -205,16 +201,5 @@ export default class PrepareEventPhase extends Phase {
 
   reset() {
     this._state = PrepareEventState.INIT;
-  }
-
-  #resetRelevantCardsStates(decks) {
-    for (let i = 0; i < decks.length; i++) {
-      const currentDeck = decks[i];
-
-      for (let j = 0; j < currentDeck.getCards().length; j++) {
-        const currentCard = currentDeck.getCards()[j];
-        currentCard.setState(CardState.PLACED);
-      }
-    }
   }
 }

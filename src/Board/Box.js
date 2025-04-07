@@ -97,6 +97,7 @@ export default class Box {
 
   resetCard() {
     this.#card = null;
+
     this.setState(BoxState.AVAILABLE);
   }
 

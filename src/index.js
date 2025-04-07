@@ -366,6 +366,7 @@ async function loadDBCardsDataAndAssets() {
   } else {
     alert(`Communication error: ${response.statusText}`);
   }
+
   loadAssets();
 }
 

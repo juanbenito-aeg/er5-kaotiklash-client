@@ -21,7 +21,6 @@ import {
   MainCharacterID,
   GridType,
   PhaseButtonData,
-  BoxState,
 } from "./constants.js";
 import { globals } from "../index.js";
 
@@ -439,17 +438,9 @@ export default class Game {
       for (let j = 0; j < 5; j++) {
         const currentEventCard = currentPlayer.cardsInHandDeck.getCards()[j];
 
-        let currentCardsInHandBoxIndex = j;
-        if (
-          currentPlayer.cardsInHandGrid ===
-          this.#board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND]
-        ) {
-          currentCardsInHandBoxIndex = j;
-        }
         const currentCardsInHandBox =
-          currentPlayer.cardsInHandGrid.getBoxes()[currentCardsInHandBoxIndex];
+          currentPlayer.cardsInHandGrid.getBoxes()[j];
         currentCardsInHandBox.setCard(currentEventCard);
-        currentCardsInHandBox.setState(BoxState.OCCUPIED);
 
         currentEventCard.setXCoordinate(currentCardsInHandBox.getXCoordinate());
         currentEventCard.setYCoordinate(currentCardsInHandBox.getYCoordinate());
@@ -478,15 +469,6 @@ export default class Game {
         currentMinionCard.setYCoordinate(
           currentBattlefieldBox.getYCoordinate()
         );
-
-        if (
-          currentMinionCard.getXCoordinate() ===
-            currentBattlefieldBox.getXCoordinate() &&
-          currentMinionCard.getYCoordinate() ===
-            currentBattlefieldBox.getYCoordinate()
-        ) {
-          currentBattlefieldBox.setCard(currentMinionCard);
-        }
       }
     }
   }
@@ -499,6 +481,8 @@ export default class Game {
   #update() {
     if (globals.isCurrentTurnFinished) {
       globals.isCurrentTurnFinished = false;
+
+      this.#healHarmedMinions();
 
       const newCurrentPlayerID = this.#turns[
         this.#currentPlayer.getID()
@@ -513,9 +497,11 @@ export default class Game {
     this.#mouseInput.detectLeftClickOnBox(this.#board);
 
     this.#mouseInput.resetIsLeftClickedOnCards(this.#deckContainer);
+    this.#mouseInput.resetIsRightClickedOnCards(this.#deckContainer);
     this.#mouseInput.detectMouseOverCard(this.#deckContainer);
     this.#mouseInput.detectCardThatIsntHoveredAnymore(this.#deckContainer);
     this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
+    this.#mouseInput.detectRightClickOnCard(this.#deckContainer);
 
     if (!globals.gameWinner) {
       this.#turns[this.#currentPlayer.getID()].execute();
@@ -530,6 +516,25 @@ export default class Game {
     this.#updatePlayersTotalHP();
 
     this.#checkIfGameOver();
+  }
+
+  #healHarmedMinions() {
+    const minionsInPlayDecks = [
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY],
+    ];
+
+    for (let i = 0; i < minionsInPlayDecks.length; i++) {
+      const currentDeck = minionsInPlayDecks[i];
+
+      for (let j = 0; j < currentDeck.getCards().length; j++) {
+        const currentCard = currentDeck.getCards()[j];
+
+        if (currentCard.getCurrentHP() < currentCard.getInitialHP()) {
+          currentCard.setCurrentHP(currentCard.getInitialHP());
+        }
+      }
+    }
   }
 
   #updatePlayersTotalHP() {
@@ -617,7 +622,7 @@ export default class Game {
           this.#renderGameWinner();
         }
 
-        if(globals.isParryMenuOpen) {
+        if (globals.isParryMenuOpen) {
           this.#renderParryMenu();
         }
 
@@ -1030,14 +1035,6 @@ export default class Game {
 
   #renderCards() {
     let expandedCard;
-    const player1Deck =
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
-    for (let i = 0; i < player1Deck.getCards().length; i++) {
-      const currentCard = player1Deck.getCards()[i];
-      if (currentCard.getState() === CardState.EXPANDED) {
-        expandedCard = currentCard;
-      }
-    }
 
     for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
       const currentDeck = this.#deckContainer.getDecks()[i];
@@ -1052,12 +1049,13 @@ export default class Game {
 
       if (
         currentDeck.getDeckType() !== DeckType.EVENTS &&
-        currentDeck.getDeckType() !== DeckType.PLAYER_1_ACTIVE_EVENTS &&
+        currentDeck.getDeckType() !== DeckType.ACTIVE_EVENTS &&
         currentDeck.getDeckType() !== DeckType.PLAYER_1_MINIONS &&
         currentDeck.getDeckType() !== DeckType.PLAYER_2_MINIONS
       ) {
         for (let j = 0; j < currentDeck.getCards().length; j++) {
           const currentCard = currentDeck.getCards()[j];
+
           if (isDeckCardsInHandOfInactivePlayer) {
             this.#renderCardReverse(
               currentCard.getXCoordinate(),
@@ -2048,7 +2046,11 @@ export default class Game {
     globals.ctx.fillStyle = "white";
 
     globals.ctx.font = "100px MedievalSharp";
-    globals.ctx.fillText("Do you want to parry?", canvasWidthDividedBy2, canvasHeightDividedBy2);
+    globals.ctx.fillText(
+      "Do you want to parry?",
+      canvasWidthDividedBy2,
+      canvasHeightDividedBy2
+    );
 
     const buttonWidth = 150;
     const buttonHeight = 50;
@@ -2056,8 +2058,12 @@ export default class Game {
     const buttonY = canvasHeightDividedBy2 + 100;
 
     const buttons = [
-      { text: "YES", x: canvasWidthDividedBy2 - buttonWidth - buttonSpacing / 2, y: buttonY },
-      { text: "NO", x: canvasWidthDividedBy2 + buttonSpacing / 2, y: buttonY }
+      {
+        text: "YES",
+        x: canvasWidthDividedBy2 - buttonWidth - buttonSpacing / 2,
+        y: buttonY,
+      },
+      { text: "NO", x: canvasWidthDividedBy2 + buttonSpacing / 2, y: buttonY },
     ];
 
     for (let i = 0; i < buttons.length; i++) {
@@ -2071,11 +2077,26 @@ export default class Game {
       globals.ctx.beginPath();
       globals.ctx.moveTo(button.x + 10, button.y);
       globals.ctx.lineTo(button.x + buttonWidth - 10, button.y);
-      globals.ctx.quadraticCurveTo(button.x + buttonWidth, button.y, button.x + buttonWidth, button.y + 10);
+      globals.ctx.quadraticCurveTo(
+        button.x + buttonWidth,
+        button.y,
+        button.x + buttonWidth,
+        button.y + 10
+      );
       globals.ctx.lineTo(button.x + buttonWidth, button.y + buttonHeight - 10);
-      globals.ctx.quadraticCurveTo(button.x + buttonWidth, button.y + buttonHeight, button.x + buttonWidth - 10, button.y + buttonHeight);
+      globals.ctx.quadraticCurveTo(
+        button.x + buttonWidth,
+        button.y + buttonHeight,
+        button.x + buttonWidth - 10,
+        button.y + buttonHeight
+      );
       globals.ctx.lineTo(button.x + 10, button.y + buttonHeight);
-      globals.ctx.quadraticCurveTo(button.x, button.y + buttonHeight, button.x, button.y + buttonHeight - 10);
+      globals.ctx.quadraticCurveTo(
+        button.x,
+        button.y + buttonHeight,
+        button.x,
+        button.y + buttonHeight - 10
+      );
       globals.ctx.lineTo(button.x, button.y + 10);
       globals.ctx.quadraticCurveTo(button.x, button.y, button.x + 10, button.y);
       globals.ctx.closePath();
@@ -2085,10 +2106,13 @@ export default class Game {
       globals.ctx.font = "24px MedievalSharp";
       globals.ctx.textAlign = "center";
       globals.ctx.textBaseline = "middle";
-      globals.ctx.fillText(button.text, button.x + buttonWidth / 2, button.y + buttonHeight / 2);
+      globals.ctx.fillText(
+        button.text,
+        button.x + buttonWidth / 2,
+        button.y + buttonHeight / 2
+      );
     }
   }
-
 
   #renderDamageMessages() {
     for (let i = 0; i < globals.damageMessages.length; i++) {
