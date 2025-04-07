@@ -127,8 +127,8 @@ async function logInPlayer(email, password) {
   const url = "https://er5-kaotiklash-server.onrender.com/api/login";
   const messageElement = document.getElementById("login-message");
 
-  messageElement.textContent = ""; // Limpiar mensaje previo
-  messageElement.style.color = "black"; // Resetear color
+  messageElement.textContent = "";
+  messageElement.style.color = "black";
 
   const playerData = {
     email_address: email,

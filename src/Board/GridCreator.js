@@ -272,7 +272,7 @@ export default class GridCreator {
     // PLAYER 2 BATTLEFIELD BOXES
     const player2BattlefieldBoxes = [];
     let player2BattlefieldBoxXCoordinate = 700;
-    let player2BattlefieldBoxYCoordinate = 170;
+    let player2BattlefieldBoxYCoordinate = 175;
     for (let i = 0; i < 18; i++) {
       player2BattlefieldBoxXCoordinate += 135;
 
@@ -283,14 +283,14 @@ export default class GridCreator {
       } else if (i < 12) {
         if (i === 6) {
           player2BattlefieldBoxXCoordinate = 835;
-          player2BattlefieldBoxYCoordinate = 305;
+          player2BattlefieldBoxYCoordinate = 310;
         }
 
         battlefieldArea = BattlefieldArea.MIDDLE;
       } else {
         if (i === 12) {
           player2BattlefieldBoxXCoordinate = 835;
-          player2BattlefieldBoxYCoordinate = 440;
+          player2BattlefieldBoxYCoordinate = 445;
         }
 
         battlefieldArea = BattlefieldArea.FRONT;
