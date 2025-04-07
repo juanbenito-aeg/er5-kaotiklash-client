@@ -918,22 +918,37 @@ export default class Game {
       tableY + tableHeight / 8
     );
 
-    globals.ctx.fillStyle = "black";
-    globals.ctx.fillText(
-      "Player 2",
-      tableX + columnWidth / 2,
-      tableY + tableHeight - 185
-    );
-    globals.ctx.fillText(
-      "Hand of God",
-      tableX + columnWidth * 1.5,
-      tableY + tableHeight - 185
-    );
-    globals.ctx.fillText(
-      "2 rounds",
-      tableX + columnWidth * 2.5,
-      tableY + tableHeight - 185
-    );
+    let rowIndex = 1;
+
+    const events = this.#deckContainer.getDecks()[DeckType.ACTIVE_EVENTS];
+    const eventCards = events.getCards();
+    for (let i = 0; i < eventCards.length; i++) {
+      const event = eventCards[i];
+
+      const duration = event.getCurrentDurationInRounds();
+
+      if (duration <= 0) {
+        events.removeCard(event);
+        i--;
+        continue;
+      }
+
+      const eventName = event.getName();
+      const playerName = this.#currentPlayer.getName();
+
+      const rowY = tableY + tableHeight / 4 + 30 * rowIndex;
+      globals.ctx.fillStyle = "black";
+      globals.ctx.font = "14px MedievalSharp";
+      globals.ctx.fillText(playerName, tableX + columnWidth / 2, rowY);
+      globals.ctx.fillText(eventName, tableX + columnWidth * 1.5, rowY);
+      globals.ctx.fillText(
+        duration.toString(),
+        tableX + columnWidth * 2.5,
+        rowY
+      );
+
+      rowIndex++;
+    }
   }
 
   #renderPhaseMessage() {
