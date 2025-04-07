@@ -45,6 +45,10 @@ export default class CardMovement {
     return this.#card.getCurrentMadness();
   }
 
+  getInitialStrength() {
+    return this.#card.getInitialStrength();
+  }
+
   getCurrentStrength() {
     return this.#card.getCurrentStrength();
   }
@@ -238,6 +242,10 @@ export default class CardMovement {
 
   setCurrenPrepTimeInRounds(newPrepTimeInRounds) {
     this.#card.setCurrenPrepTimeInRounds(newPrepTimeInRounds);
+  }
+
+  setCurrentDurationInRounds(newDuration) {
+    this.#card.setCurrentDurationInRounds(newDuration);
   }
 
   isMouseOver() {

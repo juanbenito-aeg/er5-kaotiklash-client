@@ -84,6 +84,10 @@ export default class Minion extends Card {
     return this.#currentDefense;
   }
 
+  getInitialStrength() {
+    return this.#initialStrength;
+  }
+
   getCurrentStrength() {
     return this.#currentStrength;
   }
