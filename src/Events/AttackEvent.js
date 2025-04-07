@@ -32,9 +32,6 @@ export default class AttackEvent extends Event {
     let critProb = this.#attacker.getCritChance();
     let fumbreProb = this.#attacker.getFumbleChance();
     let roll = Math.floor(Math.random() * 100 + 1);
-    console.log("roll", roll);
-    console.log("critProb", critProb);
-    console.log("fumbreProb", fumbreProb);
     let chances = critProb + fumbreProb;
     let fumble = false;
     if (roll > critProb && roll <= chances) {
@@ -97,9 +94,7 @@ export default class AttackEvent extends Event {
         this.#attacker.getCurrentAttack() +
         this.#attacker.getWeaponCurrentDamage() -
         this.#target.getCurrentDefense();
-      console.log("damageToInflict", damageToInflict);
       damageToInflict = Math.floor(this.caltulateDistance(damageToInflict))
-      console.log("damageToInflict", damageToInflict);
       }
     } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE && this.#parry === true) {
     // ATTACK USING A MISSILE WEAPON && ENEMY IS PARRYING
@@ -113,9 +108,7 @@ export default class AttackEvent extends Event {
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage();
           
-          console.log("damageToInflict", damageToInflict);
           damageToInflict = Math.floor(this.caltulateDistance(damageToInflict))
-          console.log("damageToInflict", damageToInflict);      
         }
     } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID && this.#parry === false) {
     // ATTACK USING A HYBRID WEAPON && ENEMY IS NOT PARRYING
@@ -133,9 +126,7 @@ export default class AttackEvent extends Event {
           this.#attacker.getWeaponCurrentDamage() -
           this.#target.getCurrentDefense();
         
-          console.log("damageToInflict", damageToInflict);
           damageToInflict = Math.floor(this.caltulateDistance(damageToInflict))
-          console.log("damageToInflict", damageToInflict);      
         }
     } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID && this.#parry === true) {
     // ATTACK USING A HYBRID WEAPON && ENEMY IS PARRYING
@@ -151,23 +142,16 @@ export default class AttackEvent extends Event {
         this.#attacker.getCurrentAttack() +
         this.#attacker.getWeaponCurrentDamage()
 
-        console.log("damageToInflict", damageToInflict);
         damageToInflict = Math.floor(this.caltulateDistance(damageToInflict))
-        console.log("damageToInflict", damageToInflict);      
       }
     }
 
     if (roll <= critProb) {
       // CRITICAL HIT
       console.log("Critical Hit");
-      console.log("normal damageToInflict", damageToInflict);
       damageToInflict = damageToInflict * 1.75;
-      console.log("critical damageToInflict", damageToInflict);
       crit = true;
-    } else {
-      // NORMAL HIT
-      console.log("Normal Hit");
-    }
+    } 
 
     if (damageToInflict < 0) {
       damageToInflict = 0;
@@ -222,7 +206,6 @@ export default class AttackEvent extends Event {
     let xDiff = Math.abs(x2 - x1) / 135;
     let yDiff = Math.abs(y2 - y1) / 135;
     let distance = xDiff + yDiff;
-    console.log("distance", distance);
 
     let newdamageToInflict = damageToInflict / distance;
 
