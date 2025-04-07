@@ -1,5 +1,6 @@
 import Event from "./Event.js";
 import SpecialSkillXG from "./SpecialSkillXG.js";
+import LucretiaSpecialSkill from "./LucretiaSpecialSkill.js";
 import { MainCharacterID } from "../Game/constants.js";
 
 export default class SummonCharacterEvent extends Event {
@@ -10,7 +11,10 @@ export default class SummonCharacterEvent extends Event {
   #currentPlayerEventsInPrepGrid;
   #currentPlayerBattlefieldGrid;
   #enemyMinionsInPlayDeck;
+  #enemyBattlefieldGrid;
+  #lucretiaDeers;
   #isFinished;
+
   constructor(
     executedBy,
     eventCard,
@@ -20,7 +24,9 @@ export default class SummonCharacterEvent extends Event {
     currentPlayerMinionsInPlayDeck,
     currentPlayerEventsInPrepGrid,
     currentPlayerBattlefieldGrid,
-    enemyMinionsInPlayDeck
+    enemyMinionsInPlayDeck,
+    enemyBattlefieldGrid,
+    lucretiaDeers
   ) {
     super(executedBy, eventCard);
 
@@ -31,6 +37,8 @@ export default class SummonCharacterEvent extends Event {
     this.#currentPlayerEventsInPrepGrid = currentPlayerEventsInPrepGrid;
     this.#currentPlayerBattlefieldGrid = currentPlayerBattlefieldGrid;
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
+    this.#enemyBattlefieldGrid = enemyBattlefieldGrid;
+    this.#lucretiaDeers = lucretiaDeers;
     this.#isFinished = false;
   }
 
@@ -51,17 +59,29 @@ export default class SummonCharacterEvent extends Event {
           xgSkill.execute();
           this.#isFinished = true;
         }
+
         if (!this.isActive()) {
           xgSkill.restoreMinionStats();
         }
+
         break;
 
       case MainCharacterID.LUCRETIA:
-        //HERE A SPECIAL SKILL INSTANCE IS CREATED
+        const lucretiaSpecialSkill = new LucretiaSpecialSkill(
+          this.#lucretiaDeers,
+          this.#enemyMinionsInPlayDeck,
+          this.#enemyBattlefieldGrid
+        );
+
+        if (!this.#isFinished) {
+          lucretiaSpecialSkill.execute();
+          this.#isFinished = true;
+        }
+
         break;
 
       case MainCharacterID.ANGELO_DI_MORTIS:
-        //HERE A SPECIAL SKILL INSTANCE IS CREATED
+        // HERE A SPECIAL SKILL INSTANCE IS CREATED
         break;
     }
   }

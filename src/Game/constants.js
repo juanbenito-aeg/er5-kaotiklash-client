@@ -102,7 +102,8 @@ const DeckType = {
   PLAYER_2_MINIONS: 10,
   PLAYER_2_MINIONS_IN_PLAY: 11,
   PLAYER_2_EVENTS_IN_PREPARATION: 12,
-  MAIN: 13,
+  LUCRETIA_DEERS: 13,
+  MAIN: 14,
 };
 
 const MainCharacterID = {
@@ -246,6 +247,7 @@ const EventCooldownState = {
 
 const SpecialEventID = {
   SUMMON_CHARACTER: 0,
+  POTION_ETERNAL_NIGHT: 8,
 };
 
 export {

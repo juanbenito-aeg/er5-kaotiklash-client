@@ -1066,7 +1066,8 @@ export default class Game {
         currentDeck.getDeckType() !== DeckType.EVENTS &&
         currentDeck.getDeckType() !== DeckType.ACTIVE_EVENTS &&
         currentDeck.getDeckType() !== DeckType.PLAYER_1_MINIONS &&
-        currentDeck.getDeckType() !== DeckType.PLAYER_2_MINIONS
+        currentDeck.getDeckType() !== DeckType.PLAYER_2_MINIONS &&
+        currentDeck.getDeckType() !== DeckType.LUCRETIA_DEERS
       ) {
         for (let j = 0; j < currentDeck.getCards().length; j++) {
           const currentCard = currentDeck.getCards()[j];

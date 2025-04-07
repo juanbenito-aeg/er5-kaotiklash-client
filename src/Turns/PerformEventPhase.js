@@ -21,6 +21,8 @@ export default class PerformEventPhase extends Phase {
   #currentPlayerEventsInPrepGrid;
   #currentPlayerBattlefieldGrid;
   #enemyMinionsInPlayDeck;
+  #enemyBattlefieldGrid;
+  #lucretiaDeers;
   #currentPlayer;
 
   constructor(
@@ -37,6 +39,8 @@ export default class PerformEventPhase extends Phase {
     currentPlayerEventsInPrepGrid,
     currentPlayerBattlefieldGrid,
     enemyMinionsInPlayDeck,
+    enemyBattlefieldGrid,
+    lucretiaDeers,
     currentPlayer
   ) {
     super(state, mouseInput, phaseMessage);
@@ -51,6 +55,8 @@ export default class PerformEventPhase extends Phase {
     this.#currentPlayerEventsInPrepGrid = currentPlayerEventsInPrepGrid;
     this.#currentPlayerBattlefieldGrid = currentPlayerBattlefieldGrid;
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
+    this.#enemyBattlefieldGrid = enemyBattlefieldGrid;
+    this.#lucretiaDeers = lucretiaDeers;
     this.#currentPlayer = currentPlayer;
   }
 
@@ -65,6 +71,7 @@ export default class PerformEventPhase extends Phase {
   ) {
     const eventsDeck = deckContainer.getDecks()[DeckType.EVENTS];
     const activeEventsDeck = deckContainer.getDecks()[DeckType.ACTIVE_EVENTS];
+    const lucretiaDeers = deckContainer.getDecks()[DeckType.LUCRETIA_DEERS];
     let currentPlayerMainCharacterDeck;
     let currentPlayerCardsInHandDeck;
     let currentPlayerEventsInPrepDeck;
@@ -105,6 +112,7 @@ export default class PerformEventPhase extends Phase {
 
     let currentPlayerEventsInPrepGrid;
     let currentPlayerBattlefieldGrid;
+    let enemyBattlefieldGrid;
 
     if (player === currentPlayer) {
       currentPlayerEventsInPrepGrid =
@@ -112,12 +120,16 @@ export default class PerformEventPhase extends Phase {
 
       currentPlayerBattlefieldGrid =
         board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
+
+      enemyBattlefieldGrid = board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
     } else {
       currentPlayerEventsInPrepGrid =
         board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
 
       currentPlayerBattlefieldGrid =
         board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
+
+      enemyBattlefieldGrid = board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
     }
 
     const performEventPhase = new PerformEventPhase(
@@ -134,6 +146,8 @@ export default class PerformEventPhase extends Phase {
       currentPlayerEventsInPrepGrid,
       currentPlayerBattlefieldGrid,
       enemyMinionsInPlayDeck,
+      enemyBattlefieldGrid,
+      lucretiaDeers,
       currentPlayer
     );
 
@@ -229,9 +243,13 @@ export default class PerformEventPhase extends Phase {
             this.#currentPlayerMinionsInPlayDeck,
             this.#currentPlayerEventsInPrepGrid,
             this.#currentPlayerBattlefieldGrid,
-            this.#enemyMinionsInPlayDeck
+            this.#enemyMinionsInPlayDeck,
+            this.#enemyBattlefieldGrid,
+            this.#lucretiaDeers
           );
-          selectedEventInstance.execute(this.#currentPlayer);
+
+          // selectedEventInstance.execute(this.#currentPlayer);
+
           break;
       }
     } else {
