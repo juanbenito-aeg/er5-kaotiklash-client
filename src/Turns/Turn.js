@@ -18,6 +18,7 @@ import {
   PhaseButtonData,
   GridType,
   BoxState,
+  MinionTypeID,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 
@@ -404,7 +405,10 @@ export default class Turn {
           if (minion) {
             if (!minion.isLeftClicked()) {
               minion.setState(CardState.HOVERED);
-            } else if (!minion.getWeapon()) {
+            } else if (
+              minion.getMinionTypeID() !== MinionTypeID.SPECIAL &&
+              !minion.getWeapon()
+            ) {
               minion.setState(CardState.SELECTED);
 
               this.#equipWeaponState = EquipWeaponState.EQUIP_WEAPON;

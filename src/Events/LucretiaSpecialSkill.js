@@ -41,4 +41,46 @@ export default class LucretiaSpecialSkill {
       );
     }
   }
+
+  undoTransformation() {
+    for (let i = 0; i < this.#enemyMinionsInPlayDeck.getCards().length; i++) {
+      const currentDeer = this.#enemyMinionsInPlayDeck.getCards()[i];
+      const currentNormalMinion = this.#minionsBeforeTransformation[i];
+
+      const boxDeerIsPositionedIn = currentDeer.getBoxIsPositionedIn(
+        this.#enemyMinionsInPlayGrid,
+        currentDeer
+      );
+
+      // POSITION THE NORMAL MINION IN THE SAME BOX AS THE DEER
+      boxDeerIsPositionedIn.resetCard();
+      boxDeerIsPositionedIn.setCard(currentNormalMinion);
+      currentNormalMinion.setXCoordinate(
+        boxDeerIsPositionedIn.getXCoordinate()
+      );
+      currentNormalMinion.setYCoordinate(
+        boxDeerIsPositionedIn.getYCoordinate()
+      );
+
+      this.#enemyMinionsInPlayDeck.replaceCard(
+        currentDeer,
+        currentNormalMinion
+      );
+    }
+
+    this.#resetDeerAttributes();
+  }
+
+  #resetDeerAttributes() {
+    for (let i = 0; i < this.#lucretiaDeers.getCards().length; i++) {
+      const currentDeer = this.#lucretiaDeers.getCards()[i];
+
+      currentDeer.setCurrentHP(currentDeer.getInitialHP());
+      currentDeer.setCurrentMadness(currentDeer.getInitialMadness());
+      currentDeer.setCurrentStrength(currentDeer.getInitialStrength());
+      currentDeer.setCurrentAttack(currentDeer.getInitialAttack());
+      currentDeer.setCurrentConstitution(currentDeer.getInitialConstitution());
+      currentDeer.setCurrentDefense(currentDeer.getInitialDefense());
+    }
+  }
 }

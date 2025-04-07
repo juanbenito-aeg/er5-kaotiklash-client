@@ -76,6 +76,10 @@ export default class Minion extends Card {
     return this.#currentConstitution;
   }
 
+  setCurrentConstitution(newConstitution) {
+    this.#currentConstitution = newConstitution;
+  }
+
   getInitialDefense() {
     return this.#initialDefense;
   }
@@ -153,5 +157,4 @@ export default class Minion extends Card {
       ((this.#currentMadness + this.#currentAttack) / 2) * 0.2;
     return fumbleChance;
   }
-
 }

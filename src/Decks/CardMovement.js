@@ -29,6 +29,10 @@ export default class CardMovement {
     return this.#card.getSpecialSkill();
   }
 
+  getMinionTypeID() {
+    return this.#card.getMinionTypeID();
+  }
+
   getInitialHP() {
     return this.#card.getInitialHP();
   }
@@ -73,6 +77,10 @@ export default class CardMovement {
     return this.#card.getInitialConstitution();
   }
 
+  setCurrentConstitution(newConstitution) {
+    this.#card.setCurrentConstitution(newConstitution);
+  }
+
   setCurrentAttack(newAttack) {
     this.#card.setCurrentAttack(newAttack);
   }
@@ -80,6 +88,7 @@ export default class CardMovement {
   setCurrentDefense(newDefense) {
     this.#card.setCurrentDefense(newDefense);
   }
+
   getInitialDefense() {
     return this.#card.getInitialDefense();
   }

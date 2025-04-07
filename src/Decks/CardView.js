@@ -31,6 +31,10 @@ export default class CardView {
     return this.#card.getSpecialSkill();
   }
 
+  getMinionTypeID() {
+    return this.#card.getMinionTypeID();
+  }
+
   getInitialHP() {
     return this.#card.getInitialHP();
   }
@@ -73,6 +77,10 @@ export default class CardView {
 
   getInitialConstitution() {
     return this.#card.getInitialConstitution();
+  }
+
+  setCurrentConstitution(newConstitution) {
+    this.#card.setCurrentConstitution(newConstitution);
   }
 
   setCurrentAttack(newAttack) {
