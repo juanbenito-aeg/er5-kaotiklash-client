@@ -72,12 +72,32 @@ export default class Minion extends Card {
     return this.#currentAttack;
   }
 
+  getInitialConstitution() {
+    return this.#currentConstitution;
+  }
+
   getInitialDefense() {
     return this.#initialDefense;
   }
 
   getCurrentDefense() {
     return this.#currentDefense;
+  }
+
+  getInitialStrength() {
+    return this.#initialStrength;
+  }
+
+  getCurrentStrength() {
+    return this.#currentStrength;
+  }
+
+  setCurrentMadness(newMadness) {
+    this.#currentMadness = newMadness;
+  }
+
+  setCurrentStrength(newStrength) {
+    this.#currentStrength = newStrength;
   }
 
   getWeapon() {
@@ -94,6 +114,14 @@ export default class Minion extends Card {
 
   setCurrentHP(newHP) {
     this.#currentHP = newHP;
+  }
+
+  setCurrentAttack(newAttack) {
+    this.#currentAttack = newAttack;
+  }
+
+  setCurrentDefense(newDefense) {
+    this.#currentDefense = newDefense;
   }
 
   setWeapon(weapon) {

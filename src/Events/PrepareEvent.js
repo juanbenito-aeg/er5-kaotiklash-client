@@ -3,44 +3,40 @@ import { EventCooldownState } from "../Game/constants.js";
 
 export default class PrepareEvent extends Event {
   #preparationEventDeck;
-  #executedByPlayer;
   #currentState;
-  #lastPlayer;
 
-  constructor(preparationEventDeck, executedByPlayer) {
-    super();
+  constructor(executedBy, preparationEventDeck) {
+    super(executedBy);
 
     this.#preparationEventDeck = preparationEventDeck;
-    this.#executedByPlayer = executedByPlayer;
     this.#currentState = EventCooldownState.UNINITIALIZED;
-    this.#lastPlayer = null;
   }
 
-  static create(preparationEventDeck, executedByPlayer) {
-    return new PrepareEvent(preparationEventDeck, executedByPlayer);
+  static create(executedBy, preparationEventDeck) {
+    return new PrepareEvent(executedBy, preparationEventDeck);
   }
 
   execute(currentPlayer) {
     // INITIALIZE WHEN IT'S THE EXECUTING PLAYER'S TURN
     switch (this.#currentState) {
       case EventCooldownState.UNINITIALIZED:
-        if (currentPlayer === this.#executedByPlayer) {
+        if (currentPlayer === this._executedBy) {
           this.#currentState = EventCooldownState.INITIALIZED;
-          this.#lastPlayer = currentPlayer;
+          this._lastPlayer = currentPlayer;
         }
         break;
 
       case EventCooldownState.INITIALIZED:
         // ONLY ACT ON PLAYER CHANGE
-        if (currentPlayer !== this.#lastPlayer) {
+        if (currentPlayer !== this._lastPlayer) {
           // REDUCE TIME WHEN RETURNING TO EXECUTING PLAYER FROM OTHER PLAYER
           if (
-            currentPlayer === this.#executedByPlayer &&
-            this.#lastPlayer !== this.#executedByPlayer
+            currentPlayer === this._executedBy &&
+            this._lastPlayer !== this._executedBy
           ) {
             this.#reducePreparationTime();
           }
-          this.#lastPlayer = currentPlayer; // UPDATE LAST PLAYER
+          this._lastPlayer = currentPlayer; // UPDATE LAST PLAYER
         }
         break;
     }

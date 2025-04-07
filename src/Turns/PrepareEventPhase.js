@@ -190,8 +190,8 @@ export default class PrepareEventPhase extends Phase {
     selectedCard.setState(CardState.PLACED);
 
     const prepareEvent = PrepareEvent.create(
-      this.#decksRelevants[1],
-      this.#player
+      this.#player,
+      this.#decksRelevants[1]
     );
 
     this.#events.push(prepareEvent);
