@@ -218,4 +218,12 @@ export default class CardView {
   getBoxIsPositionedIn(gridWhereToLookForBox, minion) {
     return this.#card.getBoxIsPositionedIn(gridWhereToLookForBox, minion);
   }
+
+  getCritChance() {
+    return this.#card.getCritChance();
+  }
+
+  getFumbleChance() {
+    return this.#card.getFumbleChance();
+  }
 }

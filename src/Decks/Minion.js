@@ -109,4 +109,21 @@ export default class Minion extends Card {
       }
     }
   }
+
+  getCritChance() {
+    //Critical Hit Probability (%) = ((Madness + Strength + Attack) / 3) * 0.4
+    const critChance =
+      ((this.#currentMadness + this.#currentStrength + this.#currentAttack) /
+        3) *
+      0.4;
+    return critChance;
+  }
+
+  getFumbleChance() {
+    //Fumble/Self-Damage Probability (%) = ((Madness + Attack) / 2) * 0.2
+    const fumbleChance =
+      ((this.#currentMadness + this.#currentAttack) / 2) * 0.2;
+    return fumbleChance;
+  }
+
 }

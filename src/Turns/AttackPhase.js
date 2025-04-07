@@ -292,8 +292,61 @@ export default class AttackPhase extends Phase {
         !attacker.getWeapon() ||
         attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE
       ) {
-        if (this.#currentPlayerMovementGrid.getGridType() === GridType.PLAYER_1_BATTLEFIELD) {
-        isTargetWithinReach = true;
+        console.log("MISSILE WEAPON");
+        let isYCoordinateLimitExceeded = false;
+        let isXCoordinateLimitExceeded = false;
+        if (
+          this.#currentPlayerMovementGrid.getGridType() ===
+          GridType.PLAYER_1_BATTLEFIELD
+        ) {
+          console.log("PLAYER 1 BATTLEFIELD");
+          const targetMinYCoordinate =
+            attackerBox.getYCoordinate() - 135 - attackerBox.getHeight();
+  
+          if (targetBox.getYCoordinate() >= targetMinYCoordinate) {
+            console.log("Y COORDINATE LIMIT EXCEEDED");
+            isYCoordinateLimitExceeded = true;
+          }
+
+          const targetMinXCoordinate =
+          attackerBox.getXCoordinate() - 135 ;
+          const targetMaxXCoordinate =
+            attackerBox.getXCoordinate() + 135 + attackerBox.getWidth();
+
+          if (targetBox.getXCoordinate() >= targetMinXCoordinate && targetBox.getXCoordinate() <= targetMaxXCoordinate) {
+            isXCoordinateLimitExceeded = true;
+          }
+        } else {
+          const targetMaxYCoordinate =
+            attackerBox.getYCoordinate() + 135 + attackerBox.getHeight();
+  
+          if (targetBox.getYCoordinate() <= targetMaxYCoordinate) {
+            isYCoordinateLimitExceeded = true;
+          }
+
+          const targetMinXCoordinate =
+          attackerBox.getXCoordinate() - 135;
+          const targetMaxXCoordinate =
+            attackerBox.getXCoordinate() + 135 + attackerBox.getWidth();
+
+          if (targetBox.getXCoordinate() >= targetMinXCoordinate && targetBox.getXCoordinate() <= targetMaxXCoordinate) {
+            isXCoordinateLimitExceeded = true;
+          }
+        }
+
+        console.log("isYCoordinateLimitExceeded", isYCoordinateLimitExceeded);
+        console.log("isXCoordinateLimitExceeded", isXCoordinateLimitExceeded);
+        if (
+          isXCoordinateLimitExceeded &&
+          isYCoordinateLimitExceeded
+        ) {
+          console.log("TARGET NOT WITHIN REACH");
+
+          isTargetWithinReach = false;
+        } else {
+          console.log("TARGET WITHIN REACH");
+          isTargetWithinReach = true;
+
         }
       } else if (
       !attacker.getWeapon() ||
