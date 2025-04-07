@@ -21,6 +21,7 @@ export default class PerformEventPhase extends Phase {
   #currentPlayerEventsInPrepGrid;
   #currentPlayerBattlefieldGrid;
   #enemyMinionsInPlayDeck;
+  #currentPlayer;
 
   constructor(
     state,
@@ -35,7 +36,8 @@ export default class PerformEventPhase extends Phase {
     currentPlayerMinionsInPlayDeck,
     currentPlayerEventsInPrepGrid,
     currentPlayerBattlefieldGrid,
-    enemyMinionsInPlayDeck
+    enemyMinionsInPlayDeck,
+    currentPlayer
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -49,6 +51,7 @@ export default class PerformEventPhase extends Phase {
     this.#currentPlayerEventsInPrepGrid = currentPlayerEventsInPrepGrid;
     this.#currentPlayerBattlefieldGrid = currentPlayerBattlefieldGrid;
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
+    this.#currentPlayer = currentPlayer;
   }
 
   static create(
@@ -130,7 +133,8 @@ export default class PerformEventPhase extends Phase {
       currentPlayerMinionsInPlayDeck,
       currentPlayerEventsInPrepGrid,
       currentPlayerBattlefieldGrid,
-      enemyMinionsInPlayDeck
+      enemyMinionsInPlayDeck,
+      currentPlayer
     );
 
     return performEventPhase;
@@ -217,6 +221,8 @@ export default class PerformEventPhase extends Phase {
       switch (selectedCard.getID()) {
         case SpecialEventID.SUMMON_CHARACTER:
           selectedEventInstance = new SummonCharacterEvent(
+            this.#currentPlayer,
+            selectedCard,
             this.#currentPlayerMainCharacterDeck,
             this.#currentPlayerCardsInHandDeck,
             this.#currentPlayerEventsInPrepDeck,
@@ -225,7 +231,7 @@ export default class PerformEventPhase extends Phase {
             this.#currentPlayerBattlefieldGrid,
             this.#enemyMinionsInPlayDeck
           );
-          selectedEventInstance.execute();
+          selectedEventInstance.execute(this.#currentPlayer);
           break;
       }
     } else {
