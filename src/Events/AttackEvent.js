@@ -10,6 +10,22 @@ export default class AttackEvent extends Event {
   #enemyMovementGrid;
   #parry;
 
+  constructor(
+    attacker,
+    target,
+    currentPlayerMovementGrid,
+    enemyMovementGrid,
+    parry
+  ) {
+    super();
+
+    this.#attacker = attacker;
+    this.#target = target;
+    this.#currentPlayerMovementGrid = currentPlayerMovementGrid;
+    this.#enemyMovementGrid = enemyMovementGrid;
+    this.#parry = parry;
+  }
+
   static create(
     attacker,
     target,
@@ -17,18 +33,19 @@ export default class AttackEvent extends Event {
     enemyMovementGrid,
     parry
   ) {
-    const attackEvent = new AttackEvent();
-    attackEvent.#attacker = attacker;
-    attackEvent.#target = target;
-    attackEvent.#currentPlayerMovementGrid = currentPlayerMovementGrid;
-    attackEvent.#enemyMovementGrid = enemyMovementGrid;
-    attackEvent.#parry = parry;
+    const attackEvent = new AttackEvent(
+      attacker,
+      target,
+      currentPlayerMovementGrid,
+      enemyMovementGrid,
+      parry
+    );
 
     return attackEvent;
   }
 
   execute() {
-    let damageToInflict      
+    let damageToInflict;
 
     if (!this.#attacker.getWeapon() && this.#parry === false) {
       // ATTACK USING FISTS && ENEMY IS NOT PARRYING
@@ -37,40 +54,47 @@ export default class AttackEvent extends Event {
         this.#attacker.getCurrentAttack() - this.#target.getCurrentDefense();
     } else if (!this.#attacker.getWeapon() && this.#parry === true) {
       // ATTACK USING FISTS && ENEMY IS PARRYING
-      
-        damageToInflict =
-        this.#attacker.getCurrentAttack()
-        console.log("damageToInflict", damageToInflict);
-    } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MELEE && this.#parry === false) {
+
+      damageToInflict = this.#attacker.getCurrentAttack();
+      console.log("damageToInflict", damageToInflict);
+    } else if (
+      this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MELEE &&
+      this.#parry === false
+    ) {
       // ATTACK USING A MELEE WEAPON && ENEMY IS NOT PARRYING
       damageToInflict =
         this.#attacker.getCurrentAttack() +
         this.#attacker.getWeaponCurrentDamage() -
         this.#target.getCurrentDefense();
-    } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MELEE && this.#parry === true) {
+    } else if (
+      this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MELEE &&
+      this.#parry === true
+    ) {
       // ATTACK USING A MELEE WEAPON && ENEMY IS PARRYING
       damageToInflict =
         this.#attacker.getCurrentAttack() +
-        this.#attacker.getWeaponCurrentDamage()
+        this.#attacker.getWeaponCurrentDamage();
     }
 
     if (damageToInflict < 0) {
       damageToInflict = 0;
     }
 
-    if(this.#parry === true) {
-      let targetNewDurability = damageToInflict - this.#target.getWeapon().getCurrentDurability();
+    if (this.#parry === true) {
+      let targetNewDurability =
+        damageToInflict - this.#target.getWeapon().getCurrentDurability();
 
       // this.#target.getWeapon().setCurrentDurability(targetNewDurability);
-      
     } else {
       let targetNewCurrentHP = this.#target.getCurrentHP() - damageToInflict;
+
       if (targetNewCurrentHP < 0) {
         targetNewCurrentHP = 0;
       }
+
       this.#target.setCurrentHP(targetNewCurrentHP);
     }
-    
+
     if (damageToInflict > 0) {
       damageToInflict = damageToInflict * -1;
     }
