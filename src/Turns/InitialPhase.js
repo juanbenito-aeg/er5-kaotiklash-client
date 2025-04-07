@@ -75,18 +75,14 @@ export default class InitialPhase {
     numOfCardsToSelectAndInsert
   ) {
     for (let i = 0; i < numOfCardsToSelectAndInsert; i++) {
-      const selectedCard = deckToSelectCardsFrom.getCards().splice(i, 1)[0];
+      const selectedCard = deckToSelectCardsFrom.getCards().shift();
       deckToInsertCardsInto.insertCard(selectedCard);
     }
   }
 
   #dealEventCards() {
-    const player1CardsInHand =
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
-    const player2CardsInHand =
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND];
-
     const eventsDeck = this.#deckContainer.getDecks()[DeckType.EVENTS];
+    this.#shuffleDeck(eventsDeck);
 
     const eventCardsToDealToPlayers = new Deck(-1, []);
 
@@ -99,20 +95,28 @@ export default class InitialPhase {
         CardCategory.WEAPON
       ) {
         eventCardsToDealToPlayers.insertCard(currentCard);
+
+        eventsDeck.removeCard(currentCard);
+
+        if (eventCardsToDealToPlayers.getCards().length === 10) {
+          break;
+        }
       }
     }
 
-    this.#shuffleDeck(eventCardsToDealToPlayers);
+    const playersCardsInHand = [
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND],
+    ];
 
-    this.#selectAndInsertCards(
-      eventCardsToDealToPlayers,
-      player1CardsInHand,
-      5
-    );
-    this.#selectAndInsertCards(
-      eventCardsToDealToPlayers,
-      player2CardsInHand,
-      5
-    );
+    for (let i = 0; i < playersCardsInHand.length; i++) {
+      const currentCardsInHand = playersCardsInHand[i];
+
+      this.#selectAndInsertCards(
+        eventCardsToDealToPlayers,
+        currentCardsInHand,
+        5
+      );
+    }
   }
 }
