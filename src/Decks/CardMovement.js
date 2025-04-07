@@ -252,4 +252,8 @@ export default class CardMovement {
   getFumbleChance() {
     return this.#card.getFumbleChance();
   }
+
+  setCurrentDurability(newDurability) {
+    this.#card.setCurrentDurability(newDurability);
+  }
 }

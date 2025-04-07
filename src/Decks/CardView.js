@@ -234,4 +234,8 @@ export default class CardView {
   getFumbleChance() {
     return this.#card.getFumbleChance();
   }
+
+  setCurrentDurability(newDurability) {
+    this.#card.setCurrentDurability(newDurability);
+  }
 }

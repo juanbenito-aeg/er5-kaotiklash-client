@@ -158,9 +158,9 @@ export default class AttackEvent extends Event {
 
     if(this.#parry === true) {
       let targetNewDurability = damageToInflict - this.#target.getWeapon().getCurrentDurability();
-
-      // this.#target.getWeapon().setCurrentDurability(targetNewDurability);
-      
+      console.log(this.#target.getWeapon().getCurrentDurability());
+      this.#target.getWeapon().setCurrentDurability(targetNewDurability);
+      console.log(this.#target.getWeapon().getCurrentDurability());
     } else {
       let targetNewCurrentHP = this.#target.getCurrentHP() - damageToInflict;
       if (targetNewCurrentHP < 0) {

@@ -126,4 +126,8 @@ export default class Minion extends Card {
     return fumbleChance;
   }
 
+  setCurrentDurability(newDurability) {
+    this.#weapon.setCurrentDurability(newDurability);
+  }
+
 }
