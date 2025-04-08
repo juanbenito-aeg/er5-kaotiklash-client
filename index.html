@@ -47,10 +47,10 @@
         <!-- REGISTRATION FORM -->
         <form id="register-form">
           <label for="name">Name</label>
-          <input type="text" id="name" required />
+          <input type="text" id="name" maxlength="50" required />
 
           <label for="register-email">Email</label>
-          <input type="email" id="register-email" required />
+          <input type="email" id="register-email" maxlength="254" required />
 
           <label for="register-password">Password</label>
           <input
@@ -62,6 +62,8 @@
 
           <label for="confirm-password">Confirm Password</label>
           <input type="password" id="confirm-password" minlength="6" required />
+
+          <p id="register-error-message" class="error-message"></p>
 
           <button type="submit" id="register-btn">Register</button>
 
@@ -92,6 +94,7 @@
       </div>
     </div>
 
+    <!-- GAME SCREEN -->
     <canvas id="game-screen" width="2380" height="1120"></canvas>
 
     <script type="module" src="./src/index.js"></script>

@@ -61,8 +61,14 @@ function hideRegisterAndShowLoginScreen() {
 
 // LOGIN SCREEN
 function showLoginScreen() {
-  const logInScreen = document.getElementById("login-screen");
-  logInScreen.style.display = "block";
+  const loginForm = document.getElementById("login-form");
+  loginForm.reset();
+
+  const errorMessage = document.getElementById("login-error-message");
+  errorMessage.textContent = "";
+
+  const loginScreen = document.getElementById("login-screen");
+  loginScreen.style.display = "block";
 }
 function hideLoginScreen() {
   const loginScreen = document.getElementById("login-screen");
@@ -80,6 +86,12 @@ function showOrInitRegisterScreen() {
   }
 }
 function showRegisterScreen() {
+  const registerForm = document.getElementById("register-form");
+  registerForm.reset();
+
+  const errorMessage = document.getElementById("register-error-message");
+  errorMessage.textContent = "";
+
   const registerScreen = document.getElementById("register-screen");
   registerScreen.style.display = "flex";
 }
@@ -152,6 +164,8 @@ async function logInPlayer(email, password) {
   const data = await response.json();
 
   if (response.ok) {
+    alert(data.message);
+
     localStorage.setItem("playerName", data.player.name);
     localStorage.setItem("email", data.player.email_address);
 
@@ -192,14 +206,19 @@ function checkFormDataAndRegister(e) {
   const password = document.getElementById("register-password").value;
   const confirmPassword = document.getElementById("confirm-password").value;
 
+  const errorMessage = document.getElementById("register-error-message");
+  errorMessage.textContent = "";
+
   if (password !== confirmPassword) {
-    alert("Error: The passwords don't match");
+    errorMessage.textContent = "Error: The passwords do not match";
   } else {
     registerPlayer(username, email, password);
   }
 }
 
 async function registerPlayer(username, email, password) {
+  const errorMessage = document.getElementById("register-error-message");
+
   const url = "https://er5-kaotiklash-server.onrender.com/api/players";
 
   const playerData = {
@@ -216,14 +235,15 @@ async function registerPlayer(username, email, password) {
     body: JSON.stringify(playerData),
   });
 
+  const data = await response.json();
+
   if (response.ok) {
-    alert("Registration successful!");
+    alert(data.message);
 
     // AUTOMATICALLY REDIRECT TO LOGIN SCREEN AFTER REGISTERING
     window.location.reload();
   } else {
-    const errorData = await response.json();
-    alert(`Error: ${errorData.message || response.statusText}`);
+    errorMessage.textContent = data.message;
   }
 }
 
