@@ -178,8 +178,32 @@ export default class AttackEvent extends Event {
       }
     }
 
+    let parryRoll = Math.floor(Math.random() * 100 + 1);
+    let parryCritProb = this.#target.getParryCritChance();
+    let parryFumbleProb = this.#target.getParryFumbleChance();
+    let parryHalfFumbleProb = this.#target.getHalfParryFumbleChance();
+    let parryFumbleChances = parryCritProb + parryFumbleProb;
+    let parryHalfFumbleChances = parryFumbleChances + parryHalfFumbleProb;
+    let parryCrit = false;
+    let parryFumble = false; 
+    let parryHalfFumble = false;
 
+    let noDurabilityRoll = Math.floor(Math.random() * 10 + 1);
 
+    let storedDamage = 0;
+    if (this.#parry) {
+      if (parryRoll <= parryCritProb) {                                                   // PARRY CRIT
+        console.log("Parry Crit");
+        parryCrit = true; 
+      } else if(parryRoll > parryCritProb && parryRoll <= parryFumbleChances) {           // PARRY FUMBLE
+        console.log("Parry Fumble");
+        parryFumble = true;
+      } else if(parryRoll > parryFumbleChances && parryRoll <= parryHalfFumbleChances) {  // PARRY HALF FUMBLE
+        console.log("Parry Half Fumble");
+        parryHalfFumble = true;
+      }
+    }
+    
     if (roll <= critProb) { // CRITICAL HIT
       console.log("Critical Hit");
       damageToInflict = damageToInflict * 1.75;
