@@ -233,7 +233,7 @@ export default class AttackEvent extends Event {
       damageToInflict = Math.floor(damageToInflict)
     } 
 
-    if(this.#parry === true && !fumble) {  // PARRY
+    if(this.#parry === true && !fumble && this.#target.getWeapon()) {  // PARRY
       
       if(targetWeapon.getCurrentDurability() >= damageToInflict) {
       if(parryFumble) {             // PARRY FUMBLE
