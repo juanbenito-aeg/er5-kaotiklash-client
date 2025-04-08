@@ -33,6 +33,7 @@ export default class Game {
   #mouseInput;
   #events;
   #phaseMessage;
+  #turnCount;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -484,11 +485,29 @@ export default class Game {
 
       this.#healHarmedMinions();
 
+      if (globals.isDecrepitThroneActive && this.#turnCount == null) {
+        this.#turnCount = 0;
+      }
+
       const newCurrentPlayerID = this.#turns[
         this.#currentPlayer.getID()
       ].changeTurn(this.#currentPlayer);
 
       this.#currentPlayer = this.#players[newCurrentPlayerID];
+
+      this.#executeEvent();
+
+      if (
+        globals.isDecrepitThroneActive &&
+        this.#currentPlayer.getID() !== globals.activePlayerWithDecrepitThrone
+      ) {
+        if (this.#turnCount === 0 || this.#turnCount === 2) {
+          this.#turnCount++;
+          globals.isCurrentTurnFinished = true;
+          return;
+        }
+        this.#turnCount++;
+      }
     }
 
     this.#mouseInput.resetIsLeftClickedOnBoxes(this.#board);
@@ -508,8 +527,6 @@ export default class Game {
     }
 
     this.#mouseInput.setLeftButtonPressedFalse();
-
-    this.#executeEvent();
 
     this.#updateDamageMessages();
 
