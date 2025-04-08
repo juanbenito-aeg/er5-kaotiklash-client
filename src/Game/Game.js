@@ -626,6 +626,12 @@ export default class Game {
           this.#renderParryMenu();
         }
 
+        if (globals.activeVisibilitySkill) {
+          globals.activeVisibilitySkill.renderVisibilityEffect(
+            this.#currentPlayer
+          );
+        }
+
         break;
     }
   }

@@ -39,7 +39,8 @@ const globals = {
     register: false,
     playerSession: false,
   },
-  isParryMenuOpen: false
+  isParryMenuOpen: false,
+  activeVisibilitySkill: null,
 };
 
 window.onload = initLogInScreen;
@@ -152,7 +153,6 @@ async function logInPlayer(email, password) {
     } else {
       messageElement.style.color = "red";
     }
-    
 
     if (response.ok) {
       localStorage.setItem("playerName", data.player.name);
@@ -178,8 +178,6 @@ document.getElementById("login-form").addEventListener("submit", function (e) {
   const password = document.getElementById("login-password").value;
   logInPlayer(email, password);
 });
-
-
 
 function initRegisterScreen() {
   globals.isScreenInitialized.register = true;
