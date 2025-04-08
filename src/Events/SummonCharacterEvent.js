@@ -1,6 +1,7 @@
 import Event from "./Event.js";
 import SpecialSkillXG from "./SpecialSkillXG.js";
 import { MainCharacterID } from "../Game/constants.js";
+import SpecialSkillAngelo from "./SpecialSkillAngelo.js";
 
 export default class SummonCharacterEvent extends Event {
   #currentPlayerMainCharacterDeck;
@@ -9,7 +10,10 @@ export default class SummonCharacterEvent extends Event {
   #currentPlayerMinionsInPlayDeck;
   #currentPlayerEventsInPrepGrid;
   #currentPlayerBattlefieldGrid;
+  #enemyBattleFieldGrid;
+  #enemyEventsInPrepGrid;
   #enemyMinionsInPlayDeck;
+  #mouseInput;
   #isFinished;
   constructor(
     executedBy,
@@ -20,7 +24,10 @@ export default class SummonCharacterEvent extends Event {
     currentPlayerMinionsInPlayDeck,
     currentPlayerEventsInPrepGrid,
     currentPlayerBattlefieldGrid,
-    enemyMinionsInPlayDeck
+    enemyEventsInPrepGrid,
+    enemyBattleFieldGrid,
+    enemyMinionsInPlayDeck,
+    mouseInput
   ) {
     super(executedBy, eventCard);
 
@@ -30,7 +37,10 @@ export default class SummonCharacterEvent extends Event {
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
     this.#currentPlayerEventsInPrepGrid = currentPlayerEventsInPrepGrid;
     this.#currentPlayerBattlefieldGrid = currentPlayerBattlefieldGrid;
+    this.#enemyBattleFieldGrid = enemyBattleFieldGrid;
+    this.#enemyEventsInPrepGrid = enemyEventsInPrepGrid;
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
+    this.#mouseInput = mouseInput;
     this.#isFinished = false;
   }
 
@@ -61,7 +71,23 @@ export default class SummonCharacterEvent extends Event {
         break;
 
       case MainCharacterID.ANGELO_DI_MORTIS:
-        //HERE A SPECIAL SKILL INSTANCE IS CREATED
+        const angeloSkill = new SpecialSkillAngelo(
+          this.#currentPlayerBattlefieldGrid,
+          this.#currentPlayerEventsInPrepGrid,
+          this.#enemyBattleFieldGrid,
+          this.#enemyEventsInPrepGrid,
+          this.#mouseInput,
+          this._executedBy
+        );
+
+        if (!this.#isFinished) {
+          angeloSkill.execute();
+          this.#isFinished = true;
+        }
+
+        if (!this.isActive()) {
+          angeloSkill.restore();
+        }
         break;
     }
   }
