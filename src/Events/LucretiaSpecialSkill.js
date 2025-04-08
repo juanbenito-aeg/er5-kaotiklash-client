@@ -43,29 +43,32 @@ export default class LucretiaSpecialSkill {
   }
 
   undoTransformation() {
-    for (let i = 0; i < this.#enemyMinionsInPlayDeck.getCards().length; i++) {
-      const currentDeer = this.#enemyMinionsInPlayDeck.getCards()[i];
-      const currentNormalMinion = this.#minionsBeforeTransformation[i];
+    for (let i = 0; i < this.#lucretiaDeers.getCards().length; i++) {
+      const currentDeer = this.#lucretiaDeers.getCards()[i];
 
-      const boxDeerIsPositionedIn = currentDeer.getBoxIsPositionedIn(
-        this.#enemyMinionsInPlayGrid,
-        currentDeer
-      );
+      if (currentDeer.getCurrentHP() > 0) {
+        const currentNormalMinion = this.#minionsBeforeTransformation[i];
 
-      // POSITION THE NORMAL MINION IN THE SAME BOX AS THE DEER
-      boxDeerIsPositionedIn.resetCard();
-      boxDeerIsPositionedIn.setCard(currentNormalMinion);
-      currentNormalMinion.setXCoordinate(
-        boxDeerIsPositionedIn.getXCoordinate()
-      );
-      currentNormalMinion.setYCoordinate(
-        boxDeerIsPositionedIn.getYCoordinate()
-      );
+        const boxDeerIsPositionedIn = currentDeer.getBoxIsPositionedIn(
+          this.#enemyMinionsInPlayGrid,
+          currentDeer
+        );
 
-      this.#enemyMinionsInPlayDeck.replaceCard(
-        currentDeer,
-        currentNormalMinion
-      );
+        // POSITION THE NORMAL MINION IN THE SAME BOX AS THE DEER
+        boxDeerIsPositionedIn.resetCard();
+        boxDeerIsPositionedIn.setCard(currentNormalMinion);
+        currentNormalMinion.setXCoordinate(
+          boxDeerIsPositionedIn.getXCoordinate()
+        );
+        currentNormalMinion.setYCoordinate(
+          boxDeerIsPositionedIn.getYCoordinate()
+        );
+
+        this.#enemyMinionsInPlayDeck.replaceCard(
+          currentDeer,
+          currentNormalMinion
+        );
+      }
     }
 
     this.#resetDeerAttributes();
