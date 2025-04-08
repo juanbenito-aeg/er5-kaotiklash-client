@@ -9,13 +9,15 @@ export default class AttackEvent extends Event {
   #currentPlayerMovementGrid;
   #enemyMovementGrid;
   #parry;
+  #eventDeck;
 
   constructor(
     attacker,
     target,
     currentPlayerMovementGrid,
     enemyMovementGrid,
-    parry
+    parry,
+    eventDeck
   ) {
     super();
 
@@ -24,6 +26,7 @@ export default class AttackEvent extends Event {
     this.#currentPlayerMovementGrid = currentPlayerMovementGrid;
     this.#enemyMovementGrid = enemyMovementGrid;
     this.#parry = parry;
+    this.#eventDeck = eventDeck;
   }
 
   static create(
@@ -31,14 +34,16 @@ export default class AttackEvent extends Event {
     target,
     currentPlayerMovementGrid,
     enemyMovementGrid,
-    parry
+    parry,
+    eventDeck
   ) {
     const attackEvent = new AttackEvent(
       attacker,
       target,
       currentPlayerMovementGrid,
       enemyMovementGrid,
-      parry
+      parry,
+      eventDeck
     );
 
     return attackEvent;
@@ -196,6 +201,8 @@ export default class AttackEvent extends Event {
       attackerWeapon.setCurrentDurability(attackerNewDurability);
 
       if (attackerWeapon.getCurrentDurability() <= 0) {
+        console.log(this.#eventDeck.getCard())
+        this.#eventDeck.insertCard(attackerWeapon);
         this.#attacker.removeWeapon();
       }
     }
@@ -261,6 +268,8 @@ export default class AttackEvent extends Event {
       targetWeapon.setCurrentDurability(targetNewDurability);
 
       if (targetWeapon.getCurrentDurability() <= 0) {
+        console.log(this.#eventDeck.getCard())
+        this.#eventDeck.insertCard(targetWeapon);
         this.#target.removeWeapon();
       }
     } else {
