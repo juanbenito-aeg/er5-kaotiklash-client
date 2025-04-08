@@ -2,6 +2,7 @@ import Event from "./Event.js";
 import SpecialSkillXG from "./SpecialSkillXG.js";
 import LucretiaSpecialSkill from "./LucretiaSpecialSkill.js";
 import { MainCharacterID } from "../Game/constants.js";
+import { globals } from "../index.js";
 
 export default class SummonCharacterEvent extends Event {
   #mainCharacterID;
@@ -60,6 +61,10 @@ export default class SummonCharacterEvent extends Event {
 
         if (!this.isActive()) {
           this.#specialSkill.restoreMinionStats();
+
+          globals.isPlayersSummonCharacterActive[
+            this._executedBy.getID()
+          ] = false;
         }
 
         break;
@@ -79,6 +84,10 @@ export default class SummonCharacterEvent extends Event {
 
         if (!this.isActive()) {
           this.#specialSkill.undoTransformation();
+
+          globals.isPlayersSummonCharacterActive[
+            this._executedBy.getID()
+          ] = false;
         }
 
         break;

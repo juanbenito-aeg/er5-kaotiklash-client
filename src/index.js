@@ -40,6 +40,13 @@ const globals = {
     playerSession: false,
   },
   isParryMenuOpen: false,
+  isPlayersSummonCharacterActive: [
+    // PLAYER 1
+    false,
+
+    // PLAYER 2
+    false,
+  ],
 };
 
 window.onload = initLogInScreen;

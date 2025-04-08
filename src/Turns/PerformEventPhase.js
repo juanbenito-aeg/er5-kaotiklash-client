@@ -9,6 +9,7 @@ import {
   GridType,
   SpecialEventID,
 } from "../Game/constants.js";
+import { globals } from "../index.js";
 
 export default class PerformEventPhase extends Phase {
   #events;
@@ -23,7 +24,7 @@ export default class PerformEventPhase extends Phase {
   #enemyMinionsInPlayDeck;
   #enemyBattlefieldGrid;
   #lucretiaDeers;
-  #currentPlayer;
+  #player;
 
   constructor(
     state,
@@ -41,7 +42,7 @@ export default class PerformEventPhase extends Phase {
     enemyMinionsInPlayDeck,
     enemyBattlefieldGrid,
     lucretiaDeers,
-    currentPlayer
+    player
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -57,7 +58,7 @@ export default class PerformEventPhase extends Phase {
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
     this.#enemyBattlefieldGrid = enemyBattlefieldGrid;
     this.#lucretiaDeers = lucretiaDeers;
-    this.#currentPlayer = currentPlayer;
+    this.#player = player;
   }
 
   static create(
@@ -148,7 +149,7 @@ export default class PerformEventPhase extends Phase {
       enemyMinionsInPlayDeck,
       enemyBattlefieldGrid,
       lucretiaDeers,
-      currentPlayer
+      player
     );
 
     return performEventPhase;
@@ -202,6 +203,15 @@ export default class PerformEventPhase extends Phase {
       hoveredCard.getCategory() !== CardCategory.ARMOR &&
       hoveredCard.getCurrentPrepTimeInRounds() === 0
     ) {
+      // MAKE IT IMPOSSIBLE FOR THE PLAYER TO USE THE "Summon Character" EVENT IF ONE IS ALREADY ACTIVE
+      if (
+        hoveredCard.getCategory() === CardCategory.SPECIAL &&
+        hoveredCard.getID() === SpecialEventID.SUMMON_CHARACTER &&
+        globals.isPlayersSummonCharacterActive[this.#player.getID()]
+      ) {
+        return;
+      }
+
       if (!hoveredCard.isLeftClicked()) {
         hoveredCard.setState(CardState.HOVERED);
       } else {
@@ -235,7 +245,7 @@ export default class PerformEventPhase extends Phase {
       switch (selectedCard.getID()) {
         case SpecialEventID.SUMMON_CHARACTER:
           selectedEventInstance = new SummonCharacterEvent(
-            this.#currentPlayer,
+            this.#player,
             selectedCard,
             this.#currentPlayerMainCharacterDeck,
             this.#currentPlayerCardsInHandDeck,
@@ -247,6 +257,8 @@ export default class PerformEventPhase extends Phase {
             this.#enemyBattlefieldGrid,
             this.#lucretiaDeers
           );
+
+          globals.isPlayersSummonCharacterActive[this.#player.getID()] = true;
 
           // selectedEventInstance.execute(this.#currentPlayer);
 
