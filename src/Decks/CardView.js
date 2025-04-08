@@ -238,4 +238,20 @@ export default class CardView {
   setCurrentDurability(newDurability) {
     this.#card.setCurrentDurability(newDurability);
   }
+
+  getParryFumbleChance() {
+    return this.#card.getParryFumbleChance();
+  }
+
+  getParryCritChance() {
+    return this.#card.getParryCritChance();
+  }
+
+  getHalfParryFumbleChance() {
+    return this.#card.getHalfParryFumbleChance();
+  }
+
+  removeWeapon() {
+    this.#card.removeWeapon();
+  }
 }
