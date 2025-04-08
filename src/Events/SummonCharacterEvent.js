@@ -1,6 +1,8 @@
 import Event from "./Event.js";
+import { globals } from "../index.js";
 import SpecialSkillXG from "./SpecialSkillXG.js";
 import { MainCharacterID } from "../Game/constants.js";
+import SpecialSkillDecrepitThrone from "./SpecialSkillDecrepitThrone.js";
 
 export default class SummonCharacterEvent extends Event {
   #currentPlayerMainCharacterDeck;
@@ -9,7 +11,9 @@ export default class SummonCharacterEvent extends Event {
   #currentPlayerMinionsInPlayDeck;
   #currentPlayerEventsInPrepGrid;
   #currentPlayerBattlefieldGrid;
+  #enemyBattleFieldGrid;
   #enemyMinionsInPlayDeck;
+  #currentPlayer;
   #isFinished;
   constructor(
     executedBy,
@@ -20,7 +24,9 @@ export default class SummonCharacterEvent extends Event {
     currentPlayerMinionsInPlayDeck,
     currentPlayerEventsInPrepGrid,
     currentPlayerBattlefieldGrid,
-    enemyMinionsInPlayDeck
+    enemyBattleFieldGrid,
+    enemyMinionsInPlayDeck,
+    currentPlayer
   ) {
     super(executedBy, eventCard);
 
@@ -30,7 +36,9 @@ export default class SummonCharacterEvent extends Event {
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
     this.#currentPlayerEventsInPrepGrid = currentPlayerEventsInPrepGrid;
     this.#currentPlayerBattlefieldGrid = currentPlayerBattlefieldGrid;
+    this.#enemyBattleFieldGrid = enemyBattleFieldGrid;
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
+    this.#currentPlayer = currentPlayer;
     this.#isFinished = false;
   }
 
@@ -62,6 +70,22 @@ export default class SummonCharacterEvent extends Event {
 
       case MainCharacterID.ANGELO_DI_MORTIS:
         //HERE A SPECIAL SKILL INSTANCE IS CREATED
+        break;
+
+      case MainCharacterID.THE_DECREPIT_THRONE:
+        const decrepitThroneSkill = new SpecialSkillDecrepitThrone(
+          this.#enemyBattleFieldGrid,
+          this.#currentPlayer
+        );
+
+        if (!this.#isFinished) {
+          decrepitThroneSkill.execute();
+          this.#isFinished = true;
+        }
+
+        if (!this.isActive()) {
+          decrepitThroneSkill.restore();
+        }
         break;
     }
   }

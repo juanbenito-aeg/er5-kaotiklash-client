@@ -20,6 +20,7 @@ export default class PerformEventPhase extends Phase {
   #currentPlayerMinionsInPlayDeck;
   #currentPlayerEventsInPrepGrid;
   #currentPlayerBattlefieldGrid;
+  #enemyBattleFieldGrid;
   #enemyMinionsInPlayDeck;
   #currentPlayer;
 
@@ -36,6 +37,7 @@ export default class PerformEventPhase extends Phase {
     currentPlayerMinionsInPlayDeck,
     currentPlayerEventsInPrepGrid,
     currentPlayerBattlefieldGrid,
+    enemyBattleFieldGrid,
     enemyMinionsInPlayDeck,
     currentPlayer
   ) {
@@ -50,6 +52,7 @@ export default class PerformEventPhase extends Phase {
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
     this.#currentPlayerEventsInPrepGrid = currentPlayerEventsInPrepGrid;
     this.#currentPlayerBattlefieldGrid = currentPlayerBattlefieldGrid;
+    this.#enemyBattleFieldGrid = enemyBattleFieldGrid;
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
     this.#currentPlayer = currentPlayer;
   }
@@ -105,6 +108,7 @@ export default class PerformEventPhase extends Phase {
 
     let currentPlayerEventsInPrepGrid;
     let currentPlayerBattlefieldGrid;
+    let enemyBattleFieldGrid;
 
     if (player === currentPlayer) {
       currentPlayerEventsInPrepGrid =
@@ -112,12 +116,16 @@ export default class PerformEventPhase extends Phase {
 
       currentPlayerBattlefieldGrid =
         board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
+
+      enemyBattleFieldGrid = board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
     } else {
       currentPlayerEventsInPrepGrid =
         board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
 
       currentPlayerBattlefieldGrid =
         board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
+
+      enemyBattleFieldGrid = board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
     }
 
     const performEventPhase = new PerformEventPhase(
@@ -133,6 +141,7 @@ export default class PerformEventPhase extends Phase {
       currentPlayerMinionsInPlayDeck,
       currentPlayerEventsInPrepGrid,
       currentPlayerBattlefieldGrid,
+      enemyBattleFieldGrid,
       enemyMinionsInPlayDeck,
       currentPlayer
     );
@@ -229,7 +238,9 @@ export default class PerformEventPhase extends Phase {
             this.#currentPlayerMinionsInPlayDeck,
             this.#currentPlayerEventsInPrepGrid,
             this.#currentPlayerBattlefieldGrid,
-            this.#enemyMinionsInPlayDeck
+            this.#enemyBattleFieldGrid,
+            this.#enemyMinionsInPlayDeck,
+            this.#currentPlayer
           );
           selectedEventInstance.execute(this.#currentPlayer);
           break;
