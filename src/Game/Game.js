@@ -509,7 +509,7 @@ export default class Game {
 
     this.#mouseInput.setLeftButtonPressedFalse();
 
-    this.#executeEvent();
+    this.#executeEvents();
 
     this.#updateDamageMessages();
 
@@ -577,7 +577,7 @@ export default class Game {
     return totalHP;
   }
 
-  #executeEvent() {
+  #executeEvents() {
     for (let i = 0; i < this.#events.length; i++) {
       let event = this.#events[i];
       event.execute(this.#currentPlayer);

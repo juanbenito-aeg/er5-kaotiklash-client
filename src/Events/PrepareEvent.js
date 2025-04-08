@@ -52,7 +52,7 @@ export default class PrepareEvent extends Event {
       let remainingTime = cards[i].getCurrentPrepTimeInRounds();
 
       if (remainingTime > 0) {
-        cards[i].setCurrenPrepTimeInRounds(remainingTime - 1);
+        cards[i].setCurrentPrepTimeInRounds(remainingTime - 1);
         reductionOccurred = true;
         break;
       }

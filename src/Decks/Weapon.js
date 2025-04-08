@@ -59,7 +59,7 @@ export default class Weapon extends Card {
     return this.#currentPrepTimeInRounds;
   }
 
-  setCurrenPrepTimeInRounds(newPrepTimeInRounds) {
+  setCurrentPrepTimeInRounds(newPrepTimeInRounds) {
     this.#currentPrepTimeInRounds = newPrepTimeInRounds;
   }
 

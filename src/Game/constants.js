@@ -247,7 +247,7 @@ const EventCooldownState = {
 
 const SpecialEventID = {
   SUMMON_CHARACTER: 0,
-  POTION_ETERNAL_NIGHT: 8,
+  JUDGMENT_ANCIENTS: 1,
 };
 
 export {

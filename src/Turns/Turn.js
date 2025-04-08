@@ -516,7 +516,15 @@ export default class Turn {
           ) {
             if (i === PhaseButton.SKIP_OR_CANCEL) {
               this.#numOfExecutedPhases++;
-            } else if (this.#currentPhase === PhaseType.INVALID) {
+            } else if (
+              this.#currentPhase === PhaseType.INVALID &&
+              !(
+                i === PhaseType.ATTACK &&
+                globals.judgmentAncientsCardData.isEventActive &&
+                this.#player.getID() ===
+                  globals.judgmentAncientsCardData.affectedPlayerID
+              )
+            ) {
               this.#currentPhase = i;
 
               globals.buttonDataGlobal[PhaseButton.SKIP_OR_CANCEL][

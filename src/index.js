@@ -47,6 +47,10 @@ const globals = {
     // PLAYER 2
     false,
   ],
+  judgmentAncientsCardData: {
+    isEventActive: false,
+    affectedPlayerID: -1,
+  },
 };
 
 window.onload = initLogInScreen;

@@ -1,5 +1,6 @@
 import Phase from "./Phase.js";
 import SummonCharacterEvent from "../Events/SummonCharacterEvent.js";
+import JudgmentAncientsEvent from "../Events/JudgmentAncientsEvent.js";
 import {
   CardCategory,
   CardState,
@@ -262,6 +263,13 @@ export default class PerformEventPhase extends Phase {
 
           // selectedEventInstance.execute(this.#currentPlayer);
 
+          break;
+
+        case SpecialEventID.JUDGMENT_ANCIENTS:
+          selectedEventInstance = new JudgmentAncientsEvent(
+            this.#player,
+            selectedCard
+          );
           break;
       }
     } else {
