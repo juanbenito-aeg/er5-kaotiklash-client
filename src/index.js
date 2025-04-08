@@ -131,59 +131,41 @@ function checkFormDataAndLogIn(e) {
 }
 
 async function logInPlayer(email, password) {
-  const url = "https://er5-kaotiklash-server.onrender.com/api/login";
-  const messageElement = document.getElementById("login-message");
+  const errorMessage = document.getElementById("login-error-message");
+  errorMessage.textContent = "";
 
-  messageElement.textContent = "";
-  messageElement.style.color = "black";
+  const url = "https://er5-kaotiklash-server.onrender.com/api/login";
 
   const playerData = {
     email_address: email,
     password: password,
   };
 
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(playerData),
-    });
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(playerData),
+  });
 
-    const data = await response.json();
+  const data = await response.json();
 
-    messageElement.textContent = data.message;
-    if (response.ok) {
-      messageElement.style.color = "green";
+  if (response.ok) {
+    localStorage.setItem("playerName", data.player.name);
+    localStorage.setItem("email", data.player.email_address);
+
+    hideLoginScreen();
+
+    if (globals.isScreenInitialized.playerSession) {
+      showPlayerSessionScreen();
     } else {
-      messageElement.style.color = "red";
+      initPlayerSessionScreen();
     }
-
-    if (response.ok) {
-      localStorage.setItem("playerName", data.player.name);
-      localStorage.setItem("email", data.player.email_address);
-
-      hideLoginScreen();
-
-      if (globals.isScreenInitialized.playerSession) {
-        showPlayerSessionScreen();
-      } else {
-        initPlayerSessionScreen();
-      }
-    }
-  } catch (error) {
-    messageElement.textContent = "Error connecting to the server.";
-    messageElement.style.color = "red";
+  } else {
+    errorMessage.textContent = data.message;
   }
 }
-
-document.getElementById("login-form").addEventListener("submit", function (e) {
-  e.preventDefault();
-  const email = document.getElementById("login-email").value;
-  const password = document.getElementById("login-password").value;
-  logInPlayer(email, password);
-});
 
 function initRegisterScreen() {
   globals.isScreenInitialized.register = true;

@@ -4,7 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>KaotiKlash</title>
-    <link rel="preload" href="././fonts/MedievalSharp.ttf" as="font" type="font/ttf" crossorigin="anonymous" />
+    <link
+      rel="preload"
+      href="././fonts/MedievalSharp.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin="anonymous"
+    />
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
@@ -20,7 +26,8 @@
 
         <label for="login-password">Password:</label>
         <input type="password" id="login-password" name="password" required />
-        <p id="login-message" class="message"></p>
+
+        <p id="login-error-message" class="error-message"></p>
 
         <button type="submit" id="login-btn">Log in</button>
         <button type="reset" id="reset-btn">Reset</button>
@@ -29,7 +36,6 @@
           Don't have an account?
           <a href="#" id="login-screen-register-btn">Register</a>
         </p>
-
       </form>
     </div>
 
@@ -47,7 +53,12 @@
           <input type="email" id="register-email" required />
 
           <label for="register-password">Password</label>
-          <input type="password" id="register-password" minlength="6" required />
+          <input
+            type="password"
+            id="register-password"
+            minlength="6"
+            required
+          />
 
           <label for="confirm-password">Confirm Password</label>
           <input type="password" id="confirm-password" minlength="6" required />
