@@ -16,6 +16,7 @@ export default class EquipWeaponEvent extends Event {
       weapon,
       minionToEquipWeaponOn
     );
+
     return equipWeaponEvent;
   }
 

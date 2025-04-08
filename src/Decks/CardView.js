@@ -47,12 +47,40 @@ export default class CardView {
     return this.#card.getCurrentMadness();
   }
 
+  getInitialStrength() {
+    return this.#card.getInitialStrength();
+  }
+
+  getCurrentStrength() {
+    return this.#card.getCurrentStrength();
+  }
+
+  setCurrentMadness(newMadness) {
+    this.#card.setCurrentMadness(newMadness);
+  }
+
+  setCurrentStrength(newStrength) {
+    this.#card.setCurrentStrength(newStrength);
+  }
+
   getInitialAttack() {
     return this.#card.getInitialAttack();
   }
 
   getCurrentAttack() {
     return this.#card.getCurrentAttack();
+  }
+
+  getInitialConstitution() {
+    return this.#card.getInitialConstitution();
+  }
+
+  setCurrentAttack(newAttack) {
+    this.#card.setCurrentAttack(newAttack);
+  }
+
+  setCurrentDefense(newDefense) {
+    this.#card.setCurrentDefense(newDefense);
   }
 
   getInitialDefense() {
@@ -197,6 +225,10 @@ export default class CardView {
 
   setCurrenPrepTimeInRounds(newPrepTimeInRounds) {
     this.#card.setCurrenPrepTimeInRounds(newPrepTimeInRounds);
+  }
+
+  setCurrentDurationInRounds(newDuration) {
+    this.#card.setCurrentDurationInRounds(newDuration);
   }
 
   isMouseOver() {

@@ -244,6 +244,10 @@ const EventCooldownState = {
   INITIALIZED: 1,
 };
 
+const SpecialEventID = {
+  SUMMON_CHARACTER: 0,
+};
+
 export {
   GameState,
   FPS,
@@ -272,4 +276,5 @@ export {
   PhaseButtonData,
   EquipWeaponState,
   EventCooldownState,
+  SpecialEventID,
 };

@@ -10,6 +10,22 @@ export default class AttackEvent extends Event {
   #enemyMovementGrid;
   #parry;
 
+  constructor(
+    attacker,
+    target,
+    currentPlayerMovementGrid,
+    enemyMovementGrid,
+    parry
+  ) {
+    super();
+
+    this.#attacker = attacker;
+    this.#target = target;
+    this.#currentPlayerMovementGrid = currentPlayerMovementGrid;
+    this.#enemyMovementGrid = enemyMovementGrid;
+    this.#parry = parry;
+  }
+
   static create(
     attacker,
     target,
@@ -17,12 +33,13 @@ export default class AttackEvent extends Event {
     enemyMovementGrid,
     parry
   ) {
-    const attackEvent = new AttackEvent();
-    attackEvent.#attacker = attacker;
-    attackEvent.#target = target;
-    attackEvent.#currentPlayerMovementGrid = currentPlayerMovementGrid;
-    attackEvent.#enemyMovementGrid = enemyMovementGrid;
-    attackEvent.#parry = parry;
+    const attackEvent = new AttackEvent(
+      attacker,
+      target,
+      currentPlayerMovementGrid,
+      enemyMovementGrid,
+      parry
+    );
 
     return attackEvent;
   }
@@ -60,10 +77,9 @@ export default class AttackEvent extends Event {
 
       damageToInflict = Math.floor(damageToInflict)
 
-      damageToInflict = Math.floor(damageToInflict)
     } else if (!attackerWeapon && this.#parry === true) {                                       // ATTACK USING FISTS && ENEMY IS PARRYING
         damageToInflict =
-        this.#attacker.getCurrentAttack()
+          this.#attacker.getCurrentAttack()
 
         damageToInflict = Math.floor(damageToInflict)
 
@@ -87,10 +103,8 @@ export default class AttackEvent extends Event {
       if (fumble) {
         damageToInflict =
         this.#attacker.getCurrentAttack() +
-        this.#attacker.getWeaponCurrentDamage() -
-        (this.#target.getCurrentDefense()/2);
+        this.#attacker.getWeaponCurrentDamage();
 
-        damageToInflict = Math.floor(damageToInflict)
       } else {
       damageToInflict =
         this.#attacker.getCurrentAttack() +
@@ -118,8 +132,7 @@ export default class AttackEvent extends Event {
     if (fumble) {
       damageToInflict =
         this.#attacker.getCurrentAttack() +
-        this.#attacker.getWeaponCurrentDamage() -
-        (this.#target.getCurrentDefense()/2);
+        this.#attacker.getWeaponCurrentDamage()
 
       damageToInflict = Math.floor(damageToInflict)
       } else {
@@ -127,18 +140,18 @@ export default class AttackEvent extends Event {
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage();
           
-          damageToInflict = Math.floor(this.caltulateDistance(damageToInflict))
+        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict))
         }
     } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID && this.#parry === false) {   // ATTACK USING A HYBRID WEAPON && ENEMY IS NOT PARRYING
       if(fumble) {  
         damageToInflict =
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage() -
-          (this.#target.getCurrentDefense()/2);
+          this.#target.getCurrentDefense() / 2;
 
-          damageToInflict = Math.floor(damageToInflict)
-      }
-      else {
+        damageToInflict = Math.floor(damageToInflict)
+
+      } else {
         damageToInflict =
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage() -
@@ -149,23 +162,32 @@ export default class AttackEvent extends Event {
     } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID && this.#parry === true) {    // ATTACK USING A HYBRID WEAPON && ENEMY IS PARRYING
       if (fumble) {
         damageToInflict =
-        this.#attacker.getCurrentAttack() +
-        this.#attacker.getWeaponCurrentDamage() -
-        (this.#target.getCurrentDefense()/2);
+          this.#attacker.getCurrentAttack() +
+          this.#attacker.getWeaponCurrentDamage();
 
         damageToInflict = Math.floor(damageToInflict)
+
       } else {
-      damageToInflict =
-        this.#attacker.getCurrentAttack() +
-        this.#attacker.getWeaponCurrentDamage()
+        damageToInflict =
+          this.#attacker.getCurrentAttack() +
+          this.#attacker.getWeaponCurrentDamage();
 
         damageToInflict = Math.floor(this.caltulateDistance(damageToInflict))
       }
+
     }
 
     if (damageToInflict < 0) {
       damageToInflict = 0;
     }
+
+    if (roll <= critProb) {
+      // CRITICAL HIT
+      console.log("Critical Hit");
+      damageToInflict = damageToInflict * 1.75;
+      damageToInflict = Math.floor(damageToInflict)
+    }
+
     if(attackerWeapon) {
       let attackerNewDurability = attackerWeapon.getCurrentDurability() - damageToInflict;
       if (attackerNewDurability < 0) {
@@ -191,6 +213,7 @@ export default class AttackEvent extends Event {
     let noDurabilityRoll = Math.floor(Math.random() * 10 + 1);
 
     let storedDamage = 0;
+
     if (this.#parry) {
       if (parryRoll <= parryCritProb) {                                                   // PARRY CRIT
         console.log("Parry Crit");
@@ -210,8 +233,6 @@ export default class AttackEvent extends Event {
       damageToInflict = Math.floor(damageToInflict)
     } 
 
-
-
     if(this.#parry === true && !fumble) {  // PARRY
       
       if(targetWeapon.getCurrentDurability() >= damageToInflict) {
@@ -224,9 +245,9 @@ export default class AttackEvent extends Event {
         damageToInflict = 0;
       }
     } else { //NO DURABILITY PARRY
-      if(noDurabilityRoll === 1 && noDurabilityRoll === 2) {        //NO DURABILITY CRIT
+      if(noDurabilityRoll === 1 && noDurabilityRoll === 2) {  //NO DURABILITY CRIT
         damageToInflict = targetWeapon.getCurrentDurability();
-      } else if(noDurabilityRoll === 3) { //NO DURABILITY FUMBLE
+      } else if(noDurabilityRoll === 3) {                     //NO DURABILITY FUMBLE
         storedDamage = damageToInflict
         damageToInflict = targetWeapon.getCurrentDurability();
       } 
@@ -244,9 +265,11 @@ export default class AttackEvent extends Event {
       }
     } else {
       let targetNewCurrentHP = this.#target.getCurrentHP() - damageToInflict;
+
       if (targetNewCurrentHP < 0) {
         targetNewCurrentHP = 0;
       }
+
       this.#target.setCurrentHP(targetNewCurrentHP);
     }
     let targetNewCurrentHP = this.#target.getCurrentHP() - storedDamage;
@@ -260,7 +283,7 @@ export default class AttackEvent extends Event {
     }
 
     let targetBox;
-    if(fumble) {
+    if (fumble) {
       targetBox = this.#target.getBoxIsPositionedIn(
         this.#currentPlayerMovementGrid,
         this.#target
@@ -279,7 +302,6 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getYCoordinate() + 55
     );
     globals.damageMessages.push(DamageMessage);
-
   }
 
   caltulateDistance(damageToInflict) {
