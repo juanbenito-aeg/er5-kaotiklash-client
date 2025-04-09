@@ -34,7 +34,6 @@ const globals = {
   phaseMessage: {},
   gameWinner: null,
   damageMessages: [],
-  damageFontSize: 75,
   isScreenInitialized: {
     register: false,
     playerSession: false,

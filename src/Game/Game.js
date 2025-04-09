@@ -603,8 +603,9 @@ export default class Game {
     for (let i = 0; i < globals.damageMessages.length; i++) {
       let message = globals.damageMessages[i];
 
-      let isFisished = message.execute();
-      if (isFisished) {
+      let isFinished = message.execute();
+
+      if (isFinished) {
         globals.damageMessages.splice(i, 1);
       }
     }
@@ -2131,17 +2132,20 @@ export default class Game {
   }
 
   #renderDamageMessages() {
+    const damageMsgsFontSize = 75;
+
     for (let i = 0; i < globals.damageMessages.length; i++) {
       let message = globals.damageMessages[i];
       let duration = message.getDuration();
 
-      let fontSize = globals.damageFontSize / duration;
+      let fontSize = damageMsgsFontSize / duration;
+
       if (fontSize >= 100) {
         fontSize = 100;
       }
 
       globals.ctx.font = `${fontSize}px MedievalSharp`;
-      globals.ctx.fillStyle = "red";
+      globals.ctx.fillStyle = message.getColor();
       globals.ctx.fillText(
         message.getContent(),
         message.getXPosition(),
