@@ -201,7 +201,6 @@ export default class AttackEvent extends Event {
       attackerWeapon.setCurrentDurability(attackerNewDurability);
 
       if (attackerWeapon.getCurrentDurability() <= 0) {
-        console.log(this.#eventDeck.getCard())
         this.#eventDeck.insertCard(attackerWeapon);
         this.#attacker.removeWeapon();
       }
@@ -268,7 +267,6 @@ export default class AttackEvent extends Event {
       targetWeapon.setCurrentDurability(targetNewDurability);
 
       if (targetWeapon.getCurrentDurability() <= 0) {
-        console.log(this.#eventDeck.getCard())
         this.#eventDeck.insertCard(targetWeapon);
         this.#target.removeWeapon();
       }

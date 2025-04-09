@@ -94,7 +94,7 @@ export default class AttackPhase extends Phase {
       enemyMinionsDeck = deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS];
     }
 
-    const deckContainer = deckContainer.getDecks()[DeckType.EVENTS];
+    const eventDeck = deckContainer.getDecks()[DeckType.EVENTS];
 
     const attackPhase = new AttackPhase(
       AttackPhaseState.INIT,
@@ -106,7 +106,7 @@ export default class AttackPhase extends Phase {
       enemyMinionsDeck,
       currentPlayerMovementGridDeck,
       currentPlayerMinionsDeck,
-      deckContainer
+      eventDeck
     );
 
     return attackPhase;
