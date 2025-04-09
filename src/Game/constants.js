@@ -248,6 +248,7 @@ const EventCooldownState = {
 const SpecialEventID = {
   SUMMON_CHARACTER: 0,
   JUDGMENT_ANCIENTS: 1,
+  BROOM_FURY: 6,
 };
 
 export {

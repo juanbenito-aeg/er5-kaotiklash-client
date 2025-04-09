@@ -1,6 +1,7 @@
 import Phase from "./Phase.js";
 import SummonCharacterEvent from "../Events/SummonCharacterEvent.js";
 import JudgmentAncientsEvent from "../Events/JudgmentAncientsEvent.js";
+import BroomFuryEvent from "../Events/BroomFuryEvent.js";
 import {
   CardCategory,
   CardState,
@@ -19,6 +20,7 @@ export default class PerformEventPhase extends Phase {
   #currentPlayerMainCharacterDeck;
   #currentPlayerCardsInHandDeck;
   #currentPlayerEventsInPrepDeck;
+  #currentPlayerMinionsDeck;
   #currentPlayerMinionsInPlayDeck;
   #currentPlayerEventsInPrepGrid;
   #currentPlayerBattlefieldGrid;
@@ -37,6 +39,7 @@ export default class PerformEventPhase extends Phase {
     currentPlayerMainCharacterDeck,
     currentPlayerCardsInHandDeck,
     currentPlayerEventsInPrepDeck,
+    currentPlayerMinionsDeck,
     currentPlayerMinionsInPlayDeck,
     currentPlayerEventsInPrepGrid,
     currentPlayerBattlefieldGrid,
@@ -53,6 +56,7 @@ export default class PerformEventPhase extends Phase {
     this.#currentPlayerMainCharacterDeck = currentPlayerMainCharacterDeck;
     this.#currentPlayerCardsInHandDeck = currentPlayerCardsInHandDeck;
     this.#currentPlayerEventsInPrepDeck = currentPlayerEventsInPrepDeck;
+    this.#currentPlayerMinionsDeck = currentPlayerMinionsDeck;
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
     this.#currentPlayerEventsInPrepGrid = currentPlayerEventsInPrepGrid;
     this.#currentPlayerBattlefieldGrid = currentPlayerBattlefieldGrid;
@@ -77,6 +81,7 @@ export default class PerformEventPhase extends Phase {
     let currentPlayerMainCharacterDeck;
     let currentPlayerCardsInHandDeck;
     let currentPlayerEventsInPrepDeck;
+    let currentPlayerMinionsDeck;
     let currentPlayerMinionsInPlayDeck;
     let enemyMinionsInPlayDeck;
 
@@ -89,6 +94,9 @@ export default class PerformEventPhase extends Phase {
 
       currentPlayerEventsInPrepDeck =
         deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION];
+
+      currentPlayerMinionsDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS];
 
       currentPlayerMinionsInPlayDeck =
         deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
@@ -104,6 +112,9 @@ export default class PerformEventPhase extends Phase {
 
       currentPlayerEventsInPrepDeck =
         deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION];
+
+      currentPlayerMinionsDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
 
       currentPlayerMinionsInPlayDeck =
         deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
@@ -144,6 +155,7 @@ export default class PerformEventPhase extends Phase {
       currentPlayerMainCharacterDeck,
       currentPlayerCardsInHandDeck,
       currentPlayerEventsInPrepDeck,
+      currentPlayerMinionsDeck,
       currentPlayerMinionsInPlayDeck,
       currentPlayerEventsInPrepGrid,
       currentPlayerBattlefieldGrid,
@@ -269,6 +281,15 @@ export default class PerformEventPhase extends Phase {
           selectedEventInstance = new JudgmentAncientsEvent(
             this.#player,
             selectedCard
+          );
+          break;
+
+        case SpecialEventID.BROOM_FURY:
+          selectedEventInstance = new BroomFuryEvent(
+            this.#player,
+            selectedCard,
+            this.#currentPlayerMinionsDeck,
+            this.#currentPlayerMinionsInPlayDeck
           );
           break;
       }

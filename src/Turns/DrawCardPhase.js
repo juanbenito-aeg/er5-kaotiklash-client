@@ -93,7 +93,7 @@ export default class DrawCardPhase extends Phase {
 
       if (
         card.getCategory() === CardCategory.SPECIAL &&
-        card.getID() === SpecialEventID.JUDGMENT_ANCIENTS
+        card.getID() === SpecialEventID.BROOM_FURY
       ) {
         this.#filteredCards.push(card);
 
