@@ -85,7 +85,8 @@ export default class Turn {
         this.#mouseInput,
         this.#events,
         currentPlayer,
-        this.#phaseMessage
+        this.#phaseMessage,
+        this.#stateMessages
       );
 
       this.#phases.push(currentPhase);
