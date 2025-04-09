@@ -2151,17 +2151,26 @@ export default class Game {
   }
 
   #renderStateMessages() {
+    globals.ctx.save();
+
     for (let i = 0; i < this.#stateMessages.length; i++) {
       const currentMessage = this.#stateMessages[i];
 
-      globals.ctx.font = `20px MedievalSharp`;
+      globals.ctx.shadowBlur = 20;
+      globals.ctx.shadowColor = "black";
+      globals.ctx.font = "20px MedievalSharp";
       globals.ctx.fillStyle = currentMessage.getColor();
-      globals.ctx.fillText(
-        currentMessage.getContent(),
-        currentMessage.getXPosition(),
-        currentMessage.getYPosition()
-      );
+
+      for (let i = 0; i < 10; i++) {
+        globals.ctx.fillText(
+          currentMessage.getContent(),
+          currentMessage.getXPosition(),
+          currentMessage.getYPosition()
+        );
+      }
     }
+
+    globals.ctx.restore();
   }
 
   #renderDamageMessages() {

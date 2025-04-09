@@ -322,14 +322,21 @@ export default class Turn {
   #equipWeapon() {
     let playerXEventsInPreparationGrid;
     let playerXEventsInPreparationDeck;
+    let playerXBattlefieldGrid;
     let playerXMinionsInPlayDeck;
 
     if (this.#player.getID() === globals.firstActivePlayerID) {
       playerXEventsInPreparationGrid =
         this.#board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
+
+      playerXBattlefieldGrid =
+        this.#board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
     } else {
       playerXEventsInPreparationGrid =
         this.#board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
+
+      playerXBattlefieldGrid =
+        this.#board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
     }
 
     if (this.#player.getID() === PlayerID.PLAYER_1) {
@@ -416,10 +423,22 @@ export default class Turn {
           if (minion) {
             if (!minion.isLeftClicked()) {
               minion.setState(CardState.HOVERED);
-            } else if (
-              minion.getMinionTypeID() !== MinionTypeID.SPECIAL &&
-              !minion.getWeapon()
-            ) {
+            } else if (minion.getMinionTypeID() === MinionTypeID.SPECIAL) {
+              const boxDeerIsPositionedIn = minion.getBoxIsPositionedIn(
+                playerXBattlefieldGrid,
+                minion
+              );
+
+              const deerWeaponsMsg = new StateMessage(
+                "DEER CANNOT EQUIP WEAPONS",
+                "red",
+                4,
+                minion.getXCoordinate() + boxDeerIsPositionedIn.getWidth() / 2,
+                minion.getYCoordinate() + boxDeerIsPositionedIn.getHeight() / 2
+              );
+
+              this.#stateMessages.push(deerWeaponsMsg);
+            } else if (!minion.getWeapon()) {
               minion.setState(CardState.SELECTED);
 
               this.#equipWeaponState = EquipWeaponState.EQUIP_WEAPON;
