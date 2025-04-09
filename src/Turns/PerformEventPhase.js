@@ -3,6 +3,7 @@ import SummonCharacterEvent from "../Events/SummonCharacterEvent.js";
 import JudgmentAncientsEvent from "../Events/JudgmentAncientsEvent.js";
 import BroomFuryEvent from "../Events/BroomFuryEvent.js";
 import BlessingWaitressEvent from "../Events/BlessingWaitressEvent.js";
+import BartendersPowerEvent from "../Events/BartendersPowerEvent.js";
 import {
   CardCategory,
   CardState,
@@ -312,6 +313,14 @@ export default class PerformEventPhase extends Phase {
                 this.#currentPlayerMinionsInPlayDeck
               );
 
+          break;
+
+        case SpecialEventID.BARTENDERS_POWER:
+          selectedEventInstance = new BartendersPowerEvent(
+            this.#player,
+            selectedCard,
+            this.#currentPlayerMinionsInPlayDeck
+          );
           break;
       }
     } else {
