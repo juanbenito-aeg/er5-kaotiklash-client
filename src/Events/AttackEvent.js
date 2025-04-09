@@ -197,12 +197,13 @@ export default class AttackEvent extends Event {
     if (damageToInflict < 0) {
       damageToInflict = 0;
     }
-
+    let crit = false;
     if (roll <= critProb) {
       // CRITICAL HIT
       console.log("Critical Hit");
       damageToInflict = damageToInflict * 1.75;
       damageToInflict = Math.floor(damageToInflict);
+      crit = true;
     }
 
     if (attackerWeapon) {
@@ -326,15 +327,65 @@ export default class AttackEvent extends Event {
         this.#target
       );
     }
+    if(this.#parry && !fumble) {
+      const damageMessage = new StateMessage(
+        damageToInflict,
+        "lightblue",
+        4,
+        targetBox.getCard().getXCoordinate() + 55,
+        targetBox.getCard().getYCoordinate() + 55
+      );
+      const parryMessage = new StateMessage(
+        "Attack parried",
+        "lightblue",
+        4,
+        targetBox.getCard().getXCoordinate() + 55,
+        targetBox.getCard().getYCoordinate() - 55
+      );
+      globals.damageMessages.push(damageMessage, parryMessage);
+    } else if (fumble) { 
+      const fumbleMessage = new StateMessage(
+        "Fumble!",
+        "red",
+        4,
+        targetBox.getCard().getXCoordinate() + 55,
+        targetBox.getCard().getYCoordinate() - 55
+        );
+        const damageMessage = new StateMessage(
+          damageToInflict,
+          "red",
+          4,
+          targetBox.getCard().getXCoordinate() + 55,
+          targetBox.getCard().getYCoordinate() + 55
+        );
+        globals.damageMessages.push(damageMessage, fumbleMessage);
+    } else if (crit) {
+      const critMessage = new StateMessage(
+        "Critical Hit!",
+        "gold",
+        4,
+        targetBox.getCard().getXCoordinate() + 55,
+        targetBox.getCard().getYCoordinate() - 55
+      );
+      const damageMessage = new StateMessage(
+        damageToInflict,
+        "gold",
+        4,
+        targetBox.getCard().getXCoordinate() + 55,
+        targetBox.getCard().getYCoordinate() + 55
+      );
+      globals.damageMessages.push(damageMessage, critMessage);
+    } else {
+      const damageMessage = new StateMessage(
+        damageToInflict,
+        "red",
+        4,
+        targetBox.getCard().getXCoordinate() + 55,
+        targetBox.getCard().getYCoordinate() + 55
+      );
+      globals.damageMessages.push(damageMessage);
+    }
 
-    const damageMessage = new StateMessage(
-      damageToInflict,
-      "red",
-      4,
-      targetBox.getCard().getXCoordinate() + 55,
-      targetBox.getCard().getYCoordinate() + 55
-    );
-    globals.damageMessages.push(damageMessage);
   }
 
   caltulateDistance(damageToInflict) {

@@ -2136,13 +2136,10 @@ export default class Game {
 
     for (let i = 0; i < globals.damageMessages.length; i++) {
       let message = globals.damageMessages[i];
-      let duration = message.getDuration();
 
-      let fontSize = damageMsgsFontSize / duration;
+      let fontSize = 60;
 
-      if (fontSize >= 100) {
-        fontSize = 100;
-      }
+
 
       globals.ctx.font = `${fontSize}px MedievalSharp`;
       globals.ctx.fillStyle = message.getColor();
