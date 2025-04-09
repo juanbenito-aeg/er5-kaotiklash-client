@@ -2154,7 +2154,7 @@ export default class Game {
     for (let i = 0; i < this.#stateMessages.length; i++) {
       const currentMessage = this.#stateMessages[i];
 
-      globals.ctx.font = `20px MedievalSharp`;
+      globals.ctx.font = currentMessage.getFont();
       globals.ctx.fillStyle = currentMessage.getColor();
       globals.ctx.fillText(
         currentMessage.getContent(),
