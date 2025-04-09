@@ -7,6 +7,7 @@ import PerformEventPhase from "./PerformEventPhase.js";
 import DiscardCardPhase from "./DiscardCardPhase.js";
 import EquipWeaponEvent from "../Events/EquipWeaponEvent.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
+import StateMessage from "../Messages/StateMessage.js";
 import {
   PlayerID,
   CardState,
@@ -34,9 +35,18 @@ export default class Turn {
   #player;
   #events;
   #phaseMessage;
+  #stateMessages;
   #equipWeaponState;
 
-  constructor(deckContainer, board, mouseInput, player, events, phaseMessage) {
+  constructor(
+    deckContainer,
+    board,
+    mouseInput,
+    player,
+    events,
+    phaseMessage,
+    stateMessages
+  ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
     this.#currentPhase = PhaseType.INVALID;
@@ -48,6 +58,7 @@ export default class Turn {
     this.#player = player;
     this.#events = events;
     this.#phaseMessage = phaseMessage;
+    this.#stateMessages = stateMessages;
     this.#equipWeaponState = EquipWeaponState.INIT;
   }
 

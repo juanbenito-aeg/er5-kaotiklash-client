@@ -33,6 +33,7 @@ export default class Game {
   #mouseInput;
   #events;
   #phaseMessage;
+  #stateMessages;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -81,6 +82,8 @@ export default class Game {
       PhaseMessage.content.drawCard.initialDraw[globals.language]
     );
 
+    game.#stateMessages = [];
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
@@ -88,7 +91,8 @@ export default class Game {
       game.#mouseInput,
       game.#players[PlayerID.PLAYER_1],
       game.#events,
-      game.#phaseMessage
+      game.#phaseMessage,
+      game.#stateMessages
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -97,7 +101,8 @@ export default class Game {
       game.#mouseInput,
       game.#players[PlayerID.PLAYER_2],
       game.#events,
-      game.#phaseMessage
+      game.#phaseMessage,
+      game.#stateMessages
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -511,6 +516,7 @@ export default class Game {
 
     this.#executeEvents();
 
+    this.#updateStateMessages();
     this.#updateDamageMessages();
 
     this.#updatePlayersTotalHP();
@@ -599,6 +605,18 @@ export default class Game {
     }
   }
 
+  #updateStateMessages() {
+    for (let i = 0; i < this.#stateMessages.length; i++) {
+      let currentMessage = this.#stateMessages[i];
+
+      let isFinished = currentMessage.execute();
+
+      if (isFinished) {
+        this.#stateMessages.splice(i, 1);
+      }
+    }
+  }
+
   #updateDamageMessages() {
     for (let i = 0; i < globals.damageMessages.length; i++) {
       let message = globals.damageMessages[i];
@@ -640,6 +658,7 @@ export default class Game {
     this.#renderPhaseMessage();
     this.#renderCardsReverse();
     this.#renderCards();
+    this.#renderStateMessages();
     this.#renderDamageMessages();
   }
 
@@ -2127,6 +2146,20 @@ export default class Game {
         button.text,
         button.x + buttonWidth / 2,
         button.y + buttonHeight / 2
+      );
+    }
+  }
+
+  #renderStateMessages() {
+    for (let i = 0; i < this.#stateMessages.length; i++) {
+      const currentMessage = this.#stateMessages[i];
+
+      globals.ctx.font = `20px MedievalSharp`;
+      globals.ctx.fillStyle = currentMessage.getColor();
+      globals.ctx.fillText(
+        currentMessage.getContent(),
+        currentMessage.getXPosition(),
+        currentMessage.getYPosition()
       );
     }
   }
