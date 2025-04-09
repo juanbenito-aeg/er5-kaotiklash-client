@@ -3,16 +3,18 @@ import { globals } from "../index.js";
 
 export default class StateMessage extends Message {
   #content;
+  #font;
   #color;
   #duration;
   #startTime;
   #xPosition;
   #yPosition;
 
-  constructor(content, color, duration, xPosition, yPosition) {
+  constructor(content, font, color, duration, xPosition, yPosition) {
     super();
 
     this.#content = content;
+    this.#font = font;
     this.#color = color;
     this.#duration = duration;
     this.#xPosition = xPosition;
@@ -51,5 +53,9 @@ export default class StateMessage extends Message {
 
   getYPosition() {
     return this.#yPosition;
+  }
+
+  getFont() {
+    return this.#font;
   }
 }
