@@ -39,6 +39,10 @@ export default class StateMessage extends Message {
     return this.#content;
   }
 
+  getFont() {
+    return this.#font;
+  }
+
   getColor() {
     return this.#color;
   }
@@ -53,9 +57,5 @@ export default class StateMessage extends Message {
 
   getYPosition() {
     return this.#yPosition;
-  }
-
-  getFont() {
-    return this.#font;
   }
 }
