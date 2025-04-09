@@ -1,11 +1,19 @@
 import Event from "./Event.js";
+import StateMessage from "../Messages/StateMessage.js";
 export default class BartendersPowerEvent extends Event {
   #currentPlayerMinionsInPlayDeck;
+  #stateMessage;
   #isFinished;
 
-  constructor(executedBy, eventCard, currentPlayerMinionsInPlayDeck) {
+  constructor(
+    executedBy,
+    eventCard,
+    currentPlayerMinionsInPlayDeck,
+    stateMessage
+  ) {
     super(executedBy, eventCard);
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
+    this.#stateMessage = stateMessage;
     this.#isFinished = false;
   }
 
@@ -24,6 +32,15 @@ export default class BartendersPowerEvent extends Event {
 
         minion.setCurrentAttack(attack + 7);
         minion.setCurrentDefense(defense + 7);
+        let message = new StateMessage(
+          "+7",
+          `50px MedievalSharp`,
+          "red",
+          5,
+          minion.getXCoordinate(),
+          minion.getYCoordinate()
+        );
+        this.#stateMessage.push(message);
       }
     }
     this.#isFinished = true;
