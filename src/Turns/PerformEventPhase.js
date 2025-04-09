@@ -2,6 +2,7 @@ import Phase from "./Phase.js";
 import SummonCharacterEvent from "../Events/SummonCharacterEvent.js";
 import JudgmentAncientsEvent from "../Events/JudgmentAncientsEvent.js";
 import BroomFuryEvent from "../Events/BroomFuryEvent.js";
+import BlessingWaitressEvent from "../Events/BlessingWaitressEvent.js";
 import {
   CardCategory,
   CardState,
@@ -239,8 +240,13 @@ export default class PerformEventPhase extends Phase {
     const selectedCard =
       this.#currentPlayerEventsInPrepDeck.lookForSelectedCard();
 
-    const selectedEventInstance =
-      this.#determineAndCreateSelectedEvent(selectedCard);
+    let selectedEventInstance;
+    if (!globals.blessingWaitressCardData.isEventActive) {
+      selectedEventInstance =
+        this.#determineAndCreateSelectedEvent(selectedCard);
+    } else {
+      selectedEventInstance = globals.blessingWaitressCardData.eventInstance;
+    }
 
     if (selectedCard.getInitialDurationInRounds() === 0) {
       selectedEventInstance.execute();
@@ -248,7 +254,9 @@ export default class PerformEventPhase extends Phase {
       this.#events.push(selectedEventInstance);
     }
 
-    this._state = PerformEventState.END;
+    if (!globals.blessingWaitressCardData.isEventActive) {
+      this._state = PerformEventState.END;
+    }
   }
 
   #determineAndCreateSelectedEvent(selectedCard) {
@@ -291,6 +299,19 @@ export default class PerformEventPhase extends Phase {
             this.#currentPlayerMinionsDeck,
             this.#currentPlayerMinionsInPlayDeck
           );
+          break;
+
+        case SpecialEventID.BLESSING_WAITRESS:
+          globals.blessingWaitressCardData.isEventActive = true;
+
+          selectedEventInstance =
+            globals.blessingWaitressCardData.eventInstance =
+              new BlessingWaitressEvent(
+                this.#player,
+                selectedCard,
+                this.#currentPlayerMinionsInPlayDeck
+              );
+
           break;
       }
     } else {
