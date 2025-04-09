@@ -168,8 +168,8 @@ export default class Game {
                 globals.cardsIconsImages[IconID.DEFENSE_DURABILITY_DIAMOND],
                 globals.cardsIconsImages[IconID.EVENT_TYPE_CIRCLE],
                 globals.cardsIconsImages[IconID.WEAPON_MELEE_TYPE],
-                // globals.cardsIconsImages[IconID.WEAPON_HYBRID_TYPE],
-                // globals.cardsIconsImages[IconID.WEAPON_MISSILE_TYPE],
+                globals.cardsIconsImages[IconID.WEAPON_HYBRID_TYPE],
+                globals.cardsIconsImages[IconID.WEAPON_MISSILE_TYPE],
                 // globals.cardsIconsImages[IconID.ARMOR_LIGHT_TYPE],
                 // globals.cardsIconsImages[IconID.ARMOR_MEDIUM_TYPE],
                 // globals.cardsIconsImages[IconID.ARMOR_HEAVY_TYPE],
@@ -1212,23 +1212,81 @@ export default class Game {
     ];
 
     if (card.getWeapon()) {
-      iconsPositions.push(
-        {
-          // (WEAPON) TYPE CIRCLE
-          x: xCoordinate - 17,
-          y: yCoordinate - 17,
-          width: 35,
-          height: 35,
-        },
-        {
-          // (WEAPON) TYPE
-          x: xCoordinate - 10,
-          y: yCoordinate - 10,
-          width: 20,
-          height: 20,
-        }
-      );
+      if(card.getWeapon().getWeaponTypeID() === WeaponTypeID.MELEE) {
+        iconsPositions.push(
+          {
+            // (WEAPON) TYPE CIRCLE
+            x: xCoordinate - 17,
+            y: yCoordinate - 17,
+            width: 35,
+            height: 35,
+          },
+          {
+            // (WEAPON) TYPE
+            x: xCoordinate - 10,
+            y: yCoordinate - 10,
+            width: 20,
+            height: 20,
+          }
+        );
+      } else if(card.getWeapon().getWeaponTypeID() === WeaponTypeID.HYBRID) {
+        iconsPositions.push(
+          {
+            // (WEAPON) TYPE CIRCLE
+            x: xCoordinate - 17,
+            y: yCoordinate - 17,
+            width: 35,
+            height: 35,
+          },
+          {
+            // (WEAPON) TYPE
+            x: xCoordinate - 10,
+            y: yCoordinate - 10,
+            width: 0,
+            height: 0,
+          },
+          {
+            // (WEAPON) TYPE
+            x: xCoordinate - 10,
+            y: yCoordinate - 10,
+            width: 20,
+            height: 20,
+          }
+        );
+      } else if(card.getWeapon().getWeaponTypeID() === WeaponTypeID.MISSILE) {
+        iconsPositions.push(
+          {
+            // (WEAPON) TYPE CIRCLE
+            x: xCoordinate - 17,
+            y: yCoordinate - 17,
+            width: 35,
+            height: 35,
+          },
+          {
+            // (WEAPON) TYPE
+            x: xCoordinate - 10,
+            y: yCoordinate - 10,
+            width: 0,
+            height: 0,
+          },
+          {
+            // (WEAPON) TYPE
+            x: xCoordinate - 10,
+            y: yCoordinate - 10,
+            width: 0,
+            height: 0,
+          },
+          {
+            // (WEAPON) TYPE
+            x: xCoordinate - 10,
+            y: yCoordinate - 10,
+            width: 20,
+            height: 20,
+          }
+        );
+      }
     }
+
 
     let numOfIconsToRender = iconsPositions.length;
 
