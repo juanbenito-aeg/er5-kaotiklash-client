@@ -1,11 +1,14 @@
 import Event from "./Event.js";
-import { globals } from "../index.js";
 import SpecialSkillXG from "./SpecialSkillXG.js";
-import { MainCharacterID } from "../Game/constants.js";
+import LucretiaSpecialSkill from "./LucretiaSpecialSkill.js";
 import SpecialSkillDecrepitThrone from "./SpecialSkillDecrepitThrone.js";
+import { MainCharacterID } from "../Game/constants.js";
+import { globals } from "../index.js";
 
 export default class SummonCharacterEvent extends Event {
-  #currentPlayerMainCharacterDeck;
+  #mainCharacterID;
+  #specialSkill;
+  // #currentPlayer;
   #currentPlayerCardsInHandDeck;
   #currentPlayerEventsInPrepDeck;
   #currentPlayerMinionsInPlayDeck;
@@ -13,11 +16,14 @@ export default class SummonCharacterEvent extends Event {
   #currentPlayerBattlefieldGrid;
   #enemyBattleFieldGrid;
   #enemyMinionsInPlayDeck;
-  #currentPlayer;
   #isFinished;
+  #enemyBattlefieldGrid;
+  #lucretiaDeers;
+
   constructor(
     executedBy,
     eventCard,
+    // currentPlayer,
     currentPlayerMainCharacterDeck,
     currentPlayerCardsInHandDeck,
     currentPlayerEventsInPrepDeck,
@@ -26,11 +32,14 @@ export default class SummonCharacterEvent extends Event {
     currentPlayerBattlefieldGrid,
     enemyBattleFieldGrid,
     enemyMinionsInPlayDeck,
-    currentPlayer
+    lucretiaDeers
   ) {
     super(executedBy, eventCard);
 
-    this.#currentPlayerMainCharacterDeck = currentPlayerMainCharacterDeck;
+    this.#mainCharacterID = currentPlayerMainCharacterDeck
+      .getCards()[0]
+      .getID();
+    // this.#currentPlayer = currentPlayer;
     this.#currentPlayerCardsInHandDeck = currentPlayerCardsInHandDeck;
     this.#currentPlayerEventsInPrepDeck = currentPlayerEventsInPrepDeck;
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
@@ -38,44 +47,65 @@ export default class SummonCharacterEvent extends Event {
     this.#currentPlayerBattlefieldGrid = currentPlayerBattlefieldGrid;
     this.#enemyBattleFieldGrid = enemyBattleFieldGrid;
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
-    this.#currentPlayer = currentPlayer;
-    this.#isFinished = false;
+    this.#lucretiaDeers = lucretiaDeers;
   }
 
   execute(currentPlayer) {
     this.reduceDuration(currentPlayer);
 
-    const mainCharacterDeck = this.#currentPlayerMainCharacterDeck;
-    const mainCharacterCard = mainCharacterDeck.getCards()[0];
-    const mainCharacterID = mainCharacterCard.getID();
-
-    switch (mainCharacterID) {
+    switch (this.#mainCharacterID) {
       case MainCharacterID.THE_ERUDITE_XG:
-        const xgSkill = new SpecialSkillXG(
-          this.#currentPlayerMinionsInPlayDeck
-        );
+        if (!this.#specialSkill) {
+          const xgSkill = new SpecialSkillXG(
+            this.#currentPlayerMinionsInPlayDeck
+          );
 
-        if (!this.#isFinished) {
-          xgSkill.execute();
-          this.#isFinished = true;
+          this.#specialSkill = xgSkill;
+
+          this.#specialSkill.execute();
         }
+
         if (!this.isActive()) {
-          xgSkill.restoreMinionStats();
+          this.#specialSkill.restoreMinionStats();
+
+          globals.isPlayersSummonCharacterActive[
+            this._executedBy.getID()
+          ] = false;
         }
+
         break;
 
       case MainCharacterID.LUCRETIA:
-        //HERE A SPECIAL SKILL INSTANCE IS CREATED
+        if (!this.#specialSkill) {
+          const lucretiaSpecialSkill = new LucretiaSpecialSkill(
+            this.#lucretiaDeers,
+            this.#enemyMinionsInPlayDeck,
+            this.#enemyBattlefieldGrid
+          );
+
+          this.#specialSkill = lucretiaSpecialSkill;
+
+          this.#specialSkill.execute();
+        }
+
+        if (!this.isActive()) {
+          this.#specialSkill.undoTransformation();
+
+          globals.isPlayersSummonCharacterActive[
+            this._executedBy.getID()
+          ] = false;
+        }
+
         break;
 
       case MainCharacterID.ANGELO_DI_MORTIS:
-        //HERE A SPECIAL SKILL INSTANCE IS CREATED
+        // HERE A SPECIAL SKILL INSTANCE IS CREATED
         break;
 
       case MainCharacterID.THE_DECREPIT_THRONE:
         const decrepitThroneSkill = new SpecialSkillDecrepitThrone(
-          this.#enemyBattleFieldGrid,
-          this.#currentPlayer
+          this.#enemyBattleFieldGrid
+          // this.#currentPlayer
         );
 
         if (!this.#isFinished) {

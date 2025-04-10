@@ -1,5 +1,9 @@
 import Phase from "./Phase.js";
 import SummonCharacterEvent from "../Events/SummonCharacterEvent.js";
+import JudgmentAncientsEvent from "../Events/JudgmentAncientsEvent.js";
+import BroomFuryEvent from "../Events/BroomFuryEvent.js";
+import BlessingWaitressEvent from "../Events/BlessingWaitressEvent.js";
+import BartendersPowerEvent from "../Events/BartendersPowerEvent.js";
 import {
   CardCategory,
   CardState,
@@ -9,6 +13,7 @@ import {
   GridType,
   SpecialEventID,
 } from "../Game/constants.js";
+import { globals } from "../index.js";
 
 export default class PerformEventPhase extends Phase {
   #events;
@@ -17,12 +22,16 @@ export default class PerformEventPhase extends Phase {
   #currentPlayerMainCharacterDeck;
   #currentPlayerCardsInHandDeck;
   #currentPlayerEventsInPrepDeck;
+  #currentPlayerMinionsDeck;
   #currentPlayerMinionsInPlayDeck;
   #currentPlayerEventsInPrepGrid;
   #currentPlayerBattlefieldGrid;
   #enemyBattleFieldGrid;
   #enemyMinionsInPlayDeck;
-  #currentPlayer;
+  #enemyBattlefieldGrid;
+  #lucretiaDeers;
+  #stateMessages;
+  #player;
 
   constructor(
     state,
@@ -34,12 +43,16 @@ export default class PerformEventPhase extends Phase {
     currentPlayerMainCharacterDeck,
     currentPlayerCardsInHandDeck,
     currentPlayerEventsInPrepDeck,
+    currentPlayerMinionsDeck,
     currentPlayerMinionsInPlayDeck,
     currentPlayerEventsInPrepGrid,
     currentPlayerBattlefieldGrid,
     enemyBattleFieldGrid,
     enemyMinionsInPlayDeck,
-    currentPlayer
+    enemyBattlefieldGrid,
+    lucretiaDeers,
+    player,
+    stateMessages
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -49,12 +62,16 @@ export default class PerformEventPhase extends Phase {
     this.#currentPlayerMainCharacterDeck = currentPlayerMainCharacterDeck;
     this.#currentPlayerCardsInHandDeck = currentPlayerCardsInHandDeck;
     this.#currentPlayerEventsInPrepDeck = currentPlayerEventsInPrepDeck;
+    this.#currentPlayerMinionsDeck = currentPlayerMinionsDeck;
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
     this.#currentPlayerEventsInPrepGrid = currentPlayerEventsInPrepGrid;
     this.#currentPlayerBattlefieldGrid = currentPlayerBattlefieldGrid;
     this.#enemyBattleFieldGrid = enemyBattleFieldGrid;
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
-    this.#currentPlayer = currentPlayer;
+    this.#enemyBattlefieldGrid = enemyBattlefieldGrid;
+    this.#stateMessages = stateMessages;
+    this.#lucretiaDeers = lucretiaDeers;
+    this.#player = player;
   }
 
   static create(
@@ -64,13 +81,16 @@ export default class PerformEventPhase extends Phase {
     mouseInput,
     events,
     currentPlayer,
-    phaseMessage
+    phaseMessage,
+    stateMessages
   ) {
     const eventsDeck = deckContainer.getDecks()[DeckType.EVENTS];
     const activeEventsDeck = deckContainer.getDecks()[DeckType.ACTIVE_EVENTS];
+    const lucretiaDeers = deckContainer.getDecks()[DeckType.LUCRETIA_DEERS];
     let currentPlayerMainCharacterDeck;
     let currentPlayerCardsInHandDeck;
     let currentPlayerEventsInPrepDeck;
+    let currentPlayerMinionsDeck;
     let currentPlayerMinionsInPlayDeck;
     let enemyMinionsInPlayDeck;
 
@@ -83,6 +103,9 @@ export default class PerformEventPhase extends Phase {
 
       currentPlayerEventsInPrepDeck =
         deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION];
+
+      currentPlayerMinionsDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS];
 
       currentPlayerMinionsInPlayDeck =
         deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
@@ -99,6 +122,9 @@ export default class PerformEventPhase extends Phase {
       currentPlayerEventsInPrepDeck =
         deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION];
 
+      currentPlayerMinionsDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
+
       currentPlayerMinionsInPlayDeck =
         deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
 
@@ -108,7 +134,7 @@ export default class PerformEventPhase extends Phase {
 
     let currentPlayerEventsInPrepGrid;
     let currentPlayerBattlefieldGrid;
-    let enemyBattleFieldGrid;
+    let enemyBattlefieldGrid;
 
     if (player === currentPlayer) {
       currentPlayerEventsInPrepGrid =
@@ -117,7 +143,7 @@ export default class PerformEventPhase extends Phase {
       currentPlayerBattlefieldGrid =
         board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
 
-      enemyBattleFieldGrid = board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
+      enemyBattlefieldGrid = board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
     } else {
       currentPlayerEventsInPrepGrid =
         board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
@@ -125,7 +151,7 @@ export default class PerformEventPhase extends Phase {
       currentPlayerBattlefieldGrid =
         board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
 
-      enemyBattleFieldGrid = board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
+      enemyBattlefieldGrid = board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
     }
 
     const performEventPhase = new PerformEventPhase(
@@ -138,12 +164,16 @@ export default class PerformEventPhase extends Phase {
       currentPlayerMainCharacterDeck,
       currentPlayerCardsInHandDeck,
       currentPlayerEventsInPrepDeck,
+      currentPlayerMinionsDeck,
       currentPlayerMinionsInPlayDeck,
       currentPlayerEventsInPrepGrid,
       currentPlayerBattlefieldGrid,
       enemyBattleFieldGrid,
       enemyMinionsInPlayDeck,
-      currentPlayer
+      enemyBattlefieldGrid,
+      lucretiaDeers,
+      player,
+      stateMessages
     );
 
     return performEventPhase;
@@ -197,6 +227,15 @@ export default class PerformEventPhase extends Phase {
       hoveredCard.getCategory() !== CardCategory.ARMOR &&
       hoveredCard.getCurrentPrepTimeInRounds() === 0
     ) {
+      // MAKE IT IMPOSSIBLE FOR THE PLAYER TO USE THE "Summon Character" EVENT IF ONE IS ALREADY ACTIVE
+      if (
+        hoveredCard.getCategory() === CardCategory.SPECIAL &&
+        hoveredCard.getID() === SpecialEventID.SUMMON_CHARACTER &&
+        globals.isPlayersSummonCharacterActive[this.#player.getID()]
+      ) {
+        return;
+      }
+
       if (!hoveredCard.isLeftClicked()) {
         hoveredCard.setState(CardState.HOVERED);
       } else {
@@ -211,8 +250,13 @@ export default class PerformEventPhase extends Phase {
     const selectedCard =
       this.#currentPlayerEventsInPrepDeck.lookForSelectedCard();
 
-    const selectedEventInstance =
-      this.#determineAndCreateSelectedEvent(selectedCard);
+    let selectedEventInstance;
+    if (!globals.blessingWaitressCardData.isEventActive) {
+      selectedEventInstance =
+        this.#determineAndCreateSelectedEvent(selectedCard);
+    } else {
+      selectedEventInstance = globals.blessingWaitressCardData.eventInstance;
+    }
 
     if (selectedCard.getInitialDurationInRounds() === 0) {
       selectedEventInstance.execute();
@@ -220,7 +264,9 @@ export default class PerformEventPhase extends Phase {
       this.#events.push(selectedEventInstance);
     }
 
-    this._state = PerformEventState.END;
+    if (!globals.blessingWaitressCardData.isEventActive) {
+      this._state = PerformEventState.END;
+    }
   }
 
   #determineAndCreateSelectedEvent(selectedCard) {
@@ -230,8 +276,9 @@ export default class PerformEventPhase extends Phase {
       switch (selectedCard.getID()) {
         case SpecialEventID.SUMMON_CHARACTER:
           selectedEventInstance = new SummonCharacterEvent(
-            this.#currentPlayer,
+            this.#player,
             selectedCard,
+            // this.#currentPlayer
             this.#currentPlayerMainCharacterDeck,
             this.#currentPlayerCardsInHandDeck,
             this.#currentPlayerEventsInPrepDeck,
@@ -240,9 +287,54 @@ export default class PerformEventPhase extends Phase {
             this.#currentPlayerBattlefieldGrid,
             this.#enemyBattleFieldGrid,
             this.#enemyMinionsInPlayDeck,
-            this.#currentPlayer
+            this.#lucretiaDeers
           );
-          selectedEventInstance.execute(this.#currentPlayer);
+
+          globals.isPlayersSummonCharacterActive[this.#player.getID()] = true;
+
+          // selectedEventInstance.execute(this.#currentPlayer);
+
+          break;
+
+        case SpecialEventID.JUDGMENT_ANCIENTS:
+          selectedEventInstance = new JudgmentAncientsEvent(
+            this.#player,
+            selectedCard
+          );
+          break;
+
+        case SpecialEventID.BROOM_FURY:
+          selectedEventInstance = new BroomFuryEvent(
+            this.#player,
+            selectedCard,
+            this.#stateMessages,
+            this.#currentPlayerMinionsDeck,
+            this.#currentPlayerMinionsInPlayDeck
+          );
+          break;
+
+        case SpecialEventID.BLESSING_WAITRESS:
+          globals.blessingWaitressCardData.isEventActive = true;
+
+          selectedEventInstance =
+            globals.blessingWaitressCardData.eventInstance =
+              new BlessingWaitressEvent(
+                this.#player,
+                selectedCard,
+                this._phaseMessage,
+                this.#stateMessages,
+                this.#currentPlayerMinionsInPlayDeck
+              );
+
+          break;
+
+        case SpecialEventID.BARTENDERS_POWER:
+          selectedEventInstance = new BartendersPowerEvent(
+            this.#player,
+            selectedCard,
+            this.#currentPlayerMinionsInPlayDeck,
+            this.#stateMessages
+          );
           break;
       }
     } else {

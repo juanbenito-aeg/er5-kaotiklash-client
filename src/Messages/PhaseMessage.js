@@ -125,6 +125,16 @@ export default class PhaseMessage extends Message {
         "",
       ],
     },
+
+    blessingWaitress: {
+      selectMinion: [
+        // ENG
+        "Select a minion to heal.",
+
+        // EUS
+        "",
+      ],
+    },
   };
 
   #currentContent;

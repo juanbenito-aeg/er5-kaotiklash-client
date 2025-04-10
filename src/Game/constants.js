@@ -102,7 +102,8 @@ const DeckType = {
   PLAYER_2_MINIONS: 10,
   PLAYER_2_MINIONS_IN_PLAY: 11,
   PLAYER_2_EVENTS_IN_PREPARATION: 12,
-  MAIN: 13,
+  LUCRETIA_DEERS: 13,
+  MAIN: 14,
 };
 
 const MainCharacterID = {
@@ -246,6 +247,16 @@ const EventCooldownState = {
 
 const SpecialEventID = {
   SUMMON_CHARACTER: 0,
+  JUDGMENT_ANCIENTS: 1,
+  BARTENDERS_POWER: 5,
+  BROOM_FURY: 6,
+  BLESSING_WAITRESS: 7,
+};
+
+const BlessingWaitressState = {
+  INIT: 0,
+  SELECT_MINION: 1,
+  HEAL: 2,
 };
 
 export {
@@ -277,4 +288,5 @@ export {
   EquipWeaponState,
   EventCooldownState,
   SpecialEventID,
+  BlessingWaitressState,
 };

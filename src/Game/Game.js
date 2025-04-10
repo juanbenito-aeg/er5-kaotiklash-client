@@ -30,10 +30,11 @@ export default class Game {
   #deckContainer;
   #board;
   #turns;
+  #turnsCounter;
   #mouseInput;
   #events;
   #phaseMessage;
-  #turnCount;
+  #stateMessages;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -82,6 +83,8 @@ export default class Game {
       PhaseMessage.content.drawCard.initialDraw[globals.language]
     );
 
+    game.#stateMessages = [];
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
@@ -89,7 +92,8 @@ export default class Game {
       game.#mouseInput,
       game.#players[PlayerID.PLAYER_1],
       game.#events,
-      game.#phaseMessage
+      game.#phaseMessage,
+      game.#stateMessages
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -98,7 +102,8 @@ export default class Game {
       game.#mouseInput,
       game.#players[PlayerID.PLAYER_2],
       game.#events,
-      game.#phaseMessage
+      game.#phaseMessage,
+      game.#stateMessages
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -485,8 +490,8 @@ export default class Game {
 
       this.#healHarmedMinions();
 
-      if (globals.isDecrepitThroneActive && this.#turnCount == null) {
-        this.#turnCount = 0;
+      if (globals.isDecrepitThroneActive && this.#turnsCounter == null) {
+        this.#turnsCounter = 0;
       }
 
       const newCurrentPlayerID = this.#turns[
@@ -495,18 +500,18 @@ export default class Game {
 
       this.#currentPlayer = this.#players[newCurrentPlayerID];
 
-      this.#executeEvent();
+      this.#executeEvents();
 
       if (
         globals.isDecrepitThroneActive &&
         this.#currentPlayer.getID() !== globals.activePlayerWithDecrepitThrone
       ) {
-        if (this.#turnCount === 0 || this.#turnCount === 2) {
-          this.#turnCount++;
+        if (this.#turnsCounter === 0 || this.#turnsCounter === 2) {
+          this.#turnsCounter++;
           globals.isCurrentTurnFinished = true;
           return;
         }
-        this.#turnCount++;
+        this.#turnsCounter++;
       }
     }
 
@@ -528,6 +533,9 @@ export default class Game {
 
     this.#mouseInput.setLeftButtonPressedFalse();
 
+    this.#executeEvents();
+
+    this.#updateStateMessages();
     this.#updateDamageMessages();
 
     this.#updatePlayersTotalHP();
@@ -594,7 +602,7 @@ export default class Game {
     return totalHP;
   }
 
-  #executeEvent() {
+  #executeEvents() {
     for (let i = 0; i < this.#events.length; i++) {
       let event = this.#events[i];
       event.execute(this.#currentPlayer);
@@ -616,12 +624,25 @@ export default class Game {
     }
   }
 
+  #updateStateMessages() {
+    for (let i = 0; i < this.#stateMessages.length; i++) {
+      let currentMessage = this.#stateMessages[i];
+
+      let isFinished = currentMessage.execute();
+
+      if (isFinished) {
+        this.#stateMessages.splice(i, 1);
+      }
+    }
+  }
+
   #updateDamageMessages() {
     for (let i = 0; i < globals.damageMessages.length; i++) {
       let message = globals.damageMessages[i];
 
-      let isFisished = message.execute();
-      if (isFisished) {
+      let isFinished = message.execute();
+
+      if (isFinished) {
         globals.damageMessages.splice(i, 1);
       }
     }
@@ -656,6 +677,7 @@ export default class Game {
     this.#renderPhaseMessage();
     this.#renderCardsReverse();
     this.#renderCards();
+    this.#renderStateMessages();
     this.#renderDamageMessages();
   }
 
@@ -1083,7 +1105,8 @@ export default class Game {
         currentDeck.getDeckType() !== DeckType.EVENTS &&
         currentDeck.getDeckType() !== DeckType.ACTIVE_EVENTS &&
         currentDeck.getDeckType() !== DeckType.PLAYER_1_MINIONS &&
-        currentDeck.getDeckType() !== DeckType.PLAYER_2_MINIONS
+        currentDeck.getDeckType() !== DeckType.PLAYER_2_MINIONS &&
+        currentDeck.getDeckType() !== DeckType.LUCRETIA_DEERS
       ) {
         for (let j = 0; j < currentDeck.getCards().length; j++) {
           const currentCard = currentDeck.getCards()[j];
@@ -2146,18 +2169,44 @@ export default class Game {
     }
   }
 
+  #renderStateMessages() {
+    globals.ctx.save();
+
+    for (let i = 0; i < this.#stateMessages.length; i++) {
+      const currentMessage = this.#stateMessages[i];
+
+      globals.ctx.shadowBlur = 20;
+      globals.ctx.shadowColor = "black";
+      globals.ctx.font = currentMessage.getFont();
+      globals.ctx.fillStyle = currentMessage.getColor();
+
+      for (let i = 0; i < 10; i++) {
+        globals.ctx.fillText(
+          currentMessage.getContent(),
+          currentMessage.getXPosition(),
+          currentMessage.getYPosition()
+        );
+      }
+    }
+
+    globals.ctx.restore();
+  }
+
   #renderDamageMessages() {
+    const damageMsgsFontSize = 75;
+
     for (let i = 0; i < globals.damageMessages.length; i++) {
       let message = globals.damageMessages[i];
       let duration = message.getDuration();
 
-      let fontSize = globals.damageFontSize / duration;
+      let fontSize = damageMsgsFontSize / duration;
+
       if (fontSize >= 100) {
         fontSize = 100;
       }
 
       globals.ctx.font = `${fontSize}px MedievalSharp`;
-      globals.ctx.fillStyle = "red";
+      globals.ctx.fillStyle = message.getColor();
       globals.ctx.fillText(
         message.getContent(),
         message.getXPosition(),

@@ -76,6 +76,10 @@ export default class Minion extends Card {
     return this.#currentConstitution;
   }
 
+  setCurrentConstitution(newConstitution) {
+    this.#currentConstitution = newConstitution;
+  }
+
   getInitialDefense() {
     return this.#initialDefense;
   }
@@ -152,6 +156,33 @@ export default class Minion extends Card {
     const fumbleChance =
       ((this.#currentMadness + this.#currentAttack) / 2) * 0.2;
     return fumbleChance;
+  }
+
+  setCurrentDurability(newDurability) {
+    this.#weapon.setCurrentDurability(newDurability);
+  }
+
+  getParryFumbleChance() {
+    //Probability (%) = (Madness * 0.005) * 100    const fumbleChance =
+    const fumbleChance = (this.#currentMadness * 0.005) * 100;
+    return fumbleChance;
+  }
+
+  getParryCritChance() {
+    // Probability (%) = (Madness * 0.0035) * 100
+    const critChance = (this.#currentMadness * 0.0035) * 100;
+    return critChance;
+  }
+
+  getHalfParryFumbleChance() {
+    //The weapon blocks the damage previously calculated * 1.25.
+    // Probability (%) = (Madness * 0.01) * 100
+    const HalffumbleChance = (this.#currentMadness * 0.01) * 100;
+    return HalffumbleChance;
+  }
+
+  removeWeapon() {
+    this.#weapon = null;
   }
 
 }

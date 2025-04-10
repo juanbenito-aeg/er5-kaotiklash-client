@@ -7,6 +7,7 @@ import PerformEventPhase from "./PerformEventPhase.js";
 import DiscardCardPhase from "./DiscardCardPhase.js";
 import EquipWeaponEvent from "../Events/EquipWeaponEvent.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
+import StateMessage from "../Messages/StateMessage.js";
 import {
   PlayerID,
   CardState,
@@ -18,6 +19,7 @@ import {
   PhaseButtonData,
   GridType,
   BoxState,
+  MinionTypeID,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 
@@ -33,9 +35,18 @@ export default class Turn {
   #player;
   #events;
   #phaseMessage;
+  #stateMessages;
   #equipWeaponState;
 
-  constructor(deckContainer, board, mouseInput, player, events, phaseMessage) {
+  constructor(
+    deckContainer,
+    board,
+    mouseInput,
+    player,
+    events,
+    phaseMessage,
+    stateMessages
+  ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
     this.#currentPhase = PhaseType.INVALID;
@@ -47,6 +58,7 @@ export default class Turn {
     this.#player = player;
     this.#events = events;
     this.#phaseMessage = phaseMessage;
+    this.#stateMessages = stateMessages;
     this.#equipWeaponState = EquipWeaponState.INIT;
   }
 
@@ -73,7 +85,8 @@ export default class Turn {
         this.#mouseInput,
         this.#events,
         currentPlayer,
-        this.#phaseMessage
+        this.#phaseMessage,
+        this.#stateMessages
       );
 
       this.#phases.push(currentPhase);
@@ -310,14 +323,21 @@ export default class Turn {
   #equipWeapon() {
     let playerXEventsInPreparationGrid;
     let playerXEventsInPreparationDeck;
+    let playerXBattlefieldGrid;
     let playerXMinionsInPlayDeck;
 
     if (this.#player.getID() === globals.firstActivePlayerID) {
       playerXEventsInPreparationGrid =
         this.#board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
+
+      playerXBattlefieldGrid =
+        this.#board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
     } else {
       playerXEventsInPreparationGrid =
         this.#board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
+
+      playerXBattlefieldGrid =
+        this.#board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
     }
 
     if (this.#player.getID() === PlayerID.PLAYER_1) {
@@ -404,6 +424,22 @@ export default class Turn {
           if (minion) {
             if (!minion.isLeftClicked()) {
               minion.setState(CardState.HOVERED);
+            } else if (minion.getMinionTypeID() === MinionTypeID.SPECIAL) {
+              const boxDeerIsPositionedIn = minion.getBoxIsPositionedIn(
+                playerXBattlefieldGrid,
+                minion
+              );
+
+              const deerWeaponsMsg = new StateMessage(
+                "DEER CANNOT EQUIP WEAPONS",
+                "20px MedievalSharp",
+                "red",
+                4,
+                minion.getXCoordinate() + boxDeerIsPositionedIn.getWidth() / 2,
+                minion.getYCoordinate() + boxDeerIsPositionedIn.getHeight() / 2
+              );
+
+              this.#stateMessages.push(deerWeaponsMsg);
             } else if (!minion.getWeapon()) {
               minion.setState(CardState.SELECTED);
 
@@ -512,6 +548,22 @@ export default class Turn {
           ) {
             if (i === PhaseButton.SKIP_OR_CANCEL) {
               this.#numOfExecutedPhases++;
+            } else if (
+              i === PhaseType.ATTACK &&
+              globals.judgmentAncientsEventData.isActive &&
+              this.#player.getID() ===
+                globals.judgmentAncientsEventData.affectedPlayerID
+            ) {
+              const cannotAttackDueToActiveEventMsg = new StateMessage(
+                "CANNOT ATTACK DUE TO ACTIVE EVENT",
+                "20px MedievalSharp",
+                "red",
+                4,
+                buttonXCoordinate + buttonWidth / 2,
+                buttonYCoordinate + buttonHeight / 2
+              );
+
+              this.#stateMessages.push(cannotAttackDueToActiveEventMsg);
             } else if (this.#currentPhase === PhaseType.INVALID) {
               this.#currentPhase = i;
 
