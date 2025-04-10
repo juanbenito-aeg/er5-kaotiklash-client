@@ -3,6 +3,7 @@ import SummonCharacterEvent from "../Events/SummonCharacterEvent.js";
 import JudgmentAncientsEvent from "../Events/JudgmentAncientsEvent.js";
 import BroomFuryEvent from "../Events/BroomFuryEvent.js";
 import BlessingWaitressEvent from "../Events/BlessingWaitressEvent.js";
+import BartendersPowerEvent from "../Events/BartendersPowerEvent.js";
 import {
   CardCategory,
   CardState,
@@ -28,6 +29,7 @@ export default class PerformEventPhase extends Phase {
   #enemyMinionsInPlayDeck;
   #enemyBattlefieldGrid;
   #lucretiaDeers;
+  #stateMessages;
   #player;
 
   constructor(
@@ -47,7 +49,8 @@ export default class PerformEventPhase extends Phase {
     enemyMinionsInPlayDeck,
     enemyBattlefieldGrid,
     lucretiaDeers,
-    player
+    player,
+    stateMessages
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -63,6 +66,7 @@ export default class PerformEventPhase extends Phase {
     this.#currentPlayerBattlefieldGrid = currentPlayerBattlefieldGrid;
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
     this.#enemyBattlefieldGrid = enemyBattlefieldGrid;
+    this.#stateMessages = stateMessages;
     this.#lucretiaDeers = lucretiaDeers;
     this.#player = player;
   }
@@ -74,7 +78,8 @@ export default class PerformEventPhase extends Phase {
     mouseInput,
     events,
     currentPlayer,
-    phaseMessage
+    phaseMessage,
+    stateMessages
   ) {
     const eventsDeck = deckContainer.getDecks()[DeckType.EVENTS];
     const activeEventsDeck = deckContainer.getDecks()[DeckType.ACTIVE_EVENTS];
@@ -163,7 +168,8 @@ export default class PerformEventPhase extends Phase {
       enemyMinionsInPlayDeck,
       enemyBattlefieldGrid,
       lucretiaDeers,
-      player
+      player,
+      stateMessages
     );
 
     return performEventPhase;
@@ -312,6 +318,15 @@ export default class PerformEventPhase extends Phase {
                 this.#currentPlayerMinionsInPlayDeck
               );
 
+          break;
+
+        case SpecialEventID.BARTENDERS_POWER:
+          selectedEventInstance = new BartendersPowerEvent(
+            this.#player,
+            selectedCard,
+            this.#currentPlayerMinionsInPlayDeck,
+            this.#stateMessages
+          );
           break;
       }
     } else {
