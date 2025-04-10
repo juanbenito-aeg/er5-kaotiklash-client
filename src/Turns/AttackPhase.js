@@ -222,7 +222,6 @@ export default class AttackPhase extends Phase {
 
         attacker = this.#currentPlayerMovementGridDeck.lookForSelectedCard();
         target = this.#enemyMovementGridDeck.lookForSelectedCard();
-        console.log(this.#parry);
         const attackEvent = AttackEvent.create(
           attacker,
           target,
@@ -321,7 +320,6 @@ export default class AttackPhase extends Phase {
             attackerBox.getYCoordinate() - 135 - attackerBox.getHeight();
   
           if (targetBox.getYCoordinate() >= targetMinYCoordinate) {
-            console.log("Y COORDINATE LIMIT EXCEEDED");
             isYCoordinateLimitExceeded = true;
           }
 
@@ -351,14 +349,11 @@ export default class AttackPhase extends Phase {
           }
         }
 
-        console.log("isYCoordinateLimitExceeded", isYCoordinateLimitExceeded);
-        console.log("isXCoordinateLimitExceeded", isXCoordinateLimitExceeded);
         if (
           isXCoordinateLimitExceeded &&
           isYCoordinateLimitExceeded
         ) {
           console.log("TARGET NOT WITHIN REACH");
-
           isTargetWithinReach = false;
         } else {
           console.log("TARGET WITHIN REACH");

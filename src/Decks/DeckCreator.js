@@ -1,7 +1,12 @@
 import CardFactory from "./CardFactory.js";
 import Deck from "./Deck.js";
 import DeckContainer from "./DeckContainer.js";
-import { CardCategory, DeckType, MainCharacterID } from "../Game/constants.js";
+import {
+  CardCategory,
+  DeckType,
+  MainCharacterID,
+  MinionTypeID,
+} from "../Game/constants.js";
 
 export default class DeckCreator {
   #mainDeckConfig;
@@ -41,6 +46,7 @@ export default class DeckCreator {
     const events = new Deck(DeckType.EVENTS, []);
     const activeEvents = new Deck(DeckType.ACTIVE_EVENTS, []);
     const joseph = new Deck(DeckType.JOSEPH, []);
+    const lucretiaDeers = new Deck(DeckType.LUCRETIA_DEERS, []);
 
     // CREATION OF PLAYER 1'S DECKS
     const player1MainCharacter = new Deck(DeckType.PLAYER_1_MAIN_CHARACTER, []);
@@ -101,7 +107,9 @@ export default class DeckCreator {
           player2MainCharacter.insertCard(card);
         }
       } else if (card.getCategory() === CardCategory.MINION) {
-        if (numOfDealtMinions % 2 === 0) {
+        if (card.getMinionTypeID() === MinionTypeID.SPECIAL) {
+          lucretiaDeers.insertCard(card);
+        } else if (numOfDealtMinions % 2 === 0) {
           player1Minions.insertCard(card);
         } else {
           player2Minions.insertCard(card);
@@ -127,6 +135,7 @@ export default class DeckCreator {
       player2Minions,
       player2MinionsInPlay,
       player2EventsInPreparation,
+      lucretiaDeers,
     ]);
 
     return deckContainer;

@@ -1,10 +1,13 @@
 import Event from "./Event.js";
 import SpecialSkillXG from "./SpecialSkillXG.js";
+import LucretiaSpecialSkill from "./LucretiaSpecialSkill.js";
 import { MainCharacterID } from "../Game/constants.js";
 import SpecialSkillAngelo from "./SpecialSkillAngelo.js";
+import { globals } from "../index.js";
 
 export default class SummonCharacterEvent extends Event {
-  #currentPlayerMainCharacterDeck;
+  #mainCharacterID;
+  #specialSkill;
   #currentPlayerCardsInHandDeck;
   #currentPlayerEventsInPrepDeck;
   #currentPlayerMinionsInPlayDeck;
@@ -15,6 +18,9 @@ export default class SummonCharacterEvent extends Event {
   #enemyMinionsInPlayDeck;
   #mouseInput;
   #isFinished;
+  #enemyBattlefieldGrid;
+  #lucretiaDeers;
+
   constructor(
     executedBy,
     eventCard,
@@ -27,11 +33,14 @@ export default class SummonCharacterEvent extends Event {
     enemyEventsInPrepGrid,
     enemyBattleFieldGrid,
     enemyMinionsInPlayDeck,
-    mouseInput
+    mouseInput,
+    lucretiaDeers
   ) {
     super(executedBy, eventCard);
 
-    this.#currentPlayerMainCharacterDeck = currentPlayerMainCharacterDeck;
+    this.#mainCharacterID = currentPlayerMainCharacterDeck
+      .getCards()[0]
+      .getID();
     this.#currentPlayerCardsInHandDeck = currentPlayerCardsInHandDeck;
     this.#currentPlayerEventsInPrepDeck = currentPlayerEventsInPrepDeck;
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
@@ -42,32 +51,55 @@ export default class SummonCharacterEvent extends Event {
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
     this.#mouseInput = mouseInput;
     this.#isFinished = false;
+    this.#lucretiaDeers = lucretiaDeers;
   }
 
   execute(currentPlayer) {
     this.reduceDuration(currentPlayer);
 
-    const mainCharacterDeck = this.#currentPlayerMainCharacterDeck;
-    const mainCharacterCard = mainCharacterDeck.getCards()[0];
-    const mainCharacterID = mainCharacterCard.getID();
-
-    switch (mainCharacterID) {
+    switch (this.#mainCharacterID) {
       case MainCharacterID.THE_ERUDITE_XG:
-        const xgSkill = new SpecialSkillXG(
-          this.#currentPlayerMinionsInPlayDeck
-        );
+        if (!this.#specialSkill) {
+          const xgSkill = new SpecialSkillXG(
+            this.#currentPlayerMinionsInPlayDeck
+          );
 
-        if (!this.#isFinished) {
-          xgSkill.execute();
-          this.#isFinished = true;
+          this.#specialSkill = xgSkill;
+
+          this.#specialSkill.execute();
         }
+
         if (!this.isActive()) {
-          xgSkill.restoreMinionStats();
+          this.#specialSkill.restoreMinionStats();
+
+          globals.isPlayersSummonCharacterActive[
+            this._executedBy.getID()
+          ] = false;
         }
+
         break;
 
       case MainCharacterID.LUCRETIA:
-        //HERE A SPECIAL SKILL INSTANCE IS CREATED
+        if (!this.#specialSkill) {
+          const lucretiaSpecialSkill = new LucretiaSpecialSkill(
+            this.#lucretiaDeers,
+            this.#enemyMinionsInPlayDeck,
+            this.#enemyBattlefieldGrid
+          );
+
+          this.#specialSkill = lucretiaSpecialSkill;
+
+          this.#specialSkill.execute();
+        }
+
+        if (!this.isActive()) {
+          this.#specialSkill.undoTransformation();
+
+          globals.isPlayersSummonCharacterActive[
+            this._executedBy.getID()
+          ] = false;
+        }
+
         break;
 
       case MainCharacterID.ANGELO_DI_MORTIS:

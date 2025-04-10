@@ -29,6 +29,10 @@ export default class CardMovement {
     return this.#card.getSpecialSkill();
   }
 
+  getMinionTypeID() {
+    return this.#card.getMinionTypeID();
+  }
+
   getInitialHP() {
     return this.#card.getInitialHP();
   }
@@ -73,6 +77,10 @@ export default class CardMovement {
     return this.#card.getInitialConstitution();
   }
 
+  setCurrentConstitution(newConstitution) {
+    this.#card.setCurrentConstitution(newConstitution);
+  }
+
   setCurrentAttack(newAttack) {
     this.#card.setCurrentAttack(newAttack);
   }
@@ -80,6 +88,7 @@ export default class CardMovement {
   setCurrentDefense(newDefense) {
     this.#card.setCurrentDefense(newDefense);
   }
+
   getInitialDefense() {
     return this.#card.getInitialDefense();
   }
@@ -240,8 +249,8 @@ export default class CardMovement {
     this.#gridPosition = position;
   }
 
-  setCurrenPrepTimeInRounds(newPrepTimeInRounds) {
-    this.#card.setCurrenPrepTimeInRounds(newPrepTimeInRounds);
+  setCurrentPrepTimeInRounds(newPrepTimeInRounds) {
+    this.#card.setCurrentPrepTimeInRounds(newPrepTimeInRounds);
   }
 
   setCurrentDurationInRounds(newDuration) {
@@ -282,5 +291,25 @@ export default class CardMovement {
 
   getFumbleChance() {
     return this.#card.getFumbleChance();
+  }
+
+  setCurrentDurability(newDurability) {
+    this.#card.setCurrentDurability(newDurability);
+  }
+
+  getParryFumbleChance() {
+    return this.#card.getParryFumbleChance();
+  }
+
+  getParryCritChance() {
+    return this.#card.getParryCritChance();
+  }
+
+  getHalfParryFumbleChance() {
+    return this.#card.getHalfParryFumbleChance();
+  }
+
+  removeWeapon() {
+    this.#card.removeWeapon();
   }
 }

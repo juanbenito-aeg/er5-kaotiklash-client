@@ -27,6 +27,12 @@ export default class Deck {
     this.#cards.splice(indexOfCardToRemove, 1);
   }
 
+  replaceCard(cardToReplace, replacementCard) {
+    const indexOfCardToReplace = this.#cards.indexOf(cardToReplace);
+
+    this.#cards.splice(indexOfCardToReplace, 1, replacementCard);
+  }
+
   lookForHoveredCard() {
     for (let i = 0; i < this.getCards().length; i++) {
       const currentCard = this.getCards()[i];
