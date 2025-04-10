@@ -55,6 +55,10 @@ const globals = {
     isEventActive: false,
     eventInstance: {},
   },
+  poisonOfTheAbyssEventData: {
+    isActive: false,
+    affectedPlayerID: -1,
+  },
 };
 
 window.onload = initLogInScreen;

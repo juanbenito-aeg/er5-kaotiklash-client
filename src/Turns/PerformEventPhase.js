@@ -4,6 +4,7 @@ import JudgmentAncientsEvent from "../Events/JudgmentAncientsEvent.js";
 import BroomFuryEvent from "../Events/BroomFuryEvent.js";
 import BlessingWaitressEvent from "../Events/BlessingWaitressEvent.js";
 import BartendersPowerEvent from "../Events/BartendersPowerEvent.js";
+import PoisonOfTheAbyssEvent from "../Events/PoisonOfTheAbyssEvent.js";
 import {
   CardCategory,
   CardState,
@@ -51,7 +52,6 @@ export default class PerformEventPhase extends Phase {
     enemyEventsInPrepGrid,
     enemyBattleFieldGrid,
     enemyMinionsInPlayDeck,
-    enemyBattlefieldGrid,
     lucretiaDeers,
     player,
     stateMessages
@@ -71,7 +71,6 @@ export default class PerformEventPhase extends Phase {
     this.#enemyBattleFieldGrid = enemyBattleFieldGrid;
     this.#enemyEventsInPrepGrid = enemyEventsInPrepGrid;
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
-    this.#enemyBattlefieldGrid = enemyBattlefieldGrid;
     this.#stateMessages = stateMessages;
     this.#lucretiaDeers = lucretiaDeers;
     this.#player = player;
@@ -344,6 +343,13 @@ export default class PerformEventPhase extends Phase {
             selectedCard,
             this.#currentPlayerMinionsInPlayDeck,
             this.#stateMessages
+          );
+          break;
+
+        case SpecialEventID.POISON_OF_THE_ABYSS:
+          selectedEventInstance = new PoisonOfTheAbyssEvent(
+            this.#player, 
+            selectedCard
           );
           break;
       }

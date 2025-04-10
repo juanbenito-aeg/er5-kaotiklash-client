@@ -7,6 +7,7 @@ import Turn from "../Turns/Turn.js";
 import MouseInput from "./MouseInput.js";
 import ImageSet from "./ImageSet.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
+import StateMessage from "../Messages/StateMessage.js";
 import {
   GameState,
   CardCategory,
@@ -487,7 +488,11 @@ export default class Game {
     if (globals.isCurrentTurnFinished) {
       globals.isCurrentTurnFinished = false;
 
+      if(globals.poisonOfTheAbyssEventData.isActive === false) {
       this.#healHarmedMinions();
+      } else if(globals.poisonOfTheAbyssEventData.isActive === true) {
+      this.#poisonMinions();
+      }
 
       const newCurrentPlayerID = this.#turns[
         this.#currentPlayer.getID()
@@ -542,6 +547,46 @@ export default class Game {
       }
     }
   }
+
+  #poisonMinions() {
+    const minionsInPlayDecks = [
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY],
+    ];
+
+    if(globals.poisonOfTheAbyssEventData.affectedPlayerID === PlayerID.PLAYER_1) {
+      for(let i = 0; i < minionsInPlayDecks[0].getCards().length; i++) {
+        const currentCard = minionsInPlayDecks[0].getCards()[i];
+
+          currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
+          let message = new StateMessage(
+            "-5",
+            `50px MedievalSharp`,
+            "green",
+            2,
+            currentCard.getXCoordinate() + 55,
+            currentCard.getYCoordinate() + 55
+          );
+          this.#stateMessages.push(message);
+      }
+      
+  } else {
+    for(let i = 0; i < minionsInPlayDecks[1].getCards().length; i++) {
+      const currentCard = minionsInPlayDecks[1].getCards()[i];
+
+        currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
+        let message = new StateMessage(
+          "-5",
+          `50px MedievalSharp`,
+          "green",
+          1,
+          currentCard.getXCoordinate() + 55,
+          currentCard.getYCoordinate() + 55
+        );
+        this.#stateMessages.push(message);
+    }
+  }
+}
 
   #updatePlayersTotalHP() {
     // PLAYER 1

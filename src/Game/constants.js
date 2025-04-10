@@ -248,9 +248,11 @@ const EventCooldownState = {
 const SpecialEventID = {
   SUMMON_CHARACTER: 0,
   JUDGMENT_ANCIENTS: 1,
+  POISON_OF_THE_ABYSS: 3,
   BARTENDERS_POWER: 5,
   BROOM_FURY: 6,
   BLESSING_WAITRESS: 7,
+
 };
 
 const BlessingWaitressState = {
