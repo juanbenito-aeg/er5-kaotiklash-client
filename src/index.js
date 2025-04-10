@@ -57,7 +57,8 @@ const globals = {
   },
   poisonOfTheAbyssEventData: {
     isActive: false,
-    affectedPlayerID: -1,
+    isPlayer1Affected: false,
+    isPlayer2Affected: false,
   },
 };
 

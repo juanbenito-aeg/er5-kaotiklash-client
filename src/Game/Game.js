@@ -554,7 +554,7 @@ export default class Game {
       this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY],
     ];
 
-    if(globals.poisonOfTheAbyssEventData.affectedPlayerID === PlayerID.PLAYER_1) {
+    if(globals.poisonOfTheAbyssEventData.isPlayer2Affected) {
       for(let i = 0; i < minionsInPlayDecks[0].getCards().length; i++) {
         const currentCard = minionsInPlayDecks[0].getCards()[i];
 
@@ -563,14 +563,15 @@ export default class Game {
             "-5",
             `50px MedievalSharp`,
             "green",
-            2,
+            1,
             currentCard.getXCoordinate() + 55,
             currentCard.getYCoordinate() + 55
           );
           this.#stateMessages.push(message);
       }
       
-  } else {
+  } 
+  if(globals.poisonOfTheAbyssEventData.isPlayer1Affected) {
     for(let i = 0; i < minionsInPlayDecks[1].getCards().length; i++) {
       const currentCard = minionsInPlayDecks[1].getCards()[i];
 

@@ -15,15 +15,17 @@ export default class PoisonOfTheAbyssEvent extends Event {
 
     globals.poisonOfTheAbyssEventData.isActive = true;
     if (this._executedBy.getID() === PlayerID.PLAYER_1) {
-      globals.poisonOfTheAbyssEventData.affectedPlayerID = PlayerID.PLAYER_2;
+      globals.poisonOfTheAbyssEventData.isPlayer1Affected = true;
     } else {
-      globals.poisonOfTheAbyssEventData.affectedPlayerID = PlayerID.PLAYER_1;
+      globals.poisonOfTheAbyssEventData.isPlayer2Affected = true;
     }
 
     if (!this.isActive()) {
       globals.poisonOfTheAbyssEventData.isActive = false;
 
-      globals.poisonOfTheAbyssEventData.affectedPlayerID = -1;
+      globals.poisonOfTheAbyssEventData.isPlayer1Affected = false;
+
+      globals.poisonOfTheAbyssEventData.isPlayer2Affected = false;
     }
   }
 }
