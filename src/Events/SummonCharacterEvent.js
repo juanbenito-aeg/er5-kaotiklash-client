@@ -20,6 +20,7 @@ export default class SummonCharacterEvent extends Event {
   #isFinished;
   #enemyBattlefieldGrid;
   #lucretiaDeers;
+  #stateMessages;
 
   constructor(
     executedBy,
@@ -34,7 +35,8 @@ export default class SummonCharacterEvent extends Event {
     enemyBattleFieldGrid,
     enemyMinionsInPlayDeck,
     mouseInput,
-    lucretiaDeers
+    lucretiaDeers,
+    stateMessages
   ) {
     super(executedBy, eventCard);
 
@@ -52,6 +54,7 @@ export default class SummonCharacterEvent extends Event {
     this.#mouseInput = mouseInput;
     this.#isFinished = false;
     this.#lucretiaDeers = lucretiaDeers;
+    this.#stateMessages = stateMessages;
   }
 
   execute(currentPlayer) {
@@ -104,12 +107,11 @@ export default class SummonCharacterEvent extends Event {
 
       case MainCharacterID.ANGELO_DI_MORTIS:
         const angeloSkill = new SpecialSkillAngelo(
-          this.#currentPlayerBattlefieldGrid,
-          this.#currentPlayerEventsInPrepGrid,
           this.#enemyBattleFieldGrid,
           this.#enemyEventsInPrepGrid,
           this.#mouseInput,
-          this._executedBy
+          currentPlayer,
+          this.#stateMessages
         );
 
         if (!this.#isFinished) {

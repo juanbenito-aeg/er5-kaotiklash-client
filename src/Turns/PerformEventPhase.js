@@ -179,7 +179,6 @@ export default class PerformEventPhase extends Phase {
       enemyEventsInPrepGrid,
       enemyBattleFieldGrid,
       enemyMinionsInPlayDeck,
-      enemyBattlefieldGrid,
       lucretiaDeers,
       player,
       stateMessages
@@ -297,7 +296,8 @@ export default class PerformEventPhase extends Phase {
             this.#enemyEventsInPrepGrid,
             this.#enemyMinionsInPlayDeck,
             this._mouseInput,
-            this.#lucretiaDeers
+            this.#lucretiaDeers,
+            this.#stateMessages
           );
 
           globals.isPlayersSummonCharacterActive[this.#player.getID()] = true;
