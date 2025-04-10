@@ -316,6 +316,8 @@ export default class PerformEventPhase extends Phase {
               new BlessingWaitressEvent(
                 this.#player,
                 selectedCard,
+                this._phaseMessage,
+                this.#stateMessages,
                 this.#currentPlayerMinionsInPlayDeck
               );
 
