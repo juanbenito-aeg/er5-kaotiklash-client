@@ -233,7 +233,27 @@ export default class AttackEvent extends Event {
 
     let storedDamage = 0;
 
+    let targetBox;
+    if (fumble) {
+      targetBox = this.#target.getBoxIsPositionedIn(
+        this.#currentPlayerMovementGrid,
+        this.#target
+      );
+    } else {
+      targetBox = this.#target.getBoxIsPositionedIn(
+        this.#enemyMovementGrid,
+        this.#target
+      );
+      
     if (this.#parry) {
+      const parryMessage = new StateMessage(
+        "Attack parried",
+        "lightblue",
+        4,
+        targetBox.getCard().getXCoordinate() + 55,
+        targetBox.getCard().getYCoordinate() - 55
+      );
+      globals.damageMessages.push(parryMessage);
       if (parryRoll <= parryCritProb) {
         // PARRY CRIT
         console.log("Parry Crit");
@@ -315,17 +335,7 @@ export default class AttackEvent extends Event {
       damageToInflict = damageToInflict * -1;
     }
 
-    let targetBox;
-    if (fumble) {
-      targetBox = this.#target.getBoxIsPositionedIn(
-        this.#currentPlayerMovementGrid,
-        this.#target
-      );
-    } else {
-      targetBox = this.#target.getBoxIsPositionedIn(
-        this.#enemyMovementGrid,
-        this.#target
-      );
+
     }
     if(this.#parry && !fumble) {
       const damageMessage = new StateMessage(
@@ -335,14 +345,8 @@ export default class AttackEvent extends Event {
         targetBox.getCard().getXCoordinate() + 55,
         targetBox.getCard().getYCoordinate() + 55
       );
-      const parryMessage = new StateMessage(
-        "Attack parried",
-        "lightblue",
-        4,
-        targetBox.getCard().getXCoordinate() + 55,
-        targetBox.getCard().getYCoordinate() - 55
-      );
-      globals.damageMessages.push(damageMessage, parryMessage);
+
+      globals.damageMessages.push(damageMessage);
     } else if (fumble) { 
       const fumbleMessage = new StateMessage(
         "Fumble!",
