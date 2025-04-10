@@ -2,37 +2,29 @@ import { globals } from "../index.js";
 export default class SpecialSkillAngelo {
   #enemyBattlefieldGrid;
   #enemyEventsInPrepGrid;
-  #playerBattlefieldGrid;
-  #playerEventsInPrepGrid;
   #mouseInput;
-  #currentPlayer;
   #executeBy;
-  #isActive;
+  #stateMessages;
 
   constructor(
-    playerBattlefieldGrid,
-    playerEventsInPrepGrid,
     enemyBattlefieldGrid,
     enemyEventsInPrepGrid,
     mouseInput,
-    executeBy
+    executeBy,
+    stateMessages
   ) {
-    this.#playerBattlefieldGrid = playerBattlefieldGrid;
-    this.#playerEventsInPrepGrid = playerEventsInPrepGrid;
     this.#enemyBattlefieldGrid = enemyBattlefieldGrid;
     this.#enemyEventsInPrepGrid = enemyEventsInPrepGrid;
     this.#mouseInput = mouseInput;
     this.#executeBy = executeBy;
-    this.#isActive = false;
+    this.#stateMessages = stateMessages;
   }
 
   execute() {
-    this.#isActive = true;
     globals.activeVisibilitySkill = this;
   }
 
   restore() {
-    this.#isActive = false;
     globals.activeVisibilitySkill = null;
   }
 
@@ -42,32 +34,28 @@ export default class SpecialSkillAngelo {
     const fieldX = (globals.canvas.width - fieldWidth) / 2;
     const fieldY = globals.canvas.height * 0.1;
 
-    globals.ctx.save();
-    globals.ctx.fillStyle = "rgba(0, 0, 0, 1)";
-    globals.ctx.fillRect(fieldX, fieldY, fieldWidth, fieldHeight);
+    //MESSAGE COORDINATES
+    const centerX = fieldX + fieldWidth / 2;
+    const centerY = fieldY + fieldHeight / 2;
 
-    if (visiblePlayer === this.#executeBy) {
+    globals.ctx.save();
+
+    if (visiblePlayer === this.#executeBy.getID()) {
       const radius = 50;
       const circleX = this.#mouseInput.getMouseXCoordinate();
       const circleY = this.#mouseInput.getMouseYCoordinate();
 
-      if (
-        circleX >= fieldX &&
-        circleX <= fieldX + fieldWidth &&
-        circleY >= fieldY &&
-        circleY <= fieldY + fieldHeight
-      ) {
-        globals.ctx.beginPath();
-        globals.ctx.arc(circleX, circleY, radius, 0, Math.PI * 2);
-        globals.ctx.clip();
-        globals.ctx.clearRect(
-          circleX - radius,
-          circleY - radius,
-          radius * 2,
-          radius * 2
-        );
-      }
+      globals.ctx.beginPath();
+      globals.ctx.rect(fieldX, fieldY, fieldWidth, fieldHeight);
+      globals.ctx.arc(circleX, circleY, radius, 0, Math.PI * 2);
+      globals.ctx.clip("evenodd");
+      globals.ctx.fillStyle = "rgba(0, 0, 0, 1)";
+      globals.ctx.fillRect(fieldX, fieldY, fieldWidth, fieldHeight);
     } else {
+      globals.ctx.save();
+      globals.ctx.rect(fieldX, fieldY, fieldWidth, fieldHeight);
+      globals.ctx.fillStyle = "rgba(0, 0, 0, 1)";
+      globals.ctx.fillRect(fieldX, fieldY, fieldWidth, fieldHeight);
       globals.ctx.globalCompositeOperation = "source-over";
       globals.ctx.strokeStyle = "rgba(226, 22, 22, 0.3)";
       globals.ctx.lineWidth = 2;
@@ -76,6 +64,7 @@ export default class SpecialSkillAngelo {
         ...this.#enemyEventsInPrepGrid.getBoxes(),
         ...this.#enemyBattlefieldGrid.getBoxes(),
       ];
+
       for (let i = 0; i < enemieBoxes.length; i++) {
         const box = enemieBoxes[i];
         if (box.isMouseOver()) {
