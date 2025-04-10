@@ -2,6 +2,7 @@ import Event from "./Event.js";
 import SpecialSkillXG from "./SpecialSkillXG.js";
 import LucretiaSpecialSkill from "./LucretiaSpecialSkill.js";
 import { MainCharacterID } from "../Game/constants.js";
+import SpecialSkillAngelo from "./SpecialSkillAngelo.js";
 import { globals } from "../index.js";
 
 export default class SummonCharacterEvent extends Event {
@@ -12,9 +13,14 @@ export default class SummonCharacterEvent extends Event {
   #currentPlayerMinionsInPlayDeck;
   #currentPlayerEventsInPrepGrid;
   #currentPlayerBattlefieldGrid;
+  #enemyBattleFieldGrid;
+  #enemyEventsInPrepGrid;
   #enemyMinionsInPlayDeck;
+  #mouseInput;
+  #isFinished;
   #enemyBattlefieldGrid;
   #lucretiaDeers;
+  #stateMessages;
 
   constructor(
     executedBy,
@@ -25,9 +31,12 @@ export default class SummonCharacterEvent extends Event {
     currentPlayerMinionsInPlayDeck,
     currentPlayerEventsInPrepGrid,
     currentPlayerBattlefieldGrid,
+    enemyEventsInPrepGrid,
+    enemyBattleFieldGrid,
     enemyMinionsInPlayDeck,
-    enemyBattlefieldGrid,
-    lucretiaDeers
+    mouseInput,
+    lucretiaDeers,
+    stateMessages
   ) {
     super(executedBy, eventCard);
 
@@ -39,9 +48,13 @@ export default class SummonCharacterEvent extends Event {
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
     this.#currentPlayerEventsInPrepGrid = currentPlayerEventsInPrepGrid;
     this.#currentPlayerBattlefieldGrid = currentPlayerBattlefieldGrid;
+    this.#enemyBattleFieldGrid = enemyBattleFieldGrid;
+    this.#enemyEventsInPrepGrid = enemyEventsInPrepGrid;
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
-    this.#enemyBattlefieldGrid = enemyBattlefieldGrid;
+    this.#mouseInput = mouseInput;
+    this.#isFinished = false;
     this.#lucretiaDeers = lucretiaDeers;
+    this.#stateMessages = stateMessages;
   }
 
   execute(currentPlayer) {
@@ -93,7 +106,22 @@ export default class SummonCharacterEvent extends Event {
         break;
 
       case MainCharacterID.ANGELO_DI_MORTIS:
-        // HERE A SPECIAL SKILL INSTANCE IS CREATED
+        const angeloSkill = new SpecialSkillAngelo(
+          this.#enemyBattleFieldGrid,
+          this.#enemyEventsInPrepGrid,
+          this.#mouseInput,
+          currentPlayer,
+          this.#stateMessages
+        );
+
+        if (!this.#isFinished) {
+          angeloSkill.execute();
+          this.#isFinished = true;
+        }
+
+        if (!this.isActive()) {
+          angeloSkill.restore();
+        }
         break;
     }
   }

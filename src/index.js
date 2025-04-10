@@ -39,6 +39,7 @@ const globals = {
     playerSession: false,
   },
   isParryMenuOpen: false,
+  activeVisibilitySkill: null,
   isPlayersSummonCharacterActive: [
     // PLAYER 1
     false,

@@ -637,6 +637,11 @@ export default class Game {
       case GameState.PLAYING:
         this.#renderGame();
 
+        if (globals.activeVisibilitySkill) {
+          globals.activeVisibilitySkill.renderVisibilityEffect(
+            this.#currentPlayer.getID()
+          );
+        }
         if (globals.gameWinner) {
           this.#renderGameWinner();
         }
