@@ -10,18 +10,18 @@ export default class JudgmentAncientsEvent extends Event {
   execute(currentPlayer) {
     this.reduceDuration(currentPlayer);
 
-    globals.judgmentAncientsCardData.isEventActive = true;
+    globals.judgmentAncientsEventData.isActive = true;
 
     if (this._executedBy.getID() === PlayerID.PLAYER_1) {
-      globals.judgmentAncientsCardData.affectedPlayerID = PlayerID.PLAYER_2;
+      globals.judgmentAncientsEventData.affectedPlayerID = PlayerID.PLAYER_2;
     } else {
-      globals.judgmentAncientsCardData.affectedPlayerID = PlayerID.PLAYER_1;
+      globals.judgmentAncientsEventData.affectedPlayerID = PlayerID.PLAYER_1;
     }
 
     if (!this.isActive()) {
-      globals.judgmentAncientsCardData.isEventActive = false;
+      globals.judgmentAncientsEventData.isActive = false;
 
-      globals.judgmentAncientsCardData.affectedPlayerID = -1;
+      globals.judgmentAncientsEventData.affectedPlayerID = -1;
     }
   }
 }
