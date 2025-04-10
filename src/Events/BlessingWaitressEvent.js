@@ -1,15 +1,27 @@
 import Event from "./Event.js";
+import PhaseMessage from "../Messages/PhaseMessage.js";
+import StateMessage from "../Messages/StateMessage.js";
 import { BlessingWaitressState, CardState } from "../Game/constants.js";
 import { globals } from "../index.js";
 
 export default class BlessingWaitressEvent extends Event {
   #state;
+  #phaseMessage;
+  #stateMessages;
   #currentPlayerMinionsInPlayDeck;
 
-  constructor(executedBy, eventCard, currentPlayerMinionsInPlayDeck) {
+  constructor(
+    executedBy,
+    eventCard,
+    phaseMessage,
+    stateMessages,
+    currentPlayerMinionsInPlayDeck
+  ) {
     super(executedBy, eventCard);
 
     this.#state = BlessingWaitressState.INIT;
+    this.#phaseMessage = phaseMessage;
+    this.#stateMessages = stateMessages;
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
   }
 
@@ -45,6 +57,10 @@ export default class BlessingWaitressEvent extends Event {
   }
 
   #selectMinionToHeal() {
+    this.#phaseMessage.setCurrentContent(
+      PhaseMessage.content.blessingWaitress.selectMinion[globals.language]
+    );
+
     const hoveredCard =
       this.#currentPlayerMinionsInPlayDeck.lookForHoveredCard();
 
@@ -69,7 +85,7 @@ export default class BlessingWaitressEvent extends Event {
       selectedCard.getInitialHP()
     );
 
-    // VARIABLE USED BY THE CORRESPONDING STATE MESSAGE (WHEN IT IS IMPLEMENTED)
+    // VARIABLE USED BY THE STATE MESSAGE
     let hpToRestore;
 
     if (newHP === selectedCard.getInitialHP()) {
@@ -78,7 +94,29 @@ export default class BlessingWaitressEvent extends Event {
       hpToRestore = 30;
     }
 
+    // HP RESTORATION
     selectedCard.setCurrentHP(newHP);
+
+    // STATE MESSAGE CREATION
+
+    const restoredHPMsgXCoordinate =
+      selectedCard.getXCoordinate() +
+      globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width / 2;
+
+    const restoredHPMsgYCoordinate =
+      selectedCard.getYCoordinate() +
+      globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2;
+
+    const restoredHPMsg = new StateMessage(
+      `+${hpToRestore} HP`,
+      "20px MedievalSharp",
+      "rgb(250 233 183)",
+      4,
+      restoredHPMsgXCoordinate,
+      restoredHPMsgYCoordinate
+    );
+
+    this.#stateMessages.push(restoredHPMsg);
 
     globals.blessingWaitressCardData.isEventActive = false;
     globals.blessingWaitressCardData.eventInstance = {};

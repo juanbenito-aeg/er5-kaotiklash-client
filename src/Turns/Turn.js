@@ -432,6 +432,7 @@ export default class Turn {
 
               const deerWeaponsMsg = new StateMessage(
                 "DEER CANNOT EQUIP WEAPONS",
+                "20px MedievalSharp",
                 "red",
                 4,
                 minion.getXCoordinate() + boxDeerIsPositionedIn.getWidth() / 2,
@@ -548,14 +549,22 @@ export default class Turn {
             if (i === PhaseButton.SKIP_OR_CANCEL) {
               this.#numOfExecutedPhases++;
             } else if (
-              this.#currentPhase === PhaseType.INVALID &&
-              !(
-                i === PhaseType.ATTACK &&
-                globals.judgmentAncientsCardData.isEventActive &&
-                this.#player.getID() ===
-                  globals.judgmentAncientsCardData.affectedPlayerID
-              )
+              i === PhaseType.ATTACK &&
+              globals.judgmentAncientsEventData.isActive &&
+              this.#player.getID() ===
+                globals.judgmentAncientsEventData.affectedPlayerID
             ) {
+              const cannotAttackDueToActiveEventMsg = new StateMessage(
+                "CANNOT ATTACK DUE TO ACTIVE EVENT",
+                "20px MedievalSharp",
+                "red",
+                4,
+                buttonXCoordinate + buttonWidth / 2,
+                buttonYCoordinate + buttonHeight / 2
+              );
+
+              this.#stateMessages.push(cannotAttackDueToActiveEventMsg);
+            } else if (this.#currentPhase === PhaseType.INVALID) {
               this.#currentPhase = i;
 
               globals.buttonDataGlobal[PhaseButton.SKIP_OR_CANCEL][

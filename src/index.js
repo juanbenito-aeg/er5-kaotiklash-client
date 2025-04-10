@@ -39,6 +39,7 @@ const globals = {
     playerSession: false,
   },
   isParryMenuOpen: false,
+  activeVisibilitySkill: null,
   isPlayersSummonCharacterActive: [
     // PLAYER 1
     false,
@@ -46,8 +47,8 @@ const globals = {
     // PLAYER 2
     false,
   ],
-  judgmentAncientsCardData: {
-    isEventActive: false,
+  judgmentAncientsEventData: {
+    isActive: false,
     affectedPlayerID: -1,
   },
   blessingWaitressCardData: {
