@@ -302,6 +302,7 @@ export default class PerformEventPhase extends Phase {
           selectedEventInstance = new BroomFuryEvent(
             this.#player,
             selectedCard,
+            this.#stateMessages,
             this.#currentPlayerMinionsDeck,
             this.#currentPlayerMinionsInPlayDeck
           );
