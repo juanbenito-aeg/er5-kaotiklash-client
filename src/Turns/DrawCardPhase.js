@@ -6,6 +6,7 @@ import {
   CardCategory,
   GridType,
   SpecialEventID,
+  RareEventID,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 
@@ -92,8 +93,8 @@ export default class DrawCardPhase extends Phase {
       const card = eventCards[i];
 
       if (
-        card.getCategory() === CardCategory.SPECIAL &&
-        card.getID() === SpecialEventID.BARTENDERS_POWER
+        card.getCategory() === CardCategory.RARE &&
+        card.getID() === RareEventID.ECHO_OF_THE_STRATAGEN
       ) {
         this.#filteredCards.push(card);
 

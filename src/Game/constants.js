@@ -253,6 +253,16 @@ const SpecialEventID = {
   BLESSING_WAITRESS: 7,
 };
 
+const RareEventID = {
+  ECHO_OF_THE_STRATAGEN: 2,
+};
+
+const EchoOfTheStratagenState = {
+  INIT: 0,
+  SELECT_ENEMY_PREP_EVENT: 1,
+  END: 2,
+};
+
 const BlessingWaitressState = {
   INIT: 0,
   SELECT_MINION: 1,
@@ -289,4 +299,6 @@ export {
   EventCooldownState,
   SpecialEventID,
   BlessingWaitressState,
+  RareEventID,
+  EchoOfTheStratagenState,
 };
