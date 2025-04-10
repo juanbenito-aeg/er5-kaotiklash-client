@@ -49,7 +49,6 @@ export default class PerformEventPhase extends Phase {
     currentPlayerBattlefieldGrid,
     enemyBattleFieldGrid,
     enemyMinionsInPlayDeck,
-    enemyBattlefieldGrid,
     lucretiaDeers,
     player,
     stateMessages
@@ -68,7 +67,6 @@ export default class PerformEventPhase extends Phase {
     this.#currentPlayerBattlefieldGrid = currentPlayerBattlefieldGrid;
     this.#enemyBattleFieldGrid = enemyBattleFieldGrid;
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
-    this.#enemyBattlefieldGrid = enemyBattlefieldGrid;
     this.#stateMessages = stateMessages;
     this.#lucretiaDeers = lucretiaDeers;
     this.#player = player;
@@ -168,9 +166,8 @@ export default class PerformEventPhase extends Phase {
       currentPlayerMinionsInPlayDeck,
       currentPlayerEventsInPrepGrid,
       currentPlayerBattlefieldGrid,
-      enemyBattleFieldGrid,
-      enemyMinionsInPlayDeck,
       enemyBattlefieldGrid,
+      enemyMinionsInPlayDeck,
       lucretiaDeers,
       player,
       stateMessages

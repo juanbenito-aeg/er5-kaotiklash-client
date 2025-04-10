@@ -30,7 +30,6 @@ export default class Game {
   #deckContainer;
   #board;
   #turns;
-  #turnsCounter;
   #mouseInput;
   #events;
   #phaseMessage;
@@ -490,8 +489,8 @@ export default class Game {
 
       this.#healHarmedMinions();
 
-      if (globals.isDecrepitThroneActive && this.#turnsCounter == null) {
-        this.#turnsCounter = 0;
+      if (globals.decrepitThroneSkillData.isActive) {
+        globals.decrepitThroneSkillData.turnsSinceActivation++;
       }
 
       const newCurrentPlayerID = this.#turns[
@@ -499,20 +498,6 @@ export default class Game {
       ].changeTurn(this.#currentPlayer);
 
       this.#currentPlayer = this.#players[newCurrentPlayerID];
-
-      this.#executeEvents();
-
-      if (
-        globals.isDecrepitThroneActive &&
-        this.#currentPlayer.getID() !== globals.activePlayerWithDecrepitThrone
-      ) {
-        if (this.#turnsCounter === 0 || this.#turnsCounter === 2) {
-          this.#turnsCounter++;
-          globals.isCurrentTurnFinished = true;
-          return;
-        }
-        this.#turnsCounter++;
-      }
     }
 
     this.#mouseInput.resetIsLeftClickedOnBoxes(this.#board);

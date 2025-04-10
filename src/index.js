@@ -39,8 +39,11 @@ const globals = {
     playerSession: false,
   },
   isParryMenuOpen: false,
-  isDecrepitThroneActive: false,
-  activePlayerWithDecrepitThrone: null,
+  decrepitThroneSkillData: {
+    isActive: false,
+    playerWithDecrepitThrone: {},
+    turnsSinceActivation: 0,
+  },
   isPlayersSummonCharacterActive: [
     // PLAYER 1
     false,

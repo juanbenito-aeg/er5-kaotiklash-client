@@ -8,7 +8,6 @@ import { globals } from "../index.js";
 export default class SummonCharacterEvent extends Event {
   #mainCharacterID;
   #specialSkill;
-  // #currentPlayer;
   #currentPlayerCardsInHandDeck;
   #currentPlayerEventsInPrepDeck;
   #currentPlayerMinionsInPlayDeck;
@@ -23,7 +22,6 @@ export default class SummonCharacterEvent extends Event {
   constructor(
     executedBy,
     eventCard,
-    // currentPlayer,
     currentPlayerMainCharacterDeck,
     currentPlayerCardsInHandDeck,
     currentPlayerEventsInPrepDeck,
@@ -39,7 +37,6 @@ export default class SummonCharacterEvent extends Event {
     this.#mainCharacterID = currentPlayerMainCharacterDeck
       .getCards()[0]
       .getID();
-    // this.#currentPlayer = currentPlayer;
     this.#currentPlayerCardsInHandDeck = currentPlayerCardsInHandDeck;
     this.#currentPlayerEventsInPrepDeck = currentPlayerEventsInPrepDeck;
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
@@ -99,23 +96,36 @@ export default class SummonCharacterEvent extends Event {
         break;
 
       case MainCharacterID.ANGELO_DI_MORTIS:
-        // HERE A SPECIAL SKILL INSTANCE IS CREATED
+        // TODO
         break;
 
       case MainCharacterID.THE_DECREPIT_THRONE:
-        const decrepitThroneSkill = new SpecialSkillDecrepitThrone(
-          this.#enemyBattleFieldGrid
-          // this.#currentPlayer
-        );
+        if (!this.#specialSkill) {
+          const decrepitThroneSkill = new SpecialSkillDecrepitThrone(
+            this.#enemyBattleFieldGrid,
+            this._executedBy
+          );
 
-        if (!this.#isFinished) {
-          decrepitThroneSkill.execute();
-          this.#isFinished = true;
+          this.#specialSkill = decrepitThroneSkill;
+
+          this.#specialSkill.execute();
+        }
+
+        if (globals.decrepitThroneSkillData.turnsSinceActivation === 5) {
+          // INCREMENT "turnsSinceActivation" TO STOP THE EFFECT FROM BEING APPLIED MANY MORE TIMES
+          globals.decrepitThroneSkillData.turnsSinceActivation++;
+
+          this.#specialSkill.applyEffect();
         }
 
         if (!this.isActive()) {
-          decrepitThroneSkill.restore();
+          this.#specialSkill.resetRelatedVariables();
+
+          globals.isPlayersSummonCharacterActive[
+            this._executedBy.getID()
+          ] = false;
         }
+
         break;
     }
   }

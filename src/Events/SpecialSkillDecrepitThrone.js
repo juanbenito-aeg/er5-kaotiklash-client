@@ -1,5 +1,5 @@
+import { BattlefieldArea } from "../Game/constants.js";
 import { globals } from "../index.js";
-import { BattlefieldArea, BoxState } from "../Game/constants.js";
 
 export default class SpecialSkillDecrepitThrone {
   #enemyBattlefieldGrid;
@@ -11,24 +11,22 @@ export default class SpecialSkillDecrepitThrone {
   }
 
   execute() {
-    globals.activePlayerWithDecrepitThrone = this.#currentPlayer;
-    this.#applyEffect();
+    globals.decrepitThroneSkillData.isActive = true;
+    globals.decrepitThroneSkillData.playerWithDecrepitThrone =
+      this.#currentPlayer;
+
+    this.applyEffect();
   }
 
-  restore() {
-    globals.isDecrepitThroneActive = false;
-    globals.activePlayerWithDecrepitThrone = null;
-  }
-
-  #applyEffect() {
+  applyEffect() {
     const frontBoxes = [];
     const cardsToMove = [];
     const allBoxes = this.#enemyBattlefieldGrid.getBoxes();
-    globals.isDecrepitThroneActive = true;
 
-    //SEARCH ALL AVIABLE BOXES IN FRONT
+    // SEARCH FOR ALL THE AVAILABLE BOXES IN THE FRONT AREA
     for (let i = 0; i < allBoxes.length; i++) {
       const box = allBoxes[i];
+
       if (
         box.getBattlefieldAreaItBelongsTo() === BattlefieldArea.FRONT &&
         !box.isOccupied()
@@ -36,31 +34,38 @@ export default class SpecialSkillDecrepitThrone {
         frontBoxes.push(box);
       }
     }
-    //FIND ALL CARDS IN THE ENEMY`S AREA
+
+    // FIND ALL THE CARDS IN THE OPPONENT'S BATTLEFIELD
     for (let i = 0; i < allBoxes.length; i++) {
       const box = allBoxes[i];
+
       if (box.isOccupied()) {
         cardsToMove.push(box.getCard());
       }
     }
 
-    //MOVE CARDS TO FRONT
+    // MOVE CARDS TO THE FRONT AREA
     for (let i = 0; i < cardsToMove.length && i < frontBoxes.length; i++) {
       const card = cardsToMove[i];
+
       const currentBox = card.getBoxIsPositionedIn(
         this.#enemyBattlefieldGrid,
         card
       );
-
-      if (currentBox) {
-        currentBox.resetCard();
-      }
+      currentBox.resetCard();
 
       const targetBox = frontBoxes[i];
+
       card.setXCoordinate(targetBox.getXCoordinate());
       card.setYCoordinate(targetBox.getYCoordinate());
+
       targetBox.setCard(card);
-      targetBox.setState(BoxState.OCCUPIED);
     }
+  }
+
+  resetRelatedVariables() {
+    globals.decrepitThroneSkillData.isActive = false;
+    globals.decrepitThroneSkillData.playerWithDecrepitThrone = {};
+    globals.decrepitThroneSkillData.turnsSinceActivation = 0;
   }
 }
