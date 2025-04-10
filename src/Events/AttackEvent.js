@@ -328,6 +328,8 @@ export default class AttackEvent extends Event {
       } else if(parryCrit) {        // PARRY CRIT 
         damageToInflict = 0;
         this.parryCritMessage(damageToInflict,targetBox);
+      } else {
+        this.parryMessage(damageToInflict,targetBox);
       }
     } else { //NO DURABILITY PARRY
       if(noDurabilityRoll === 1 && noDurabilityRoll === 2) {  //NO DURABILITY CRIT
@@ -339,8 +341,13 @@ export default class AttackEvent extends Event {
         this.parryFumbleMessage(damageToInflict,targetBox);
         this.damageMessage(storedDamage,targetBox,"red");
       } else {
-        NewDurability = targetWeapon.getCurrentDurability() - damageToInflict
-        this.parryMessage((targetWeapon.getCurrentDurability() - damageToInflict) ,targetBox);
+        let NewDurability = targetWeapon.getCurrentDurability() - damageToInflict
+        console.log("currentDurability: " + targetWeapon.getCurrentDurability())
+        console.log("damageToInflict: " + damageToInflict)
+        console.log("NewDurability: " + NewDurability)
+        console.log(targetWeapon.getCurrentDurability() - NewDurability)
+
+        this.parryMessage((targetWeapon.getCurrentDurability() - NewDurability) ,targetBox);
       }
       
     }
@@ -353,6 +360,14 @@ export default class AttackEvent extends Event {
       targetWeapon.setCurrentDurability(targetNewDurability);
 
       if (targetWeapon.getCurrentDurability() <= 0) {
+        const weaponMessage = new StateMessage(
+          "weapon broke!",
+          "20px MedievalSharp",
+          "red",
+          4,
+          targetBox.getCard().getXCoordinate(),
+          targetBox.getCard().getYCoordinate() + 10
+        );
         this.#eventDeck.insertCard(targetWeapon);
         this.#target.removeWeapon();
       }
