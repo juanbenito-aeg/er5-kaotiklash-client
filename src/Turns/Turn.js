@@ -94,8 +94,6 @@ export default class Turn {
   }
 
   changeTurn(currentPlayer) {
-    this.#numOfExecutedPhases = 0;
-
     /*  this.#swapTurnPosition(); */
 
     if (currentPlayer.getID() === PlayerID.PLAYER_1) {
@@ -244,6 +242,7 @@ export default class Turn {
 
       if (this.#numOfExecutedPhases === 5) {
         this.#currentPhase = PhaseType.INVALID;
+        this.#numOfExecutedPhases = 0;
         globals.isCurrentTurnFinished = true;
       }
     }
@@ -564,7 +563,29 @@ export default class Turn {
               );
 
               this.#stateMessages.push(cannotAttackDueToActiveEventMsg);
-            } else if (this.#currentPhase === PhaseType.INVALID) {
+            } else if (
+              globals.decrepitThroneSkillData.isActive &&
+              this.#player !==
+                globals.decrepitThroneSkillData.playerWithDecrepitThrone &&
+              globals.decrepitThroneSkillData.turnsSinceActivation !== 3
+            ) {
+              const cannotDoAnythingDueToActiveEventMsg = new StateMessage(
+                "CANNOT DO (ALMOST) ANYTHING DUE TO ACTIVE EVENT",
+                "20px MedievalSharp",
+                "red",
+                4,
+                buttonXCoordinate + buttonWidth / 2,
+                buttonYCoordinate + buttonHeight / 2
+              );
+
+              this.#stateMessages.push(cannotDoAnythingDueToActiveEventMsg);
+            } else if (
+              this.#currentPhase === PhaseType.INVALID &&
+              (!globals.decrepitThroneSkillData.isActive ||
+                this.#player ===
+                  globals.decrepitThroneSkillData.playerWithDecrepitThrone ||
+                globals.decrepitThroneSkillData.turnsSinceActivation === 3)
+            ) {
               this.#currentPhase = i;
 
               globals.buttonDataGlobal[PhaseButton.SKIP_OR_CANCEL][

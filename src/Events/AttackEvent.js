@@ -223,6 +223,20 @@ export default class AttackEvent extends Event {
         damageToInflict = Math.floor(this.caltulateDistance(damageToInflict));
       }
     }
+
+    let targetBox;
+    if (fumble) {
+      targetBox = this.#target.getBoxIsPositionedIn(
+        this.#currentPlayerMovementGrid,
+        this.#target
+      );
+    } else {
+      targetBox = this.#target.getBoxIsPositionedIn(
+        this.#enemyMovementGrid,
+        this.#target
+      );
+    }
+
     if (isPlayer1Debuffed && this.#player.getID() === PlayerID.PLAYER_1) {
       damageToInflict = damageToInflict - debuff;
     }
@@ -282,6 +296,7 @@ export default class AttackEvent extends Event {
     let storedDamage = 0;
 
     if (this.#parry) {
+      console.log("Parry");
       if (parryRoll <= parryCritProb) {                                                   // PARRY CRIT
         console.log("Parry Crit");
         parryCrit = true; 
@@ -291,7 +306,7 @@ export default class AttackEvent extends Event {
       } else if(parryRoll > parryFumbleChances && parryRoll <= parryHalfFumbleChances) {  // PARRY HALF FUMBLE
         console.log("Parry Half Fumble");
         parryHalfFumble = true;
-      }
+      } 
     }
     
     if (roll <= critProb) { // CRITICAL HIT
@@ -305,25 +320,35 @@ export default class AttackEvent extends Event {
       if(targetWeapon.getCurrentDurability() >= damageToInflict) {
       if(parryFumble) {             // PARRY FUMBLE
         damageToInflict = targetWeapon.getCurrentDurability();
+        this.parryFumbleMessage(damageToInflict,targetBox);
       } else if (parryHalfFumble) { // PARRY HALF FUMBLE
         damageToInflict = damageToInflict * 1.25;
         damageToInflict = Math.floor(damageToInflict)
+        this.parryHalfFumbleMessage(damageToInflict,targetBox);
       } else if(parryCrit) {        // PARRY CRIT 
         damageToInflict = 0;
+        this.parryCritMessage(damageToInflict,targetBox);
       }
     } else { //NO DURABILITY PARRY
       if(noDurabilityRoll === 1 && noDurabilityRoll === 2) {  //NO DURABILITY CRIT
         damageToInflict = targetWeapon.getCurrentDurability();
+        this.parryCritMessage(damageToInflict,targetBox);
       } else if(noDurabilityRoll === 3) {                     //NO DURABILITY FUMBLE
         storedDamage = damageToInflict
         damageToInflict = targetWeapon.getCurrentDurability();
-      } 
+        this.parryFumbleMessage(damageToInflict,targetBox);
+        this.damageMessage(storedDamage,targetBox,"red");
+      } else {
+        NewDurability = targetWeapon.getCurrentDurability() - damageToInflict
+        this.parryMessage((targetWeapon.getCurrentDurability() - damageToInflict) ,targetBox);
+      }
       
     }
       let targetNewDurability = targetWeapon.getCurrentDurability() - damageToInflict;
       if (targetNewDurability < 0) {
         storedDamage = Math.abs(targetNewDurability);
         targetNewDurability = 0;
+        this.damageMessage(storedDamage,targetBox,"lightblue");
       }
       targetWeapon.setCurrentDurability(targetNewDurability);
 
@@ -331,6 +356,7 @@ export default class AttackEvent extends Event {
         this.#eventDeck.insertCard(targetWeapon);
         this.#target.removeWeapon();
       }
+
     } else {
       let targetNewCurrentHP = this.#target.getCurrentHP() - damageToInflict;
 
@@ -349,20 +375,6 @@ export default class AttackEvent extends Event {
     if (damageToInflict > 0) {
       damageToInflict = damageToInflict * -1;
     }
-
-    let targetBox;
-    if (fumble) {
-      targetBox = this.#target.getBoxIsPositionedIn(
-        this.#currentPlayerMovementGrid,
-        this.#target
-      );
-    } else {
-      targetBox = this.#target.getBoxIsPositionedIn(
-        this.#enemyMovementGrid,
-        this.#target
-      );
-    }
-
     
     if (fumble) { 
         this.fumbleMessage(targetBox)

@@ -40,6 +40,11 @@ const globals = {
   },
   isParryMenuOpen: false,
   activeVisibilitySkill: null,
+  decrepitThroneSkillData: {
+    isActive: false,
+    playerWithDecrepitThrone: {},
+    turnsSinceActivation: 0,
+  },
   isPlayersSummonCharacterActive: [
     // PLAYER 1
     false,

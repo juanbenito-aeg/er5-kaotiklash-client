@@ -494,6 +494,10 @@ export default class Game {
       this.#poisonMinions();
       }
 
+      if (globals.decrepitThroneSkillData.isActive) {
+        globals.decrepitThroneSkillData.turnsSinceActivation++;
+      }
+
       const newCurrentPlayerID = this.#turns[
         this.#currentPlayer.getID()
       ].changeTurn(this.#currentPlayer);
