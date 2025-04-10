@@ -243,7 +243,7 @@ export default class AttackPhase extends Phase {
           this.#enemyMovementGridDeck,
           this.#currentPlayerMovementGridDeck,
         ]);
-
+        this.#parry = false;
         isPhaseFinished = true;
 
         this._state = AttackPhaseState.INIT;
