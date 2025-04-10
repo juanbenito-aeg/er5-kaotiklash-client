@@ -1,7 +1,6 @@
 import Event from "./Event.js";
 import StateMessage from "../Messages/StateMessage.js";
 import { WeaponTypeID } from "../Game/constants.js";
-import { globals } from "../index.js";
 
 export default class AttackEvent extends Event {
   #attacker;
@@ -9,13 +8,15 @@ export default class AttackEvent extends Event {
   #currentPlayerMovementGrid;
   #enemyMovementGrid;
   #parry;
+  #stateMessage;
 
   constructor(
     attacker,
     target,
     currentPlayerMovementGrid,
     enemyMovementGrid,
-    parry
+    parry,
+    stateMessage
   ) {
     super();
 
@@ -24,6 +25,7 @@ export default class AttackEvent extends Event {
     this.#currentPlayerMovementGrid = currentPlayerMovementGrid;
     this.#enemyMovementGrid = enemyMovementGrid;
     this.#parry = parry;
+    this.#stateMessage = stateMessage;
   }
 
   static create(
@@ -31,14 +33,16 @@ export default class AttackEvent extends Event {
     target,
     currentPlayerMovementGrid,
     enemyMovementGrid,
-    parry
+    parry,
+    stateMessage
   ) {
     const attackEvent = new AttackEvent(
       attacker,
       target,
       currentPlayerMovementGrid,
       enemyMovementGrid,
-      parry
+      parry,
+      stateMessage
     );
 
     return attackEvent;
@@ -248,12 +252,13 @@ export default class AttackEvent extends Event {
     if (this.#parry) {
       const parryMessage = new StateMessage(
         "Attack parried",
+        "60px MedievalSharp",
         "lightblue",
         4,
         targetBox.getCard().getXCoordinate() + 55,
         targetBox.getCard().getYCoordinate() - 55
       );
-      globals.damageMessages.push(parryMessage);
+      this.#stateMessage.push(parryMessage);
       if (parryRoll <= parryCritProb) {
         // PARRY CRIT
         console.log("Parry Crit");
@@ -286,13 +291,40 @@ export default class AttackEvent extends Event {
         if (parryFumble) {
           // PARRY FUMBLE
           damageToInflict = targetWeapon.getCurrentDurability();
+          const parryMessage = new StateMessage(
+            `Parry Fumble!: ${damageToInflict}`,
+            "60px MedievalSharp",
+            "lightblue",
+            4,
+            targetBox.getCard().getXCoordinate() + 55,
+            targetBox.getCard().getYCoordinate() - 55
+          );
+          this.#stateMessage.push(parryMessage);
         } else if (parryHalfFumble) {
           // PARRY HALF FUMBLE
           damageToInflict = damageToInflict * 1.25;
           damageToInflict = Math.floor(damageToInflict);
+          const parryMessage = new StateMessage(
+            `Parry Half Fumble!: ${damageToInflict}`,
+            "60px MedievalSharp",
+            "lightblue",
+            4,
+            targetBox.getCard().getXCoordinate() + 55,
+            targetBox.getCard().getYCoordinate() - 55
+          );
+          this.#stateMessage.push(parryMessage);
         } else if (parryCrit) {
           // PARRY CRIT
           damageToInflict = 0;
+          const parryMessage = new StateMessage(
+            `Parry Crit!: ${damageToInflict}`,
+            "60px MedievalSharp",
+            "lightblue",
+            4,
+            targetBox.getCard().getXCoordinate() + 55,
+            targetBox.getCard().getYCoordinate() - 55
+          );
+          this.#stateMessage.push(parryMessage);
         }
       } else {
         //NO DURABILITY PARRY
@@ -340,16 +372,18 @@ export default class AttackEvent extends Event {
     if(this.#parry && !fumble) {
       const damageMessage = new StateMessage(
         damageToInflict,
+        "40px MedievalSharp",
         "lightblue",
         4,
         targetBox.getCard().getXCoordinate() + 55,
         targetBox.getCard().getYCoordinate() + 55
       );
 
-      globals.damageMessages.push(damageMessage);
+      this.#stateMessage.push(damageMessage);
     } else if (fumble) { 
       const fumbleMessage = new StateMessage(
         "Fumble!",
+        "60px MedievalSharp",
         "red",
         4,
         targetBox.getCard().getXCoordinate() + 55,
@@ -357,15 +391,17 @@ export default class AttackEvent extends Event {
         );
         const damageMessage = new StateMessage(
           damageToInflict,
+          "40px MedievalSharp",
           "red",
           4,
           targetBox.getCard().getXCoordinate() + 55,
           targetBox.getCard().getYCoordinate() + 55
         );
-        globals.damageMessages.push(damageMessage, fumbleMessage);
+        this.#stateMessage.push(damageMessage, fumbleMessage);
     } else if (crit) {
       const critMessage = new StateMessage(
         "Critical Hit!",
+        "60px MedievalSharp",
         "gold",
         4,
         targetBox.getCard().getXCoordinate() + 55,
@@ -373,21 +409,23 @@ export default class AttackEvent extends Event {
       );
       const damageMessage = new StateMessage(
         damageToInflict,
+        "40px MedievalSharp",
         "gold",
         4,
         targetBox.getCard().getXCoordinate() + 55,
         targetBox.getCard().getYCoordinate() + 55
       );
-      globals.damageMessages.push(damageMessage, critMessage);
+      this.#stateMessage.push(damageMessage, critMessage);
     } else {
       const damageMessage = new StateMessage(
         damageToInflict,
+        "40px MedievalSharp",
         "red",
         4,
         targetBox.getCard().getXCoordinate() + 55,
         targetBox.getCard().getYCoordinate() + 55
       );
-      globals.damageMessages.push(damageMessage);
+      this.#stateMessage.push(damageMessage);
     }
 
   }
