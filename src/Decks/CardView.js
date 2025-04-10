@@ -231,8 +231,8 @@ export default class CardView {
     this.#card.setWeapon(weapon);
   }
 
-  setCurrenPrepTimeInRounds(newPrepTimeInRounds) {
-    this.#card.setCurrenPrepTimeInRounds(newPrepTimeInRounds);
+  setCurrentPrepTimeInRounds(newPrepTimeInRounds) {
+    this.#card.setCurrentPrepTimeInRounds(newPrepTimeInRounds);
   }
 
   setCurrentDurationInRounds(newDuration) {

@@ -249,8 +249,8 @@ export default class CardMovement {
     this.#gridPosition = position;
   }
 
-  setCurrenPrepTimeInRounds(newPrepTimeInRounds) {
-    this.#card.setCurrenPrepTimeInRounds(newPrepTimeInRounds);
+  setCurrentPrepTimeInRounds(newPrepTimeInRounds) {
+    this.#card.setCurrentPrepTimeInRounds(newPrepTimeInRounds);
   }
 
   setCurrentDurationInRounds(newDuration) {

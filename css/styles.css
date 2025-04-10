@@ -17,6 +17,10 @@ body {
   align-items: center;
 }
 
+.error-message {
+  color: red;
+}
+
 #register-screen {
   width: 100%;
   min-height: 100vh;

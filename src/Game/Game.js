@@ -7,6 +7,7 @@ import Turn from "../Turns/Turn.js";
 import MouseInput from "./MouseInput.js";
 import ImageSet from "./ImageSet.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
+import StateMessage from "../Messages/StateMessage.js";
 import {
   GameState,
   CardCategory,
@@ -33,6 +34,7 @@ export default class Game {
   #mouseInput;
   #events;
   #phaseMessage;
+  #stateMessages;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -81,6 +83,8 @@ export default class Game {
       PhaseMessage.content.drawCard.initialDraw[globals.language]
     );
 
+    game.#stateMessages = [];
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
@@ -88,7 +92,8 @@ export default class Game {
       game.#mouseInput,
       game.#players[PlayerID.PLAYER_1],
       game.#events,
-      game.#phaseMessage
+      game.#phaseMessage,
+      game.#stateMessages
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -97,7 +102,8 @@ export default class Game {
       game.#mouseInput,
       game.#players[PlayerID.PLAYER_2],
       game.#events,
-      game.#phaseMessage
+      game.#phaseMessage,
+      game.#stateMessages
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -482,7 +488,11 @@ export default class Game {
     if (globals.isCurrentTurnFinished) {
       globals.isCurrentTurnFinished = false;
 
+      if(globals.poisonOfTheAbyssEventData.isActive === false) {
       this.#healHarmedMinions();
+      } else if(globals.poisonOfTheAbyssEventData.isActive === true) {
+      this.#poisonMinions();
+      }
 
       const newCurrentPlayerID = this.#turns[
         this.#currentPlayer.getID()
@@ -509,8 +519,9 @@ export default class Game {
 
     this.#mouseInput.setLeftButtonPressedFalse();
 
-    this.#executeEvent();
+    this.#executeEvents();
 
+    this.#updateStateMessages();
     this.#updateDamageMessages();
 
     this.#updatePlayersTotalHP();
@@ -536,6 +547,47 @@ export default class Game {
       }
     }
   }
+
+  #poisonMinions() {
+    const minionsInPlayDecks = [
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY],
+    ];
+
+    if(globals.poisonOfTheAbyssEventData.isPlayer2Affected) {
+      for(let i = 0; i < minionsInPlayDecks[0].getCards().length; i++) {
+        const currentCard = minionsInPlayDecks[0].getCards()[i];
+
+          currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
+          let message = new StateMessage(
+            "-5",
+            `50px MedievalSharp`,
+            "green",
+            1,
+            currentCard.getXCoordinate() + 55,
+            currentCard.getYCoordinate() + 55
+          );
+          this.#stateMessages.push(message);
+      }
+      
+  } 
+  if(globals.poisonOfTheAbyssEventData.isPlayer1Affected) {
+    for(let i = 0; i < minionsInPlayDecks[1].getCards().length; i++) {
+      const currentCard = minionsInPlayDecks[1].getCards()[i];
+
+        currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
+        let message = new StateMessage(
+          "-5",
+          `50px MedievalSharp`,
+          "green",
+          1,
+          currentCard.getXCoordinate() + 55,
+          currentCard.getYCoordinate() + 55
+        );
+        this.#stateMessages.push(message);
+    }
+  }
+}
 
   #updatePlayersTotalHP() {
     // PLAYER 1
@@ -577,7 +629,7 @@ export default class Game {
     return totalHP;
   }
 
-  #executeEvent() {
+  #executeEvents() {
     for (let i = 0; i < this.#events.length; i++) {
       let event = this.#events[i];
       event.execute(this.#currentPlayer);
@@ -599,12 +651,25 @@ export default class Game {
     }
   }
 
+  #updateStateMessages() {
+    for (let i = 0; i < this.#stateMessages.length; i++) {
+      let currentMessage = this.#stateMessages[i];
+
+      let isFinished = currentMessage.execute();
+
+      if (isFinished) {
+        this.#stateMessages.splice(i, 1);
+      }
+    }
+  }
+
   #updateDamageMessages() {
     for (let i = 0; i < globals.damageMessages.length; i++) {
       let message = globals.damageMessages[i];
 
-      let isFisished = message.execute();
-      if (isFisished) {
+      let isFinished = message.execute();
+
+      if (isFinished) {
         globals.damageMessages.splice(i, 1);
       }
     }
@@ -618,6 +683,11 @@ export default class Game {
       case GameState.PLAYING:
         this.#renderGame();
 
+        if (globals.activeVisibilitySkill) {
+          globals.activeVisibilitySkill.renderVisibilityEffect(
+            this.#currentPlayer.getID()
+          );
+        }
         if (globals.gameWinner) {
           this.#renderGameWinner();
         }
@@ -639,6 +709,7 @@ export default class Game {
     this.#renderPhaseMessage();
     this.#renderCardsReverse();
     this.#renderCards();
+    this.#renderStateMessages();
     this.#renderDamageMessages();
   }
 
@@ -2188,18 +2259,41 @@ export default class Game {
     }
   }
 
+  #renderStateMessages() {
+    globals.ctx.save();
+
+    for (let i = 0; i < this.#stateMessages.length; i++) {
+      const currentMessage = this.#stateMessages[i];
+
+      globals.ctx.shadowBlur = 20;
+      globals.ctx.shadowColor = "black";
+      globals.ctx.font = currentMessage.getFont();
+      globals.ctx.fillStyle = currentMessage.getColor();
+
+      for (let i = 0; i < 10; i++) {
+        globals.ctx.fillText(
+          currentMessage.getContent(),
+          currentMessage.getXPosition(),
+          currentMessage.getYPosition()
+        );
+      }
+    }
+
+    globals.ctx.restore();
+  }
+
   #renderDamageMessages() {
+    const damageMsgsFontSize = 75;
+
     for (let i = 0; i < globals.damageMessages.length; i++) {
       let message = globals.damageMessages[i];
-      let duration = message.getDuration();
 
-      let fontSize = globals.damageFontSize / duration;
-      if (fontSize >= 100) {
-        fontSize = 100;
-      }
+      let fontSize = 60;
+
+
 
       globals.ctx.font = `${fontSize}px MedievalSharp`;
-      globals.ctx.fillStyle = "red";
+      globals.ctx.fillStyle = message.getColor();
       globals.ctx.fillText(
         message.getContent(),
         message.getXPosition(),

@@ -1,7 +1,6 @@
 import Event from "./Event.js";
-import DamageMessages from "../Messages/DamageMessage.js";
+import StateMessage from "../Messages/StateMessage.js";
 import { WeaponTypeID } from "../Game/constants.js";
-import { globals } from "../index.js";
 
 export default class AttackEvent extends Event {
   #attacker;
@@ -10,6 +9,7 @@ export default class AttackEvent extends Event {
   #enemyMovementGrid;
   #parry;
   #eventDeck;
+  #stateMessage;
 
   constructor(
     attacker,
@@ -17,7 +17,8 @@ export default class AttackEvent extends Event {
     currentPlayerMovementGrid,
     enemyMovementGrid,
     parry,
-    eventDeck
+    eventDeck,
+    stateMessage
   ) {
     super();
 
@@ -27,6 +28,7 @@ export default class AttackEvent extends Event {
     this.#enemyMovementGrid = enemyMovementGrid;
     this.#parry = parry;
     this.#eventDeck = eventDeck;
+    this.#stateMessage = stateMessage;
   }
 
   static create(
@@ -35,7 +37,8 @@ export default class AttackEvent extends Event {
     currentPlayerMovementGrid,
     enemyMovementGrid,
     parry,
-    eventDeck
+    eventDeck,
+    stateMessage
   ) {
     const attackEvent = new AttackEvent(
       attacker,
@@ -43,14 +46,15 @@ export default class AttackEvent extends Event {
       currentPlayerMovementGrid,
       enemyMovementGrid,
       parry,
-      eventDeck
+      eventDeck,
+      stateMessage
     );
 
     return attackEvent;
   }
 
   execute() {
-    let damageToInflict     
+    let damageToInflict;
 
     let roll = Math.floor(Math.random() * 100 + 1);
     let critProb = this.#attacker.getCritChance();
@@ -60,148 +64,180 @@ export default class AttackEvent extends Event {
     let targetWeapon = this.#target.getWeapon();
     let attackerWeapon = this.#attacker.getWeapon();
 
-    if (roll > critProb && roll <= chances) { // FUMBLE
+    if (roll > critProb && roll <= chances) {
+      // FUMBLE
 
       console.log("Fumble");
       fumble = true;
     }
-    
-    if(fumble) {
+
+    if (fumble) {
       this.#target = this.#attacker;
     }
 
-
-    if (!attackerWeapon && this.#parry === false) {                                             // ATTACK USING FISTS && ENEMY IS NOT PARRYING
-      if(fumble) {
+    if (!attackerWeapon && this.#parry === false) {
+      // ATTACK USING FISTS && ENEMY IS NOT PARRYING
+      if (fumble) {
         damageToInflict =
-          this.#attacker.getCurrentAttack() - (this.#target.getCurrentDefense()/2);
+          this.#attacker.getCurrentAttack() -
+          this.#target.getCurrentDefense() / 2;
+
+        console.log(damageToInflict);
       } else {
         damageToInflict =
           this.#attacker.getCurrentAttack() - this.#target.getCurrentDefense();
       }
 
-      damageToInflict = Math.floor(damageToInflict)
+      damageToInflict = Math.floor(damageToInflict);
+    } else if (!attackerWeapon && this.#parry === true) {
+      // ATTACK USING FISTS && ENEMY IS PARRYING
+      damageToInflict = this.#attacker.getCurrentAttack();
 
-    } else if (!attackerWeapon && this.#parry === true) {                                       // ATTACK USING FISTS && ENEMY IS PARRYING
-        damageToInflict =
-          this.#attacker.getCurrentAttack()
-
-        damageToInflict = Math.floor(damageToInflict)
-
-    } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MELEE && this.#parry === false) {    // ATTACK USING A MELEE WEAPON && ENEMY IS NOT PARRYING
+      damageToInflict = Math.floor(damageToInflict);
+    } else if (
+      this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MELEE &&
+      this.#parry === false
+    ) {
+      // ATTACK USING A MELEE WEAPON && ENEMY IS NOT PARRYING
       if (fumble) {
         damageToInflict =
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage() -
-          (this.#target.getCurrentDefense()/2);
-
-      } else {      
+          this.#target.getCurrentDefense() / 2;
+      } else {
         damageToInflict =
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage() -
           this.#target.getCurrentDefense();
-
       }
 
-      damageToInflict = Math.floor(damageToInflict)
-    } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MELEE && this.#parry === true) {     // ATTACK USING A MELEE WEAPON && ENEMY IS PARRYING
+      damageToInflict = Math.floor(damageToInflict);
+    } else if (
+      this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MELEE &&
+      this.#parry === true
+    ) {
+      // ATTACK USING A MELEE WEAPON && ENEMY IS PARRYING
       if (fumble) {
         damageToInflict =
-        this.#attacker.getCurrentAttack() +
-        this.#attacker.getWeaponCurrentDamage();
-
-      } else {
-      damageToInflict =
-        this.#attacker.getCurrentAttack() +
-        this.#attacker.getWeaponCurrentDamage()
-      }
-
-      damageToInflict = Math.floor(damageToInflict)
-    } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE && this.#parry === false) {  // ATTACK USING A MISSILE WEAPON && ENEMY IS NOT PARRYING
-      if (fumble) {
-        damageToInflict =
-        this.#attacker.getCurrentAttack() +
-        this.#attacker.getWeaponCurrentDamage() -
-        (this.#target.getCurrentDefense()/2);
-
-        damageToInflict = Math.floor(damageToInflict)
-      }
-      else {  
-      damageToInflict =
-        this.#attacker.getCurrentAttack() +
-        this.#attacker.getWeaponCurrentDamage() -
-        this.#target.getCurrentDefense();
-      damageToInflict = Math.floor(this.caltulateDistance(damageToInflict))
-      }
-    } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE && this.#parry === true) {   // ATTACK USING A MISSILE WEAPON && ENEMY IS PARRYING
-    if (fumble) {
-      damageToInflict =
-        this.#attacker.getCurrentAttack() +
-        this.#attacker.getWeaponCurrentDamage()
-
-      damageToInflict = Math.floor(damageToInflict)
+          this.#attacker.getCurrentAttack() +
+          this.#attacker.getWeaponCurrentDamage();
       } else {
         damageToInflict =
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage();
-          
-        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict))
-        }
-    } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID && this.#parry === false) {   // ATTACK USING A HYBRID WEAPON && ENEMY IS NOT PARRYING
-      if(fumble) {  
+      }
+
+      damageToInflict = Math.floor(damageToInflict);
+    } else if (
+      this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE &&
+      this.#parry === false
+    ) {
+      // ATTACK USING A MISSILE WEAPON && ENEMY IS NOT PARRYING
+      if (fumble) {
         damageToInflict =
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage() -
           this.#target.getCurrentDefense() / 2;
 
-        damageToInflict = Math.floor(damageToInflict)
-
+        damageToInflict = Math.floor(damageToInflict);
       } else {
         damageToInflict =
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage() -
           this.#target.getCurrentDefense();
-        
-          damageToInflict = Math.floor(this.caltulateDistance(damageToInflict))
-        }
-    } else if (this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID && this.#parry === true) {    // ATTACK USING A HYBRID WEAPON && ENEMY IS PARRYING
+        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict));
+      }
+    } else if (
+      this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE &&
+      this.#parry === true
+    ) {
+      // ATTACK USING A MISSILE WEAPON && ENEMY IS PARRYING
       if (fumble) {
         damageToInflict =
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage();
 
-        damageToInflict = Math.floor(damageToInflict)
-
+        damageToInflict = Math.floor(damageToInflict);
       } else {
         damageToInflict =
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage();
 
-        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict))
+        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict));
       }
+    } else if (
+      this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID &&
+      this.#parry === false
+    ) {
+      // ATTACK USING A HYBRID WEAPON && ENEMY IS NOT PARRYING
+      if (fumble) {
+        damageToInflict =
+          this.#attacker.getCurrentAttack() +
+          this.#attacker.getWeaponCurrentDamage() -
+          this.#target.getCurrentDefense() / 2;
 
+        damageToInflict = Math.floor(damageToInflict);
+      } else {
+        damageToInflict =
+          this.#attacker.getCurrentAttack() +
+          this.#attacker.getWeaponCurrentDamage() -
+          this.#target.getCurrentDefense();
+
+        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict));
+      }
+    } else if (
+      this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID &&
+      this.#parry === true
+    ) {
+      // ATTACK USING A HYBRID WEAPON && ENEMY IS PARRYING
+      if (fumble) {
+        damageToInflict =
+          this.#attacker.getCurrentAttack() +
+          this.#attacker.getWeaponCurrentDamage();
+
+        damageToInflict = Math.floor(damageToInflict);
+      } else {
+        damageToInflict =
+          this.#attacker.getCurrentAttack() +
+          this.#attacker.getWeaponCurrentDamage();
+
+        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict));
+      }
     }
 
     if (damageToInflict < 0) {
       damageToInflict = 0;
     }
-
+    let crit = false;
     if (roll <= critProb) {
       // CRITICAL HIT
       console.log("Critical Hit");
       damageToInflict = damageToInflict * 1.75;
-      damageToInflict = Math.floor(damageToInflict)
+      damageToInflict = Math.floor(damageToInflict);
+      crit = true;
     }
 
-    if(attackerWeapon) {
-      let attackerNewDurability = attackerWeapon.getCurrentDurability() - damageToInflict;
+    if (attackerWeapon) {
+      let attackerNewDurability =
+        attackerWeapon.getCurrentDurability() - damageToInflict;
       if (attackerNewDurability < 0) {
         attackerNewDurability = 0;
       }
       attackerWeapon.setCurrentDurability(attackerNewDurability);
-
+      let attackerBox = this.#attacker.getBoxIsPositionedIn(
+        this.#currentPlayerMovementGrid,
+        this.#attacker
+      );
       if (attackerWeapon.getCurrentDurability() <= 0) {
-        this.#eventDeck.insertCard(attackerWeapon);
+        const weaponMessage = new StateMessage(
+          "weapon broke!",
+          "20px MedievalSharp",
+          "red",
+          4,
+          attackerBox.getCard().getXCoordinate(),
+          attackerBox.getCard().getYCoordinate() + 10
+        );
+        this.#stateMessage.push(weaponMessage);
         this.#attacker.removeWeapon();
       }
     }
@@ -213,7 +249,7 @@ export default class AttackEvent extends Event {
     let parryFumbleChances = parryCritProb + parryFumbleProb;
     let parryHalfFumbleChances = parryFumbleChances + parryHalfFumbleProb;
     let parryCrit = false;
-    let parryFumble = false; 
+    let parryFumble = false;
     let parryHalfFumble = false;
 
     let noDurabilityRoll = Math.floor(Math.random() * 10 + 1);
@@ -279,11 +315,11 @@ export default class AttackEvent extends Event {
 
       this.#target.setCurrentHP(targetNewCurrentHP);
     }
-    let targetNewCurrentHP = this.#target.getCurrentHP() - storedDamage;
-    if (targetNewCurrentHP < 0) {
-      targetNewCurrentHP = 0;
+    let targetNewCurrentHPstored = this.#target.getCurrentHP() - storedDamage;
+    if (targetNewCurrentHPstored < 0) {
+      targetNewCurrentHPstored = 0;
     }
-    this.#target.setCurrentHP(targetNewCurrentHP);
+    this.#target.setCurrentHP(targetNewCurrentHPstored);
   
     if (damageToInflict > 0) {
       damageToInflict = damageToInflict * -1;
@@ -302,13 +338,213 @@ export default class AttackEvent extends Event {
       );
     }
 
-    const DamageMessage = new DamageMessages(
-      damageToInflict,
-      4,
-      targetBox.getCard().getXCoordinate() + 55,
-      targetBox.getCard().getYCoordinate() + 55
-    );
-    globals.damageMessages.push(DamageMessage);
+
+    if (this.#parry === true && !fumble && this.#target.getWeapon()) {
+      // PARRY
+
+      if (targetWeapon.getCurrentDurability() >= damageToInflict) {
+
+        if (parryRoll <= parryCritProb) {
+          // PARRY CRIT
+          console.log("Parry Crit");
+          parryCrit = true;
+        } else if (parryRoll > parryCritProb && parryRoll <= parryFumbleChances) {
+          // PARRY FUMBLE
+          console.log("Parry Fumble");
+          parryFumble = true;
+        } else if (
+          parryRoll > parryFumbleChances &&
+          parryRoll <= parryHalfFumbleChances
+        ) {
+          // PARRY HALF FUMBLE
+          console.log("Parry Half Fumble");
+          parryHalfFumble = true;
+        }
+        if (parryFumble) {
+          // PARRY FUMBLE
+          damageToInflict = targetWeapon.getCurrentDurability();
+          const parryMessage = new StateMessage(
+            `Parry Fumble!: ${damageToInflict}`,
+            "60px MedievalSharp",
+            "red",
+            4,
+            targetBox.getCard().getXCoordinate() + 55,
+            targetBox.getCard().getYCoordinate() - 55
+          );
+          this.#stateMessage.push(parryMessage);
+        } else if (parryHalfFumble) {
+          // PARRY HALF FUMBLE
+          damageToInflict = damageToInflict * 1.25;
+          damageToInflict = Math.floor(damageToInflict);
+          const parryMessage = new StateMessage(
+            `Parry Half Fumble!: ${damageToInflict}`,
+            "60px MedievalSharp",
+            "lightblue",
+            4,
+            targetBox.getCard().getXCoordinate() + 55,
+            targetBox.getCard().getYCoordinate() - 55
+          );
+          this.#stateMessage.push(parryMessage);
+        } else if (parryCrit) {
+          // PARRY CRIT
+          damageToInflict = 0;
+          const parryMessage = new StateMessage(
+            `Parry Crit!: ${damageToInflict}`,
+            "60px MedievalSharp",
+            "lightblue",
+            4,
+            targetBox.getCard().getXCoordinate() + 55,
+            targetBox.getCard().getYCoordinate() - 55
+          );
+          this.#stateMessage.push(parryMessage);
+        }
+      } else {
+        //NO DURABILITY PARRY
+        if (noDurabilityRoll === 1 || noDurabilityRoll === 2) {
+          //NO DURABILITY CRIT
+          damageToInflict = targetWeapon.getCurrentDurability();
+          const parryMessage = new StateMessage(
+            `Parry Crit!: ${damageToInflict}`,
+            "60px MedievalSharp",
+            "lightblue",
+            4,
+            targetBox.getCard().getXCoordinate() + 55,
+            targetBox.getCard().getYCoordinate() + 55
+          );
+          this.#stateMessage.push(parryMessage);
+        } else if (noDurabilityRoll === 3) {
+          //NO DURABILITY FUMBLE
+          storedDamage = damageToInflict;
+          damageToInflict = targetWeapon.getCurrentDurability();
+          const parryMessage = new StateMessage(
+            `Parry fumble!: ${damageToInflict}`,
+            "60px MedievalSharp",
+            "lightblue",
+            4,
+            targetBox.getCard().getXCoordinate() + 55,
+            targetBox.getCard().getYCoordinate() - 55
+          );
+          const damageMessage = new StateMessage(
+            storedDamage,
+            "40px MedievalSharp",
+            "red",
+            4,
+            targetBox.getCard().getXCoordinate() + 55,
+            targetBox.getCard().getYCoordinate() + 55
+          );
+          this.#stateMessage.push(parryMessage, damageMessage);
+        } else {
+          //NO DURABILITY NORMAL
+          storedDamage = Math.abs(targetWeapon.getCurrentDurability() - damageToInflict);
+          damageToInflict = targetWeapon.getCurrentDurability();
+          const parryMessage = new StateMessage(
+            `Parry !: ${damageToInflict}`,
+            "60px MedievalSharp",
+            "lightblue",
+            4,
+            targetBox.getCard().getXCoordinate() + 55,
+            targetBox.getCard().getYCoordinate() - 55
+          );
+          const damageMessage = new StateMessage(
+            storedDamage,
+            "40px MedievalSharp",
+            "lightblue",
+            4,
+            targetBox.getCard().getXCoordinate() + 55,
+            targetBox.getCard().getYCoordinate() + 55
+          );
+          this.#stateMessage.push(parryMessage, damageMessage);
+        }
+      }
+      let targetNewDurability =
+        targetWeapon.getCurrentDurability() - damageToInflict;
+      if (targetNewDurability < 0) {
+        storedDamage = Math.abs(targetNewDurability);
+        targetNewDurability = 0;
+      }
+      targetWeapon.setCurrentDurability(targetNewDurability);
+
+      if (targetWeapon.getCurrentDurability() <= 0) {
+        const weaponMessage = new StateMessage(
+          "weapon broke!",
+          "20px MedievalSharp",
+          "red",
+          4,
+          targetBox.getCard().getXCoordinate(),
+          targetBox.getCard().getYCoordinate() + 10
+        );
+        this.#stateMessage.push(weaponMessage);
+        this.#target.removeWeapon();
+      }
+    } else {
+      let targetNewCurrentHP = this.#target.getCurrentHP() - damageToInflict;
+      if (targetNewCurrentHP < 0) {
+        targetNewCurrentHP = 0;
+      }
+
+      this.#target.setCurrentHP(targetNewCurrentHP);
+    }
+    let targetNewCurrentHP = this.#target.getCurrentHP() - storedDamage;
+    if (targetNewCurrentHP < 0) {
+      targetNewCurrentHP = 0;
+    }
+    this.#target.setCurrentHP(targetNewCurrentHP);
+
+    if (damageToInflict > 0) {
+      damageToInflict = damageToInflict * -1;
+    }
+
+
+    
+    if (fumble) { 
+      const fumbleMessage = new StateMessage(
+        "Fumble!",
+        "60px MedievalSharp",
+        "red",
+        4,
+        targetBox.getCard().getXCoordinate() + 55,
+        targetBox.getCard().getYCoordinate() - 55
+        );
+        const damageMessage = new StateMessage(
+          damageToInflict,
+          "40px MedievalSharp",
+          "red",
+          4,
+          targetBox.getCard().getXCoordinate() + 55,
+          targetBox.getCard().getYCoordinate() + 55
+        );
+        this.#stateMessage.push(damageMessage, fumbleMessage);
+
+        fumble = false;
+    } else if (crit) {
+      const critMessage = new StateMessage(
+        "Critical Hit!",
+        "60px MedievalSharp",
+        "gold",
+        4,
+        targetBox.getCard().getXCoordinate() + 55,
+        targetBox.getCard().getYCoordinate() - 55
+      );
+      const damageMessage = new StateMessage(
+        damageToInflict,
+        "40px MedievalSharp",
+        "gold",
+        4,
+        targetBox.getCard().getXCoordinate() + 55,
+        targetBox.getCard().getYCoordinate() + 55
+      );
+      this.#stateMessage.push(damageMessage, critMessage);
+    } else if (!this.#parry) {
+      const damageMessage = new StateMessage(
+        damageToInflict,
+        "40px MedievalSharp",
+        "red",
+        4,
+        targetBox.getCard().getXCoordinate() + 55,
+        targetBox.getCard().getYCoordinate() + 55
+      );
+      this.#stateMessage.push(damageMessage);
+    }
   }
 
   caltulateDistance(damageToInflict) {

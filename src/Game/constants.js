@@ -247,7 +247,18 @@ const EventCooldownState = {
 
 const SpecialEventID = {
   SUMMON_CHARACTER: 0,
-  POTION_ETERNAL_NIGHT: 8,
+  JUDGMENT_ANCIENTS: 1,
+  POISON_OF_THE_ABYSS: 3,
+  BARTENDERS_POWER: 5,
+  BROOM_FURY: 6,
+  BLESSING_WAITRESS: 7,
+
+};
+
+const BlessingWaitressState = {
+  INIT: 0,
+  SELECT_MINION: 1,
+  HEAL: 2,
 };
 
 export {
@@ -279,4 +290,5 @@ export {
   EquipWeaponState,
   EventCooldownState,
   SpecialEventID,
+  BlessingWaitressState,
 };
