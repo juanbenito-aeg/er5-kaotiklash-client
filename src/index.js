@@ -60,6 +60,11 @@ const globals = {
     isPlayer1Affected: false,
     isPlayer2Affected: false,
   },
+  curseOfTheBoundTitanEventData: {
+    isActive: false,
+    isPlayer1Affected: false,
+    isPlayer2Affected: false,
+  },
 };
 
 window.onload = initLogInScreen;

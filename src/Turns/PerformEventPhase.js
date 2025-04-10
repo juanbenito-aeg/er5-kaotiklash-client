@@ -5,6 +5,7 @@ import BroomFuryEvent from "../Events/BroomFuryEvent.js";
 import BlessingWaitressEvent from "../Events/BlessingWaitressEvent.js";
 import BartendersPowerEvent from "../Events/BartendersPowerEvent.js";
 import PoisonOfTheAbyssEvent from "../Events/PoisonOfTheAbyssEvent.js";
+import CurseOfTheBoundTitanEvent from "../Events/CurseOfTheBoundTitan.js";
 import {
   CardCategory,
   CardState,
@@ -348,6 +349,13 @@ export default class PerformEventPhase extends Phase {
 
         case SpecialEventID.POISON_OF_THE_ABYSS:
           selectedEventInstance = new PoisonOfTheAbyssEvent(
+            this.#player, 
+            selectedCard
+          );
+          break;
+
+        case SpecialEventID.CURSE_OF_THE_BOUND_TITAN:
+          selectedEventInstance = new CurseOfTheBoundTitanEvent(
             this.#player, 
             selectedCard
           );

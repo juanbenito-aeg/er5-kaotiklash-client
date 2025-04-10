@@ -1,6 +1,7 @@
 import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import AttackEvent from "../Events/AttackEvent.js";
+import StateMessage from "../Messages/StateMessage.js";
 import {
   PlayerID,
   CardState,
@@ -21,6 +22,7 @@ export default class AttackPhase extends Phase {
   #parry;
   #eventDeck;
   #stateMessages;
+  #player;
 
   constructor(
     state,
@@ -33,7 +35,8 @@ export default class AttackPhase extends Phase {
     currentPlayerMovementGridDeck,
     currentPlayerMinionsDeck,
     eventDeck,
-    stateMessages
+    stateMessages,
+    player
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -46,6 +49,7 @@ export default class AttackPhase extends Phase {
     this.#parry = false;
     this.#eventDeck = eventDeck;
     this.#stateMessages = stateMessages;
+    this.#player = player;
   }
 
   static create(
@@ -111,7 +115,8 @@ export default class AttackPhase extends Phase {
       currentPlayerMovementGridDeck,
       currentPlayerMinionsDeck,
       eventDeck,
-      stateMessages
+      stateMessages,
+      player
     );
 
     return attackPhase;
@@ -145,11 +150,37 @@ export default class AttackPhase extends Phase {
         );
 
         attacker = this.#currentPlayerMovementGridDeck.lookForHoveredCard();
+        
 
+        
         if (attacker) {
+          if(this.#player.getID() === PlayerID.PLAYER_1 && globals.curseOfTheBoundTitanEventData.isPlayer1Affected) {
+            console.log("CURSE OF THE BOUND TITAN EVENT DATA PLAYER 1 AFFECTED");
+            const debuffMessage = new StateMessage(
+              "Minion Debuffed",
+              "20px MedievalSharp",
+              "red",
+              0.01,
+              attacker.getXCoordinate() + 55,
+              attacker.getYCoordinate() + 10
+            );
+            this.#stateMessages.push(debuffMessage);
+          }
+          if(this.#player.getID() === PlayerID.PLAYER_2 && globals.curseOfTheBoundTitanEventData.isPlayer2Affected) {
+            const debuffMessage = new StateMessage(
+              "Minion Debuffed",
+              "20px MedievalSharp",
+              "red",
+              0.01,
+              attacker.getXCoordinate() + 55,
+              attacker.getYCoordinate() + 10
+            );
+            this.#stateMessages.push(debuffMessage);
+          }
           if (!attacker.isLeftClicked()) {
             attacker.setState(CardState.HOVERED);
           } else {
+          
             console.log("ATTACKER SELECTED");
 
             attacker.setState(CardState.SELECTED);
@@ -241,6 +272,7 @@ export default class AttackPhase extends Phase {
           this.#parry,
           this.#eventDeck,
           this.#stateMessages,
+          this.#player
         );
         attackEvent.execute();
 
