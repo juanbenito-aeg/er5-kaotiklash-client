@@ -12,8 +12,10 @@ import {
   PlayerID,
   GridType,
   SpecialEventID,
+  RareEventID,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
+import EchoOfTheStratagenEvent from "../Events/EchoOfTheStratagenEvent.js";
 
 export default class PerformEventPhase extends Phase {
   #events;
@@ -28,6 +30,9 @@ export default class PerformEventPhase extends Phase {
   #currentPlayerBattlefieldGrid;
   #enemyMinionsInPlayDeck;
   #enemyBattlefieldGrid;
+  #enemyEventsInPrepDeck;
+  #enemyEventsInPrepGrid;
+  #eventWithoutDurationData;
   #lucretiaDeers;
   #stateMessages;
   #player;
@@ -44,10 +49,12 @@ export default class PerformEventPhase extends Phase {
     currentPlayerEventsInPrepDeck,
     currentPlayerMinionsDeck,
     currentPlayerMinionsInPlayDeck,
+    enemyMinionsInPlayDeck,
+    enemyEventsInPrepDeck,
     currentPlayerEventsInPrepGrid,
     currentPlayerBattlefieldGrid,
-    enemyMinionsInPlayDeck,
     enemyBattlefieldGrid,
+    enemyEventsInPrepGrid,
     lucretiaDeers,
     player,
     stateMessages
@@ -66,9 +73,15 @@ export default class PerformEventPhase extends Phase {
     this.#currentPlayerBattlefieldGrid = currentPlayerBattlefieldGrid;
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
     this.#enemyBattlefieldGrid = enemyBattlefieldGrid;
+    this.#enemyEventsInPrepDeck = enemyEventsInPrepDeck;
+    this.#enemyEventsInPrepGrid = enemyEventsInPrepGrid;
     this.#stateMessages = stateMessages;
     this.#lucretiaDeers = lucretiaDeers;
     this.#player = player;
+    this.#eventWithoutDurationData = {
+      isActive: false,
+      instance: {},
+    };
   }
 
   static create(
@@ -90,6 +103,7 @@ export default class PerformEventPhase extends Phase {
     let currentPlayerMinionsDeck;
     let currentPlayerMinionsInPlayDeck;
     let enemyMinionsInPlayDeck;
+    let enemyEventsInPrepDeck;
 
     if (player.getID() === PlayerID.PLAYER_1) {
       currentPlayerMainCharacterDeck =
@@ -109,6 +123,9 @@ export default class PerformEventPhase extends Phase {
 
       enemyMinionsInPlayDeck =
         deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
+
+      enemyEventsInPrepDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION];
     } else {
       currentPlayerMainCharacterDeck =
         deckContainer.getDecks()[DeckType.PLAYER_2_MAIN_CHARACTER];
@@ -127,11 +144,15 @@ export default class PerformEventPhase extends Phase {
 
       enemyMinionsInPlayDeck =
         deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
+
+      enemyEventsInPrepDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION];
     }
 
     let currentPlayerEventsInPrepGrid;
     let currentPlayerBattlefieldGrid;
     let enemyBattlefieldGrid;
+    let enemyEventsInPrepGrid;
 
     if (player === currentPlayer) {
       currentPlayerEventsInPrepGrid =
@@ -141,6 +162,8 @@ export default class PerformEventPhase extends Phase {
         board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
 
       enemyBattlefieldGrid = board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
+
+      enemyEventsInPrepGrid = board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
     } else {
       currentPlayerEventsInPrepGrid =
         board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
@@ -149,6 +172,8 @@ export default class PerformEventPhase extends Phase {
         board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
 
       enemyBattlefieldGrid = board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
+
+      enemyEventsInPrepGrid = board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
     }
 
     const performEventPhase = new PerformEventPhase(
@@ -163,10 +188,12 @@ export default class PerformEventPhase extends Phase {
       currentPlayerEventsInPrepDeck,
       currentPlayerMinionsDeck,
       currentPlayerMinionsInPlayDeck,
+      enemyMinionsInPlayDeck,
+      enemyEventsInPrepDeck,
       currentPlayerEventsInPrepGrid,
       currentPlayerBattlefieldGrid,
-      enemyMinionsInPlayDeck,
       enemyBattlefieldGrid,
+      enemyEventsInPrepGrid,
       lucretiaDeers,
       player,
       stateMessages
@@ -247,7 +274,7 @@ export default class PerformEventPhase extends Phase {
       this.#currentPlayerEventsInPrepDeck.lookForSelectedCard();
 
     let selectedEventInstance;
-    if (!globals.blessingWaitressCardData.isEventActive) {
+    if (!this.#eventWithoutDurationData.isActive) {
       selectedEventInstance =
         this.#determineAndCreateSelectedEvent(selectedCard);
     } else {
@@ -260,7 +287,7 @@ export default class PerformEventPhase extends Phase {
       this.#events.push(selectedEventInstance);
     }
 
-    if (!globals.blessingWaitressCardData.isEventActive) {
+    if (!this.#eventWithoutDurationData.isActive) {
       this._state = PerformEventState.END;
     }
   }
@@ -307,7 +334,7 @@ export default class PerformEventPhase extends Phase {
           );
           break;
 
-        case SpecialEventID.BLESSING_WAITRESS:
+        /*  case SpecialEventID.BLESSING_WAITRESS:
           globals.blessingWaitressCardData.isEventActive = true;
 
           selectedEventInstance =
@@ -318,7 +345,7 @@ export default class PerformEventPhase extends Phase {
                 this.#currentPlayerMinionsInPlayDeck
               );
 
-          break;
+          break; */
 
         case SpecialEventID.BARTENDERS_POWER:
           selectedEventInstance = new BartendersPowerEvent(
@@ -331,8 +358,24 @@ export default class PerformEventPhase extends Phase {
       }
     } else {
       switch (selectedCard.getID()) {
-        case RareEventID.STOLEN_FATE:
+        /* case RareEventID.STOLEN_FATE:
           // HERE A "StolenFateEvent" INSTANCE IS CREATED
+          break; */
+        case RareEventID.ECHO_OF_THE_STRATAGEN:
+          this.#eventWithoutDurationData.isActive = true;
+
+          selectedEventInstance = this.#eventWithoutDurationData.instance =
+            new EchoOfTheStratagenEvent(
+              this.#player,
+              selectedCard,
+              this.#currentPlayerEventsInPrepDeck,
+              this.#enemyEventsInPrepDeck,
+              this.#currentPlayerEventsInPrepGrid,
+              this.#enemyEventsInPrepGrid,
+              this.#stateMessages,
+              this.#eventWithoutDurationData
+            );
+
           break;
       }
     }
