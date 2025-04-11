@@ -256,6 +256,10 @@ const SpecialEventID = {
 
 };
 
+const RareEventID = {
+  THE_CUP_OF_THE_LAST_BREATH: 5,
+};
+
 const BlessingWaitressState = {
   INIT: 0,
   SELECT_MINION: 1,
@@ -291,5 +295,6 @@ export {
   EquipWeaponState,
   EventCooldownState,
   SpecialEventID,
+  RareEventID,
   BlessingWaitressState,
 };

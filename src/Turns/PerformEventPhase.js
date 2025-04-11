@@ -14,8 +14,10 @@ import {
   PlayerID,
   GridType,
   SpecialEventID,
+  RareEventID,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
+import TheCupOfTheLastBreathEvent from "../Events/TheCupOfTheLastBreathEvent.js";
 
 export default class PerformEventPhase extends Phase {
   #events;
@@ -362,9 +364,14 @@ export default class PerformEventPhase extends Phase {
       }
     } else {
       switch (selectedCard.getID()) {
-        case RareEventID.STOLEN_FATE:
-          // HERE A "StolenFateEvent" INSTANCE IS CREATED (IT IS JUST AN EXAMPLE)
+        case RareEventID.THE_CUP_OF_THE_LAST_BREATH:
+          selectedEventInstance = new TheCupOfTheLastBreathEvent(
+            this.#player,
+            selectedCard
+          );
           break;
+        break;
+
       }
     }
 

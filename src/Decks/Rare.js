@@ -31,4 +31,12 @@ export default class Rare extends Card {
   getCurrentDurationInRounds() {
     return this.#currentDurationInRounds;
   }
+
+  getCurrentPrepTimeInRounds() {
+    return 0;
+  }
+
+  setCurrentDurationInRounds(currentDurationInRounds) {
+    this.#currentDurationInRounds = currentDurationInRounds;
+  }
 }

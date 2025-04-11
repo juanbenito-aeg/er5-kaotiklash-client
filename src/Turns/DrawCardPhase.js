@@ -6,6 +6,7 @@ import {
   CardCategory,
   GridType,
   SpecialEventID,
+  RareEventID,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 
@@ -92,8 +93,8 @@ export default class DrawCardPhase extends Phase {
       const card = eventCards[i];
 
       if (
-        card.getCategory() === CardCategory.SPECIAL &&
-        card.getID() === SpecialEventID.CURSE_OF_THE_BOUND_TITAN
+        card.getCategory() === CardCategory.RARE &&
+        card.getID() === RareEventID.THE_CUP_OF_THE_LAST_BREATH
       ) {
         this.#filteredCards.push(card);
 

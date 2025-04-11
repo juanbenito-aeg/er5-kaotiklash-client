@@ -70,6 +70,11 @@ const globals = {
     isPlayer1Affected: false,
     isPlayer2Affected: false,
   },
+  theCupOfTheLastBreathEventData: {
+    isActive: false,
+    isPlayer1Affected: false,
+    isPlayer2Affected: false,
+  },
 };
 
 window.onload = initLogInScreen;
