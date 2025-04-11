@@ -107,21 +107,26 @@ export default class SummonCharacterEvent extends Event {
         break;
 
       case MainCharacterID.ANGELO_DI_MORTIS:
-        const angeloSkill = new SpecialSkillAngelo(
-          this.#enemyBattlefieldGrid,
-          this.#enemyEventsInPrepGrid,
-          this.#mouseInput,
-          currentPlayer,
-          this.#stateMessages
-        );
+        if (!this.#specialSkill) {
+          const angeloSkill = new SpecialSkillAngelo(
+            this.#enemyBattlefieldGrid,
+            this.#enemyEventsInPrepGrid,
+            this.#mouseInput,
+            currentPlayer,
+            this.#stateMessages
+          );
 
-        if (!this.#isFinished) {
-          angeloSkill.execute();
-          this.#isFinished = true;
+          this.#specialSkill = angeloSkill;
+
+          this.#specialSkill.execute();
         }
 
         if (!this.isActive()) {
           angeloSkill.restore();
+
+          globals.isPlayersSummonCharacterActive[
+            this._executedBy.getID()
+          ] = false;
         }
 
         break;
