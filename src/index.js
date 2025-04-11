@@ -50,10 +50,6 @@ const globals = {
     isEventActive: false,
     affectedPlayerID: -1,
   },
-  blessingWaitressCardData: {
-    isEventActive: false,
-    eventInstance: {},
-  },
 };
 
 window.onload = initLogInScreen;

@@ -5,12 +5,19 @@ import { globals } from "../index.js";
 export default class BlessingWaitressEvent extends Event {
   #state;
   #currentPlayerMinionsInPlayDeck;
+  #eventWithoutDurationData;
 
-  constructor(executedBy, eventCard, currentPlayerMinionsInPlayDeck) {
+  constructor(
+    executedBy,
+    eventCard,
+    currentPlayerMinionsInPlayDeck,
+    eventWithoutDurationData
+  ) {
     super(executedBy, eventCard);
 
     this.#state = BlessingWaitressState.INIT;
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
+    this.#eventWithoutDurationData = eventWithoutDurationData;
   }
 
   execute() {
@@ -80,7 +87,7 @@ export default class BlessingWaitressEvent extends Event {
 
     selectedCard.setCurrentHP(newHP);
 
-    globals.blessingWaitressCardData.isEventActive = false;
-    globals.blessingWaitressCardData.eventInstance = {};
+    this.#eventWithoutDurationData.isActive = false;
+    this.#eventWithoutDurationData.instance = {};
   }
 }
