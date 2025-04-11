@@ -294,4 +294,16 @@ export default class CardView {
   removeWeapon() {
     this.#card.removeWeapon();
   }
+
+  getInitialPrepTimeInRounds() {
+    return this.#card.getInitialPrepTimeInRounds();
+  }
+
+  getCurrentInitialPrepTimeInRounds() {
+    return this.#card.getCurrentPrepTimeInRounds;
+  }
+
+  setCurrentPrepTimeInRounds(newPrepTimeInRounds) {
+    this.#card.setCurrentPrepTimeInRounds(newPrepTimeInRounds);
+  }
 }

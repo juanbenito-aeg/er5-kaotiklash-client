@@ -56,10 +56,6 @@ const globals = {
     isActive: false,
     affectedPlayerID: -1,
   },
-  blessingWaitressCardData: {
-    isEventActive: false,
-    eventInstance: {},
-  },
   poisonOfTheAbyssEventData: {
     isActive: false,
     isPlayer1Affected: false,

@@ -9,13 +9,15 @@ export default class BlessingWaitressEvent extends Event {
   #phaseMessage;
   #stateMessages;
   #currentPlayerMinionsInPlayDeck;
+  #eventWithoutDurationData;
 
   constructor(
     executedBy,
     eventCard,
     phaseMessage,
     stateMessages,
-    currentPlayerMinionsInPlayDeck
+    currentPlayerMinionsInPlayDeck,
+    eventWithoutDurationData
   ) {
     super(executedBy, eventCard);
 
@@ -23,6 +25,7 @@ export default class BlessingWaitressEvent extends Event {
     this.#phaseMessage = phaseMessage;
     this.#stateMessages = stateMessages;
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
+    this.#eventWithoutDurationData = eventWithoutDurationData;
   }
 
   execute() {
@@ -118,7 +121,7 @@ export default class BlessingWaitressEvent extends Event {
 
     this.#stateMessages.push(restoredHPMsg);
 
-    globals.blessingWaitressCardData.isEventActive = false;
-    globals.blessingWaitressCardData.eventInstance = {};
+    this.#eventWithoutDurationData.isActive = false;
+    this.#eventWithoutDurationData.instance = {};
   }
 }

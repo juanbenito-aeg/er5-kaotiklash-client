@@ -6,6 +6,7 @@ import {
   CardCategory,
   GridType,
   SpecialEventID,
+  RareEventID,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 

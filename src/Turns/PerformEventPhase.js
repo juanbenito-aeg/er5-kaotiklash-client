@@ -14,8 +14,10 @@ import {
   PlayerID,
   GridType,
   SpecialEventID,
+  RareEventID,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
+import EchoOfTheStratagenEvent from "../Events/EchoOfTheStratagenEvent.js";
 
 export default class PerformEventPhase extends Phase {
   #events;
@@ -28,9 +30,11 @@ export default class PerformEventPhase extends Phase {
   #currentPlayerMinionsInPlayDeck;
   #currentPlayerEventsInPrepGrid;
   #currentPlayerBattlefieldGrid;
-  #enemyEventsInPrepGrid;
   #enemyBattlefieldGrid;
   #enemyMinionsInPlayDeck;
+  #enemyEventsInPrepDeck;
+  #enemyEventsInPrepGrid;
+  #eventWithoutDurationData;
   #lucretiaDeers;
   #stateMessages;
   #player;
@@ -47,11 +51,13 @@ export default class PerformEventPhase extends Phase {
     currentPlayerEventsInPrepDeck,
     currentPlayerMinionsDeck,
     currentPlayerMinionsInPlayDeck,
+    enemyMinionsInPlayDeck,
+    enemyEventsInPrepDeck,
     currentPlayerEventsInPrepGrid,
     currentPlayerBattlefieldGrid,
-    enemyEventsInPrepGrid,
-    enemyBattlefieldGrid,
     enemyMinionsInPlayDeck,
+    enemyBattlefieldGrid,
+    enemyEventsInPrepGrid,
     lucretiaDeers,
     player,
     stateMessages
@@ -69,11 +75,16 @@ export default class PerformEventPhase extends Phase {
     this.#currentPlayerEventsInPrepGrid = currentPlayerEventsInPrepGrid;
     this.#currentPlayerBattlefieldGrid = currentPlayerBattlefieldGrid;
     this.#enemyBattlefieldGrid = enemyBattlefieldGrid;
-    this.#enemyEventsInPrepGrid = enemyEventsInPrepGrid;
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
+    this.#enemyEventsInPrepDeck = enemyEventsInPrepDeck;
+    this.#enemyEventsInPrepGrid = enemyEventsInPrepGrid;
     this.#stateMessages = stateMessages;
     this.#lucretiaDeers = lucretiaDeers;
     this.#player = player;
+    this.#eventWithoutDurationData = {
+      isActive: false,
+      instance: {},
+    };
   }
 
   static create(
@@ -95,6 +106,7 @@ export default class PerformEventPhase extends Phase {
     let currentPlayerMinionsDeck;
     let currentPlayerMinionsInPlayDeck;
     let enemyMinionsInPlayDeck;
+    let enemyEventsInPrepDeck;
 
     if (player.getID() === PlayerID.PLAYER_1) {
       currentPlayerMainCharacterDeck =
@@ -114,6 +126,9 @@ export default class PerformEventPhase extends Phase {
 
       enemyMinionsInPlayDeck =
         deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
+
+      enemyEventsInPrepDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION];
     } else {
       currentPlayerMainCharacterDeck =
         deckContainer.getDecks()[DeckType.PLAYER_2_MAIN_CHARACTER];
@@ -132,12 +147,15 @@ export default class PerformEventPhase extends Phase {
 
       enemyMinionsInPlayDeck =
         deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
+
+      enemyEventsInPrepDeck =
+        deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION];
     }
 
     let currentPlayerEventsInPrepGrid;
     let currentPlayerBattlefieldGrid;
-    let enemyEventsInPrepGrid;
     let enemyBattlefieldGrid;
+    let enemyEventsInPrepGrid;
 
     if (player === currentPlayer) {
       currentPlayerEventsInPrepGrid =
@@ -149,6 +167,8 @@ export default class PerformEventPhase extends Phase {
       enemyEventsInPrepGrid = board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
 
       enemyBattlefieldGrid = board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
+
+      enemyEventsInPrepGrid = board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
     } else {
       currentPlayerEventsInPrepGrid =
         board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
@@ -159,6 +179,8 @@ export default class PerformEventPhase extends Phase {
       enemyEventsInPrepGrid = board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
 
       enemyBattlefieldGrid = board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
+
+      enemyEventsInPrepGrid = board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
     }
 
     const performEventPhase = new PerformEventPhase(
@@ -173,11 +195,13 @@ export default class PerformEventPhase extends Phase {
       currentPlayerEventsInPrepDeck,
       currentPlayerMinionsDeck,
       currentPlayerMinionsInPlayDeck,
+      enemyMinionsInPlayDeck,
+      enemyEventsInPrepDeck,
       currentPlayerEventsInPrepGrid,
       currentPlayerBattlefieldGrid,
-      enemyEventsInPrepGrid,
-      enemyBattlefieldGrid,
       enemyMinionsInPlayDeck,
+      enemyBattlefieldGrid,
+      enemyEventsInPrepGrid,
       lucretiaDeers,
       player,
       stateMessages
@@ -231,8 +255,8 @@ export default class PerformEventPhase extends Phase {
     if (
       hoveredCard &&
       hoveredCard.getCategory() !== CardCategory.WEAPON &&
-      hoveredCard.getCategory() !== CardCategory.ARMOR &&
-      hoveredCard.getCurrentPrepTimeInRounds() === 0
+      hoveredCard.getCategory() !== CardCategory.ARMOR /* &&
+      hoveredCard.getCurrentPrepTimeInRounds() === 0 */
     ) {
       // MAKE IT IMPOSSIBLE FOR THE PLAYER TO USE THE "Summon Character" EVENT IF ONE IS ALREADY ACTIVE
       if (
@@ -258,11 +282,11 @@ export default class PerformEventPhase extends Phase {
       this.#currentPlayerEventsInPrepDeck.lookForSelectedCard();
 
     let selectedEventInstance;
-    if (!globals.blessingWaitressCardData.isEventActive) {
+    if (!this.#eventWithoutDurationData.isActive) {
       selectedEventInstance =
         this.#determineAndCreateSelectedEvent(selectedCard);
     } else {
-      selectedEventInstance = globals.blessingWaitressCardData.eventInstance;
+      selectedEventInstance = this.#eventWithoutDurationData.instance;
     }
 
     if (selectedCard.getInitialDurationInRounds() === 0) {
@@ -271,7 +295,7 @@ export default class PerformEventPhase extends Phase {
       this.#events.push(selectedEventInstance);
     }
 
-    if (!globals.blessingWaitressCardData.isEventActive) {
+    if (!this.#eventWithoutDurationData.isActive) {
       this._state = PerformEventState.END;
     }
   }
@@ -323,17 +347,15 @@ export default class PerformEventPhase extends Phase {
           break;
 
         case SpecialEventID.BLESSING_WAITRESS:
-          globals.blessingWaitressCardData.isEventActive = true;
+          this.#eventWithoutDurationData.isActive = true;
 
-          selectedEventInstance =
-            globals.blessingWaitressCardData.eventInstance =
-              new BlessingWaitressEvent(
-                this.#player,
-                selectedCard,
-                this._phaseMessage,
-                this.#stateMessages,
-                this.#currentPlayerMinionsInPlayDeck
-              );
+          selectedEventInstance = this.#eventWithoutDurationData.instance =
+            new BlessingWaitressEvent(
+              this.#player,
+              selectedCard,
+              this.#currentPlayerMinionsInPlayDeck,
+              this.#eventWithoutDurationData
+            );
 
           break;
 
@@ -355,7 +377,7 @@ export default class PerformEventPhase extends Phase {
 
         case SpecialEventID.CURSE_OF_THE_BOUND_TITAN:
           selectedEventInstance = new CurseOfTheBoundTitanEvent(
-            this.#player, 
+            this.#player,
             selectedCard
           );
           break;
@@ -364,6 +386,23 @@ export default class PerformEventPhase extends Phase {
       switch (selectedCard.getID()) {
         case RareEventID.STOLEN_FATE:
           // HERE A "StolenFateEvent" INSTANCE IS CREATED (IT IS JUST AN EXAMPLE)
+          break;
+        case RareEventID.ECHO_OF_THE_STRATAGEN:
+          this.#eventWithoutDurationData.isActive = true;
+
+          selectedEventInstance = this.#eventWithoutDurationData.instance =
+            new EchoOfTheStratagenEvent(
+              this.#player,
+              selectedCard,
+              this.#currentPlayerEventsInPrepDeck,
+              this.#enemyEventsInPrepDeck,
+              this.#currentPlayerEventsInPrepGrid,
+              this.#enemyEventsInPrepGrid,
+              this.#stateMessages,
+              this.#eventWithoutDurationData,
+              this.#events
+            );
+
           break;
       }
     }
