@@ -247,8 +247,8 @@ export default class PerformEventPhase extends Phase {
     if (
       hoveredCard &&
       hoveredCard.getCategory() !== CardCategory.WEAPON &&
-      hoveredCard.getCategory() !== CardCategory.ARMOR &&
-      hoveredCard.getCurrentPrepTimeInRounds() === 0
+      hoveredCard.getCategory() !== CardCategory.ARMOR /* &&
+      hoveredCard.getCurrentPrepTimeInRounds() === 0 */
     ) {
       // MAKE IT IMPOSSIBLE FOR THE PLAYER TO USE THE "Summon Character" EVENT IF ONE IS ALREADY ACTIVE
       if (
@@ -278,7 +278,7 @@ export default class PerformEventPhase extends Phase {
       selectedEventInstance =
         this.#determineAndCreateSelectedEvent(selectedCard);
     } else {
-      selectedEventInstance = globals.blessingWaitressCardData.eventInstance;
+      selectedEventInstance = this.#eventWithoutDurationData.instance;
     }
 
     if (selectedCard.getInitialDurationInRounds() === 0) {
@@ -334,18 +334,18 @@ export default class PerformEventPhase extends Phase {
           );
           break;
 
-        /*  case SpecialEventID.BLESSING_WAITRESS:
-          globals.blessingWaitressCardData.isEventActive = true;
+        case SpecialEventID.BLESSING_WAITRESS:
+          this.#eventWithoutDurationData.isActive = true;
 
-          selectedEventInstance =
-            globals.blessingWaitressCardData.eventInstance =
-              new BlessingWaitressEvent(
-                this.#player,
-                selectedCard,
-                this.#currentPlayerMinionsInPlayDeck
-              );
+          selectedEventInstance = this.#eventWithoutDurationData.instance =
+            new BlessingWaitressEvent(
+              this.#player,
+              selectedCard,
+              this.#currentPlayerMinionsInPlayDeck,
+              this.#eventWithoutDurationData
+            );
 
-          break; */
+          break;
 
         case SpecialEventID.BARTENDERS_POWER:
           selectedEventInstance = new BartendersPowerEvent(
@@ -373,7 +373,8 @@ export default class PerformEventPhase extends Phase {
               this.#currentPlayerEventsInPrepGrid,
               this.#enemyEventsInPrepGrid,
               this.#stateMessages,
-              this.#eventWithoutDurationData
+              this.#eventWithoutDurationData,
+              this.#events
             );
 
           break;

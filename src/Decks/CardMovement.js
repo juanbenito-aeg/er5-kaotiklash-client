@@ -317,8 +317,8 @@ export default class CardMovement {
     return this.#card.getInitialPrepTimeInRounds();
   }
 
-  getCurrentInitialPrepTimeInRounds() {
-    return this.#card.getCurrentPrepTimeInRounds;
+  getCurrentPrepTimeInRounds() {
+    return this.#card.getCurrentPrepTimeInRounds();
   }
 
   setCurrentPrepTimeInRounds(newPrepTimeInRounds) {

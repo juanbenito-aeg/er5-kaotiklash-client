@@ -5,6 +5,7 @@ import {
   CardState,
 } from "../Game/constants.js";
 import StateMessage from "../Messages/StateMessage.js";
+import PrepareEvent from "./PrepareEvent.js";
 export default class EchoOfTheStratagenEvent extends Event {
   #currentPlayerPrepEventDeck;
   #enemyPrepEventDeck;
@@ -13,6 +14,7 @@ export default class EchoOfTheStratagenEvent extends Event {
   #state;
   #stateMessages;
   #eventWithoutDurationData;
+  #events;
 
   constructor(
     executeBy,
@@ -22,7 +24,8 @@ export default class EchoOfTheStratagenEvent extends Event {
     currentPlayerPrepEventGrid,
     enemyPrepEventGrid,
     stateMessages,
-    eventWithoutDurationData
+    eventWithoutDurationData,
+    events
   ) {
     super(executeBy, eventCard);
     this.#currentPlayerPrepEventDeck = currentPlayerPrepEventDeck;
@@ -32,6 +35,7 @@ export default class EchoOfTheStratagenEvent extends Event {
     this.#state = EchoOfTheStratagenState.INIT;
     this.#stateMessages = stateMessages;
     this.#eventWithoutDurationData = eventWithoutDurationData;
+    this.#events = events;
   }
 
   execute() {
@@ -60,6 +64,7 @@ export default class EchoOfTheStratagenEvent extends Event {
         hoveredCard.setState(CardState.HOVERED);
       } else {
         hoveredCard.setState(CardState.SELECTED);
+        this.#state = EchoOfTheStratagenState.END;
       }
     }
   }
@@ -79,47 +84,50 @@ export default class EchoOfTheStratagenEvent extends Event {
           this.#currentPlayerPrepEventDeck.insertCard(selectedCard);
           this.#enemyPrepEventDeck.removeCard(selectedCard);
 
-          const boxEventCardWasPositionedIn = selectedCard.getBoxIsPositionedIn(
-            this.#enemyPrepEventGrid,
-            selectedCard
-          );
-          boxEventCardWasPositionedIn.resetCard();
+          this.#resetSelectedCardFromEnemyGrid(selectedCard);
 
           boxes.setCard(selectedCard);
 
           selectedCard.setCurrentPrepTimeInRounds(2);
-
           selectedCard.setXCoordinate(boxes.getXCoordinate());
           selectedCard.setYCoordinate(boxes.getYCoordinate());
 
           boxes.setState(BoxState.OCCUPIED);
 
+          let prepareEvent = PrepareEvent.create(
+            this._executedBy,
+            this.#currentPlayerPrepEventDeck
+          );
+          this.#events.push(prepareEvent);
+
           let message = new StateMessage(
             "YOU HAVE STOLEN THE EVENT CORRECTLY",
             "30px MedievalSharp",
-            "white",
+            "red",
             3,
             selectedCard.getXCoordinate(),
             selectedCard.getYCoordinate()
           );
           this.#stateMessages.push(message);
+
+          break;
         } else {
-          let message = new StateMessage(
-            "NOT AVIABLE BOX TO INSERT",
-            "20px MedievalSharp",
-            "red",
-            2,
-            boxes.getXCoordinate(),
-            boxes.getYCoordinate()
-          );
-
-          this.#stateMessages.push(message);
-
           this.#state = EchoOfTheStratagenState.INIT;
         }
       }
     }
     this.#eventWithoutDurationData.isActive = false;
     this.#eventWithoutDurationData.instance = {};
+  }
+
+  #resetSelectedCardFromEnemyGrid(selectedCard) {
+    const enemyBoxes = this.#enemyPrepEventGrid.getBoxes();
+    for (let j = 0; j < enemyBoxes.length; j++) {
+      const enemyBox = enemyBoxes[j];
+      if (enemyBox.getCard() === selectedCard) {
+        enemyBox.resetCard();
+        break;
+      }
+    }
   }
 }
