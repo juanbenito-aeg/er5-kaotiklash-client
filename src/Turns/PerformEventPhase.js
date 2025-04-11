@@ -18,6 +18,7 @@ import {
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 import EchoOfTheStratagenEvent from "../Events/EchoOfTheStratagenEvent.js";
+import MarchOfTheLastSighEvent from "../Events/MarchOfTheLastSighEvent.js";
 
 export default class PerformEventPhase extends Phase {
   #events;
@@ -253,8 +254,8 @@ export default class PerformEventPhase extends Phase {
     if (
       hoveredCard &&
       hoveredCard.getCategory() !== CardCategory.WEAPON &&
-      hoveredCard.getCategory() !== CardCategory.ARMOR &&
-      hoveredCard.getCurrentPrepTimeInRounds() === 0
+      hoveredCard.getCategory() !== CardCategory.ARMOR /* &&
+      hoveredCard.getCurrentPrepTimeInRounds() === 0 */
     ) {
       // MAKE IT IMPOSSIBLE FOR THE PLAYER TO USE THE "Summon Character" EVENT IF ONE IS ALREADY ACTIVE
       if (
@@ -403,6 +404,15 @@ export default class PerformEventPhase extends Phase {
               this.#events
             );
 
+          break;
+
+        case RareEventID.MARCH_OF_THE_LAST_SIGH:
+          selectedEventInstance = new MarchOfTheLastSighEvent(
+            this.#player,
+            selectedCard,
+            this.#currentPlayerMinionsInPlayDeck,
+            this.#stateMessages
+          );
           break;
       }
     }

@@ -253,11 +253,11 @@ const SpecialEventID = {
   BARTENDERS_POWER: 5,
   BROOM_FURY: 6,
   BLESSING_WAITRESS: 7,
-
 };
 
 const RareEventID = {
   ECHO_OF_THE_STRATAGEN: 2,
+  MARCH_OF_THE_LAST_SIGH: 4,
 };
 
 const EchoOfTheStratagenState = {
