@@ -64,7 +64,8 @@ export default class SummonCharacterEvent extends Event {
       case MainCharacterID.THE_ERUDITE_XG:
         if (!this.#specialSkill) {
           const xgSkill = new SpecialSkillXG(
-            this.#currentPlayerMinionsInPlayDeck
+            this.#currentPlayerMinionsInPlayDeck,
+            this.#stateMessages
           );
 
           this.#specialSkill = xgSkill;

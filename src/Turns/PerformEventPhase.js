@@ -55,7 +55,6 @@ export default class PerformEventPhase extends Phase {
     enemyEventsInPrepDeck,
     currentPlayerEventsInPrepGrid,
     currentPlayerBattlefieldGrid,
-    enemyMinionsInPlayDeck,
     enemyBattlefieldGrid,
     enemyEventsInPrepGrid,
     lucretiaDeers,
@@ -199,7 +198,6 @@ export default class PerformEventPhase extends Phase {
       enemyEventsInPrepDeck,
       currentPlayerEventsInPrepGrid,
       currentPlayerBattlefieldGrid,
-      enemyMinionsInPlayDeck,
       enemyBattlefieldGrid,
       enemyEventsInPrepGrid,
       lucretiaDeers,
@@ -353,6 +351,8 @@ export default class PerformEventPhase extends Phase {
             new BlessingWaitressEvent(
               this.#player,
               selectedCard,
+              phaseMessage,
+              this.#stateMessages,
               this.#currentPlayerMinionsInPlayDeck,
               this.#eventWithoutDurationData
             );
