@@ -253,8 +253,8 @@ export default class PerformEventPhase extends Phase {
     if (
       hoveredCard &&
       hoveredCard.getCategory() !== CardCategory.WEAPON &&
-      hoveredCard.getCategory() !== CardCategory.ARMOR /* &&
-      hoveredCard.getCurrentPrepTimeInRounds() === 0 */
+      hoveredCard.getCategory() !== CardCategory.ARMOR &&
+      hoveredCard.getCurrentPrepTimeInRounds() === 0
     ) {
       // MAKE IT IMPOSSIBLE FOR THE PLAYER TO USE THE "Summon Character" EVENT IF ONE IS ALREADY ACTIVE
       if (
