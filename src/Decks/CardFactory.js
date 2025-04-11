@@ -189,7 +189,8 @@ export default class CardFactory {
       rawCardName,
       rawCardDescription,
       rawCardEffect,
-      rawCard.duration_in_rounds
+      rawCard.duration_in_rounds,
+      0
     );
 
     return processedCard;

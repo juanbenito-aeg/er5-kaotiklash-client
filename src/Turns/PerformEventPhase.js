@@ -51,7 +51,6 @@ export default class PerformEventPhase extends Phase {
     currentPlayerEventsInPrepDeck,
     currentPlayerMinionsDeck,
     currentPlayerMinionsInPlayDeck,
-    enemyMinionsInPlayDeck,
     enemyEventsInPrepDeck,
     currentPlayerEventsInPrepGrid,
     currentPlayerBattlefieldGrid,
@@ -195,7 +194,6 @@ export default class PerformEventPhase extends Phase {
       currentPlayerEventsInPrepDeck,
       currentPlayerMinionsDeck,
       currentPlayerMinionsInPlayDeck,
-      enemyMinionsInPlayDeck,
       enemyEventsInPrepDeck,
       currentPlayerEventsInPrepGrid,
       currentPlayerBattlefieldGrid,
@@ -255,8 +253,8 @@ export default class PerformEventPhase extends Phase {
     if (
       hoveredCard &&
       hoveredCard.getCategory() !== CardCategory.WEAPON &&
-      hoveredCard.getCategory() !== CardCategory.ARMOR /* &&
-      hoveredCard.getCurrentPrepTimeInRounds() === 0 */
+      hoveredCard.getCategory() !== CardCategory.ARMOR &&
+      hoveredCard.getCurrentPrepTimeInRounds() === 0
     ) {
       // MAKE IT IMPOSSIBLE FOR THE PLAYER TO USE THE "Summon Character" EVENT IF ONE IS ALREADY ACTIVE
       if (
@@ -353,6 +351,8 @@ export default class PerformEventPhase extends Phase {
             new BlessingWaitressEvent(
               this.#player,
               selectedCard,
+              this._phaseMessage,
+              this.#stateMessages,
               this.#currentPlayerMinionsInPlayDeck,
               this.#eventWithoutDurationData
             );
@@ -384,9 +384,6 @@ export default class PerformEventPhase extends Phase {
       }
     } else {
       switch (selectedCard.getID()) {
-        case RareEventID.STOLEN_FATE:
-          // HERE A "StolenFateEvent" INSTANCE IS CREATED (IT IS JUST AN EXAMPLE)
-          break;
         case RareEventID.ECHO_OF_THE_STRATAGEN:
           this.#eventWithoutDurationData.isActive = true;
 
