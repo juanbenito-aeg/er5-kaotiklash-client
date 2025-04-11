@@ -1,9 +1,13 @@
+import StateMessage from "../Messages/StateMessage.js";
+
 export default class SpecialSkillXG {
   #currentPlayerMinionsInPlayDeck;
+  #stateMessages;
   #isFinished;
 
-  constructor(currentPlayerMinionsInPlayDeck) {
+  constructor(currentPlayerMinionsInPlayDeck, stateMessages) {
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
+    this.#stateMessages = stateMessages;
     this.#isFinished = false;
   }
 
@@ -32,6 +36,17 @@ export default class SpecialSkillXG {
 
         minion.setCurrentAttack(attack);
         minion.setCurrentDefense(defense);
+
+        let message = new StateMessage(
+          "*1.75",
+          "30px MedievalSharp",
+          "green",
+          2,
+          minion.getXCoordinate(),
+          minion.getYCoordinate()
+        );
+
+        this.#stateMessages.push(message);
       }
       this.#isFinished = true;
     }
