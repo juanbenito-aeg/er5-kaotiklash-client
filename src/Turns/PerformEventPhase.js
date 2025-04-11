@@ -18,6 +18,7 @@ import {
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 import EchoOfTheStratagenEvent from "../Events/EchoOfTheStratagenEvent.js";
+import MarchOfTheLastSighEvent from "../Events/MarchOfTheLastSighEvent.js";
 
 export default class PerformEventPhase extends Phase {
   #events;
@@ -400,6 +401,15 @@ export default class PerformEventPhase extends Phase {
               this.#events
             );
 
+          break;
+
+        case RareEventID.MARCH_OF_THE_LAST_SIGH:
+          selectedEventInstance = new MarchOfTheLastSighEvent(
+            this.#player,
+            selectedCard,
+            this.#currentPlayerMinionsInPlayDeck,
+            this.#stateMessages
+          );
           break;
       }
     }
