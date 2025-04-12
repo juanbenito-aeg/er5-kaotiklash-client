@@ -37,7 +37,10 @@ export default class CardFactory {
 
     // SELECTION OF RANDOM CHAOTIC EVENT
 
-    const chaoticEventID = Math.floor(Math.random() * 4);
+    // (!) UNCOMMENT IF WE END UP PROGRAMMING MORE THAN ONE CHAOTIC EVENT
+    // const chaoticEventID = Math.floor(Math.random() * 4);
+
+    const chaoticEventID = 3;
     const gottenChaoticEvent =
       globals.cardsData.main_characters[MainCharacterID.JOSEPH].chaotic_events[
         chaoticEventID
@@ -52,6 +55,12 @@ export default class CardFactory {
       chaoticEventDescription = gottenChaoticEvent.description_eus;
     }
 
+    // DETERMINE HOW MANY ROUNDS WILL JOSEPH'S CHAOTIC EVENT LAST WHEN HIS CARD IS DRAWN FROM THE EVENTS DECK
+    const MIN_ROUNDS = 3;
+    const MAX_ROUNDS = 6;
+    const durationInRounds =
+      Math.floor(Math.random() * (MAX_ROUNDS - MIN_ROUNDS + 1)) + MIN_ROUNDS;
+
     const processedCard = new Joseph(
       CardCategory.MAIN_CHARACTER,
       rawCard.main_character_id - 1,
@@ -59,7 +68,8 @@ export default class CardFactory {
       rawCardDescription,
       chaoticEventID,
       chaoticEventName,
-      chaoticEventDescription
+      chaoticEventDescription,
+      durationInRounds
     );
 
     return processedCard;
