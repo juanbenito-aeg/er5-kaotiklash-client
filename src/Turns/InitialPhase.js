@@ -47,26 +47,11 @@ export default class InitialPhase {
     const player2MinionsInPlay =
       this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
 
-    this.#shuffleDeck(player1Minions);
-    this.#shuffleDeck(player2Minions);
+    player1Minions.shuffle();
+    player2Minions.shuffle();
 
     this.#selectAndInsertCards(player1Minions, player1MinionsInPlay, 3);
     this.#selectAndInsertCards(player2Minions, player2MinionsInPlay, 3);
-  }
-
-  #shuffleDeck(deck) {
-    for (let i = 0; i < deck.getCards().length; i++) {
-      let randomIndex = Math.floor(Math.random() * deck.getCards().length);
-
-      // ENSURE A CARD IS NOT ASSIGNED ITSELF
-      while (randomIndex === i) {
-        randomIndex = Math.floor(Math.random() * deck.getCards().length);
-      }
-
-      const temp = deck.getCards()[i];
-      deck.getCards()[i] = deck.getCards()[randomIndex];
-      deck.getCards()[randomIndex] = temp;
-    }
   }
 
   #selectAndInsertCards(
@@ -82,7 +67,7 @@ export default class InitialPhase {
 
   #dealEventCards() {
     const eventsDeck = this.#deckContainer.getDecks()[DeckType.EVENTS];
-    this.#shuffleDeck(eventsDeck);
+    eventsDeck.shuffle();
 
     const eventCardsToDealToPlayers = new Deck(-1, []);
 

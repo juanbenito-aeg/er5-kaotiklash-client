@@ -105,4 +105,19 @@ export default class Deck {
       }
     }
   }
+
+  shuffle() {
+    for (let i = 0; i < this.getCards().length; i++) {
+      let randomIndex = Math.floor(Math.random() * this.getCards().length);
+
+      // ENSURE A CARD IS NOT ASSIGNED ITSELF
+      while (randomIndex === i) {
+        randomIndex = Math.floor(Math.random() * this.getCards().length);
+      }
+
+      const temp = this.getCards()[i];
+      this.getCards()[i] = this.getCards()[randomIndex];
+      this.getCards()[randomIndex] = temp;
+    }
+  }
 }
