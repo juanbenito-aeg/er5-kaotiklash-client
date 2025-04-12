@@ -626,7 +626,15 @@ export default class Game {
   #executeEvents() {
     for (let i = 0; i < this.#events.length; i++) {
       let event = this.#events[i];
-      event.execute(this.#currentPlayer);
+
+      let enemy;
+      if (this.#currentPlayer.getID() === PlayerID.PLAYER_1) {
+        enemy = this.#players[PlayerID.PLAYER_2];
+      } else {
+        enemy = this.#players[PlayerID.PLAYER_1];
+      }
+
+      event.execute(this.#currentPlayer, enemy);
 
       if (!event.isActive()) {
         this.#events.splice(i, 1);

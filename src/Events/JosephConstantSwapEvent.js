@@ -1,7 +1,7 @@
 import Event from "./Event.js";
-import Card from "../Decks/Card.js";
-import { DeckType, GridType } from "../Game/constants.js";
 import PrepareEvent from "./PrepareEvent.js";
+import Card from "../Decks/Card.js";
+import { DeckType, GridType, PlayerID } from "../Game/constants.js";
 
 export default class JosephConstantSwapEvent extends Event {
   #events;
@@ -79,22 +79,12 @@ export default class JosephConstantSwapEvent extends Event {
       player2EventsInPrepGrid
     );
 
-    josephConstantSwapEvent.#removeAllPrepareEvents();
-
     return josephConstantSwapEvent;
   }
 
-  #removeAllPrepareEvents() {
-    for (let i = 0; i < this.#events.length; i++) {
-      const currentEvent = this.#events[i];
+  execute(currentPlayer, enemy) {
+    this.#removeAllPrepareEvents();
 
-      if (currentEvent instanceof PrepareEvent) {
-        this.#events.splice(i, 1);
-      }
-    }
-  }
-
-  execute(currentPlayer) {
     const currentDurationInRounds =
       this._eventCard.getCurrentDurationInRounds();
 
@@ -106,9 +96,19 @@ export default class JosephConstantSwapEvent extends Event {
       this.#swapCardsBetweenPlayers();
 
       if (!this.isActive()) {
-        this.#createRemovedPrepareEvents();
+        this.#createRemovedPrepareEvents(currentPlayer, enemy);
 
         this.#josephDeck.removeCard(this._eventCard);
+      }
+    }
+  }
+
+  #removeAllPrepareEvents() {
+    for (let i = 0; i < this.#events.length; i++) {
+      const currentEvent = this.#events[i];
+
+      if (currentEvent instanceof PrepareEvent) {
+        this.#events.splice(i, 1);
       }
     }
   }
@@ -185,7 +185,7 @@ export default class JosephConstantSwapEvent extends Event {
     }
   }
 
-  #createRemovedPrepareEvents() {
+  #createRemovedPrepareEvents(currentPlayer, enemy) {
     const playersEventsInPrepDecks = [
       this.#player1EventsInPrepDeck,
       this.#player2EventsInPrepDeck,
@@ -194,10 +194,30 @@ export default class JosephConstantSwapEvent extends Event {
     for (let i = 0; i < playersEventsInPrepDecks.length; i++) {
       const currentEventsInPrepDeck = playersEventsInPrepDecks[i];
 
-      for (let j = 0; j < currentEventsInPrepDeck.length; j++) {
+      let ownerOfEventsInPrep;
+
+      if (currentEventsInPrepDeck === this.#player1EventsInPrepDeck) {
+        if (currentPlayer.getID() === PlayerID.PLAYER_1) {
+          ownerOfEventsInPrep = currentPlayer;
+        } else {
+          ownerOfEventsInPrep = enemy;
+        }
+      } else {
+        if (currentPlayer.getID() === PlayerID.PLAYER_2) {
+          ownerOfEventsInPrep = currentPlayer;
+        } else {
+          ownerOfEventsInPrep = enemy;
+        }
+      }
+
+      for (let j = 0; j < currentEventsInPrepDeck.getCards().length; j++) {
         const currentEventInPrep = currentEventsInPrepDeck.getCards()[j];
 
-        // TODO: CONTINUE AFTER FIXING "PrepareEvent"
+        const prepareEvent = PrepareEvent.create(
+          ownerOfEventsInPrep,
+          currentEventInPrep
+        );
+        this.#events.push(prepareEvent);
       }
     }
   }
