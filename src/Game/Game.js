@@ -456,17 +456,8 @@ export default class Game {
       for (let j = 0; j < 3; j++) {
         const currentMinionCard = currentPlayer.minionsInPlayDeck.getCards()[j];
 
-        let currentBattlefieldBoxIndex = j + 1;
-        if (
-          currentPlayer.minionsInPlayGrid ===
-          this.#board.getGrids()[GridType.PLAYER_1_BATTLEFIELD]
-        ) {
-          currentBattlefieldBoxIndex = j + 2;
-        }
         const currentBattlefieldBox =
-          currentPlayer.minionsInPlayGrid.getBoxes()[
-            currentBattlefieldBoxIndex
-          ];
+          currentPlayer.minionsInPlayGrid.getBoxes()[j + 2];
         currentBattlefieldBox.setCard(currentMinionCard);
 
         currentMinionCard.setXCoordinate(
@@ -488,10 +479,10 @@ export default class Game {
     if (globals.isCurrentTurnFinished) {
       globals.isCurrentTurnFinished = false;
 
-      if(globals.poisonOfTheAbyssEventData.isActive === false) {
-      this.#healHarmedMinions();
-      } else if(globals.poisonOfTheAbyssEventData.isActive === true) {
-      this.#poisonMinions();
+      if (globals.poisonOfTheAbyssEventData.isActive === false) {
+        this.#healHarmedMinions();
+      } else if (globals.poisonOfTheAbyssEventData.isActive === true) {
+        this.#poisonMinions();
       }
 
       if (globals.decrepitThroneSkillData.isActive) {
@@ -558,26 +549,9 @@ export default class Game {
       this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY],
     ];
 
-    if(globals.poisonOfTheAbyssEventData.isPlayer2Affected) {
-      for(let i = 0; i < minionsInPlayDecks[0].getCards().length; i++) {
+    if (globals.poisonOfTheAbyssEventData.isPlayer2Affected) {
+      for (let i = 0; i < minionsInPlayDecks[0].getCards().length; i++) {
         const currentCard = minionsInPlayDecks[0].getCards()[i];
-
-          currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
-          let message = new StateMessage(
-            "-5",
-            `50px MedievalSharp`,
-            "green",
-            1,
-            currentCard.getXCoordinate() + 55,
-            currentCard.getYCoordinate() + 55
-          );
-          this.#stateMessages.push(message);
-      }
-      
-  } 
-  if(globals.poisonOfTheAbyssEventData.isPlayer1Affected) {
-    for(let i = 0; i < minionsInPlayDecks[1].getCards().length; i++) {
-      const currentCard = minionsInPlayDecks[1].getCards()[i];
 
         currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
         let message = new StateMessage(
@@ -589,9 +563,25 @@ export default class Game {
           currentCard.getYCoordinate() + 55
         );
         this.#stateMessages.push(message);
+      }
+    }
+    if (globals.poisonOfTheAbyssEventData.isPlayer1Affected) {
+      for (let i = 0; i < minionsInPlayDecks[1].getCards().length; i++) {
+        const currentCard = minionsInPlayDecks[1].getCards()[i];
+
+        currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
+        let message = new StateMessage(
+          "-5",
+          `50px MedievalSharp`,
+          "green",
+          1,
+          currentCard.getXCoordinate() + 55,
+          currentCard.getYCoordinate() + 55
+        );
+        this.#stateMessages.push(message);
+      }
     }
   }
-}
 
   #updatePlayersTotalHP() {
     // PLAYER 1
@@ -1287,7 +1277,7 @@ export default class Game {
     ];
 
     if (card.getWeapon()) {
-      if(card.getWeapon().getWeaponTypeID() === WeaponTypeID.MELEE) {
+      if (card.getWeapon().getWeaponTypeID() === WeaponTypeID.MELEE) {
         iconsPositions.push(
           {
             // (WEAPON) TYPE CIRCLE
@@ -1304,7 +1294,7 @@ export default class Game {
             height: 20,
           }
         );
-      } else if(card.getWeapon().getWeaponTypeID() === WeaponTypeID.HYBRID) {
+      } else if (card.getWeapon().getWeaponTypeID() === WeaponTypeID.HYBRID) {
         iconsPositions.push(
           {
             // (WEAPON) TYPE CIRCLE
@@ -1328,7 +1318,7 @@ export default class Game {
             height: 20,
           }
         );
-      } else if(card.getWeapon().getWeaponTypeID() === WeaponTypeID.MISSILE) {
+      } else if (card.getWeapon().getWeaponTypeID() === WeaponTypeID.MISSILE) {
         iconsPositions.push(
           {
             // (WEAPON) TYPE CIRCLE
@@ -1361,7 +1351,6 @@ export default class Game {
         );
       }
     }
-
 
     let numOfIconsToRender = iconsPositions.length;
 
@@ -2293,8 +2282,6 @@ export default class Game {
       let message = globals.damageMessages[i];
 
       let fontSize = 60;
-
-
 
       globals.ctx.font = `${fontSize}px MedievalSharp`;
       globals.ctx.fillStyle = message.getColor();

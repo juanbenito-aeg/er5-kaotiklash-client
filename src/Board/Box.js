@@ -85,10 +85,7 @@ export default class Box {
   }
 
   setCard(card) {
-    if (
-      this.#state === BoxState.AVAILABLE ||
-      this.#state === BoxState.SELECTED
-    ) {
+    if (!this.isOccupied()) {
       this.#card = card;
 
       this.setState(BoxState.OCCUPIED);
