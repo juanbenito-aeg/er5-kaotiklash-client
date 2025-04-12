@@ -96,7 +96,7 @@ export default class EchoOfTheStratagenEvent extends Event {
 
           let prepareEvent = PrepareEvent.create(
             this._executedBy,
-            this.#currentPlayerPrepEventDeck
+            selectedCard
           );
           this.#events.push(prepareEvent);
 
