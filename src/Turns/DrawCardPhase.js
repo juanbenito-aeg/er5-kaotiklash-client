@@ -1,28 +1,53 @@
 import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
+import JosephConstantSwapEvent from "../Events/JosephConstantSwapEvent.js";
 import {
   DeckType,
   PlayerID,
   CardCategory,
   GridType,
-  SpecialEventID,
-  RareEventID,
+  MainCharacterID,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
 
 export default class DrawCardPhase extends Phase {
-  #decksRelevants;
-  #gridsRelevants;
   #isFirstTurn;
-  #filteredCards;
+  #player;
+  #events;
+  #eventsDeck;
+  #josephDeck;
+  #josephGrid;
+  #currentPlayerCardsInHandDeck;
+  #currentPlayerCardsInHandGrid;
+  #deckContainer;
+  #board;
 
-  constructor(state, mouseInput, phaseMessage, decksRelevants, gridsRelevants) {
+  constructor(
+    state,
+    mouseInput,
+    phaseMessage,
+    player,
+    events,
+    eventsDeck,
+    josephDeck,
+    josephGrid,
+    currentPlayerCardsInHandDeck,
+    currentPlayerCardsInHandGrid,
+    deckContainer,
+    board
+  ) {
     super(state, mouseInput, phaseMessage);
 
-    this.#decksRelevants = decksRelevants;
-    this.#gridsRelevants = gridsRelevants;
     this.#isFirstTurn = true;
-    this.#filteredCards = [];
+    this.#player = player;
+    this.#events = events;
+    this.#eventsDeck = eventsDeck;
+    this.#josephDeck = josephDeck;
+    this.#josephGrid = josephGrid;
+    this.#currentPlayerCardsInHandDeck = currentPlayerCardsInHandDeck;
+    this.#currentPlayerCardsInHandGrid = currentPlayerCardsInHandGrid;
+    this.#deckContainer = deckContainer;
+    this.#board = board;
   }
 
   static create(
@@ -34,28 +59,34 @@ export default class DrawCardPhase extends Phase {
     currentPlayer,
     phaseMessage
   ) {
-    let decksRelevants;
-    let gridsRelevants;
-
-    decksRelevants = [
-      deckContainer.getDecks()[DeckType.EVENTS],
+    // DECKS VARIABLES
+    const eventsDeck = deckContainer.getDecks()[DeckType.EVENTS];
+    const josephDeck = deckContainer.getDecks()[DeckType.JOSEPH];
+    let currentPlayerCardsInHandDeck =
       player.getID() === PlayerID.PLAYER_1
         ? deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND]
-        : deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND],
-    ];
+        : deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND];
 
-    gridsRelevants = [
+    // GRIDS VARIABLES
+    const josephGrid = board.getGrids()[GridType.JOSEPH];
+    let currentPlayerCardsInHandGrid =
       player === currentPlayer
         ? board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND]
-        : board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND],
-    ];
+        : board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND];
 
     const drawCardPhase = new DrawCardPhase(
       0,
       mouseInput,
       phaseMessage,
-      decksRelevants,
-      gridsRelevants
+      player,
+      events,
+      eventsDeck,
+      josephDeck,
+      josephGrid,
+      currentPlayerCardsInHandDeck,
+      currentPlayerCardsInHandGrid,
+      deckContainer,
+      board
     );
 
     return drawCardPhase;
@@ -71,13 +102,7 @@ export default class DrawCardPhase extends Phase {
         PhaseMessage.content.drawCard.subsequentDraw[globals.language]
       );
 
-      this.#filterEventsDeck();
-
-      if (this.#filteredCards.length > 0) {
-        this.#assignCards();
-
-        this.#filteredCards = [];
-      }
+      this.#drawCard();
     }
 
     isPhaseFinished = true;
@@ -85,60 +110,78 @@ export default class DrawCardPhase extends Phase {
     return isPhaseFinished;
   }
 
-  #filterEventsDeck() {
-    const eventsDeck = this.#decksRelevants[0];
-    const eventCards = eventsDeck.getCards();
+  #drawCard() {
+    this.#eventsDeck.shuffle();
 
-    for (let i = 0; i < eventCards.length; i++) {
-      const card = eventCards[i];
+    // (!) UNCOMMENT WHEN CARDS TESTING FINISHES
+    // const drawnCard = this.#eventsDeck.getCards()[0];
 
-      if (
-        card.getCategory() === CardCategory.SPECIAL &&
-        card.getID() === SpecialEventID.CURSE_OF_THE_BOUND_TITAN
+    // (!) REMOVE WHEN CARDS TESTING FINISHES
+    const drawnCard = this.#getSpecifiedCard(
+      CardCategory.MAIN_CHARACTER,
+      MainCharacterID.JOSEPH
+    );
+    if (!drawnCard) {
+      return;
+    }
+
+    let boxToPlaceDrawnCardInto;
+
+    if (
+      drawnCard.getCategory() === CardCategory.MAIN_CHARACTER &&
+      drawnCard.getID() === MainCharacterID.JOSEPH
+    ) {
+      this.#josephDeck.insertCard(drawnCard);
+
+      boxToPlaceDrawnCardInto = this.#josephGrid.getBoxes()[0];
+
+      this.#createAndStoreJosephEvent();
+    } else {
+      this.#currentPlayerCardsInHandDeck.insertCard(drawnCard);
+
+      for (
+        let i = 0;
+        i < this.#currentPlayerCardsInHandGrid.getBoxes().length;
+        i++
       ) {
-        this.#filteredCards.push(card);
+        const box = this.#currentPlayerCardsInHandGrid.getBoxes()[i];
 
-        break;
+        if (!box.getCard()) {
+          boxToPlaceDrawnCardInto = box;
+
+          break;
+        }
       }
+    }
 
-      /* if (card.getCategory() === CardCategory.WEAPON) {
-        this.#filteredCards.push(card);
-      } */
+    drawnCard.setXCoordinate(boxToPlaceDrawnCardInto.getXCoordinate());
+    drawnCard.setYCoordinate(boxToPlaceDrawnCardInto.getYCoordinate());
 
-      // if (this.#filteredCards.length === 0 && eventCards.length > 0) {
-      //   const randomIndex = Math.floor(Math.random() * eventCards.length);
-      //   const randomCard = eventCards[randomIndex];
+    boxToPlaceDrawnCardInto.setCard(drawnCard);
 
-      //   if (randomCard.getCategory() !== CardCategory.MAIN_CHARACTER) {
-      //     this.#filteredCards[this.#filteredCards.length] = randomCard;
-      //     eventsDeck.removeCard(randomCard);
-      //   }
-      // }
+    this.#eventsDeck.removeCard(drawnCard);
+  }
+
+  // (!) REMOVE WHEN CARDS TESTING FINISHES
+  #getSpecifiedCard(cardCategory, cardID) {
+    for (let i = 0; i < this.#eventsDeck.getCards().length; i++) {
+      const card = this.#eventsDeck.getCards()[i];
+
+      if (card.getCategory() === cardCategory && card.getID() === cardID) {
+        return card;
+      }
     }
   }
 
-  #assignCards() {
-    const handDeck = this.#decksRelevants[1];
-    const handGrid = this.#gridsRelevants[0];
-    const eventsDeck = this.#decksRelevants[0];
+  #createAndStoreJosephEvent() {
+    const josephConstantSwapEvent = JosephConstantSwapEvent.create(
+      this.#player,
+      this.#josephDeck,
+      this.#deckContainer,
+      this.#board,
+      this.#events
+    );
 
-    const randomIndex = Math.floor(Math.random() * this.#filteredCards.length);
-    const selectedCard = this.#filteredCards[randomIndex];
-
-    handDeck.insertCard(selectedCard);
-    eventsDeck.removeCard(selectedCard);
-
-    for (let i = 0; i < handGrid.getBoxes().length; i++) {
-      const box = handGrid.getBoxes()[i];
-
-      if (!box.getCard()) {
-        selectedCard.setXCoordinate(box.getXCoordinate());
-        selectedCard.setYCoordinate(box.getYCoordinate());
-
-        box.setCard(selectedCard);
-
-        break;
-      }
-    }
+    this.#events.push(josephConstantSwapEvent);
   }
 }
