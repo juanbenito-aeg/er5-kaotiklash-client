@@ -6,6 +6,7 @@ import {
 } from "../Game/constants.js";
 import StateMessage from "../Messages/StateMessage.js";
 import PrepareEvent from "./PrepareEvent.js";
+
 export default class EchoOfTheStratagenEvent extends Event {
   #currentPlayerPrepEventDeck;
   #enemyPrepEventDeck;
@@ -28,6 +29,7 @@ export default class EchoOfTheStratagenEvent extends Event {
     events
   ) {
     super(executeBy, eventCard);
+
     this.#currentPlayerPrepEventDeck = currentPlayerPrepEventDeck;
     this.#enemyPrepEventDeck = enemyPrepEventDeck;
     this.#currentPlayerPrepEventGrid = currentPlayerPrepEventGrid;
@@ -43,9 +45,11 @@ export default class EchoOfTheStratagenEvent extends Event {
       case EchoOfTheStratagenState.INIT:
         this.#initEvent();
         break;
+
       case EchoOfTheStratagenState.SELECT_ENEMY_PREP_EVENT:
         this.#selectEnemyPrepEvent();
         break;
+
       case EchoOfTheStratagenState.END:
         this.#insertEnemyEvent();
         break;
@@ -94,11 +98,7 @@ export default class EchoOfTheStratagenEvent extends Event {
 
           boxes.setState(BoxState.OCCUPIED);
 
-          let prepareEvent = PrepareEvent.create(
-            this._executedBy,
-            selectedCard
-          );
-          this.#events.push(prepareEvent);
+          this.#deleteOldAndCreateNewPrepareEvent(selectedCard);
 
           let message = new StateMessage(
             "YOU HAVE STOLEN THE EVENT CORRECTLY",
@@ -129,5 +129,21 @@ export default class EchoOfTheStratagenEvent extends Event {
         break;
       }
     }
+  }
+
+  #deleteOldAndCreateNewPrepareEvent(selectedCard) {
+    for (let i = 0; i < this.#events.length; i++) {
+      const currentEvent = this.#events[i];
+
+      if (
+        currentEvent.getEventCard() === selectedCard &&
+        currentEvent instanceof PrepareEvent
+      ) {
+        this.#events.splice(i, 1);
+      }
+    }
+
+    const newPrepareEvent = PrepareEvent.create(this._executedBy, selectedCard);
+    this.#events.push(newPrepareEvent);
   }
 }
