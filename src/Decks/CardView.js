@@ -239,6 +239,10 @@ export default class CardView {
     this.#card.setCurrentDurationInRounds(newDuration);
   }
 
+  setCurrentDurationInRounds(newDuration) {
+    this.#card.setCurrentDurationInRounds(newDuration);
+  }
+
   isMouseOver() {
     return this.#card.isMouseOver();
   }
