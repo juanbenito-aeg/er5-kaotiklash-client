@@ -324,4 +324,12 @@ export default class CardMovement {
   setCurrentPrepTimeInRounds(newPrepTimeInRounds) {
     this.#card.setCurrentPrepTimeInRounds(newPrepTimeInRounds);
   }
+
+  getArmor() {
+    return this.#card.getArmor();
+  }
+
+  setArmor(armor) {
+    this.#card.setArmor(armor);
+  }
 }

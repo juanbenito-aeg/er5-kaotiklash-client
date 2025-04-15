@@ -306,4 +306,12 @@ export default class CardView {
   setCurrentPrepTimeInRounds(newPrepTimeInRounds) {
     this.#card.setCurrentPrepTimeInRounds(newPrepTimeInRounds);
   }
+
+  getArmor() {
+    return this.#card.getArmor();
+  }
+
+  setArmor(armor) {
+    this.#card.setArmor(armor);
+  }
 }

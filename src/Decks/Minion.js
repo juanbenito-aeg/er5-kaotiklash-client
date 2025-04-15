@@ -16,6 +16,7 @@ export default class Minion extends Card {
   #initialDefense;
   #currentDefense;
   #weapon;
+  #armor;
 
   constructor(
     category,
@@ -42,6 +43,7 @@ export default class Minion extends Card {
     this.#initialConstitution = this.#currentConstitution = initialConstitution;
     this.#initialDefense = this.#currentDefense = initialDefense;
     this.#weapon = null;
+    this.#armor = null;
   }
 
   getMinionTypeID() {
@@ -143,7 +145,7 @@ export default class Minion extends Card {
   }
 
   getCritChance() {
-    //Critical Hit Probability (%) = ((Madness + Strength + Attack) / 3) * 0.4
+    // Critical Hit Probability (%) = ((Madness + Strength + Attack) / 3) * 0.4
     const critChance =
       ((this.#currentMadness + this.#currentStrength + this.#currentAttack) /
         3) *
@@ -152,7 +154,7 @@ export default class Minion extends Card {
   }
 
   getFumbleChance() {
-    //Fumble/Self-Damage Probability (%) = ((Madness + Attack) / 2) * 0.2
+    // Fumble/Self-Damage Probability (%) = ((Madness + Attack) / 2) * 0.2
     const fumbleChance =
       ((this.#currentMadness + this.#currentAttack) / 2) * 0.2;
     return fumbleChance;
@@ -163,21 +165,21 @@ export default class Minion extends Card {
   }
 
   getParryFumbleChance() {
-    //Probability (%) = (Madness * 0.005) * 100    const fumbleChance =
-    const fumbleChance = (this.#currentMadness * 0.005) * 100;
+    // Probability (%) = (Madness * 0.005) * 100    const fumbleChance =
+    const fumbleChance = this.#currentMadness * 0.005 * 100;
     return fumbleChance;
   }
 
   getParryCritChance() {
     // Probability (%) = (Madness * 0.0035) * 100
-    const critChance = (this.#currentMadness * 0.0035) * 100;
+    const critChance = this.#currentMadness * 0.0035 * 100;
     return critChance;
   }
 
   getHalfParryFumbleChance() {
-    //The weapon blocks the damage previously calculated * 1.25.
+    // The weapon blocks the damage previously calculated * 1.25.
     // Probability (%) = (Madness * 0.01) * 100
-    const HalffumbleChance = (this.#currentMadness * 0.01) * 100;
+    const HalffumbleChance = this.#currentMadness * 0.01 * 100;
     return HalffumbleChance;
   }
 
@@ -185,4 +187,11 @@ export default class Minion extends Card {
     this.#weapon = null;
   }
 
+  getArmor() {
+    return this.#armor;
+  }
+
+  setArmor(armor) {
+    this.#armor = armor;
+  }
 }
