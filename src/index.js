@@ -33,7 +33,6 @@ const globals = {
   firstActivePlayerID: -1, // (!) DELETE AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
   phaseMessage: {},
   gameWinner: null,
-  damageMessages: [],
   isScreenInitialized: {
     register: false,
     playerSession: false,

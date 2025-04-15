@@ -324,21 +324,14 @@ export default class Turn {
   #equipWeaponOrArmor() {
     let playerXEventsInPreparationGrid;
     let playerXEventsInPreparationDeck;
-    let playerXBattlefieldGrid;
     let playerXMinionsInPlayDeck;
 
     if (this.#player.getID() === globals.firstActivePlayerID) {
       playerXEventsInPreparationGrid =
         this.#board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
-
-      playerXBattlefieldGrid =
-        this.#board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
     } else {
       playerXEventsInPreparationGrid =
         this.#board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
-
-      playerXBattlefieldGrid =
-        this.#board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
     }
 
     if (this.#player.getID() === PlayerID.PLAYER_1) {
@@ -420,23 +413,30 @@ export default class Turn {
           minion = playerXMinionsInPlayDeck.lookForHoveredCard();
 
           if (minion) {
+            // STATE MESSAGE DATA
+            const nMsgXCoordinate =
+              minion.getXCoordinate() +
+              globals.imagesDestinationSizes.minionsAndEventsSmallVersion
+                .width /
+                2;
+            const nMsgYCoordinate =
+              minion.getYCoordinate() +
+              globals.imagesDestinationSizes.minionsAndEventsSmallVersion
+                .height /
+                2;
+
             if (!minion.isLeftClicked()) {
               minion.setState(CardState.HOVERED);
             } else if (minion.getMinionTypeID() === MinionTypeID.SPECIAL) {
-              const boxDeerIsPositionedIn = minion.getBoxIsPositionedIn(
-                playerXBattlefieldGrid,
-                minion
-              );
-
+              // DEER STATE MESSAGE CREATION
               const deerWeaponsMsg = new StateMessage(
                 "DEER CANNOT EQUIP WEAPONS OR ARMOR",
                 "20px MedievalSharp",
                 "red",
                 4,
-                minion.getXCoordinate() + boxDeerIsPositionedIn.getWidth() / 2,
-                minion.getYCoordinate() + boxDeerIsPositionedIn.getHeight() / 2
+                nMsgXCoordinate,
+                nMsgYCoordinate
               );
-
               this.#stateMessages.push(deerWeaponsMsg);
             } else if (
               (weaponOrArmor.getCategory() === CardCategory.WEAPON &&
@@ -444,6 +444,17 @@ export default class Turn {
               (weaponOrArmor.getCategory() === CardCategory.ARMOR &&
                 !minion.getArmor())
             ) {
+              // EQUIPMENT STATE MESSAGE CREATION
+              const gearedUpMsg = new StateMessage(
+                "GEARED UP!",
+                "20px MedievalSharp",
+                "yellow",
+                4,
+                nMsgXCoordinate,
+                nMsgYCoordinate
+              );
+              this.#stateMessages.push(gearedUpMsg);
+
               minion.setState(CardState.SELECTED);
 
               this.#equipWeaponOrArmorState =

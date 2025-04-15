@@ -518,7 +518,6 @@ export default class Game {
     this.#executeEvents();
 
     this.#updateStateMessages();
-    this.#updateDamageMessages();
 
     this.#updatePlayersTotalHP();
 
@@ -666,18 +665,6 @@ export default class Game {
     }
   }
 
-  #updateDamageMessages() {
-    for (let i = 0; i < globals.damageMessages.length; i++) {
-      let message = globals.damageMessages[i];
-
-      let isFinished = message.execute();
-
-      if (isFinished) {
-        globals.damageMessages.splice(i, 1);
-      }
-    }
-  }
-
   #render() {
     // CLEAR SCREEN
     globals.ctx.clearRect(0, 0, globals.canvas.width, globals.canvas.height);
@@ -713,7 +700,6 @@ export default class Game {
     this.#renderCardsReverse();
     this.#renderCards();
     this.#renderStateMessages();
-    this.#renderDamageMessages();
   }
 
   #renderBoard() {
@@ -1459,7 +1445,7 @@ export default class Game {
           attributesRenderingData[attribute].y
         );
 
-        globals.ctx.fillStyle = "rgb(255 255 0)";
+        globals.ctx.fillStyle = "yellow";
       } else {
         globals.ctx.fillStyle = "black";
       }
@@ -2332,7 +2318,7 @@ export default class Game {
       globals.ctx.font = currentMessage.getFont();
       globals.ctx.fillStyle = currentMessage.getColor();
 
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 15; i++) {
         globals.ctx.fillText(
           currentMessage.getContent(),
           currentMessage.getXPosition(),
@@ -2342,23 +2328,5 @@ export default class Game {
     }
 
     globals.ctx.restore();
-  }
-
-  #renderDamageMessages() {
-    const damageMsgsFontSize = 75;
-
-    for (let i = 0; i < globals.damageMessages.length; i++) {
-      let message = globals.damageMessages[i];
-
-      let fontSize = 60;
-
-      globals.ctx.font = `${fontSize}px MedievalSharp`;
-      globals.ctx.fillStyle = message.getColor();
-      globals.ctx.fillText(
-        message.getContent(),
-        message.getXPosition(),
-        message.getYPosition()
-      );
-    }
   }
 }
