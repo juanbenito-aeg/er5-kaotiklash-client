@@ -36,18 +36,41 @@ export default class SpecialSkillXG {
 
         minion.setCurrentAttack(attack);
         minion.setCurrentDefense(defense);
-
-        let message = new StateMessage(
-          "*1.75",
-          "30px MedievalSharp",
-          "green",
-          2,
-          minion.getXCoordinate(),
-          minion.getYCoordinate()
-        );
-
-        this.#stateMessages.push(message);
       }
+
+      let message = new StateMessage(
+        "MINIONS GOT CRAZY!!",
+        "50px MedievalSharp",
+        "blue",
+        2,
+        1200,
+        520
+      );
+
+      this.#stateMessages.push(message);
+
+      let attackMessage = new StateMessage(
+        "ATTACK ↑",
+        "40px MedievalSharp",
+        "green",
+        2,
+        1200,
+        570
+      );
+
+      this.#stateMessages.push(attackMessage);
+
+      let DefenseMessage = new StateMessage(
+        "DEFENSE ↓",
+        "40px MedievalSharp",
+        "red",
+        2,
+        1200,
+        630
+      );
+
+      this.#stateMessages.push(DefenseMessage);
+
       this.#isFinished = true;
     }
   }
