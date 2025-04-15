@@ -139,17 +139,27 @@ export default class PhaseMessage extends Message {
 
     handOfTheSoulThief: {
       selectEnemyCard: [
-        //ENG
+        // ENG
         "Select a enemy card to steal.",
 
-        //EUS
+        // EUS
         "",
       ],
       selectCardInHand: [
-        //ENG
+        // ENG
         "Select a card to exchange.",
 
-        //EUS
+        // EUS
+        "",
+      ],
+    },
+
+    stolenFate: {
+      discardCardsInHand: [
+        // ENG
+        "Discard cards in hand to leave 2 boxes free.",
+
+        // EUS
         "",
       ],
     },

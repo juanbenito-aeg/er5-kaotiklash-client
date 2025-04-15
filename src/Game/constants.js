@@ -256,6 +256,7 @@ const SpecialEventID = {
 };
 
 const RareEventID = {
+  STOLEN_FATE: 0,
   HAND_OF_THE_SOUL_THIEF: 1,
   ECHO_OF_THE_STRATAGEN: 2,
   SHIELD_OF_BALANCE: 3,
@@ -279,6 +280,11 @@ const HandOfTheSoulThiefState = {
   SELECT_ENEMY_CARD_TO_STEAL: 1,
   SELECT_CARD_TO_EXCHANGE: 2,
   END: 3,
+};
+
+const StolenFateState = {
+  DISCARD_CARDS: 0,
+  DRAW_CARDS: 1,
 };
 
 export {
@@ -314,4 +320,5 @@ export {
   RareEventID,
   EchoOfTheStratagenState,
   HandOfTheSoulThiefState,
+  StolenFateState,
 };
