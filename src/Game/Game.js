@@ -1406,6 +1406,7 @@ export default class Game {
         x: xCoordinate + 110,
         y: yCoordinate + 59,
         hasBoostIndicator: false,
+        hasNerfIndicator: false,
       },
     };
 
@@ -1427,6 +1428,8 @@ export default class Game {
 
     if (minion.getCurrentDefense() > minion.getInitialDefense()) {
       attributesRenderingData.defense.hasBoostIndicator = true;
+    } else if (minion.getCurrentDefense() < minion.getInitialDefense()) {
+      attributesRenderingData.defense.hasNerfIndicator = true;
     }
 
     globals.ctx.save();
@@ -1434,21 +1437,25 @@ export default class Game {
     globals.ctx.textAlign = "center";
     globals.ctx.font = "14px MedievalSharp";
     globals.ctx.lineWidth = "3.5";
-    globals.ctx.strokeStyle = "black";
     globals.ctx.fillStyle = "black";
 
     for (const attribute in attributesRenderingData) {
-      if (attributesRenderingData[attribute].hasBoostIndicator) {
-        globals.ctx.strokeText(
-          attributesRenderingData[attribute].value,
-          attributesRenderingData[attribute].x,
-          attributesRenderingData[attribute].y
-        );
+      globals.ctx.strokeStyle = "black";
 
+      if (attributesRenderingData[attribute].hasBoostIndicator) {
         globals.ctx.fillStyle = "yellow";
+      } else if (attributesRenderingData[attribute].hasNerfIndicator) {
+        globals.ctx.fillStyle = "rgb(255 186 162)";
       } else {
+        globals.ctx.strokeStyle = "transparent";
         globals.ctx.fillStyle = "black";
       }
+
+      globals.ctx.strokeText(
+        attributesRenderingData[attribute].value,
+        attributesRenderingData[attribute].x,
+        attributesRenderingData[attribute].y
+      );
 
       globals.ctx.fillText(
         attributesRenderingData[attribute].value,
