@@ -20,6 +20,7 @@ import { globals } from "../index.js";
 import EchoOfTheStratagenEvent from "../Events/EchoOfTheStratagenEvent.js";
 import MarchOfTheLastSighEvent from "../Events/MarchOfTheLastSighEvent.js";
 import ShieldOfBalanceEvent from "../Events/ShieldOfBalanceEvent.js";
+import HandOfTheSoulThiefEvent from "../Events/HandOfTheSoulThiefEvent.js";
 
 export default class PerformEventPhase extends Phase {
   #events;
@@ -32,10 +33,13 @@ export default class PerformEventPhase extends Phase {
   #currentPlayerMinionsInPlayDeck;
   #currentPlayerEventsInPrepGrid;
   #currentPlayerBattlefieldGrid;
+  #currentPlayerCardsInHandGrid;
   #enemyBattlefieldGrid;
   #enemyMinionsInPlayDeck;
   #enemyEventsInPrepDeck;
   #enemyEventsInPrepGrid;
+  #enemyCardsInHand;
+  #enemyCardsInHandGrid;
   #eventWithoutDurationData;
   #lucretiaDeers;
   #stateMessages;
@@ -56,9 +60,12 @@ export default class PerformEventPhase extends Phase {
     enemyEventsInPrepDeck,
     currentPlayerEventsInPrepGrid,
     currentPlayerBattlefieldGrid,
+    currentPlayerCardsInHandGrid,
     enemyMinionsInPlayDeck,
     enemyBattlefieldGrid,
     enemyEventsInPrepGrid,
+    enemyCardsInHand,
+    enemyCardsInHandGrid,
     lucretiaDeers,
     player,
     stateMessages
@@ -75,10 +82,13 @@ export default class PerformEventPhase extends Phase {
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
     this.#currentPlayerEventsInPrepGrid = currentPlayerEventsInPrepGrid;
     this.#currentPlayerBattlefieldGrid = currentPlayerBattlefieldGrid;
+    this.#currentPlayerCardsInHandGrid = currentPlayerCardsInHandGrid;
     this.#enemyBattlefieldGrid = enemyBattlefieldGrid;
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
     this.#enemyEventsInPrepDeck = enemyEventsInPrepDeck;
     this.#enemyEventsInPrepGrid = enemyEventsInPrepGrid;
+    this.#enemyCardsInHand = enemyCardsInHand;
+    this.#enemyCardsInHandGrid = enemyCardsInHandGrid;
     this.#stateMessages = stateMessages;
     this.#lucretiaDeers = lucretiaDeers;
     this.#player = player;
@@ -108,6 +118,7 @@ export default class PerformEventPhase extends Phase {
     let currentPlayerMinionsInPlayDeck;
     let enemyMinionsInPlayDeck;
     let enemyEventsInPrepDeck;
+    let enemyCardsInHand;
 
     if (player.getID() === PlayerID.PLAYER_1) {
       currentPlayerMainCharacterDeck =
@@ -130,6 +141,9 @@ export default class PerformEventPhase extends Phase {
 
       enemyEventsInPrepDeck =
         deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION];
+
+      enemyCardsInHand =
+        deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND];
     } else {
       currentPlayerMainCharacterDeck =
         deckContainer.getDecks()[DeckType.PLAYER_2_MAIN_CHARACTER];
@@ -151,12 +165,17 @@ export default class PerformEventPhase extends Phase {
 
       enemyEventsInPrepDeck =
         deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION];
+
+      enemyCardsInHand =
+        deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND];
     }
 
     let currentPlayerEventsInPrepGrid;
     let currentPlayerBattlefieldGrid;
+    let currentPlayerCardsInHandGrid;
     let enemyBattlefieldGrid;
     let enemyEventsInPrepGrid;
+    let enemyCardsInHandGrid;
 
     if (player === currentPlayer) {
       currentPlayerEventsInPrepGrid =
@@ -165,11 +184,16 @@ export default class PerformEventPhase extends Phase {
       currentPlayerBattlefieldGrid =
         board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
 
+      currentPlayerCardsInHandGrid =
+        board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND];
+
       enemyEventsInPrepGrid = board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
 
       enemyBattlefieldGrid = board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
 
       enemyEventsInPrepGrid = board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
+
+      enemyCardsInHandGrid = board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND];
     } else {
       currentPlayerEventsInPrepGrid =
         board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
@@ -177,11 +201,16 @@ export default class PerformEventPhase extends Phase {
       currentPlayerBattlefieldGrid =
         board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
 
+      currentPlayerCardsInHandGrid =
+        board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND];
+
       enemyEventsInPrepGrid = board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
 
       enemyBattlefieldGrid = board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
 
       enemyEventsInPrepGrid = board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
+
+      enemyCardsInHandGrid = board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND];
     }
 
     const performEventPhase = new PerformEventPhase(
@@ -199,9 +228,12 @@ export default class PerformEventPhase extends Phase {
       enemyEventsInPrepDeck,
       currentPlayerEventsInPrepGrid,
       currentPlayerBattlefieldGrid,
+      currentPlayerCardsInHandGrid,
       enemyMinionsInPlayDeck,
       enemyBattlefieldGrid,
       enemyEventsInPrepGrid,
+      enemyCardsInHand,
+      enemyCardsInHandGrid,
       lucretiaDeers,
       player,
       stateMessages
@@ -386,6 +418,23 @@ export default class PerformEventPhase extends Phase {
       }
     } else {
       switch (selectedCard.getID()) {
+        case RareEventID.HAND_OF_THE_SOUL_THIEF:
+          this.#eventWithoutDurationData.isActive = true;
+
+          selectedEventInstance = this.#eventWithoutDurationData.instance =
+            new HandOfTheSoulThiefEvent(
+              this.#player,
+              selectedCard,
+              this.#currentPlayerCardsInHandDeck,
+              this.#currentPlayerCardsInHandGrid,
+              this.#enemyCardsInHand,
+              this.#enemyCardsInHandGrid,
+              this._phaseMessage,
+              this.#stateMessages,
+              this.#eventWithoutDurationData
+            );
+          break;
+
         case RareEventID.ECHO_OF_THE_STRATAGEN:
           this.#eventWithoutDurationData.isActive = true;
 

@@ -1,3 +1,4 @@
+import { HandOfTheSoulThiefState } from "../Game/constants.js";
 import Message from "./Message.js";
 
 export default class PhaseMessage extends Message {
@@ -132,6 +133,23 @@ export default class PhaseMessage extends Message {
         "Select a minion to heal.",
 
         // EUS
+        "",
+      ],
+    },
+
+    handOfTheSoulThief: {
+      selectEnemyCard: [
+        //ENG
+        "Select a enemy card to steal.",
+
+        //EUS
+        "",
+      ],
+      selectCardInHand: [
+        //ENG
+        "Select a card to exchange.",
+
+        //EUS
         "",
       ],
     },

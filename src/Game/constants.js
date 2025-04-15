@@ -256,6 +256,7 @@ const SpecialEventID = {
 };
 
 const RareEventID = {
+  HAND_OF_THE_SOUL_THIEF: 1,
   ECHO_OF_THE_STRATAGEN: 2,
   SHIELD_OF_BALANCE: 3,
   MARCH_OF_THE_LAST_SIGH: 4,
@@ -271,6 +272,13 @@ const BlessingWaitressState = {
   INIT: 0,
   SELECT_MINION: 1,
   HEAL: 2,
+};
+
+const HandOfTheSoulThiefState = {
+  INIT: 0,
+  SELECT_ENEMY_CARD_TO_STEAL: 1,
+  SELECT_CARD_TO_EXCHANGE: 2,
+  END: 3,
 };
 
 export {
@@ -305,4 +313,5 @@ export {
   BlessingWaitressState,
   RareEventID,
   EchoOfTheStratagenState,
+  HandOfTheSoulThiefState,
 };
