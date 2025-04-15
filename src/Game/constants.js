@@ -257,6 +257,7 @@ const SpecialEventID = {
 
 const RareEventID = {
   ECHO_OF_THE_STRATAGEN: 2,
+  SHIELD_OF_BALANCE: 3,
   MARCH_OF_THE_LAST_SIGH: 4,
 };
 
