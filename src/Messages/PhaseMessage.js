@@ -109,7 +109,7 @@ export default class PhaseMessage extends Message {
       ],
     },
 
-    equipWeapon: {
+    equipWeaponOrArmor: {
       selectMinion: [
         // ENG
         "Choose a minion to equip.",
@@ -117,9 +117,9 @@ export default class PhaseMessage extends Message {
         // EUS
         "",
       ],
-      equipWeapon: [
+      equip: [
         // ENG
-        "Equipping weapon...",
+        "Equipping minion...",
 
         // EUS
         "",

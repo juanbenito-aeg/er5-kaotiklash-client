@@ -310,4 +310,20 @@ export default class CardView {
   setCurrentPrepTimeInRounds(newPrepTimeInRounds) {
     this.#card.setCurrentPrepTimeInRounds(newPrepTimeInRounds);
   }
+
+  getArmor() {
+    return this.#card.getArmor();
+  }
+
+  setArmor(armor) {
+    this.#card.setArmor(armor);
+  }
+
+  getMinionArmorTypeID() {
+    return this.#card.getArmor().getArmorTypeID();
+  }
+
+  getArmorCurrentDurability() {
+    return this.#card.getArmor().getCurrentDurability();
+  }
 }

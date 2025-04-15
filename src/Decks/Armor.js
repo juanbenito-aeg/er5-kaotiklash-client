@@ -53,4 +53,8 @@ export default class Armor extends Card {
   getCurrentPrepTimeInRounds() {
     return this.#currentPrepTimeInRounds;
   }
+
+  setCurrentPrepTimeInRounds(newPrepTimeInRounds) {
+    this.#currentPrepTimeInRounds = newPrepTimeInRounds;
+  }
 }

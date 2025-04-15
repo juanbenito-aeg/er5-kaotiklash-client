@@ -5,7 +5,7 @@ import MovePhase from "./MovePhase.js";
 import PrepareEventPhase from "./PrepareEventPhase.js";
 import PerformEventPhase from "./PerformEventPhase.js";
 import DiscardCardPhase from "./DiscardCardPhase.js";
-import EquipWeaponEvent from "../Events/EquipWeaponEvent.js";
+import EquipWeaponOrArmorEvent from "../Events/EquipWeaponOrArmorEvent.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
 import {
@@ -14,7 +14,7 @@ import {
   DeckType,
   PhaseType,
   PhaseButton,
-  EquipWeaponState,
+  EquipWeaponOrArmorState,
   CardCategory,
   PhaseButtonData,
   GridType,
@@ -36,7 +36,7 @@ export default class Turn {
   #events;
   #phaseMessage;
   #stateMessages;
-  #equipWeaponState;
+  #equipWeaponOrArmorState;
 
   constructor(
     deckContainer,
@@ -59,7 +59,7 @@ export default class Turn {
     this.#events = events;
     this.#phaseMessage = phaseMessage;
     this.#stateMessages = stateMessages;
-    this.#equipWeaponState = EquipWeaponState.INIT;
+    this.#equipWeaponOrArmorState = EquipWeaponOrArmorState.INIT;
   }
 
   fillPhases(currentPlayer) {
@@ -197,11 +197,12 @@ export default class Turn {
 
     if (!isAnyCardExpanded) {
       if (this.#currentPhase === PhaseType.INVALID) {
-        this.#equipWeapon();
+        this.#equipWeaponOrArmor();
 
         if (
-          this.#equipWeaponState === EquipWeaponState.SELECT_WEAPON ||
-          this.#equipWeaponState === EquipWeaponState.END
+          this.#equipWeaponOrArmorState ===
+            EquipWeaponOrArmorState.SELECT_WEAPON_OR_ARMOR ||
+          this.#equipWeaponOrArmorState === EquipWeaponOrArmorState.END
         ) {
           this.#phaseMessage.setCurrentContent(
             PhaseMessage.content.invalid[globals.language]
@@ -213,14 +214,15 @@ export default class Turn {
       }
 
       if (
-        this.#equipWeaponState === EquipWeaponState.INIT ||
-        this.#equipWeaponState === EquipWeaponState.SELECT_WEAPON
+        this.#equipWeaponOrArmorState === EquipWeaponOrArmorState.INIT ||
+        this.#equipWeaponOrArmorState ===
+          EquipWeaponOrArmorState.SELECT_WEAPON_OR_ARMOR
       ) {
         this.#checkButtonClick();
       }
 
       if (this.#isCurrentPhaseCanceled || this.#isCurrentPhaseFinished) {
-        this.#equipWeaponState = EquipWeaponState.INIT;
+        this.#equipWeaponOrArmorState = EquipWeaponOrArmorState.INIT;
 
         this.#currentPhase = PhaseType.INVALID;
 
@@ -319,24 +321,17 @@ export default class Turn {
     return this.#numOfExecutedPhases;
   }
 
-  #equipWeapon() {
+  #equipWeaponOrArmor() {
     let playerXEventsInPreparationGrid;
     let playerXEventsInPreparationDeck;
-    let playerXBattlefieldGrid;
     let playerXMinionsInPlayDeck;
 
     if (this.#player.getID() === globals.firstActivePlayerID) {
       playerXEventsInPreparationGrid =
         this.#board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
-
-      playerXBattlefieldGrid =
-        this.#board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
     } else {
       playerXEventsInPreparationGrid =
         this.#board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
-
-      playerXBattlefieldGrid =
-        this.#board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
     }
 
     if (this.#player.getID() === PlayerID.PLAYER_1) {
@@ -351,10 +346,10 @@ export default class Turn {
         this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
     }
 
-    let weapon;
+    let weaponOrArmor;
     let minion;
-    switch (this.#equipWeaponState) {
-      case EquipWeaponState.INIT:
+    switch (this.#equipWeaponOrArmorState) {
+      case EquipWeaponOrArmorState.INIT:
         this.#resetXDeckCardsToYState(
           playerXEventsInPreparationDeck,
           CardState.PLACED
@@ -364,39 +359,36 @@ export default class Turn {
           CardState.INACTIVE
         );
 
-        this.#resetXGridBoxesToYState(
-          playerXEventsInPreparationGrid,
-          BoxState.INACTIVE
-        );
-
-        this.#equipWeaponState = EquipWeaponState.SELECT_WEAPON;
+        this.#equipWeaponOrArmorState =
+          EquipWeaponOrArmorState.SELECT_WEAPON_OR_ARMOR;
 
         break;
 
-      // SELECT WEAPON TO EQUIP ON A MINION
-      case EquipWeaponState.SELECT_WEAPON:
-        weapon = playerXEventsInPreparationDeck.lookForHoveredCard();
+      // SELECT WEAPON OR ARMOR TO EQUIP ON A MINION
+      case EquipWeaponOrArmorState.SELECT_WEAPON_OR_ARMOR:
+        weaponOrArmor = playerXEventsInPreparationDeck.lookForHoveredCard();
 
-        if (weapon && weapon.getCategory() === CardCategory.WEAPON) {
-          if (!weapon.isLeftClicked()) {
-            weapon.setState(CardState.HOVERED);
-          } else if (weapon.getCurrentPrepTimeInRounds() === 0) {
-            console.log("WEAPON SELECTED");
+        if (
+          weaponOrArmor &&
+          (weaponOrArmor.getCategory() === CardCategory.WEAPON ||
+            weaponOrArmor.getCategory() === CardCategory.ARMOR)
+        ) {
+          if (!weaponOrArmor.isLeftClicked()) {
+            weaponOrArmor.setState(CardState.HOVERED);
+          } else if (weaponOrArmor.getCurrentPrepTimeInRounds() === 0) {
+            weaponOrArmor.setState(CardState.SELECTED);
 
-            weapon.setState(CardState.SELECTED);
-
-            this.#equipWeaponState = EquipWeaponState.SELECT_MINION;
+            this.#equipWeaponOrArmorState =
+              EquipWeaponOrArmorState.SELECT_MINION;
           }
         }
 
         break;
 
-      // SELECT MINION TO EQUIP WEAPON ON
-      case EquipWeaponState.SELECT_MINION:
-        console.log("MINION SELECTION");
-
+      // SELECT MINION TO EQUIP WEAPON OR ARMOR ON
+      case EquipWeaponOrArmorState.SELECT_MINION:
         this.#phaseMessage.setCurrentContent(
-          PhaseMessage.content.equipWeapon.selectMinion[globals.language]
+          PhaseMessage.content.equipWeaponOrArmor.selectMinion[globals.language]
         );
 
         this.#resetXDeckCardsToYState(
@@ -410,81 +402,105 @@ export default class Turn {
           CardState.HOVERED
         );
 
-        weapon = playerXEventsInPreparationDeck.lookForSelectedCard();
+        weaponOrArmor = playerXEventsInPreparationDeck.lookForSelectedCard();
 
-        if (weapon.isLeftClicked()) {
-          console.log("WEAPON DESELECTED");
+        if (weaponOrArmor.isLeftClicked()) {
+          console.log("WEAPON OR ARMOR DESELECTED");
 
-          // THE PREVIOUSLY SELECTED WEAPON WAS DESELECTED
-          this.#equipWeaponState = EquipWeaponState.INIT;
+          // THE PREVIOUSLY SELECTED WEAPON OR ARMOR WAS DESELECTED
+          this.#equipWeaponOrArmorState = EquipWeaponOrArmorState.INIT;
         } else {
           minion = playerXMinionsInPlayDeck.lookForHoveredCard();
 
           if (minion) {
+            // STATE MESSAGE DATA
+            const nMsgXCoordinate =
+              minion.getXCoordinate() +
+              globals.imagesDestinationSizes.minionsAndEventsSmallVersion
+                .width /
+                2;
+            const nMsgYCoordinate =
+              minion.getYCoordinate() +
+              globals.imagesDestinationSizes.minionsAndEventsSmallVersion
+                .height /
+                2;
+
             if (!minion.isLeftClicked()) {
               minion.setState(CardState.HOVERED);
             } else if (minion.getMinionTypeID() === MinionTypeID.SPECIAL) {
-              const boxDeerIsPositionedIn = minion.getBoxIsPositionedIn(
-                playerXBattlefieldGrid,
-                minion
-              );
-
+              // DEER STATE MESSAGE CREATION
               const deerWeaponsMsg = new StateMessage(
-                "DEER CANNOT EQUIP WEAPONS",
+                "DEER CANNOT EQUIP WEAPONS OR ARMOR",
                 "20px MedievalSharp",
                 "red",
                 4,
-                minion.getXCoordinate() + boxDeerIsPositionedIn.getWidth() / 2,
-                minion.getYCoordinate() + boxDeerIsPositionedIn.getHeight() / 2
+                nMsgXCoordinate,
+                nMsgYCoordinate
               );
-
               this.#stateMessages.push(deerWeaponsMsg);
-            } else if (!minion.getWeapon()) {
+            } else if (
+              (weaponOrArmor.getCategory() === CardCategory.WEAPON &&
+                !minion.getWeapon()) ||
+              (weaponOrArmor.getCategory() === CardCategory.ARMOR &&
+                !minion.getArmor())
+            ) {
+              // EQUIPMENT STATE MESSAGE CREATION
+              const gearedUpMsg = new StateMessage(
+                "GEARED UP!",
+                "20px MedievalSharp",
+                "yellow",
+                4,
+                nMsgXCoordinate,
+                nMsgYCoordinate
+              );
+              this.#stateMessages.push(gearedUpMsg);
+
               minion.setState(CardState.SELECTED);
 
-              this.#equipWeaponState = EquipWeaponState.EQUIP_WEAPON;
+              this.#equipWeaponOrArmorState =
+                EquipWeaponOrArmorState.EQUIP_WEAPON_OR_ARMOR;
             }
           }
         }
 
         break;
 
-      // PERFORM THE WEAPON EQUIPMENT
-      case EquipWeaponState.EQUIP_WEAPON:
-        console.log("WEAPON EQUIPMENT");
-
+      // PERFORM THE WEAPON OR ARMOR EQUIPMENT
+      case EquipWeaponOrArmorState.EQUIP_WEAPON_OR_ARMOR:
         this.#phaseMessage.setCurrentContent(
-          PhaseMessage.content.equipWeapon.equipWeapon[globals.language]
+          PhaseMessage.content.equipWeaponOrArmor.equip[globals.language]
         );
 
-        weapon = playerXEventsInPreparationDeck.lookForSelectedCard();
+        weaponOrArmor = playerXEventsInPreparationDeck.lookForSelectedCard();
         minion = playerXMinionsInPlayDeck.lookForSelectedCard();
 
-        const equipWeaponEvent = new EquipWeaponEvent(weapon, minion);
-        equipWeaponEvent.execute();
+        const equipWeaponOrArmorEvent = new EquipWeaponOrArmorEvent(
+          weaponOrArmor,
+          minion
+        );
+        equipWeaponOrArmorEvent.execute();
 
-        this.#equipWeaponState = EquipWeaponState.END;
+        this.#equipWeaponOrArmorState = EquipWeaponOrArmorState.END;
 
         break;
 
       // EVENT END
-      case EquipWeaponState.END:
-        console.log("EVENT END");
+      case EquipWeaponOrArmorState.END:
+        weaponOrArmor = playerXEventsInPreparationDeck.lookForSelectedCard();
+        weaponOrArmor.setState(CardState.INACTIVE);
+        playerXEventsInPreparationDeck.removeCard(weaponOrArmor);
 
-        weapon = playerXEventsInPreparationDeck.lookForSelectedCard();
-        weapon.setState(CardState.INACTIVE);
-        playerXEventsInPreparationDeck.removeCard(weapon);
-
-        const boxWeaponWasPositionedIn = weapon.getBoxIsPositionedIn(
-          playerXEventsInPreparationGrid,
-          weapon
-        );
-        boxWeaponWasPositionedIn.resetCard();
+        const boxWeaponOrArmorWasPositionedIn =
+          weaponOrArmor.getBoxIsPositionedIn(
+            playerXEventsInPreparationGrid,
+            weaponOrArmor
+          );
+        boxWeaponOrArmorWasPositionedIn.resetCard();
 
         minion = playerXMinionsInPlayDeck.lookForSelectedCard();
         minion.setState(CardState.INACTIVE);
 
-        this.#equipWeaponState = EquipWeaponState.INIT;
+        this.#equipWeaponOrArmorState = EquipWeaponOrArmorState.INIT;
 
         break;
     }
@@ -496,16 +512,6 @@ export default class Turn {
 
       if (currentCard.getState() !== stateNotToOverWrite) {
         currentCard.setState(stateToSet);
-      }
-    }
-  }
-
-  #resetXGridBoxesToYState(grid, stateToSet, stateNotToOverWrite = -1) {
-    for (let i = 0; i < grid.getBoxes().length; i++) {
-      const currentBox = grid.getBoxes()[i];
-
-      if (currentBox.getState() !== stateNotToOverWrite) {
-        currentBox.setState(stateToSet);
       }
     }
   }

@@ -232,11 +232,11 @@ const PhaseButtonData = {
   NAME: 4,
 };
 
-const EquipWeaponState = {
+const EquipWeaponOrArmorState = {
   INIT: 0,
-  SELECT_WEAPON: 1,
+  SELECT_WEAPON_OR_ARMOR: 1,
   SELECT_MINION: 2,
-  EQUIP_WEAPON: 3,
+  EQUIP_WEAPON_OR_ARMOR: 3,
   END: 4,
 };
 
@@ -299,7 +299,7 @@ export {
   PhaseType,
   PhaseButton,
   PhaseButtonData,
-  EquipWeaponState,
+  EquipWeaponOrArmorState,
   EventCooldownState,
   SpecialEventID,
   BlessingWaitressState,

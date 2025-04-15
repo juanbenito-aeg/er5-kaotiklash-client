@@ -176,9 +176,10 @@ export default class Game {
                 globals.cardsIconsImages[IconID.WEAPON_MELEE_TYPE],
                 globals.cardsIconsImages[IconID.WEAPON_HYBRID_TYPE],
                 globals.cardsIconsImages[IconID.WEAPON_MISSILE_TYPE],
-                // globals.cardsIconsImages[IconID.ARMOR_LIGHT_TYPE],
-                // globals.cardsIconsImages[IconID.ARMOR_MEDIUM_TYPE],
-                // globals.cardsIconsImages[IconID.ARMOR_HEAVY_TYPE],
+                globals.cardsIconsImages[IconID.EVENT_TYPE_CIRCLE],
+                globals.cardsIconsImages[IconID.ARMOR_LIGHT_TYPE],
+                globals.cardsIconsImages[IconID.ARMOR_MEDIUM_TYPE],
+                globals.cardsIconsImages[IconID.ARMOR_HEAVY_TYPE],
               ],
               bigVersion: [
                 globals.cardsIconsImages[IconID.MINION_HP],
@@ -517,7 +518,6 @@ export default class Game {
     this.#executeEvents();
 
     this.#updateStateMessages();
-    this.#updateDamageMessages();
 
     this.#updatePlayersTotalHP();
 
@@ -665,18 +665,6 @@ export default class Game {
     }
   }
 
-  #updateDamageMessages() {
-    for (let i = 0; i < globals.damageMessages.length; i++) {
-      let message = globals.damageMessages[i];
-
-      let isFinished = message.execute();
-
-      if (isFinished) {
-        globals.damageMessages.splice(i, 1);
-      }
-    }
-  }
-
   #render() {
     // CLEAR SCREEN
     globals.ctx.clearRect(0, 0, globals.canvas.width, globals.canvas.height);
@@ -712,7 +700,6 @@ export default class Game {
     this.#renderCardsReverse();
     this.#renderCards();
     this.#renderStateMessages();
-    this.#renderDamageMessages();
   }
 
   #renderBoard() {
@@ -1249,9 +1236,13 @@ export default class Game {
 
     this.#renderCardImageAndTemplate(card, xCoordinate, yCoordinate);
 
-    // RENDER ICONS
+    this.#renderMinionIcons(card, xCoordinate, yCoordinate);
 
-    const icons = card.getImageSet().getIcons().smallVersion;
+    this.#renderMinionAttributesValues(card, xCoordinate, yCoordinate);
+  }
+
+  #renderMinionIcons(minion, xCoordinate, yCoordinate) {
+    const icons = minion.getImageSet().getIcons().smallVersion;
 
     const iconsPositions = [
       {
@@ -1282,135 +1273,191 @@ export default class Game {
         width: 35,
         height: 35,
       },
+      {
+        // (WEAPON) TYPE CIRCLE
+        x: xCoordinate - 17,
+        y: yCoordinate - 17,
+        width: minion.getWeapon() ? 35 : 0,
+        height: minion.getWeapon() ? 35 : 0,
+      },
+      {
+        // (WEAPON) MELEE TYPE
+        x: xCoordinate - 10,
+        y: yCoordinate - 10,
+        width:
+          minion.getWeapon() && minion.getWeaponTypeID() === WeaponTypeID.MELEE
+            ? 20
+            : 0,
+        height:
+          minion.getWeapon() && minion.getWeaponTypeID() === WeaponTypeID.MELEE
+            ? 20
+            : 0,
+      },
+      {
+        // (WEAPON) HYBRID TYPE
+        x: xCoordinate - 10,
+        y: yCoordinate - 10,
+        width:
+          minion.getWeapon() && minion.getWeaponTypeID() === WeaponTypeID.HYBRID
+            ? 20
+            : 0,
+        height:
+          minion.getWeapon() && minion.getWeaponTypeID() === WeaponTypeID.HYBRID
+            ? 20
+            : 0,
+      },
+      {
+        // (WEAPON) MISSILE TYPE
+        x: xCoordinate - 10,
+        y: yCoordinate - 10,
+        width:
+          minion.getWeapon() &&
+          minion.getWeaponTypeID() === WeaponTypeID.MISSILE
+            ? 20
+            : 0,
+        height:
+          minion.getWeapon() &&
+          minion.getWeaponTypeID() === WeaponTypeID.MISSILE
+            ? 20
+            : 0,
+      },
+      {
+        // (ARMOR) TYPE CIRCLE
+        x:
+          xCoordinate +
+          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width -
+          17,
+        y: yCoordinate - 17,
+        width: minion.getArmor() ? 35 : 0,
+        height: minion.getArmor() ? 35 : 0,
+      },
+      {
+        // (ARMOR) LIGHT TYPE
+        x:
+          xCoordinate +
+          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width -
+          10,
+        y: yCoordinate - 10,
+        width:
+          minion.getArmor() && minion.getArmorTypeID() === ArmorTypeID.LIGHT
+            ? 20
+            : 0,
+        height:
+          minion.getArmor() && minion.getArmorTypeID() === ArmorTypeID.LIGHT
+            ? 20
+            : 0,
+      },
+      {
+        // (ARMOR) MEDIUM TYPE
+        x:
+          xCoordinate +
+          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width -
+          10,
+        y: yCoordinate - 10,
+        width:
+          minion.getArmor() && minion.getArmorTypeID() === ArmorTypeID.MEDIUM
+            ? 20
+            : 0,
+        height:
+          minion.getArmor() && minion.getArmorTypeID() === ArmorTypeID.MEDIUM
+            ? 20
+            : 0,
+      },
+      {
+        // (ARMOR) HEAVY TYPE
+        x:
+          xCoordinate +
+          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width -
+          10,
+        y: yCoordinate - 10,
+        width:
+          minion.getArmor() && minion.getArmorTypeID() === ArmorTypeID.HEAVY
+            ? 20
+            : 0,
+        height:
+          minion.getArmor() && minion.getArmorTypeID() === ArmorTypeID.HEAVY
+            ? 20
+            : 0,
+      },
     ];
 
-    if (card.getWeapon()) {
-      if (card.getWeapon().getWeaponTypeID() === WeaponTypeID.MELEE) {
-        iconsPositions.push(
-          {
-            // (WEAPON) TYPE CIRCLE
-            x: xCoordinate - 17,
-            y: yCoordinate - 17,
-            width: 35,
-            height: 35,
-          },
-          {
-            // (WEAPON) TYPE
-            x: xCoordinate - 10,
-            y: yCoordinate - 10,
-            width: 20,
-            height: 20,
-          }
-        );
-      } else if (card.getWeapon().getWeaponTypeID() === WeaponTypeID.HYBRID) {
-        iconsPositions.push(
-          {
-            // (WEAPON) TYPE CIRCLE
-            x: xCoordinate - 17,
-            y: yCoordinate - 17,
-            width: 35,
-            height: 35,
-          },
-          {
-            // (WEAPON) TYPE
-            x: xCoordinate - 10,
-            y: yCoordinate - 10,
-            width: 0,
-            height: 0,
-          },
-          {
-            // (WEAPON) TYPE
-            x: xCoordinate - 10,
-            y: yCoordinate - 10,
-            width: 20,
-            height: 20,
-          }
-        );
-      } else if (card.getWeapon().getWeaponTypeID() === WeaponTypeID.MISSILE) {
-        iconsPositions.push(
-          {
-            // (WEAPON) TYPE CIRCLE
-            x: xCoordinate - 17,
-            y: yCoordinate - 17,
-            width: 35,
-            height: 35,
-          },
-          {
-            // (WEAPON) TYPE
-            x: xCoordinate - 10,
-            y: yCoordinate - 10,
-            width: 0,
-            height: 0,
-          },
-          {
-            // (WEAPON) TYPE
-            x: xCoordinate - 10,
-            y: yCoordinate - 10,
-            width: 0,
-            height: 0,
-          },
-          {
-            // (WEAPON) TYPE
-            x: xCoordinate - 10,
-            y: yCoordinate - 10,
-            width: 20,
-            height: 20,
-          }
-        );
-      }
-    }
-
-    let numOfIconsToRender = iconsPositions.length;
-
-    for (let i = 0; i < numOfIconsToRender; i++) {
+    for (let i = 0; i < icons.length; i++) {
       const { x, y, width, height } = iconsPositions[i];
       globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
     }
+  }
 
-    // RENDER ATTRIBUTES VALUES
+  #renderMinionAttributesValues(minion, xCoordinate, yCoordinate) {
+    const attributesRenderingData = {
+      attack: {
+        value: minion.getCurrentAttack(),
+        x: xCoordinate,
+        y: yCoordinate + 59,
+        hasBoostIndicator: false,
+      },
+      hp: {
+        value: minion.getCurrentHP(),
+        x: xCoordinate + 55,
+        y: yCoordinate + 111,
+        hasBoostIndicator: false,
+      },
+      defense: {
+        value: minion.getCurrentDefense(),
+        x: xCoordinate + 110,
+        y: yCoordinate + 59,
+        hasBoostIndicator: false,
+      },
+    };
+
+    if (
+      minion.getCurrentAttack() > minion.getInitialAttack() ||
+      minion.getWeapon()
+    ) {
+      if (minion.getWeapon()) {
+        attributesRenderingData.attack.value += minion.getWeaponCurrentDamage();
+      }
+
+      attributesRenderingData.attack.hasBoostIndicator = true;
+    }
+
+    if (minion.getArmor()) {
+      attributesRenderingData.hp.value += minion.getArmorCurrentDurability();
+      attributesRenderingData.hp.hasBoostIndicator = true;
+    }
+
+    if (minion.getCurrentDefense() > minion.getInitialDefense()) {
+      attributesRenderingData.defense.hasBoostIndicator = true;
+    }
+
+    globals.ctx.save();
 
     globals.ctx.textAlign = "center";
     globals.ctx.font = "14px MedievalSharp";
+    globals.ctx.lineWidth = "3.5";
+    globals.ctx.strokeStyle = "black";
     globals.ctx.fillStyle = "black";
 
-    // CURRENT HP
-    globals.ctx.fillText(
-      card.getCurrentHP(),
-      xCoordinate + 55,
-      yCoordinate + 111
-    );
+    for (const attribute in attributesRenderingData) {
+      if (attributesRenderingData[attribute].hasBoostIndicator) {
+        globals.ctx.strokeText(
+          attributesRenderingData[attribute].value,
+          attributesRenderingData[attribute].x,
+          attributesRenderingData[attribute].y
+        );
 
-    // CURRENT ATTACK
+        globals.ctx.fillStyle = "yellow";
+      } else {
+        globals.ctx.fillStyle = "black";
+      }
 
-    let numOfTimesToFillText = 1;
-
-    let currentAttackToRender = card.getCurrentAttack();
-
-    if (card.getWeapon()) {
-      numOfTimesToFillText = 7;
-
-      currentAttackToRender += card.getWeaponCurrentDamage();
-      globals.ctx.shadowBlur = 5;
-      globals.ctx.shadowColor = "rgb(255 0 0 / 0.25)";
-    }
-
-    for (let i = 0; i < numOfTimesToFillText; i++) {
       globals.ctx.fillText(
-        currentAttackToRender,
-        xCoordinate,
-        yCoordinate + 59
+        attributesRenderingData[attribute].value,
+        attributesRenderingData[attribute].x,
+        attributesRenderingData[attribute].y
       );
     }
 
-    globals.ctx.shadowBlur = 0;
-    globals.ctx.shadowColor = "transparent";
-
-    // CURRENT DEFENSE
-    globals.ctx.fillText(
-      card.getCurrentDefense(),
-      xCoordinate + 110,
-      yCoordinate + 59
-    );
+    globals.ctx.restore();
   }
 
   #renderWeapon(card) {
@@ -2271,7 +2318,7 @@ export default class Game {
       globals.ctx.font = currentMessage.getFont();
       globals.ctx.fillStyle = currentMessage.getColor();
 
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 15; i++) {
         globals.ctx.fillText(
           currentMessage.getContent(),
           currentMessage.getXPosition(),
@@ -2281,23 +2328,5 @@ export default class Game {
     }
 
     globals.ctx.restore();
-  }
-
-  #renderDamageMessages() {
-    const damageMsgsFontSize = 75;
-
-    for (let i = 0; i < globals.damageMessages.length; i++) {
-      let message = globals.damageMessages[i];
-
-      let fontSize = 60;
-
-      globals.ctx.font = `${fontSize}px MedievalSharp`;
-      globals.ctx.fillStyle = message.getColor();
-      globals.ctx.fillText(
-        message.getContent(),
-        message.getXPosition(),
-        message.getYPosition()
-      );
-    }
   }
 }
