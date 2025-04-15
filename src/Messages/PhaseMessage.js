@@ -135,6 +135,16 @@ export default class PhaseMessage extends Message {
         "",
       ],
     },
+
+    stolenFate: {
+      discardCardsInHand: [
+        // ENG
+        "Discard cards in hand to leave 2 boxes free.",
+
+        // EUS
+        "",
+      ],
+    },
   };
 
   #currentContent;

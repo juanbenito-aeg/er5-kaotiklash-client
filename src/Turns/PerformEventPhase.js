@@ -6,6 +6,10 @@ import BlessingWaitressEvent from "../Events/BlessingWaitressEvent.js";
 import BartendersPowerEvent from "../Events/BartendersPowerEvent.js";
 import PoisonOfTheAbyssEvent from "../Events/PoisonOfTheAbyssEvent.js";
 import CurseOfTheBoundTitanEvent from "../Events/CurseOfTheBoundTitan.js";
+import EchoOfTheStratagenEvent from "../Events/EchoOfTheStratagenEvent.js";
+import MarchOfTheLastSighEvent from "../Events/MarchOfTheLastSighEvent.js";
+import ShieldOfBalanceEvent from "../Events/ShieldOfBalanceEvent.js";
+import StolenFateEvent from "../Events/StolenFateEvent.js";
 import {
   CardCategory,
   CardState,
@@ -17,9 +21,6 @@ import {
   RareEventID,
 } from "../Game/constants.js";
 import { globals } from "../index.js";
-import EchoOfTheStratagenEvent from "../Events/EchoOfTheStratagenEvent.js";
-import MarchOfTheLastSighEvent from "../Events/MarchOfTheLastSighEvent.js";
-import ShieldOfBalanceEvent from "../Events/ShieldOfBalanceEvent.js";
 
 export default class PerformEventPhase extends Phase {
   #events;
@@ -30,6 +31,7 @@ export default class PerformEventPhase extends Phase {
   #currentPlayerEventsInPrepDeck;
   #currentPlayerMinionsDeck;
   #currentPlayerMinionsInPlayDeck;
+  #currentPlayerCardsInHandGrid;
   #currentPlayerEventsInPrepGrid;
   #currentPlayerBattlefieldGrid;
   #enemyBattlefieldGrid;
@@ -54,6 +56,7 @@ export default class PerformEventPhase extends Phase {
     currentPlayerMinionsDeck,
     currentPlayerMinionsInPlayDeck,
     enemyEventsInPrepDeck,
+    currentPlayerCardsInHandGrid,
     currentPlayerEventsInPrepGrid,
     currentPlayerBattlefieldGrid,
     enemyMinionsInPlayDeck,
@@ -73,6 +76,7 @@ export default class PerformEventPhase extends Phase {
     this.#currentPlayerEventsInPrepDeck = currentPlayerEventsInPrepDeck;
     this.#currentPlayerMinionsDeck = currentPlayerMinionsDeck;
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
+    this.#currentPlayerCardsInHandGrid = currentPlayerCardsInHandGrid;
     this.#currentPlayerEventsInPrepGrid = currentPlayerEventsInPrepGrid;
     this.#currentPlayerBattlefieldGrid = currentPlayerBattlefieldGrid;
     this.#enemyBattlefieldGrid = enemyBattlefieldGrid;
@@ -153,12 +157,16 @@ export default class PerformEventPhase extends Phase {
         deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION];
     }
 
+    let currentPlayerCardsInHandGrid;
     let currentPlayerEventsInPrepGrid;
     let currentPlayerBattlefieldGrid;
     let enemyBattlefieldGrid;
     let enemyEventsInPrepGrid;
 
     if (player === currentPlayer) {
+      currentPlayerCardsInHandGrid =
+        board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND];
+
       currentPlayerEventsInPrepGrid =
         board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT];
 
@@ -171,6 +179,9 @@ export default class PerformEventPhase extends Phase {
 
       enemyEventsInPrepGrid = board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
     } else {
+      currentPlayerCardsInHandGrid =
+        board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND];
+
       currentPlayerEventsInPrepGrid =
         board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT];
 
@@ -197,6 +208,7 @@ export default class PerformEventPhase extends Phase {
       currentPlayerMinionsDeck,
       currentPlayerMinionsInPlayDeck,
       enemyEventsInPrepDeck,
+      currentPlayerCardsInHandGrid,
       currentPlayerEventsInPrepGrid,
       currentPlayerBattlefieldGrid,
       enemyMinionsInPlayDeck,
@@ -325,8 +337,6 @@ export default class PerformEventPhase extends Phase {
 
           globals.isPlayersSummonCharacterActive[this.#player.getID()] = true;
 
-          // selectedEventInstance.execute(this.#currentPlayer);
-
           break;
 
         case SpecialEventID.JUDGMENT_ANCIENTS:
@@ -386,6 +396,23 @@ export default class PerformEventPhase extends Phase {
       }
     } else {
       switch (selectedCard.getID()) {
+        case RareEventID.STOLEN_FATE:
+          this.#eventWithoutDurationData.isActive = true;
+
+          selectedEventInstance = this.#eventWithoutDurationData.instance =
+            new StolenFateEvent(
+              this.#player,
+              selectedCard,
+              this._phaseMessage,
+              this.#stateMessages,
+              this.#eventWithoutDurationData,
+              this.#eventsDeck,
+              this.#currentPlayerCardsInHandDeck,
+              this.#currentPlayerCardsInHandGrid
+            );
+
+          break;
+
         case RareEventID.ECHO_OF_THE_STRATAGEN:
           this.#eventWithoutDurationData.isActive = true;
 

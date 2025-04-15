@@ -256,6 +256,7 @@ const SpecialEventID = {
 };
 
 const RareEventID = {
+  STOLEN_FATE: 0,
   ECHO_OF_THE_STRATAGEN: 2,
   SHIELD_OF_BALANCE: 3,
   MARCH_OF_THE_LAST_SIGH: 4,
@@ -271,6 +272,11 @@ const BlessingWaitressState = {
   INIT: 0,
   SELECT_MINION: 1,
   HEAL: 2,
+};
+
+const StolenFateState = {
+  DISCARD_CARDS: 0,
+  DRAW_CARDS: 1,
 };
 
 export {
@@ -305,4 +311,5 @@ export {
   BlessingWaitressState,
   RareEventID,
   EchoOfTheStratagenState,
+  StolenFateState,
 };
