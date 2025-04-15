@@ -395,7 +395,7 @@ export default class Turn {
       // SELECT MINION TO EQUIP WEAPON OR ARMOR ON
       case EquipWeaponOrArmorState.SELECT_MINION:
         this.#phaseMessage.setCurrentContent(
-          PhaseMessage.content.equipWeapon.selectMinion[globals.language]
+          PhaseMessage.content.equipWeaponOrArmor.selectMinion[globals.language]
         );
 
         this.#resetXDeckCardsToYState(

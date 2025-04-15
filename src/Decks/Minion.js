@@ -194,4 +194,12 @@ export default class Minion extends Card {
   setArmor(armor) {
     this.#armor = armor;
   }
+
+  getArmorTypeID() {
+    return this.#armor.getArmorTypeID();
+  }
+
+  getArmorCurrentDurability() {
+    return this.#armor.getCurrentDurability();
+  }
 }

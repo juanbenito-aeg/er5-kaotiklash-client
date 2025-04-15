@@ -332,4 +332,12 @@ export default class CardMovement {
   setArmor(armor) {
     this.#card.setArmor(armor);
   }
+
+  getMinionArmorTypeID() {
+    return this.#card.getArmor().getArmorTypeID();
+  }
+
+  getArmorCurrentDurability() {
+    return this.#card.getArmor().getCurrentDurability();
+  }
 }
