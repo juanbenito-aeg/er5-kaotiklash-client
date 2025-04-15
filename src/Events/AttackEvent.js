@@ -60,6 +60,30 @@ export default class AttackEvent extends Event {
   }
 
   execute() {
+    if (
+      globals.shieldOfBalanceActive &&
+      this.#player.getID() !== globals.shieldOfBalanceOwner
+    ) {
+      let targetBox = this.#target.getBoxIsPositionedIn(
+        this.#enemyMovementGrid,
+        this.#target
+      );
+      let nullifiedMessage = new StateMessage(
+        "ATTACK NULLIFIED BY SHIELD OF BALANCE!",
+        "50px MedievalSharp",
+        "red",
+        2,
+        targetBox.getCard().getXCoordinate() +
+          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width / 2,
+        targetBox.getCard().getYCoordinate() +
+          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2
+      );
+
+      this.#stateMessage.push(nullifiedMessage);
+
+      return;
+    }
+
     let damageToInflict;
 
     let roll = Math.floor(Math.random() * 100 + 1);
@@ -74,11 +98,17 @@ export default class AttackEvent extends Event {
     let isPlayer2Debuffed = false;
     let debuff = 10;
 
-    if(globals.curseOfTheBoundTitanEventData.isActive === true) {
-      if(this.#player.getID() === PlayerID.PLAYER_1 && globals.curseOfTheBoundTitanEventData.isPlayer1Affected) {
+    if (globals.curseOfTheBoundTitanEventData.isActive === true) {
+      if (
+        this.#player.getID() === PlayerID.PLAYER_1 &&
+        globals.curseOfTheBoundTitanEventData.isPlayer1Affected
+      ) {
         isPlayer1Debuffed = true;
       }
-      if(this.#player.getID() === PlayerID.PLAYER_2 && globals.curseOfTheBoundTitanEventData.isPlayer2Affected) {
+      if (
+        this.#player.getID() === PlayerID.PLAYER_2 &&
+        globals.curseOfTheBoundTitanEventData.isPlayer2Affected
+      ) {
         isPlayer2Debuffed = true;
       }
     }
@@ -297,65 +327,85 @@ export default class AttackEvent extends Event {
 
     if (this.#parry) {
       console.log("Parry");
-      if (parryRoll <= parryCritProb) {                                                   // PARRY CRIT
+      if (parryRoll <= parryCritProb) {
+        // PARRY CRIT
         console.log("Parry Crit");
-        parryCrit = true; 
-      } else if(parryRoll > parryCritProb && parryRoll <= parryFumbleChances) {           // PARRY FUMBLE
+        parryCrit = true;
+      } else if (parryRoll > parryCritProb && parryRoll <= parryFumbleChances) {
+        // PARRY FUMBLE
         console.log("Parry Fumble");
         parryFumble = true;
-      } else if(parryRoll > parryFumbleChances && parryRoll <= parryHalfFumbleChances) {  // PARRY HALF FUMBLE
+      } else if (
+        parryRoll > parryFumbleChances &&
+        parryRoll <= parryHalfFumbleChances
+      ) {
+        // PARRY HALF FUMBLE
         console.log("Parry Half Fumble");
         parryHalfFumble = true;
-      } 
+      }
     }
-    
-    if (roll <= critProb) { // CRITICAL HIT
+
+    if (roll <= critProb) {
+      // CRITICAL HIT
       console.log("Critical Hit");
       damageToInflict = damageToInflict * 1.75;
-      damageToInflict = Math.floor(damageToInflict)
-    } 
-
-    if(this.#parry === true && !fumble && this.#target.getWeapon()) {  // PARRY
-      
-      if(targetWeapon.getCurrentDurability() >= damageToInflict) {
-      if(parryFumble) {             // PARRY FUMBLE
-        damageToInflict = targetWeapon.getCurrentDurability();
-        this.parryFumbleMessage(damageToInflict,targetBox);
-      } else if (parryHalfFumble) { // PARRY HALF FUMBLE
-        damageToInflict = damageToInflict * 1.25;
-        damageToInflict = Math.floor(damageToInflict)
-        this.parryHalfFumbleMessage(damageToInflict,targetBox);
-      } else if(parryCrit) {        // PARRY CRIT 
-        damageToInflict = 0;
-        this.parryCritMessage(damageToInflict,targetBox);
-      } else {
-        this.parryMessage(damageToInflict,targetBox);
-      }
-    } else { //NO DURABILITY PARRY
-      if(noDurabilityRoll === 1 && noDurabilityRoll === 2) {  //NO DURABILITY CRIT
-        damageToInflict = targetWeapon.getCurrentDurability();
-        this.parryCritMessage(damageToInflict,targetBox);
-      } else if(noDurabilityRoll === 3) {                     //NO DURABILITY FUMBLE
-        storedDamage = damageToInflict
-        damageToInflict = targetWeapon.getCurrentDurability();
-        this.parryFumbleMessage(damageToInflict,targetBox);
-        this.damageMessage(storedDamage,targetBox,"red");
-      } else {
-        let NewDurability = targetWeapon.getCurrentDurability() - damageToInflict
-        console.log("currentDurability: " + targetWeapon.getCurrentDurability())
-        console.log("damageToInflict: " + damageToInflict)
-        console.log("NewDurability: " + NewDurability)
-        console.log(targetWeapon.getCurrentDurability() - NewDurability)
-
-        this.parryMessage((targetWeapon.getCurrentDurability() - NewDurability) ,targetBox);
-      }
-      
+      damageToInflict = Math.floor(damageToInflict);
     }
-      let targetNewDurability = targetWeapon.getCurrentDurability() - damageToInflict;
+
+    if (this.#parry === true && !fumble && this.#target.getWeapon()) {
+      // PARRY
+
+      if (targetWeapon.getCurrentDurability() >= damageToInflict) {
+        if (parryFumble) {
+          // PARRY FUMBLE
+          damageToInflict = targetWeapon.getCurrentDurability();
+          this.parryFumbleMessage(damageToInflict, targetBox);
+        } else if (parryHalfFumble) {
+          // PARRY HALF FUMBLE
+          damageToInflict = damageToInflict * 1.25;
+          damageToInflict = Math.floor(damageToInflict);
+          this.parryHalfFumbleMessage(damageToInflict, targetBox);
+        } else if (parryCrit) {
+          // PARRY CRIT
+          damageToInflict = 0;
+          this.parryCritMessage(damageToInflict, targetBox);
+        } else {
+          this.parryMessage(damageToInflict, targetBox);
+        }
+      } else {
+        //NO DURABILITY PARRY
+        if (noDurabilityRoll === 1 && noDurabilityRoll === 2) {
+          //NO DURABILITY CRIT
+          damageToInflict = targetWeapon.getCurrentDurability();
+          this.parryCritMessage(damageToInflict, targetBox);
+        } else if (noDurabilityRoll === 3) {
+          //NO DURABILITY FUMBLE
+          storedDamage = damageToInflict;
+          damageToInflict = targetWeapon.getCurrentDurability();
+          this.parryFumbleMessage(damageToInflict, targetBox);
+          this.damageMessage(storedDamage, targetBox, "red");
+        } else {
+          let NewDurability =
+            targetWeapon.getCurrentDurability() - damageToInflict;
+          console.log(
+            "currentDurability: " + targetWeapon.getCurrentDurability()
+          );
+          console.log("damageToInflict: " + damageToInflict);
+          console.log("NewDurability: " + NewDurability);
+          console.log(targetWeapon.getCurrentDurability() - NewDurability);
+
+          this.parryMessage(
+            targetWeapon.getCurrentDurability() - NewDurability,
+            targetBox
+          );
+        }
+      }
+      let targetNewDurability =
+        targetWeapon.getCurrentDurability() - damageToInflict;
       if (targetNewDurability < 0) {
         storedDamage = Math.abs(targetNewDurability);
         targetNewDurability = 0;
-        this.damageMessage(storedDamage,targetBox,"lightblue");
+        this.damageMessage(storedDamage, targetBox, "lightblue");
       }
       targetWeapon.setCurrentDurability(targetNewDurability);
 
@@ -371,7 +421,6 @@ export default class AttackEvent extends Event {
         this.#eventDeck.insertCard(targetWeapon);
         this.#target.removeWeapon();
       }
-
     } else {
       let targetNewCurrentHP = this.#target.getCurrentHP() - damageToInflict;
 
@@ -386,21 +435,21 @@ export default class AttackEvent extends Event {
       targetNewCurrentHPstored = 0;
     }
     this.#target.setCurrentHP(targetNewCurrentHPstored);
-  
+
     if (damageToInflict > 0) {
       damageToInflict = damageToInflict * -1;
     }
-    
-    if (fumble) { 
-        this.fumbleMessage(targetBox)
-        this.damageMessage(damageToInflict,targetBox,"red");
 
-        fumble = false;
+    if (fumble) {
+      this.fumbleMessage(targetBox);
+      this.damageMessage(damageToInflict, targetBox, "red");
+
+      fumble = false;
     } else if (crit) {
       this.critMessage(targetBox);
-      this.damageMessage(damageToInflict,targetBox,"gold");
+      this.damageMessage(damageToInflict, targetBox, "gold");
     } else if (!this.#parry) {
-    this.damageMessage(damageToInflict,targetBox,"red");
+      this.damageMessage(damageToInflict, targetBox, "red");
     }
   }
 
@@ -419,7 +468,7 @@ export default class AttackEvent extends Event {
     return newdamageToInflict;
   }
 
-  parryMessage(damageToInflict,targetBox) {
+  parryMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
       `Parry!: ${damageToInflict}`,
       "60px MedievalSharp",
@@ -431,7 +480,7 @@ export default class AttackEvent extends Event {
     this.#stateMessage.push(parryMessage);
   }
 
-  parryFumbleMessage(damageToInflict,targetBox) {
+  parryFumbleMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
       `Parry fumble!: ${damageToInflict}`,
       "60px MedievalSharp",
@@ -443,7 +492,7 @@ export default class AttackEvent extends Event {
     this.#stateMessage.push(parryMessage);
   }
 
-  parryHalfFumbleMessage(damageToInflict,targetBox) {
+  parryHalfFumbleMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
       `Parry Half Fumble!: ${damageToInflict}`,
       "60px MedievalSharp",
@@ -455,7 +504,7 @@ export default class AttackEvent extends Event {
     this.#stateMessage.push(parryMessage);
   }
 
-  parryCritMessage(damageToInflict,targetBox) {
+  parryCritMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
       `Parry Crit!: ${damageToInflict}`,
       "60px MedievalSharp",
@@ -467,7 +516,7 @@ export default class AttackEvent extends Event {
     this.#stateMessage.push(parryMessage);
   }
 
-  damageMessage(damageToInflict,targetBox,color) {
+  damageMessage(damageToInflict, targetBox, color) {
     const damageMessage = new StateMessage(
       damageToInflict,
       "40px MedievalSharp",
@@ -515,4 +564,3 @@ export default class AttackEvent extends Event {
     this.#stateMessage.push(weaponMessage);
   }
 }
-

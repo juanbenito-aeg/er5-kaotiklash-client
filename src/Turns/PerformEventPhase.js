@@ -19,6 +19,7 @@ import {
 import { globals } from "../index.js";
 import EchoOfTheStratagenEvent from "../Events/EchoOfTheStratagenEvent.js";
 import MarchOfTheLastSighEvent from "../Events/MarchOfTheLastSighEvent.js";
+import ShieldOfBalanceEvent from "../Events/ShieldOfBalanceEvent.js";
 
 export default class PerformEventPhase extends Phase {
   #events;
@@ -411,6 +412,12 @@ export default class PerformEventPhase extends Phase {
             this.#stateMessages
           );
           break;
+
+        case RareEventID.SHIELD_OF_BALANCE:
+          selectedEventInstance = new ShieldOfBalanceEvent(
+            this.#player,
+            selectedCard
+          );
       }
     }
 

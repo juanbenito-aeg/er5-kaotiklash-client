@@ -66,6 +66,8 @@ const globals = {
     isPlayer1Affected: false,
     isPlayer2Affected: false,
   },
+  shieldOfBalanceActive: false,
+  shieldOfBalanceOwner: null,
 };
 
 window.onload = initLogInScreen;
