@@ -35,6 +35,7 @@ export default class Game {
   #events;
   #phaseMessage;
   #stateMessages;
+  #attackMenuData;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -85,6 +86,33 @@ export default class Game {
 
     game.#stateMessages = [];
 
+    // ATTACK MENU DATA OBJECT CREATION
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+    const canvasHeightDividedBy2 = globals.canvas.height / 2;
+    game.#attackMenuData = {
+      isOpen: false,
+      btns: [
+        {
+          text: "TRY TO BLOCK ATTACK",
+          isActive: false,
+          yCoordinate: canvasHeightDividedBy2 - 20,
+        },
+        {
+          isActive: false,
+          text: "USE POWER OF ARMOR",
+          yCoordinate: canvasHeightDividedBy2 + 80,
+        },
+        {
+          text: "PASS",
+          isActive: true,
+          yCoordinate: canvasHeightDividedBy2 + 180,
+        },
+      ],
+      btnsWidth: 350,
+      btnsHeight: 70,
+      btnsXCoordinate: canvasWidthDividedBy2 - 175,
+    };
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
@@ -93,7 +121,8 @@ export default class Game {
       game.#players[PlayerID.PLAYER_1],
       game.#events,
       game.#phaseMessage,
-      game.#stateMessages
+      game.#stateMessages,
+      game.#attackMenuData
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -103,7 +132,8 @@ export default class Game {
       game.#players[PlayerID.PLAYER_2],
       game.#events,
       game.#phaseMessage,
-      game.#stateMessages
+      game.#stateMessages,
+      game.#attackMenuData
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];

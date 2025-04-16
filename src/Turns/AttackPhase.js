@@ -23,6 +23,7 @@ export default class AttackPhase extends Phase {
   #eventDeck;
   #stateMessages;
   #player;
+  #attackMenuData;
 
   constructor(
     state,
@@ -36,7 +37,8 @@ export default class AttackPhase extends Phase {
     currentPlayerMinionsDeck,
     eventDeck,
     stateMessages,
-    player
+    player,
+    attackMenuData
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -50,6 +52,7 @@ export default class AttackPhase extends Phase {
     this.#eventDeck = eventDeck;
     this.#stateMessages = stateMessages;
     this.#player = player;
+    this.#attackMenuData = attackMenuData;
   }
 
   static create(
@@ -60,7 +63,8 @@ export default class AttackPhase extends Phase {
     events,
     currentPlayer,
     phaseMessage,
-    stateMessages
+    stateMessages,
+    attackMenuData
   ) {
     let enemyMovementGrid;
     let currentPlayerMovementGrid;
@@ -116,7 +120,8 @@ export default class AttackPhase extends Phase {
       currentPlayerMinionsDeck,
       eventDeck,
       stateMessages,
-      player
+      player,
+      attackMenuData
     );
 
     return attackPhase;

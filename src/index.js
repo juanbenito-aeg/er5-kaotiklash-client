@@ -37,7 +37,6 @@ const globals = {
     register: false,
     playerSession: false,
   },
-  isParryMenuOpen: false,
   activeVisibilitySkill: null,
   decrepitThroneSkillData: {
     isActive: false,

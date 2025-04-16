@@ -36,6 +36,7 @@ export default class Turn {
   #events;
   #phaseMessage;
   #stateMessages;
+  #attackMenuData;
   #equipWeaponOrArmorState;
 
   constructor(
@@ -45,7 +46,8 @@ export default class Turn {
     player,
     events,
     phaseMessage,
-    stateMessages
+    stateMessages,
+    attackMenuData
   ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
@@ -59,6 +61,7 @@ export default class Turn {
     this.#events = events;
     this.#phaseMessage = phaseMessage;
     this.#stateMessages = stateMessages;
+    this.#attackMenuData = attackMenuData;
     this.#equipWeaponOrArmorState = EquipWeaponOrArmorState.INIT;
   }
 
@@ -86,7 +89,8 @@ export default class Turn {
         this.#events,
         currentPlayer,
         this.#phaseMessage,
-        this.#stateMessages
+        this.#stateMessages,
+        this.#attackMenuData
       );
 
       this.#phases.push(currentPhase);
