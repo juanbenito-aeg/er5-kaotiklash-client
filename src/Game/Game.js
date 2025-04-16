@@ -708,12 +708,13 @@ export default class Game {
             this.#currentPlayer.getID()
           );
         }
-        if (globals.gameWinner) {
-          this.#renderGameWinner();
+
+        if (this.#attackMenuData.isOpen) {
+          this.#renderAttackMenu();
         }
 
-        if (globals.isParryMenuOpen) {
-          this.#renderParryMenu();
+        if (globals.gameWinner) {
+          this.#renderGameWinner();
         }
 
         break;
@@ -2227,6 +2228,132 @@ export default class Game {
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
   }
 
+  #renderStateMessages() {
+    globals.ctx.save();
+
+    for (let i = 0; i < this.#stateMessages.length; i++) {
+      const currentMessage = this.#stateMessages[i];
+
+      globals.ctx.shadowBlur = 20;
+      globals.ctx.shadowColor = "black";
+      globals.ctx.font = currentMessage.getFont();
+      globals.ctx.fillStyle = currentMessage.getColor();
+
+      for (let i = 0; i < 15; i++) {
+        globals.ctx.fillText(
+          currentMessage.getContent(),
+          currentMessage.getXPosition(),
+          currentMessage.getYPosition()
+        );
+      }
+    }
+
+    globals.ctx.restore();
+  }
+
+  #renderAttackMenu() {
+    globals.ctx.save();
+
+    globals.ctx.globalAlpha = 0.5;
+    globals.ctx.fillStyle = "black";
+    globals.ctx.fillRect(0, 0, globals.canvas.width, globals.canvas.height);
+    globals.ctx.globalAlpha = 1;
+
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+    const canvasHeightDividedBy2 = globals.canvas.height / 2;
+    globals.ctx.textAlign = "center";
+
+    globals.ctx.shadowBlur = 20;
+    globals.ctx.shadowColor = "black";
+
+    globals.ctx.fillStyle = "white";
+    globals.ctx.font = "100px MedievalSharp";
+    globals.ctx.fillText(
+      "WHAT DO YOU WANT TO DO?",
+      canvasWidthDividedBy2,
+      canvasHeightDividedBy2 - 200
+    );
+
+    globals.ctx.shadowBlur = 10;
+    globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+    globals.ctx.font = "24px MedievalSharp";
+    globals.ctx.textBaseline = "middle";
+
+    for (let i = 0; i < this.#attackMenuData.btns.length; i++) {
+      const currentBtn = this.#attackMenuData.btns[i];
+
+      if (currentBtn.isActive) {
+        globals.ctx.globalAlpha = 1;
+      } else {
+        globals.ctx.globalAlpha = 0.65;
+      }
+
+      globals.ctx.fillStyle = "darkcyan";
+
+      globals.ctx.beginPath();
+      globals.ctx.moveTo(
+        this.#attackMenuData.btnsXCoordinate + 10,
+        currentBtn.yCoordinate
+      );
+      globals.ctx.lineTo(
+        this.#attackMenuData.btnsXCoordinate +
+          this.#attackMenuData.btnsWidth -
+          10,
+        currentBtn.yCoordinate
+      );
+      globals.ctx.quadraticCurveTo(
+        this.#attackMenuData.btnsXCoordinate + this.#attackMenuData.btnsWidth,
+        currentBtn.yCoordinate,
+        this.#attackMenuData.btnsXCoordinate + this.#attackMenuData.btnsWidth,
+        currentBtn.yCoordinate + 10
+      );
+      globals.ctx.lineTo(
+        this.#attackMenuData.btnsXCoordinate + this.#attackMenuData.btnsWidth,
+        currentBtn.yCoordinate + this.#attackMenuData.btnsHeight - 10
+      );
+      globals.ctx.quadraticCurveTo(
+        this.#attackMenuData.btnsXCoordinate + this.#attackMenuData.btnsWidth,
+        currentBtn.yCoordinate + this.#attackMenuData.btnsHeight,
+        this.#attackMenuData.btnsXCoordinate +
+          this.#attackMenuData.btnsWidth -
+          10,
+        currentBtn.yCoordinate + this.#attackMenuData.btnsHeight
+      );
+      globals.ctx.lineTo(
+        this.#attackMenuData.btnsXCoordinate + 10,
+        currentBtn.yCoordinate + this.#attackMenuData.btnsHeight
+      );
+      globals.ctx.quadraticCurveTo(
+        this.#attackMenuData.btnsXCoordinate,
+        currentBtn.yCoordinate + this.#attackMenuData.btnsHeight,
+        this.#attackMenuData.btnsXCoordinate,
+        currentBtn.yCoordinate + this.#attackMenuData.btnsHeight - 10
+      );
+      globals.ctx.lineTo(
+        this.#attackMenuData.btnsXCoordinate,
+        currentBtn.yCoordinate + 10
+      );
+      globals.ctx.quadraticCurveTo(
+        this.#attackMenuData.btnsXCoordinate,
+        currentBtn.yCoordinate,
+        this.#attackMenuData.btnsXCoordinate + 10,
+        currentBtn.yCoordinate
+      );
+      globals.ctx.closePath();
+      globals.ctx.fill();
+
+      globals.ctx.fillStyle = "white";
+      globals.ctx.fillText(
+        currentBtn.text,
+        this.#attackMenuData.btnsXCoordinate +
+          this.#attackMenuData.btnsWidth / 2,
+        currentBtn.yCoordinate + this.#attackMenuData.btnsHeight / 2
+      );
+    }
+
+    globals.ctx.restore();
+  }
+
   #renderGameWinner() {
     globals.ctx.globalAlpha = 0.35;
     globals.ctx.fillStyle = "black";
@@ -2259,111 +2386,5 @@ export default class Game {
         canvasHeightDividedBy2 + 100
       );
     }
-  }
-
-  #renderParryMenu() {
-    globals.ctx.globalAlpha = 0.35;
-    globals.ctx.fillStyle = "black";
-    globals.ctx.fillRect(0, 0, globals.canvas.width, globals.canvas.height);
-    globals.ctx.globalAlpha = 1;
-
-    const canvasWidthDividedBy2 = globals.canvas.width / 2;
-    const canvasHeightDividedBy2 = globals.canvas.height / 2;
-    globals.ctx.textAlign = "center";
-
-    globals.ctx.shadowBlur = 20;
-    globals.ctx.shadowColor = "black";
-    globals.ctx.fillStyle = "white";
-
-    globals.ctx.font = "100px MedievalSharp";
-    globals.ctx.fillText(
-      "Do you want to parry?",
-      canvasWidthDividedBy2,
-      canvasHeightDividedBy2
-    );
-
-    const buttonWidth = 150;
-    const buttonHeight = 50;
-    const buttonSpacing = 50;
-    const buttonY = canvasHeightDividedBy2 + 100;
-
-    const buttons = [
-      {
-        text: "YES",
-        x: canvasWidthDividedBy2 - buttonWidth - buttonSpacing / 2,
-        y: buttonY,
-      },
-      { text: "NO", x: canvasWidthDividedBy2 + buttonSpacing / 2, y: buttonY },
-    ];
-
-    for (let i = 0; i < buttons.length; i++) {
-      const button = buttons[i];
-      globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-      globals.ctx.shadowBlur = 10;
-      globals.ctx.shadowOffsetX = 4;
-      globals.ctx.shadowOffsetY = 4;
-
-      globals.ctx.fillStyle = "darkcyan";
-      globals.ctx.beginPath();
-      globals.ctx.moveTo(button.x + 10, button.y);
-      globals.ctx.lineTo(button.x + buttonWidth - 10, button.y);
-      globals.ctx.quadraticCurveTo(
-        button.x + buttonWidth,
-        button.y,
-        button.x + buttonWidth,
-        button.y + 10
-      );
-      globals.ctx.lineTo(button.x + buttonWidth, button.y + buttonHeight - 10);
-      globals.ctx.quadraticCurveTo(
-        button.x + buttonWidth,
-        button.y + buttonHeight,
-        button.x + buttonWidth - 10,
-        button.y + buttonHeight
-      );
-      globals.ctx.lineTo(button.x + 10, button.y + buttonHeight);
-      globals.ctx.quadraticCurveTo(
-        button.x,
-        button.y + buttonHeight,
-        button.x,
-        button.y + buttonHeight - 10
-      );
-      globals.ctx.lineTo(button.x, button.y + 10);
-      globals.ctx.quadraticCurveTo(button.x, button.y, button.x + 10, button.y);
-      globals.ctx.closePath();
-      globals.ctx.fill();
-
-      globals.ctx.fillStyle = "white";
-      globals.ctx.font = "24px MedievalSharp";
-      globals.ctx.textAlign = "center";
-      globals.ctx.textBaseline = "middle";
-      globals.ctx.fillText(
-        button.text,
-        button.x + buttonWidth / 2,
-        button.y + buttonHeight / 2
-      );
-    }
-  }
-
-  #renderStateMessages() {
-    globals.ctx.save();
-
-    for (let i = 0; i < this.#stateMessages.length; i++) {
-      const currentMessage = this.#stateMessages[i];
-
-      globals.ctx.shadowBlur = 20;
-      globals.ctx.shadowColor = "black";
-      globals.ctx.font = currentMessage.getFont();
-      globals.ctx.fillStyle = currentMessage.getColor();
-
-      for (let i = 0; i < 15; i++) {
-        globals.ctx.fillText(
-          currentMessage.getContent(),
-          currentMessage.getXPosition(),
-          currentMessage.getYPosition()
-        );
-      }
-    }
-
-    globals.ctx.restore();
   }
 }
