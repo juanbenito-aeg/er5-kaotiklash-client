@@ -146,9 +146,9 @@ const AttackPhaseState = {
   INIT: 0,
   SELECT_ATTACKER: 1,
   SELECT_TARGET: 2,
-  CALC_AND_APPLY_DMG: 3,
-  END: 4,
-  PARRY_SELECION: 5,
+  ATTACK_MENU: 3,
+  CALC_AND_APPLY_DMG: 4,
+  END: 5,
 };
 
 const DiscardCardState = {
@@ -287,6 +287,17 @@ const StolenFateState = {
   DRAW_CARDS: 1,
 };
 
+const AttackMenuBtn = {
+  BLOCK_ATTACK: 0,
+  ARMOR_POWER: 1,
+  PASS: 2,
+};
+
+const ArmorID = {
+  BREASTPLATE_PRIMORDIAL_COLOSSUS: 0,
+  CLOAK_ETERNAL_SHADOW: 1,
+};
+
 export {
   GameState,
   FPS,
@@ -321,4 +332,6 @@ export {
   EchoOfTheStratagenState,
   HandOfTheSoulThiefState,
   StolenFateState,
+  AttackMenuBtn,
+  ArmorID,
 };

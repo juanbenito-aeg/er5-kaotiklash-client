@@ -9,8 +9,9 @@ export default class AttackEvent extends Event {
   #currentPlayerMovementGrid;
   #enemyMovementGrid;
   #parry;
+  #isArmorPowerChosen;
   #eventDeck;
-  #stateMessage;
+  #stateMessages;
   #player;
 
   constructor(
@@ -19,8 +20,9 @@ export default class AttackEvent extends Event {
     currentPlayerMovementGrid,
     enemyMovementGrid,
     parry,
+    isArmorPowerChosen,
     eventDeck,
-    stateMessage,
+    stateMessages,
     player
   ) {
     super();
@@ -30,33 +32,10 @@ export default class AttackEvent extends Event {
     this.#currentPlayerMovementGrid = currentPlayerMovementGrid;
     this.#enemyMovementGrid = enemyMovementGrid;
     this.#parry = parry;
+    this.#isArmorPowerChosen = isArmorPowerChosen;
     this.#eventDeck = eventDeck;
-    this.#stateMessage = stateMessage;
+    this.#stateMessages = stateMessages;
     this.#player = player;
-  }
-
-  static create(
-    attacker,
-    target,
-    currentPlayerMovementGrid,
-    enemyMovementGrid,
-    parry,
-    eventDeck,
-    stateMessage,
-    player
-  ) {
-    const attackEvent = new AttackEvent(
-      attacker,
-      target,
-      currentPlayerMovementGrid,
-      enemyMovementGrid,
-      parry,
-      eventDeck,
-      stateMessage,
-      player
-    );
-
-    return attackEvent;
   }
 
   execute() {
@@ -68,6 +47,7 @@ export default class AttackEvent extends Event {
         this.#enemyMovementGrid,
         this.#target
       );
+
       let nullifiedMessage = new StateMessage(
         "ATTACK NULLIFIED BY SHIELD OF BALANCE!",
         "50px MedievalSharp",
@@ -78,8 +58,7 @@ export default class AttackEvent extends Event {
         targetBox.getCard().getYCoordinate() +
           globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2
       );
-
-      this.#stateMessage.push(nullifiedMessage);
+      this.#stateMessages.push(nullifiedMessage);
 
       return;
     }
@@ -306,7 +285,7 @@ export default class AttackEvent extends Event {
           attackerBox.getCard().getXCoordinate(),
           attackerBox.getCard().getYCoordinate() + 10
         );
-        this.#stateMessage.push(weaponMessage);
+        this.#stateMessages.push(weaponMessage);
         this.#attacker.removeWeapon();
       }
     }
@@ -477,7 +456,7 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
-    this.#stateMessage.push(parryMessage);
+    this.#stateMessages.push(parryMessage);
   }
 
   parryFumbleMessage(damageToInflict, targetBox) {
@@ -489,7 +468,7 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
-    this.#stateMessage.push(parryMessage);
+    this.#stateMessages.push(parryMessage);
   }
 
   parryHalfFumbleMessage(damageToInflict, targetBox) {
@@ -501,7 +480,7 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
-    this.#stateMessage.push(parryMessage);
+    this.#stateMessages.push(parryMessage);
   }
 
   parryCritMessage(damageToInflict, targetBox) {
@@ -513,7 +492,7 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
-    this.#stateMessage.push(parryMessage);
+    this.#stateMessages.push(parryMessage);
   }
 
   damageMessage(damageToInflict, targetBox, color) {
@@ -525,7 +504,7 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() + 55
     );
-    this.#stateMessage.push(damageMessage);
+    this.#stateMessages.push(damageMessage);
   }
 
   critMessage(targetBox) {
@@ -537,7 +516,7 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
-    this.#stateMessage.push(critMessage);
+    this.#stateMessages.push(critMessage);
   }
 
   fumbleMessage(targetBox) {
@@ -549,7 +528,7 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
-    this.#stateMessage.push(fumbleMessage);
+    this.#stateMessages.push(fumbleMessage);
   }
 
   weaponMessage(targetBox) {
@@ -561,6 +540,6 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getXCoordinate(),
       targetBox.getCard().getYCoordinate() + 10
     );
-    this.#stateMessage.push(weaponMessage);
+    this.#stateMessages.push(weaponMessage);
   }
 }

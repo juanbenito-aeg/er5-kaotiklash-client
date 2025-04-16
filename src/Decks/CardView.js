@@ -319,8 +319,8 @@ export default class CardView {
     this.#card.setArmor(armor);
   }
 
-  getMinionArmorTypeID() {
-    return this.#card.getArmor().getArmorTypeID();
+  getArmorID() {
+    return this.#card.getArmorID();
   }
 
   getArmorCurrentDurability() {
