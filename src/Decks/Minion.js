@@ -195,6 +195,14 @@ export default class Minion extends Card {
     this.#armor = armor;
   }
 
+  removeArmor() {
+    this.#armor = null;
+  }
+
+  resetArmorAttributes() {
+    this.#armor.resetAttributes();
+  }
+
   getArmorID() {
     return this.#armor.getID();
   }
@@ -205,10 +213,6 @@ export default class Minion extends Card {
 
   getArmorCurrentDurability() {
     return this.#armor.getCurrentDurability();
-  }
-
-  removeArmor() {
-    this.#armor = null;
   }
 
   setCurrentDurability(newDurability) {

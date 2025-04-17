@@ -1,6 +1,6 @@
 import Event from "./Event.js";
 import StateMessage from "../Messages/StateMessage.js";
-import { PlayerID, WeaponTypeID } from "../Game/constants.js";
+import { ArmorID, PlayerID, WeaponTypeID } from "../Game/constants.js";
 import { globals } from "../index.js";
 
 export default class AttackEvent extends Event {
@@ -63,6 +63,15 @@ export default class AttackEvent extends Event {
       return;
     }
 
+    const targetHasBreastplatePrimordialColossus =
+      this.#isArmorPowerChosen &&
+      this.#target.getArmorID() === ArmorID.BREASTPLATE_PRIMORDIAL_COLOSSUS;
+
+    let breastplatePrimordialColossusOwner;
+    if (targetHasBreastplatePrimordialColossus) {
+      breastplatePrimordialColossusOwner = this.#target;
+    }
+
     let damageToInflict;
 
     let roll = Math.floor(Math.random() * 100 + 1);
@@ -70,8 +79,23 @@ export default class AttackEvent extends Event {
     let fumbreProb = this.#attacker.getFumbleChance();
     let chances = critProb + fumbreProb;
     let fumble = false;
-    let targetWeapon = this.#target.getWeapon();
+
+    if (
+      !targetHasBreastplatePrimordialColossus &&
+      roll > critProb &&
+      roll <= chances
+    ) {
+      // FUMBLE
+      console.log("Fumble");
+      fumble = true;
+    }
+
+    if (targetHasBreastplatePrimordialColossus || fumble) {
+      this.#target = this.#attacker;
+    }
+
     let attackerWeapon = this.#attacker.getWeapon();
+    let targetWeapon = this.#target.getWeapon();
     let targetArmor = this.#target.getArmor();
 
     let isPlayer1Debuffed = false;
@@ -91,17 +115,6 @@ export default class AttackEvent extends Event {
       ) {
         isPlayer2Debuffed = true;
       }
-    }
-
-    if (roll > critProb && roll <= chances) {
-      // FUMBLE
-
-      console.log("Fumble");
-      fumble = true;
-    }
-
-    if (fumble) {
-      this.#target = this.#attacker;
     }
 
     if (!attackerWeapon && this.#parry === false) {
@@ -235,7 +248,7 @@ export default class AttackEvent extends Event {
     }
 
     let targetBox;
-    if (fumble) {
+    if (targetHasBreastplatePrimordialColossus || fumble) {
       targetBox = this.#target.getBoxIsPositionedIn(
         this.#currentPlayerMovementGrid,
         this.#target
@@ -257,6 +270,7 @@ export default class AttackEvent extends Event {
     if (damageToInflict < 0) {
       damageToInflict = 0;
     }
+
     let crit = false;
     if (roll <= critProb) {
       // CRITICAL HIT
@@ -278,15 +292,7 @@ export default class AttackEvent extends Event {
         this.#attacker
       );
       if (attackerWeapon.getCurrentDurability() <= 0) {
-        const weaponMessage = new StateMessage(
-          "weapon broke!",
-          "20px MedievalSharp",
-          "red",
-          4,
-          attackerBox.getCard().getXCoordinate(),
-          attackerBox.getCard().getYCoordinate() + 10
-        );
-        this.#stateMessages.push(weaponMessage);
+        this.weaponMessage(attackerBox);
         this.#attacker.removeWeapon();
       }
     }
@@ -390,16 +396,8 @@ export default class AttackEvent extends Event {
       targetWeapon.setCurrentDurability(targetNewDurability);
 
       if (targetWeapon.getCurrentDurability() <= 0) {
-        const weaponMessage = new StateMessage(
-          "weapon broke!",
-          "20px MedievalSharp",
-          "red",
-          4,
-          targetBox.getCard().getXCoordinate(),
-          targetBox.getCard().getYCoordinate() + 10
-        );
+        this.weaponMessage(targetBox);
         this.#eventDeck.insertCard(targetWeapon);
-        this.#stateMessage.push(weaponMessage);
         this.#target.removeWeapon();
 
         if (targetArmor) {
@@ -416,15 +414,7 @@ export default class AttackEvent extends Event {
           targetArmor.setCurrentDurability(armorNewDurability);
 
           if (targetArmor.getCurrentDurability() <= 0) {
-            const armorBreakMsg = new StateMessage(
-              "ARMOR BROKE!",
-              "20px MedievalSharp",
-              "gray",
-              4,
-              targetBox.getCard().getXCoordinate(),
-              targetBox.getCard().getYCoordinate() + 20
-            );
-            this.#stateMessage.push(armorBreakMsg);
+            this.#createAndStoreArmorBrokeMsg(targetBox);
             this.#target.removeArmor();
           }
         }
@@ -445,15 +435,7 @@ export default class AttackEvent extends Event {
         targetArmor.setCurrentDurability(armorNewDurability);
 
         if (targetArmor.getCurrentDurability() <= 0) {
-          const armorBreakMsg = new StateMessage(
-            "ARMOR BROKE!",
-            "20px MedievalSharp",
-            "gray",
-            4,
-            targetBox.getCard().getXCoordinate(),
-            targetBox.getCard().getYCoordinate() + 20
-          );
-          this.#stateMessage.push(armorBreakMsg);
+          this.#createAndStoreArmorBrokeMsg(targetBox);
           this.#target.removeArmor();
         }
         damageToInflict = 0;
@@ -467,11 +449,19 @@ export default class AttackEvent extends Event {
 
       this.#target.setCurrentHP(targetNewCurrentHP);
     }
-    let targetNewCurrentHPstored = this.#target.getCurrentHP() - storedDamage;
-    if (targetNewCurrentHPstored < 0) {
-      targetNewCurrentHPstored = 0;
+
+    let targetNewCurrentHPStored = this.#target.getCurrentHP() - storedDamage;
+    if (targetNewCurrentHPStored < 0) {
+      targetNewCurrentHPStored = 0;
     }
-    this.#target.setCurrentHP(targetNewCurrentHPstored);
+    this.#target.setCurrentHP(targetNewCurrentHPStored);
+
+    if (targetHasBreastplatePrimordialColossus) {
+      // IF THE TARGET HAS THE "Breastplate of the Primordial Colossus" EQUIPPED & USED ITS POWER, RESET THE ARMOR'S ATTRIBUTES, INSERT IT INTO THE EVENTS DECK & REMOVE IT FROM ITS OWNER
+      this.#finishBreastplatePrimordialColossusPower(
+        breastplatePrimordialColossusOwner
+      );
+    }
 
     if (damageToInflict > 0) {
       damageToInflict = damageToInflict * -1;
@@ -480,8 +470,6 @@ export default class AttackEvent extends Event {
     if (fumble) {
       this.fumbleMessage(targetBox);
       this.damageMessage(damageToInflict, targetBox, "red");
-
-      fumble = false;
     } else if (crit) {
       this.critMessage(targetBox);
       this.damageMessage(damageToInflict, targetBox, "gold");
@@ -565,6 +553,23 @@ export default class AttackEvent extends Event {
     this.#stateMessages.push(damageMessage);
   }
 
+  #finishBreastplatePrimordialColossusPower(
+    breastplatePrimordialColossusOwner
+  ) {
+    // CREATE AND STORE THE "ARMOR BROKE!" STATE MESSAGE
+    const breastplatePrimordialColossusOwnerBox =
+      breastplatePrimordialColossusOwner.getBoxIsPositionedIn(
+        this.#enemyMovementGrid,
+        breastplatePrimordialColossusOwner
+      );
+    this.#createAndStoreArmorBrokeMsg(breastplatePrimordialColossusOwnerBox);
+
+    // RESET THE ARMOR'S ATTRIBUTES, INSERT IT INTO THE EVENTS DECK & REMOVE IT FROM ITS OWNER
+    breastplatePrimordialColossusOwner.resetArmorAttributes();
+    this.#eventDeck.insertCard(breastplatePrimordialColossusOwner.getArmor());
+    breastplatePrimordialColossusOwner.removeArmor();
+  }
+
   critMessage(targetBox) {
     const critMessage = new StateMessage(
       "Critical Hit!",
@@ -591,13 +596,25 @@ export default class AttackEvent extends Event {
 
   weaponMessage(targetBox) {
     const weaponMessage = new StateMessage(
-      "weapon broke!",
+      "WEAPON BROKE!",
       "20px MedievalSharp",
-      "red",
+      "gray",
       4,
-      targetBox.getCard().getXCoordinate(),
+      targetBox.getCard().getXCoordinate() - 100,
       targetBox.getCard().getYCoordinate() + 10
     );
     this.#stateMessages.push(weaponMessage);
+  }
+
+  #createAndStoreArmorBrokeMsg(armorOwnerBox) {
+    const armorBrokeMsg = new StateMessage(
+      "ARMOR BROKE!",
+      "20px MedievalSharp",
+      "gray",
+      4,
+      armorOwnerBox.getCard().getXCoordinate() + 208,
+      armorOwnerBox.getCard().getYCoordinate() + 10
+    );
+    this.#stateMessages.push(armorBrokeMsg);
   }
 }

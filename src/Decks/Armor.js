@@ -46,6 +46,10 @@ export default class Armor extends Card {
     return this.#currentDurability;
   }
 
+  setCurrentDurability(newDurability) {
+    this.#currentDurability = newDurability;
+  }
+
   getInitialPrepTimeInRounds() {
     return this.#initialPrepTimeInRounds;
   }
@@ -58,7 +62,8 @@ export default class Armor extends Card {
     this.#currentPrepTimeInRounds = newPrepTimeInRounds;
   }
 
-  setCurrentDurability(newDurability) {
-    this.#currentDurability = newDurability;
+  resetAttributes() {
+    this.#currentDurability = this.#initialDurability;
+    this.#currentPrepTimeInRounds = this.#initialPrepTimeInRounds;
   }
 }

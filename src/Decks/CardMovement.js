@@ -25,6 +25,10 @@ export default class CardMovement {
     return this.#card.getDescription();
   }
 
+  resetAttributes() {
+    this.#card.resetAttributes();
+  }
+
   getSpecialSkill() {
     return this.#card.getSpecialSkill();
   }
@@ -347,5 +351,9 @@ export default class CardMovement {
 
   removeArmor() {
     this.#card.removeArmor();
+  }
+
+  resetArmorAttributes() {
+    this.#card.resetArmorAttributes();
   }
 }

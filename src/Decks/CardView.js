@@ -27,6 +27,10 @@ export default class CardView {
     return this.#card.getDescription();
   }
 
+  resetAttributes() {
+    this.#card.resetAttributes();
+  }
+
   getSpecialSkill() {
     return this.#card.getSpecialSkill();
   }
@@ -333,5 +337,9 @@ export default class CardView {
 
   removeArmor() {
     this.#card.removeArmor();
+  }
+
+  resetArmorAttributes() {
+    this.#card.resetArmorAttributes();
   }
 }
