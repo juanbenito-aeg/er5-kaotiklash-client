@@ -432,12 +432,9 @@ export default class AttackPhase extends Phase {
       target.getMinionTypeID() === MinionTypeID.WIZARD &&
       target.getArmorID() === ArmorID.CLOAK_ETERNAL_SHADOW;
 
-    const hasNotUsedArmorPower = !target.hasUsedArmorPower();
-
     if (
-      hasNotUsedArmorPower &&
-      (isWarriorAndHasBreastplatePrimordialColossus ||
-        isWizardAndHasCloakEternalShadow)
+      isWarriorAndHasBreastplatePrimordialColossus ||
+      isWizardAndHasCloakEternalShadow
     ) {
       canArmorPowerBeUsed = true;
     }

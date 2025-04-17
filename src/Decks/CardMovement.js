@@ -356,16 +356,4 @@ export default class CardMovement {
   removeArmor() {
     this.#card.removeArmor();
   }
-
-  resetArmorAttributes() {
-    this.#card.resetArmorAttributes();
-  }
-
-  hasUsedArmorPower() {
-    return this.#card.hasUsedArmorPower();
-  }
-
-  setHasUsedArmorPower(value) {
-    this.#card.setHasUsedArmorPower(value);
-  }
 }

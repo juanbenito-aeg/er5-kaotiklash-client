@@ -224,12 +224,4 @@ export default class Minion extends Card {
   setCurrentDurability(newDurability) {
     this.#armor.setCurrentDurability(newDurability);
   }
-
-  hasUsedArmorPower() {
-    return this.#hasUsedArmorPower;
-  }
-
-  setHasUsedArmorPower(value) {
-    this.#hasUsedArmorPower = value;
-  }
 }
