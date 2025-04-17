@@ -60,6 +60,10 @@ export default class Minion extends Card {
     return this.#currentHP;
   }
 
+  setCurrentHP(newHP) {
+    this.#currentHP = newHP;
+  }
+
   getInitialMadness() {
     return this.#initialMadness;
   }
@@ -68,12 +72,20 @@ export default class Minion extends Card {
     return this.#currentMadness;
   }
 
+  setCurrentMadness(newMadness) {
+    this.#currentMadness = newMadness;
+  }
+
   getInitialAttack() {
     return this.#initialAttack;
   }
 
   getCurrentAttack() {
     return this.#currentAttack;
+  }
+
+  setCurrentAttack(newAttack) {
+    this.#currentAttack = newAttack;
   }
 
   getInitialConstitution() {
@@ -92,16 +104,16 @@ export default class Minion extends Card {
     return this.#currentDefense;
   }
 
+  setCurrentDefense(newDefense) {
+    this.#currentDefense = newDefense;
+  }
+
   getInitialStrength() {
     return this.#initialStrength;
   }
 
   getCurrentStrength() {
     return this.#currentStrength;
-  }
-
-  setCurrentMadness(newMadness) {
-    this.#currentMadness = newMadness;
   }
 
   setCurrentStrength(newStrength) {
@@ -112,28 +124,24 @@ export default class Minion extends Card {
     return this.#weapon;
   }
 
+  setWeapon(weapon) {
+    this.#weapon = weapon;
+  }
+
+  removeWeapon() {
+    this.#weapon = null;
+  }
+
+  resetWeaponAttributes() {
+    this.#weapon.resetAttributes();
+  }
+
   getWeaponTypeID() {
     return this.#weapon.getWeaponTypeID();
   }
 
   getWeaponCurrentDamage() {
     return this.#weapon.getCurrentDamage();
-  }
-
-  setCurrentHP(newHP) {
-    this.#currentHP = newHP;
-  }
-
-  setCurrentAttack(newAttack) {
-    this.#currentAttack = newAttack;
-  }
-
-  setCurrentDefense(newDefense) {
-    this.#currentDefense = newDefense;
-  }
-
-  setWeapon(weapon) {
-    this.#weapon = weapon;
   }
 
   getBoxIsPositionedIn(gridWhereToLookForBox, minion) {
@@ -185,16 +193,20 @@ export default class Minion extends Card {
     return HalffumbleChance;
   }
 
-  removeWeapon() {
-    this.#weapon = null;
-  }
-
   getArmor() {
     return this.#armor;
   }
 
   setArmor(armor) {
     this.#armor = armor;
+  }
+
+  removeArmor() {
+    this.#armor = null;
+  }
+
+  resetArmorAttributes() {
+    this.#armor.resetAttributes();
   }
 
   getArmorID() {
@@ -207,10 +219,6 @@ export default class Minion extends Card {
 
   getArmorCurrentDurability() {
     return this.#armor.getCurrentDurability();
-  }
-
-  removeArmor() {
-    this.#armor = null;
   }
 
   setCurrentDurability(newDurability) {

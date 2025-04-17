@@ -27,6 +27,10 @@ export default class CardView {
     return this.#card.getDescription();
   }
 
+  resetAttributes() {
+    this.#card.resetAttributes();
+  }
+
   getSpecialSkill() {
     return this.#card.getSpecialSkill();
   }
@@ -215,6 +219,18 @@ export default class CardView {
     return this.#card.getWeapon();
   }
 
+  setWeapon(weapon) {
+    this.#card.setWeapon(weapon);
+  }
+
+  removeWeapon() {
+    this.#card.removeWeapon();
+  }
+
+  resetWeaponAttributes() {
+    this.#card.resetWeaponAttributes();
+  }
+
   getMinionWeaponTypeID() {
     return this.#card.getWeapon().getWeaponTypeID();
   }
@@ -225,10 +241,6 @@ export default class CardView {
 
   setCurrentHP(newHP) {
     this.#card.setCurrentHP(newHP);
-  }
-
-  setWeapon(weapon) {
-    this.#card.setWeapon(weapon);
   }
 
   setCurrentPrepTimeInRounds(newPrepTimeInRounds) {
@@ -295,10 +307,6 @@ export default class CardView {
     return this.#card.getHalfParryFumbleChance();
   }
 
-  removeWeapon() {
-    this.#card.removeWeapon();
-  }
-
   getInitialPrepTimeInRounds() {
     return this.#card.getInitialPrepTimeInRounds();
   }
@@ -333,6 +341,10 @@ export default class CardView {
 
   removeArmor() {
     this.#card.removeArmor();
+  }
+
+  resetArmorAttributes() {
+    this.#card.resetArmorAttributes();
   }
 
   hasUsedArmorPower() {

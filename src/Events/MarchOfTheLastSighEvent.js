@@ -19,8 +19,8 @@ export default class MarchOfTheLastSighEvent extends Event {
     this.#isFinished = false;
   }
 
-  execute() {
-    this.reduceDuration(this._executedBy);
+  execute(currentPlayer) {
+    this.reduceDuration(currentPlayer);
 
     if (!this.#isFinished) {
       for (

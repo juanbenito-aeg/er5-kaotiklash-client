@@ -52,4 +52,9 @@ export default class Special extends Card {
   setCurrentPrepTimeInRounds(newPrepTimeInRounds) {
     this.#currentPrepTimeInRounds = newPrepTimeInRounds;
   }
+
+  resetAttributes() {
+    this.#currentDurationInRounds = this.#initialDurationInRounds;
+    this.#currentPrepTimeInRounds = this.#initialPrepTimeInRounds;
+  }
 }

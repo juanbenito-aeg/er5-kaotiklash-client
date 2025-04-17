@@ -43,6 +43,8 @@ export default class Card {
     return this.#description;
   }
 
+  resetAttributes() {}
+
   isMouseOver() {
     return this.#isMouseOver;
   }

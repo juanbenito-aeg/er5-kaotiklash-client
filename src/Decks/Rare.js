@@ -37,6 +37,10 @@ export default class Rare extends Card {
     return this.#currentDurationInRounds;
   }
 
+  setCurrentDurationInRounds(newDuration) {
+    this.#currentDurationInRounds = newDuration;
+  }
+
   getInitialPrepTimeInRounds() {
     return this.#initialPrepTimeInRounds;
   }
@@ -45,11 +49,12 @@ export default class Rare extends Card {
     return this.#currentPrepTimeInRounds;
   }
 
-  setCurrentDurationInRounds(newDuration) {
-    this.#currentDurationInRounds = newDuration;
-  }
-
   setCurrentPrepTimeInRounds(newPrepTimeInRounds) {
     this.#currentPrepTimeInRounds = newPrepTimeInRounds;
+  }
+
+  resetAttributes() {
+    this.#currentDurationInRounds = this.#initialDurationInRounds;
+    this.#currentPrepTimeInRounds = this.#initialPrepTimeInRounds;
   }
 }
