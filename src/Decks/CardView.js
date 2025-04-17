@@ -334,12 +334,4 @@ export default class CardView {
   removeArmor() {
     this.#card.removeArmor();
   }
-
-  hasUsedArmorPower() {
-    return this.#card.hasUsedArmorPower();
-  }
-
-  setHasUsedArmorPower(value) {
-    this.#card.setHasUsedArmorPower(value);
-  }
 }
