@@ -2,6 +2,7 @@ import Event from "./Event.js";
 import StateMessage from "../Messages/StateMessage.js";
 import { PlayerID, WeaponTypeID } from "../Game/constants.js";
 import { globals } from "../index.js";
+import CloakOfEternalShadowSpecialEffect from "./CloakOfEternalShadowSpecialEffect.js";
 
 export default class AttackEvent extends Event {
   #attacker;
@@ -61,6 +62,29 @@ export default class AttackEvent extends Event {
       this.#stateMessages.push(nullifiedMessage);
 
       return;
+    }
+
+    if (this.#isArmorPowerChosen) {
+      const canDodge = CloakOfEternalShadowSpecialEffect.canDodge(
+        this.#target,
+        this.#isArmorPowerChosen,
+        this.#attacker.getWeaponTypeID()
+      );
+
+      if (canDodge) {
+        const dodgeMessage = new StateMessage(
+          "WIZARD DODGED THE ATTACK USING CLOAK OF ETERNAL SHADOW!",
+          "45px MedievalSharp",
+          "aqua",
+          3,
+          this.#target.getXCoordinate(),
+          this.#target.getYCoordinate() - 30
+        );
+        this.#stateMessages.push(dodgeMessage);
+        this.#isArmorPowerChosen = false;
+        this.#target.setHasUsedArmorPower(true);
+        return;
+      }
     }
 
     let damageToInflict;
@@ -399,7 +423,6 @@ export default class AttackEvent extends Event {
           targetBox.getCard().getYCoordinate() + 10
         );
         this.#eventDeck.insertCard(targetWeapon);
-        this.#stateMessages.push(weaponMessage);
         this.#target.removeWeapon();
 
         if (targetArmor) {
