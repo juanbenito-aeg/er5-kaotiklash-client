@@ -326,4 +326,12 @@ export default class CardView {
   getArmorCurrentDurability() {
     return this.#card.getArmor().getCurrentDurability();
   }
+
+  setCurrentDurability(newDurability) {
+    this.#card.setCurrentDurability(newDurability);
+  }
+
+  removeArmor() {
+    this.#card.removeArmor();
+  }
 }
