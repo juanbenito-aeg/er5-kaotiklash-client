@@ -1,8 +1,9 @@
 import Event from "./Event.js";
 import StateMessage from "../Messages/StateMessage.js";
-import { PlayerID, WeaponTypeID } from "../Game/constants.js";
+import { ArmorID, PlayerID, WeaponTypeID } from "../Game/constants.js";
 import { globals } from "../index.js";
 import CloakOfEternalShadowSpecialEffect from "./CloakOfEternalShadowSpecialEffect.js";
+import ShieldOfTheAncestralOakEffect from "./ShieldOfTheAncestralOakEffect.js";
 
 export default class AttackEvent extends Event {
   #attacker;
@@ -82,7 +83,8 @@ export default class AttackEvent extends Event {
         );
         this.#stateMessages.push(dodgeMessage);
         this.#isArmorPowerChosen = false;
-        this.#target.setHasUsedArmorPower(true);
+        this.#eventDeck.insertCard(this.#target.getArmor());
+        this.#target.removeArmor();
         return;
       }
     }
@@ -97,6 +99,7 @@ export default class AttackEvent extends Event {
     let targetWeapon = this.#target.getWeapon();
     let attackerWeapon = this.#attacker.getWeapon();
     let targetArmor = this.#target.getArmor();
+    let attackerArmor = this.#attacker.getArmor();
 
     let isPlayer1Debuffed = false;
     let isPlayer2Debuffed = false;
@@ -306,7 +309,7 @@ export default class AttackEvent extends Event {
           "weapon broke!",
           "20px MedievalSharp",
           "red",
-          4,
+          2,
           attackerBox.getCard().getXCoordinate(),
           attackerBox.getCard().getYCoordinate() + 10
         );
@@ -358,6 +361,23 @@ export default class AttackEvent extends Event {
 
     if (this.#parry === true && !fumble && this.#target.getWeapon()) {
       // PARRY
+
+      if (
+        this.#attacker.getArmor().getID() ===
+        ArmorID.SHIELD_OF_THE_ANCESTRAL_OAK
+      ) {
+        ShieldOfTheAncestralOakEffect.applyCounterAttack(
+          this.#target,
+          this.#stateMessages
+        );
+      } else if (
+        this.#target.getArmor().getID() === ArmorID.SHIELD_OF_THE_ANCESTRAL_OAK
+      ) {
+        ShieldOfTheAncestralOakEffect.applyCounterAttack(
+          this.#attacker,
+          this.#stateMessages
+        );
+      }
 
       if (targetWeapon.getCurrentDurability() >= damageToInflict) {
         if (parryFumble) {
@@ -418,7 +438,7 @@ export default class AttackEvent extends Event {
           "weapon broke!",
           "20px MedievalSharp",
           "red",
-          4,
+          2,
           targetBox.getCard().getXCoordinate(),
           targetBox.getCard().getYCoordinate() + 10
         );
@@ -429,25 +449,14 @@ export default class AttackEvent extends Event {
           let armorNewDurability =
             targetArmor.getCurrentDurability() - storedDamage;
           if (armorNewDurability < 0) {
-            let overflow = Math.abs(armorNewDurability);
-            armorNewDurability = 0;
-            let hpAfterArmor = this.#target.getCurrentHP() - overflow;
-            this.#target.setCurrentHP(Math.max(0, hpAfterArmor));
-            this.damageMessage(overflow, targetBox, "lightblue");
+            this.#applyOverflowDamage(targetArmor, targetBox);
           }
 
           targetArmor.setCurrentDurability(armorNewDurability);
 
           if (targetArmor.getCurrentDurability() <= 0) {
-            const armorBreakMsg = new StateMessage(
-              "ARMOR BROKE!",
-              "20px MedievalSharp",
-              "gray",
-              4,
-              targetBox.getCard().getXCoordinate(),
-              targetBox.getCard().getYCoordinate() + 20
-            );
-            this.#stateMessages.push(armorBreakMsg);
+            this.#armorMessage(targetBox);
+            this.#eventDeck.insertCard(targetArmor);
             this.#target.removeArmor();
           }
         }
@@ -458,25 +467,14 @@ export default class AttackEvent extends Event {
           targetArmor.getCurrentDurability() - damageToInflict;
 
         if (armorNewDurability < 0) {
-          let overflow = Math.abs(armorNewDurability);
-          armorNewDurability = 0;
-          let hpAfterArmor = this.#target.getCurrentHP() - overflow;
-          this.#target.setCurrentHP(Math.max(0, hpAfterArmor));
-          this.damageMessage(overflow, targetBox, "lightblue");
+          this.#applyOverflowDamage(targetArmor, targetBox);
         }
 
         targetArmor.setCurrentDurability(armorNewDurability);
 
         if (targetArmor.getCurrentDurability() <= 0) {
-          const armorBreakMsg = new StateMessage(
-            "ARMOR BROKE!",
-            "20px MedievalSharp",
-            "gray",
-            4,
-            targetBox.getCard().getXCoordinate(),
-            targetBox.getCard().getYCoordinate() + 20
-          );
-          this.#stateMessages.push(armorBreakMsg);
+          this.#armorMessage(targetBox);
+          this.#eventDeck.insertCard(targetArmor);
           this.#target.removeArmor();
         }
         damageToInflict = 0;
@@ -533,7 +531,7 @@ export default class AttackEvent extends Event {
       `Parry!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
-      4,
+      2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
@@ -545,7 +543,7 @@ export default class AttackEvent extends Event {
       `Parry fumble!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
-      4,
+      2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
@@ -557,7 +555,7 @@ export default class AttackEvent extends Event {
       `Parry Half Fumble!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
-      4,
+      2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
@@ -569,7 +567,7 @@ export default class AttackEvent extends Event {
       `Parry Crit!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
-      4,
+      2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
@@ -579,9 +577,9 @@ export default class AttackEvent extends Event {
   damageMessage(damageToInflict, targetBox, color) {
     const damageMessage = new StateMessage(
       damageToInflict,
-      "40px MedievalSharp",
+      "20px MedievalSharp",
       color,
-      4,
+      2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() + 55
     );
@@ -593,7 +591,7 @@ export default class AttackEvent extends Event {
       "Critical Hit!",
       "60px MedievalSharp",
       "gold",
-      4,
+      2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
@@ -605,7 +603,7 @@ export default class AttackEvent extends Event {
       "Fumble!",
       "60px MedievalSharp",
       "red",
-      4,
+      2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
@@ -617,10 +615,32 @@ export default class AttackEvent extends Event {
       "weapon broke!",
       "20px MedievalSharp",
       "red",
-      4,
+      2,
       targetBox.getCard().getXCoordinate(),
       targetBox.getCard().getYCoordinate() + 10
     );
     this.#stateMessages.push(weaponMessage);
+  }
+
+  #armorMessage(targetBox) {
+    const armorBreakMsg = new StateMessage(
+      "ARMOR BROKE!",
+      "20px MedievalSharp",
+      "gray",
+      2,
+      targetBox.getCard().getXCoordinate(),
+      targetBox.getCard().getYCoordinate() + 20
+    );
+    this.#stateMessages.push(armorBreakMsg);
+  }
+
+  #applyOverflowDamage(armor, targetBox) {
+    const overflow = Math.abs(armor.getCurrentDurability());
+    armor.setCurrentDurability(0);
+
+    const newHP = this.#target.getCurrentHP() - overflow;
+    this.#target.setCurrentHP(Math.max(0, newHP));
+
+    this.damageMessage(overflow, targetBox, "lightblue");
   }
 }

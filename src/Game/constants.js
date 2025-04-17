@@ -248,6 +248,7 @@ const EventCooldownState = {
 const SpecialEventID = {
   SUMMON_CHARACTER: 0,
   JUDGMENT_ANCIENTS: 1,
+  RAY_OF_CELESTIAL_RUIN: 2,
   POISON_OF_THE_ABYSS: 3,
   CURSE_OF_THE_BOUND_TITAN: 4,
   BARTENDERS_POWER: 5,
@@ -296,6 +297,7 @@ const AttackMenuBtn = {
 const ArmorID = {
   BREASTPLATE_PRIMORDIAL_COLOSSUS: 0,
   CLOAK_ETERNAL_SHADOW: 1,
+  SHIELD_OF_THE_ANCESTRAL_OAK: 5,
 };
 
 export {
