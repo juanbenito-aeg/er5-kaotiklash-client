@@ -93,6 +93,7 @@ export default class AttackEvent extends Event {
     let fumble = false;
     let targetWeapon = this.#target.getWeapon();
     let attackerWeapon = this.#attacker.getWeapon();
+    let targetArmor = this.#target.getArmor();
 
     let isPlayer1Debuffed = false;
     let isPlayer2Debuffed = false;
@@ -419,9 +420,66 @@ export default class AttackEvent extends Event {
           targetBox.getCard().getYCoordinate() + 10
         );
         this.#eventDeck.insertCard(targetWeapon);
+        this.#stateMessage.push(weaponMessage);
         this.#target.removeWeapon();
+
+        if (targetArmor) {
+          let armorNewDurability =
+            targetArmor.getCurrentDurability() - storedDamage;
+          if (armorNewDurability < 0) {
+            let overflow = Math.abs(armorNewDurability);
+            armorNewDurability = 0;
+            let hpAfterArmor = this.#target.getCurrentHP() - overflow;
+            this.#target.setCurrentHP(Math.max(0, hpAfterArmor));
+            this.damageMessage(overflow, targetBox, "lightblue");
+          }
+
+          targetArmor.setCurrentDurability(armorNewDurability);
+
+          if (targetArmor.getCurrentDurability() <= 0) {
+            const armorBreakMsg = new StateMessage(
+              "ARMOR BROKE!",
+              "20px MedievalSharp",
+              "gray",
+              4,
+              targetBox.getCard().getXCoordinate(),
+              targetBox.getCard().getYCoordinate() + 20
+            );
+            this.#stateMessage.push(armorBreakMsg);
+            this.#target.removeArmor();
+          }
+        }
       }
     } else {
+      if (targetArmor && damageToInflict > 0) {
+        let armorNewDurability =
+          targetArmor.getCurrentDurability() - damageToInflict;
+
+        if (armorNewDurability < 0) {
+          let overflow = Math.abs(armorNewDurability);
+          armorNewDurability = 0;
+          let hpAfterArmor = this.#target.getCurrentHP() - overflow;
+          this.#target.setCurrentHP(Math.max(0, hpAfterArmor));
+          this.damageMessage(overflow, targetBox, "lightblue");
+        }
+
+        targetArmor.setCurrentDurability(armorNewDurability);
+
+        if (targetArmor.getCurrentDurability() <= 0) {
+          const armorBreakMsg = new StateMessage(
+            "ARMOR BROKE!",
+            "20px MedievalSharp",
+            "gray",
+            4,
+            targetBox.getCard().getXCoordinate(),
+            targetBox.getCard().getYCoordinate() + 20
+          );
+          this.#stateMessage.push(armorBreakMsg);
+          this.#target.removeArmor();
+        }
+        damageToInflict = 0;
+      }
+
       let targetNewCurrentHP = this.#target.getCurrentHP() - damageToInflict;
 
       if (targetNewCurrentHP < 0) {
