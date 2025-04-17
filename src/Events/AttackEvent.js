@@ -399,7 +399,7 @@ export default class AttackEvent extends Event {
           targetBox.getCard().getYCoordinate() + 10
         );
         this.#eventDeck.insertCard(targetWeapon);
-        this.#stateMessage.push(weaponMessage);
+        this.#stateMessages.push(weaponMessage);
         this.#target.removeWeapon();
 
         if (targetArmor) {
@@ -424,7 +424,7 @@ export default class AttackEvent extends Event {
               targetBox.getCard().getXCoordinate(),
               targetBox.getCard().getYCoordinate() + 20
             );
-            this.#stateMessage.push(armorBreakMsg);
+            this.#stateMessages.push(armorBreakMsg);
             this.#target.removeArmor();
           }
         }
@@ -453,7 +453,7 @@ export default class AttackEvent extends Event {
             targetBox.getCard().getXCoordinate(),
             targetBox.getCard().getYCoordinate() + 20
           );
-          this.#stateMessage.push(armorBreakMsg);
+          this.#stateMessages.push(armorBreakMsg);
           this.#target.removeArmor();
         }
         damageToInflict = 0;
