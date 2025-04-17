@@ -13,6 +13,7 @@ export default class Minion extends Card {
   #currentAttack;
   #initialConstitution;
   #currentConstitution;
+  #hasUsedArmorPower;
   #initialDefense;
   #currentDefense;
   #weapon;
@@ -42,6 +43,7 @@ export default class Minion extends Card {
     this.#initialAttack = this.#currentAttack = initialAttack;
     this.#initialConstitution = this.#currentConstitution = initialConstitution;
     this.#initialDefense = this.#currentDefense = initialDefense;
+    this.#hasUsedArmorPower = false;
     this.#weapon = null;
     this.#armor = null;
   }
@@ -213,5 +215,13 @@ export default class Minion extends Card {
 
   setCurrentDurability(newDurability) {
     this.#armor.setCurrentDurability(newDurability);
+  }
+
+  hasUsedArmorPower() {
+    return this.#hasUsedArmorPower;
+  }
+
+  setHasUsedArmorPower(value) {
+    this.#hasUsedArmorPower = value;
   }
 }
