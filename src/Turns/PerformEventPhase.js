@@ -504,6 +504,7 @@ export default class PerformEventPhase extends Phase {
     boxEventCardWasPositionedIn.resetCard();
 
     if (selectedCard.getInitialDurationInRounds() === 0) {
+      selectedCard.resetAttributes();
       this.#eventsDeck.insertCard(selectedCard);
     } else {
       this.#activeEventsDeck.insertCard(selectedCard);

@@ -1,4 +1,5 @@
 import Player from "./Player.js";
+import Card from "../Decks/Card.js";
 import CardView from "../Decks/CardView.js";
 import Deck from "../Decks/Deck.js";
 import DeckCreator from "../Decks/DeckCreator.js";
@@ -655,7 +656,7 @@ export default class Game {
 
   #executeEvents() {
     for (let i = 0; i < this.#events.length; i++) {
-      let event = this.#events[i];
+      const event = this.#events[i];
 
       let enemy;
       if (this.#currentPlayer.getID() === PlayerID.PLAYER_1) {
@@ -667,7 +668,22 @@ export default class Game {
       event.execute(this.#currentPlayer, enemy);
 
       if (!event.isActive()) {
+        const eventCard = event.getEventCard();
+
+        const activeEventsDeck =
+          this.#deckContainer.getDecks()[DeckType.ACTIVE_EVENTS];
+
+        if (Card.isCardWithinDeck(eventCard, activeEventsDeck)) {
+          eventCard.resetAttributes();
+
+          const eventsDeck = this.#deckContainer.getDecks()[DeckType.EVENTS];
+          eventsDeck.insertCard(eventCard);
+
+          activeEventsDeck.removeCard(eventCard);
+        }
+
         this.#events.splice(i, 1);
+
         i--;
       }
     }
@@ -1016,16 +1032,9 @@ export default class Game {
     for (let i = 0; i < eventCards.length; i++) {
       const event = eventCards[i];
 
-      const duration = event.getCurrentDurationInRounds();
-
-      if (duration <= 0) {
-        events.removeCard(event);
-        i--;
-        continue;
-      }
-
-      const eventName = event.getName();
       const playerName = this.#currentPlayer.getName();
+      const eventName = event.getName();
+      const duration = event.getCurrentDurationInRounds();
 
       const rowY = tableY + tableHeight / 4 + 30 * rowIndex;
       globals.ctx.fillStyle = "black";

@@ -51,6 +51,10 @@ export default class Weapon extends Card {
     return this.#currentDurability;
   }
 
+  setCurrentDurability(newDurability) {
+    this.#currentDurability = newDurability;
+  }
+
   getInitialPrepTimeInRounds() {
     return this.#initialPrepTimeInRounds;
   }
@@ -63,6 +67,12 @@ export default class Weapon extends Card {
     this.#currentPrepTimeInRounds = newPrepTimeInRounds;
   }
 
+  resetAttributes() {
+    this.#currentDamage = this.#initialDamage;
+    this.#currentDurability = this.#initialDurability;
+    this.#currentPrepTimeInRounds = this.#initialPrepTimeInRounds;
+  }
+
   getBoxIsPositionedIn(gridWhereToLookForBox, weapon) {
     for (let i = 0; i < gridWhereToLookForBox.getBoxes().length; i++) {
       const currentBox = gridWhereToLookForBox.getBoxes()[i];
@@ -71,9 +81,5 @@ export default class Weapon extends Card {
         return currentBox;
       }
     }
-  }
-
-  setCurrentDurability(newDurability) {
-    this.#currentDurability = newDurability;
   }
 }

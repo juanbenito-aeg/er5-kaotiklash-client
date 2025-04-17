@@ -293,6 +293,8 @@ export default class AttackEvent extends Event {
       );
       if (attackerWeapon.getCurrentDurability() <= 0) {
         this.weaponMessage(attackerBox);
+        this.#attacker.resetWeaponAttributes();
+        this.#eventDeck.insertCard(this.#attacker.getWeapon());
         this.#attacker.removeWeapon();
       }
     }
@@ -397,6 +399,7 @@ export default class AttackEvent extends Event {
 
       if (targetWeapon.getCurrentDurability() <= 0) {
         this.weaponMessage(targetBox);
+        this.#target.resetWeaponAttributes();
         this.#eventDeck.insertCard(targetWeapon);
         this.#target.removeWeapon();
 
@@ -415,6 +418,8 @@ export default class AttackEvent extends Event {
 
           if (targetArmor.getCurrentDurability() <= 0) {
             this.#createAndStoreArmorBrokeMsg(targetBox);
+            this.#target.resetArmorAttributes();
+            this.#eventDeck.insertCard(this.#target.getArmor());
             this.#target.removeArmor();
           }
         }
@@ -436,6 +441,8 @@ export default class AttackEvent extends Event {
 
         if (targetArmor.getCurrentDurability() <= 0) {
           this.#createAndStoreArmorBrokeMsg(targetBox);
+          this.#target.resetArmorAttributes();
+          this.#eventDeck.insertCard(this.#target.getArmor());
           this.#target.removeArmor();
         }
         damageToInflict = 0;

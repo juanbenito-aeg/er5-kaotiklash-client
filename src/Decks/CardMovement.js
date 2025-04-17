@@ -225,6 +225,18 @@ export default class CardMovement {
     return this.#card.getWeapon();
   }
 
+  setWeapon(weapon) {
+    this.#card.setWeapon(weapon);
+  }
+
+  removeWeapon() {
+    this.#card.removeWeapon();
+  }
+
+  resetWeaponAttributes() {
+    this.#card.resetWeaponAttributes();
+  }
+
   getMinionWeaponTypeID() {
     return this.#card.getWeapon().getWeaponTypeID();
   }
@@ -239,10 +251,6 @@ export default class CardMovement {
 
   setCurrentHP(newHP) {
     this.#card.setCurrentHP(newHP);
-  }
-
-  setWeapon(weapon) {
-    this.#card.setWeapon(weapon);
   }
 
   getGridPosition() {
@@ -311,10 +319,6 @@ export default class CardMovement {
 
   getHalfParryFumbleChance() {
     return this.#card.getHalfParryFumbleChance();
-  }
-
-  removeWeapon() {
-    this.#card.removeWeapon();
   }
 
   getInitialPrepTimeInRounds() {
