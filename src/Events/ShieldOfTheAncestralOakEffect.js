@@ -2,29 +2,35 @@ import StateMessage from "../Messages/StateMessage.js";
 
 export default class ShieldOfYheAncestralOakEffect {
   static applyCounterAttack(target, stateMessages) {
-    const counterDamage = 20;
+    let isActive;
 
-    let targetHP = target.getCurrentHP() - counterDamage;
-    if (targetHP < 0) targetHP = 0;
-    target.setCurrentHP(targetHP);
+    if (!isActive) {
+      const counterDamage = 20;
 
-    const message = new StateMessage(
-      "COUNTERATTACK: SHIELD OF THE ANCESTRAL OAK!",
-      "40px MedievalSharp",
-      "green",
-      2,
-      1200,
-      520
-    );
-    const damageMessage = new StateMessage(
-      `-${counterDamage} HP`,
-      "30px MedievalSharp",
-      "darkgreen",
-      2,
-      1200,
-      570
-    );
+      let targetHP = target.getCurrentHP() - counterDamage;
+      if (targetHP < 0) targetHP = 0;
+      target.setCurrentHP(targetHP);
 
-    stateMessages.push(message, damageMessage);
+      const message = new StateMessage(
+        "COUNTERATTACK: SHIELD OF THE ANCESTRAL OAK!",
+        "40px MedievalSharp",
+        "green",
+        2,
+        1200,
+        520
+      );
+      const damageMessage = new StateMessage(
+        `-${counterDamage} HP`,
+        "30px MedievalSharp",
+        "darkgreen",
+        2,
+        1200,
+        570
+      );
+
+      stateMessages.push(message, damageMessage);
+
+      isActive = true;
+    }
   }
 }

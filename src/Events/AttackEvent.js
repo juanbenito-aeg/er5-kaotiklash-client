@@ -4,6 +4,7 @@ import { ArmorID, PlayerID, WeaponTypeID } from "../Game/constants.js";
 import { globals } from "../index.js";
 import CloakOfEternalShadowSpecialEffect from "./CloakOfEternalShadowSpecialEffect.js";
 import ShieldOfTheAncestralOakEffect from "./ShieldOfTheAncestralOakEffect.js";
+import BracersOfTheWarLionSpecialEffect from "./BracersOfTheWarLionSpecialEffect.js";
 
 export default class AttackEvent extends Event {
   #attacker;
@@ -123,7 +124,6 @@ export default class AttackEvent extends Event {
     let attackerWeapon = this.#attacker.getWeapon();
     let targetWeapon = this.#target.getWeapon();
     let targetArmor = this.#target.getArmor();
-    let attackerArmor = this.#attacker.getArmor();
 
     let isPlayer1Debuffed = false;
     let isPlayer2Debuffed = false;
@@ -371,17 +371,30 @@ export default class AttackEvent extends Event {
       // PARRY
 
       if (
+        this.#attacker.getArmor() &&
         this.#attacker.getArmor().getID() ===
-        ArmorID.SHIELD_OF_THE_ANCESTRAL_OAK
+          ArmorID.SHIELD_OF_THE_ANCESTRAL_OAK
       ) {
         ShieldOfTheAncestralOakEffect.applyCounterAttack(
           this.#target,
           this.#stateMessages
         );
       } else if (
+        this.#target.getArmor() &&
         this.#target.getArmor().getID() === ArmorID.SHIELD_OF_THE_ANCESTRAL_OAK
       ) {
         ShieldOfTheAncestralOakEffect.applyCounterAttack(
+          this.#attacker,
+          this.#stateMessages
+        );
+      }
+
+      if (
+        this.#attacker.getArmor() &&
+        this.#attacker.getArmor().getID() === ArmorID.BRACERS_OF_THE_WAR_LION
+      ) {
+        damageToInflict = BracersOfTheWarLionSpecialEffect.activeBoost(
+          damageToInflict,
           this.#attacker,
           this.#stateMessages
         );
@@ -609,7 +622,7 @@ export default class AttackEvent extends Event {
     this.#createAndStoreArmorBrokeMsg(breastplatePrimordialColossusOwnerBox);
 
     // RESET THE ARMOR'S ATTRIBUTES, INSERT IT INTO THE EVENTS DECK & REMOVE IT FROM ITS OWNER
-    breastplatePrimordialColossusOwner.resetArmorAttributes();
+    /*    breastplatePrimordialColossusOwner.resetArmorAttributes(); */
     this.#eventDeck.insertCard(breastplatePrimordialColossusOwner.getArmor());
     breastplatePrimordialColossusOwner.removeArmor();
   }
