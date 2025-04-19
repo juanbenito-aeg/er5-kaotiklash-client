@@ -674,10 +674,17 @@ export default class Game {
           this.#deckContainer.getDecks()[DeckType.ACTIVE_EVENTS];
 
         if (Card.isCardWithinDeck(eventCard, activeEventsDeck)) {
-          eventCard.resetAttributes();
+          if (
+            !(
+              eventCard.getCategory() === CardCategory.MAIN_CHARACTER &&
+              eventCard.getID() === MainCharacterID.JOSEPH
+            )
+          ) {
+            eventCard.resetAttributes();
 
-          const eventsDeck = this.#deckContainer.getDecks()[DeckType.EVENTS];
-          eventsDeck.insertCard(eventCard);
+            const eventsDeck = this.#deckContainer.getDecks()[DeckType.EVENTS];
+            eventsDeck.insertCard(eventCard);
+          }
 
           activeEventsDeck.removeCard(eventCard);
         }
