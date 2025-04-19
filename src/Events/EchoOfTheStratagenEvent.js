@@ -1,11 +1,11 @@
 import Event from "./Event.js";
+import PrepareEvent from "./PrepareEvent.js";
+import StateMessage from "../Messages/StateMessage.js";
 import {
   EchoOfTheStratagenState,
   BoxState,
   CardState,
 } from "../Game/constants.js";
-import StateMessage from "../Messages/StateMessage.js";
-import PrepareEvent from "./PrepareEvent.js";
 
 export default class EchoOfTheStratagenEvent extends Event {
   #currentPlayerPrepEventDeck;

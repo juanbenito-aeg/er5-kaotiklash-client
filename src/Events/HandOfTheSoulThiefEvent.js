@@ -1,8 +1,8 @@
-import { CardState, HandOfTheSoulThiefState } from "../Game/constants.js";
 import Event from "./Event.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
-import { globals } from "../index.js";
+import globals from "../Game/globals.js";
+import { CardState, HandOfTheSoulThiefState } from "../Game/constants.js";
 
 export default class HandOfTheSoulThiefEvent extends Event {
   #currentPlayerCardsInHandDeck;

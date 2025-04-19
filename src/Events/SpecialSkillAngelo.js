@@ -1,4 +1,5 @@
-import { globals } from "../index.js";
+import globals from "../Game/globals.js";
+
 export default class SpecialSkillAngelo {
   #enemyBattlefieldGrid;
   #enemyEventsInPrepGrid;

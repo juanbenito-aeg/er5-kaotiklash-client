@@ -5,8 +5,8 @@ import Weapon from "./Weapon.js";
 import Armor from "./Armor.js";
 import Special from "./Special.js";
 import Rare from "./Rare.js";
+import globals from "../Game/globals.js";
 import { Language, CardCategory, MainCharacterID } from "../Game/constants.js";
-import { globals } from "../index.js";
 
 export default class CardFactory {
   #createMainCharacter(rawCard) {

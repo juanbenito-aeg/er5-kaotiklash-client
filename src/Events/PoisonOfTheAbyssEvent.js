@@ -1,12 +1,9 @@
 import Event from "./Event.js";
+import globals from "../Game/globals.js";
 import { PlayerID } from "../Game/constants.js";
-import { globals } from "../index.js";
 
 export default class PoisonOfTheAbyssEvent extends Event {
-  constructor(
-    executedBy,
-    eventCard
-  ) {
+  constructor(executedBy, eventCard) {
     super(executedBy, eventCard);
   }
 

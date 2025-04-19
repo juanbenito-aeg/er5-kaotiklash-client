@@ -1,7 +1,8 @@
 import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
-import AttackEvent from "../Events/AttackEvent.js";
 import StateMessage from "../Messages/StateMessage.js";
+import AttackEvent from "../Events/AttackEvent.js";
+import globals from "../Game/globals.js";
 import {
   PlayerID,
   CardState,
@@ -13,7 +14,6 @@ import {
   MinionTypeID,
   ArmorID,
 } from "../Game/constants.js";
-import { globals } from "../index.js";
 
 export default class AttackPhase extends Phase {
   #enemyMovementGrid;

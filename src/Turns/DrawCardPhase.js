@@ -1,6 +1,7 @@
 import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import JosephConstantSwapEvent from "../Events/JosephConstantSwapEvent.js";
+import globals from "../Game/globals.js";
 import {
   DeckType,
   PlayerID,
@@ -8,7 +9,6 @@ import {
   GridType,
   MainCharacterID,
 } from "../Game/constants.js";
-import { globals } from "../index.js";
 
 export default class DrawCardPhase extends Phase {
   #isFirstTurn;

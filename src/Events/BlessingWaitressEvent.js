@@ -1,8 +1,8 @@
 import Event from "./Event.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
+import globals from "../Game/globals.js";
 import { BlessingWaitressState, CardState } from "../Game/constants.js";
-import { globals } from "../index.js";
 
 export default class BlessingWaitressEvent extends Event {
   #state;
