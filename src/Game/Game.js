@@ -25,6 +25,7 @@ import {
   PhaseButtonData,
 } from "./constants.js";
 import { globals } from "../index.js";
+import MinionTooltip from "../ToolTips/MinionToolTip.js";
 
 export default class Game {
   #players;
@@ -38,6 +39,7 @@ export default class Game {
   #stateMessages;
   #attackMenuData;
   #activeEventsTableData;
+  #minionTooltip;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -115,6 +117,8 @@ export default class Game {
       btnsXCoordinate: canvasWidthDividedBy2 - 175,
     };
 
+    game.#minionTooltip = new MinionTooltip();
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
@@ -124,7 +128,8 @@ export default class Game {
       game.#events,
       game.#phaseMessage,
       game.#stateMessages,
-      game.#attackMenuData
+      game.#attackMenuData,
+      game.#minionTooltip
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -135,7 +140,8 @@ export default class Game {
       game.#events,
       game.#phaseMessage,
       game.#stateMessages,
-      game.#attackMenuData
+      game.#attackMenuData,
+      game.#minionTooltip
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -814,6 +820,10 @@ export default class Game {
           globals.activeVisibilitySkill.renderVisibilityEffect(
             this.#currentPlayer.getID()
           );
+        }
+
+        if (this.#minionTooltip.hasTooltip()) {
+          this.#minionTooltip.render();
         }
 
         if (this.#attackMenuData.isOpen) {
