@@ -10,7 +10,7 @@ export default class GridCreator {
     // EVENTS DECK GRID
     const eventsDeckBox = new Box(
       1890,
-      550,
+      615,
       200,
       200,
       false,
@@ -23,9 +23,9 @@ export default class GridCreator {
     // ACTIVE EVENTS GRID
     const activeEventsBox = new Box(
       1790,
-      210,
-      400,
-      300,
+      235,
+      565,
+      355,
       false,
       false,
       BoxState.INACTIVE,
@@ -75,7 +75,7 @@ export default class GridCreator {
     // MESSAGES GRID
     const messagesBox = new Box(
       1790,
-      10,
+      25,
       420,
       185,
       false,

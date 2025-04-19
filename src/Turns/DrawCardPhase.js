@@ -15,6 +15,7 @@ export default class DrawCardPhase extends Phase {
   #player;
   #events;
   #eventsDeck;
+  #activeEventsDeck;
   #josephDeck;
   #josephGrid;
   #currentPlayerCardsInHandDeck;
@@ -29,6 +30,7 @@ export default class DrawCardPhase extends Phase {
     player,
     events,
     eventsDeck,
+    activeEventsDeck,
     josephDeck,
     josephGrid,
     currentPlayerCardsInHandDeck,
@@ -42,6 +44,7 @@ export default class DrawCardPhase extends Phase {
     this.#player = player;
     this.#events = events;
     this.#eventsDeck = eventsDeck;
+    this.#activeEventsDeck = activeEventsDeck;
     this.#josephDeck = josephDeck;
     this.#josephGrid = josephGrid;
     this.#currentPlayerCardsInHandDeck = currentPlayerCardsInHandDeck;
@@ -61,6 +64,7 @@ export default class DrawCardPhase extends Phase {
   ) {
     // DECKS VARIABLES
     const eventsDeck = deckContainer.getDecks()[DeckType.EVENTS];
+    const activeEventsDeck = deckContainer.getDecks()[DeckType.ACTIVE_EVENTS];
     const josephDeck = deckContainer.getDecks()[DeckType.JOSEPH];
     let currentPlayerCardsInHandDeck =
       player.getID() === PlayerID.PLAYER_1
@@ -81,6 +85,7 @@ export default class DrawCardPhase extends Phase {
       player,
       events,
       eventsDeck,
+      activeEventsDeck,
       josephDeck,
       josephGrid,
       currentPlayerCardsInHandDeck,
@@ -131,6 +136,7 @@ export default class DrawCardPhase extends Phase {
       drawnCard.getCategory() === CardCategory.MAIN_CHARACTER &&
       drawnCard.getID() === MainCharacterID.JOSEPH
     ) {
+      this.#activeEventsDeck.insertCard(drawnCard);
       this.#josephDeck.insertCard(drawnCard);
 
       boxToPlaceDrawnCardInto = this.#josephGrid.getBoxes()[0];
