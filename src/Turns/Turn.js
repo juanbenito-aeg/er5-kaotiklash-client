@@ -8,6 +8,7 @@ import DiscardCardPhase from "./DiscardCardPhase.js";
 import EquipWeaponOrArmorEvent from "../Events/EquipWeaponOrArmorEvent.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
+import MinionTooltip from "../ToolTips/MinionToolTip.js";
 import {
   PlayerID,
   CardState,
@@ -38,6 +39,9 @@ export default class Turn {
   #stateMessages;
   #attackMenuData;
   #equipWeaponOrArmorState;
+  #minionTooltip;
+  #hoverTime;
+  #lastHoveredCardId;
 
   constructor(
     deckContainer,
@@ -47,7 +51,8 @@ export default class Turn {
     events,
     phaseMessage,
     stateMessages,
-    attackMenuData
+    attackMenuData,
+    minionTooltip
   ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
@@ -63,6 +68,9 @@ export default class Turn {
     this.#stateMessages = stateMessages;
     this.#attackMenuData = attackMenuData;
     this.#equipWeaponOrArmorState = EquipWeaponOrArmorState.INIT;
+    this.#minionTooltip = minionTooltip;
+    this.#hoverTime = 0;
+    this.#lastHoveredCardId = null;
   }
 
   fillPhases(currentPlayer) {
@@ -275,10 +283,52 @@ export default class Turn {
 
     decksToCheck.push(DeckType.JOSEPH);
 
+    this.#updateMinionTooltip(decksToCheck);
     this.#setOrUnsetExpandedState(decksToCheck);
 
     const isAnyCardExpanded = this.#checkIfAnyCardIsExpanded(decksToCheck);
     return isAnyCardExpanded;
+  }
+
+  #updateMinionTooltip(decksToCheck) {
+    const tooltipDelay = 1.0;
+    let currentHoveredMinion = null;
+
+    for (let i = 0; i < decksToCheck.length; i++) {
+      const deck = this.#deckContainer.getDecks()[decksToCheck[i]];
+      const hoveredCard = deck.lookForHoveredCard();
+
+      if (hoveredCard && hoveredCard.getCategory() === CardCategory.MINION) {
+        currentHoveredMinion = hoveredCard;
+        break;
+      }
+    }
+
+    if (currentHoveredMinion) {
+      const currentCardId = currentHoveredMinion.getID();
+      const isSameCard = this.#lastHoveredCardId === currentCardId;
+      this.#lastHoveredCardId = currentCardId;
+
+      this.#hoverTime = isSameCard
+        ? this.#hoverTime + globals.deltaTime
+        : globals.deltaTime;
+
+      const cardCenterX =
+        currentHoveredMinion.getXCoordinate() +
+        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width / 2;
+      const cardCenterY =
+        currentHoveredMinion.getYCoordinate() +
+        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2;
+
+      if (this.#hoverTime >= tooltipDelay) {
+        const content = this.#minionTooltip.getContent(currentHoveredMinion);
+        this.#minionTooltip.showTooltip(content, cardCenterX, cardCenterY);
+      }
+    } else {
+      this.#minionTooltip.clearTooltip();
+      this.#hoverTime = 0;
+      this.#lastHoveredCardId = null;
+    }
   }
 
   #setOrUnsetExpandedState(decksToCheck) {
