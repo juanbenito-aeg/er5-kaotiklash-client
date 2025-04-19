@@ -37,6 +37,7 @@ export default class Game {
   #phaseMessage;
   #stateMessages;
   #attackMenuData;
+  #activeEventsTableData;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -142,6 +143,8 @@ export default class Game {
     game.#createPhaseButtons();
 
     game.#setInitialCardsCoordinates();
+
+    game.#fillActiveEventsTableData();
 
     return game;
   }
@@ -498,6 +501,87 @@ export default class Game {
         currentMinionCard.setYCoordinate(
           currentBattlefieldBox.getYCoordinate()
         );
+      }
+    }
+  }
+
+  #fillActiveEventsTableData() {
+    const tableX = this.#board
+      .getGrids()
+      [GridType.ACTIVE_EVENTS_TABLE].getBoxes()[0]
+      .getXCoordinate();
+    const tableY = this.#board
+      .getGrids()
+      [GridType.ACTIVE_EVENTS_TABLE].getBoxes()[0]
+      .getYCoordinate();
+    const tableWidth = this.#board
+      .getGrids()
+      [GridType.ACTIVE_EVENTS_TABLE].getBoxes()[0]
+      .getWidth();
+    const tableHeight = this.#board
+      .getGrids()
+      [GridType.ACTIVE_EVENTS_TABLE].getBoxes()[0]
+      .getHeight();
+
+    this.#activeEventsTableData = {
+      columns: [
+        {
+          header: "Performed By",
+          width: tableWidth * 0.4,
+          lineXCoordinate: -1,
+        },
+        {
+          header: "Event",
+          width: tableWidth * 0.4,
+          lineXCoordinate: -1,
+        },
+        {
+          header: "Duration",
+          width: tableWidth * 0.2,
+          lineXCoordinate: -1,
+        },
+      ],
+      rows: [
+        {
+          header: "",
+          height: tableHeight * 0.15,
+          lineYCoordinate: -1,
+        },
+        {
+          header: this.#players[0].getName(),
+          height: tableHeight * 0.35,
+          lineYCoordinate: -1,
+        },
+        {
+          header: this.#players[1].getName(),
+          height: tableHeight * 0.35,
+          lineYCoordinate: -1,
+        },
+        {
+          header: "...",
+          height: tableHeight * 0.15,
+          lineYCoordinate: -1,
+        },
+      ],
+    };
+
+    for (let i = 0; i < this.#activeEventsTableData.rows.length; i++) {
+      const currentColumn = this.#activeEventsTableData.columns[i];
+      const currentRow = this.#activeEventsTableData.rows[i];
+
+      if (i === 0) {
+        currentColumn.lineXCoordinate = tableX + currentColumn.width;
+        currentRow.lineYCoordinate = tableY + currentRow.height;
+      } else {
+        if (i !== this.#activeEventsTableData.rows.length - 1) {
+          currentColumn.lineXCoordinate =
+            this.#activeEventsTableData.columns[i - 1].lineXCoordinate +
+            currentColumn.width;
+        }
+
+        currentRow.lineYCoordinate =
+          this.#activeEventsTableData.rows[i - 1].lineYCoordinate +
+          currentRow.height;
       }
     }
   }
@@ -992,69 +1076,126 @@ export default class Game {
     globals.ctx.shadowOffsetX = 0;
     globals.ctx.shadowOffsetY = 0;
 
+    this.#renderColumnAndRowLinesAndHeaders(
+      tableY,
+      tableX,
+      tableWidth,
+      tableHeight
+    );
+
+    this.#renderActiveEventsData();
+  }
+
+  #renderColumnAndRowLinesAndHeaders(tableY, tableX, tableWidth, tableHeight) {
     globals.ctx.strokeStyle = "black";
     globals.ctx.lineWidth = 2;
-
-    let columnWidth = tableWidth / 3;
-
-    for (let i = 1; i <= 2; i++) {
-      let columnX = tableX + columnWidth * i;
-      globals.ctx.beginPath();
-      globals.ctx.moveTo(columnX, tableY);
-      globals.ctx.lineTo(columnX, tableY + tableHeight);
-      globals.ctx.stroke();
-    }
-
-    let lineY = tableY + (tableHeight / 4) * 1;
-    globals.ctx.beginPath();
-    globals.ctx.moveTo(tableX, lineY);
-    globals.ctx.lineTo(tableX + tableWidth, lineY);
-    globals.ctx.stroke();
 
     globals.ctx.fillStyle = "white";
     globals.ctx.font = "18px MedievalSharp";
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
 
-    globals.ctx.fillText(
-      "Player",
-      tableX + columnWidth / 2,
-      tableY + tableHeight / 8
-    );
-    globals.ctx.fillText(
-      "Event",
-      tableX + columnWidth * 1.5,
-      tableY + tableHeight / 8
-    );
-    globals.ctx.fillText(
-      "Duration",
-      tableX + columnWidth * 2.5,
-      tableY + tableHeight / 8
-    );
+    const isJosephChaoticEventActive =
+      this.#deckContainer.getDecks()[DeckType.JOSEPH].getCards().length === 1;
+    this.#activeEventsTableData.rows[3].header = isJosephChaoticEventActive
+      ? "Joseph"
+      : "...";
 
-    let rowIndex = 1;
+    for (let i = 0; i < this.#activeEventsTableData.rows.length; i++) {
+      const currentColumn = this.#activeEventsTableData.columns[i];
 
-    const events = this.#deckContainer.getDecks()[DeckType.ACTIVE_EVENTS];
-    const eventCards = events.getCards();
-    for (let i = 0; i < eventCards.length; i++) {
-      const event = eventCards[i];
+      if (i !== this.#activeEventsTableData.rows.length - 1) {
+        // COLUMN LINE
+        globals.ctx.beginPath();
+        globals.ctx.moveTo(currentColumn.lineXCoordinate, tableY);
+        globals.ctx.lineTo(currentColumn.lineXCoordinate, tableY + tableHeight);
+        globals.ctx.stroke();
 
-      const playerName = this.#currentPlayer.getName();
-      const eventName = event.getName();
-      const duration = event.getCurrentDurationInRounds();
+        // COLUMN HEADER
+        globals.ctx.fillText(
+          currentColumn.header,
+          currentColumn.lineXCoordinate - currentColumn.width / 2,
+          tableY + this.#activeEventsTableData.rows[0].height / 2
+        );
+      }
 
-      const rowY = tableY + tableHeight / 4 + 30 * rowIndex;
-      globals.ctx.fillStyle = "black";
-      globals.ctx.font = "14px MedievalSharp";
-      globals.ctx.fillText(playerName, tableX + columnWidth / 2, rowY);
-      globals.ctx.fillText(eventName, tableX + columnWidth * 1.5, rowY);
+      const currentRow = this.#activeEventsTableData.rows[i];
+
+      // ROW LINE
+      globals.ctx.beginPath();
+      globals.ctx.moveTo(tableX, currentRow.lineYCoordinate);
+      globals.ctx.lineTo(tableX + tableWidth, currentRow.lineYCoordinate);
+      globals.ctx.stroke();
+
+      // ROW HEADER
       globals.ctx.fillText(
-        duration.toString(),
-        tableX + columnWidth * 2.5,
-        rowY
+        currentRow.header,
+        tableX + this.#activeEventsTableData.columns[0].width / 2,
+        currentRow.lineYCoordinate - currentRow.height / 2
       );
+    }
+  }
 
-      rowIndex++;
+  #renderActiveEventsData() {
+    globals.ctx.fillStyle = "black";
+    globals.ctx.font = "14px MedievalSharp";
+
+    const activeEventsDeck =
+      this.#deckContainer.getDecks()[DeckType.ACTIVE_EVENTS];
+
+    let player1EventsCounter = 0;
+    let player2EventsCounter = 0;
+
+    for (let i = 0; i < this.#events.length; i++) {
+      const currentEvent = this.#events[i];
+      const currentEventCard = currentEvent.getEventCard();
+
+      if (Card.isCardWithinDeck(currentEventCard, activeEventsDeck)) {
+        let eventName = currentEventCard.getName();
+        const currentDuration = currentEventCard.getCurrentDurationInRounds();
+
+        const currentEventExecutor = currentEvent.getExecutor();
+
+        let currentEntryY;
+
+        if (
+          currentEventCard.getCategory() === CardCategory.MAIN_CHARACTER &&
+          currentEventCard.getID() === MainCharacterID.JOSEPH
+        ) {
+          eventName = currentEventCard.getChaoticEventName();
+
+          currentEntryY =
+            this.#activeEventsTableData.rows[3].lineYCoordinate -
+            this.#activeEventsTableData.rows[3].height / 2;
+        } else if (currentEventExecutor === this.#players[0]) {
+          player1EventsCounter++;
+
+          currentEntryY =
+            this.#activeEventsTableData.rows[1].lineYCoordinate -
+            this.#activeEventsTableData.rows[1].height +
+            21 * player1EventsCounter;
+        } else {
+          player2EventsCounter++;
+
+          currentEntryY =
+            this.#activeEventsTableData.rows[2].lineYCoordinate -
+            this.#activeEventsTableData.rows[2].height +
+            21 * player2EventsCounter;
+        }
+
+        globals.ctx.fillText(
+          eventName,
+          this.#activeEventsTableData.columns[1].lineXCoordinate -
+            this.#activeEventsTableData.columns[1].width / 2,
+          currentEntryY
+        );
+        globals.ctx.fillText(
+          `${currentDuration} Round${currentDuration > 1 ? "s" : ""}`,
+          this.#activeEventsTableData.columns[2].lineXCoordinate -
+            this.#activeEventsTableData.columns[2].width / 2,
+          currentEntryY
+        );
+      }
     }
   }
 

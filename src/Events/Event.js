@@ -12,6 +12,10 @@ export default class Event {
 
   execute() {}
 
+  getExecutor() {
+    return this._executedBy;
+  }
+
   getEventCard() {
     return this._eventCard;
   }
