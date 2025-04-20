@@ -29,7 +29,10 @@ export default class SpecialSkillXG {
 
         let attack = Math.ceil((newStrength + newMadness) / 2);
 
-        let defense = Math.ceil(minion.getCurrentDefense() - newMadness / 2);
+        let defense = Math.max(
+          1,
+          Math.ceil(minion.getCurrentDefense() - newMadness / 2)
+        );
 
         minion.setCurrentAttack(attack);
         minion.setCurrentDefense(defense);

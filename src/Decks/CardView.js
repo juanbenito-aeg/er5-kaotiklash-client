@@ -342,4 +342,8 @@ export default class CardView {
   removeArmor() {
     this.#card.removeArmor();
   }
+
+  resetArmorAttributes() {
+    this.#card.resetArmorAttributes();
+  }
 }
