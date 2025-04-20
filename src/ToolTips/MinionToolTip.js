@@ -9,7 +9,7 @@ export default class MinionTooltip extends ToolTip {
   getContent(minion) {
     let content = [];
 
-    content.push(`HP: ${minion.getCurrentHP()}¡`);
+    content.push(`HP: ${minion.getCurrentHP()}`);
     content.push(`Attack: ${minion.getCurrentAttack()}`);
     content.push(`Defense: ${minion.getCurrentDefense()}`);
 

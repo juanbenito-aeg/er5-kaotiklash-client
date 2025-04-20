@@ -81,6 +81,8 @@ export default class ToolTip {
     const tooltipX = this.#currentTooltip.x - tooltipWidth / 2;
     const tooltipY = this.#currentTooltip.y - tooltipHeight - 20;
 
+    globals.ctx.save();
+
     //DRAW BACKGROUND
     globals.ctx.fillStyle = this.#style.bgColor;
     globals.ctx.fillRect(tooltipX, tooltipY, tooltipWidth, tooltipHeight);
@@ -97,5 +99,7 @@ export default class ToolTip {
 
       globals.ctx.fillText(this.#tooltipElements[i].text, textX, textY);
     }
+
+    globals.ctx.restore();
   }
 }
