@@ -3,8 +3,8 @@ import SpecialSkillXG from "./SpecialSkillXG.js";
 import LucretiaSpecialSkill from "./LucretiaSpecialSkill.js";
 import SpecialSkillDecrepitThrone from "./SpecialSkillDecrepitThrone.js";
 import SpecialSkillAngelo from "./SpecialSkillAngelo.js";
+import globals from "../Game/globals.js";
 import { MainCharacterID } from "../Game/constants.js";
-import { globals } from "../index.js";
 
 export default class SummonCharacterEvent extends Event {
   #mainCharacterID;

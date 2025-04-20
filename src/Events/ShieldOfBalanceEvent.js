@@ -1,5 +1,6 @@
-import { globals } from "../index.js";
 import Event from "./Event.js";
+import globals from "../Game/globals.js";
+
 export default class ShieldOfBalanceEvent extends Event {
   constructor(executeBy, eventCard) {
     super(executeBy, eventCard);

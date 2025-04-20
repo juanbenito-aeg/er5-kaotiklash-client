@@ -1,8 +1,8 @@
 import Event from "./Event.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
+import globals from "../Game/globals.js";
 import { CardState, StolenFateState } from "../Game/constants.js";
-import { globals } from "../index.js";
 
 export default class StolenFateEvent extends Event {
   #state;

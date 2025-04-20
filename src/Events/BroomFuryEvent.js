@@ -1,6 +1,6 @@
 import Event from "./Event.js";
 import StateMessage from "../Messages/StateMessage.js";
-import { globals } from "../index.js";
+import globals from "../Game/globals.js";
 
 export default class BroomFuryEvent extends Event {
   #isAttackBoostApplied;

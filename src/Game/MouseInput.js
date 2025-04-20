@@ -1,5 +1,5 @@
+import globals from "./globals.js";
 import { BoxState, CardCategory, CardState } from "./constants.js";
-import { globals } from "../index.js";
 
 export default class MouseInput {
   #mouseXCoordinate;

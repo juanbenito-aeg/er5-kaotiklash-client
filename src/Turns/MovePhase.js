@@ -1,5 +1,6 @@
 import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
+import globals from "../Game/globals.js";
 import {
   MovePhaseState,
   CardState,
@@ -8,7 +9,6 @@ import {
   DeckType,
   GridType,
 } from "../Game/constants.js";
-import { globals } from "../index.js";
 
 export default class MovePhase extends Phase {
   #decksRelevants;

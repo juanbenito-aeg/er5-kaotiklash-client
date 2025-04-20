@@ -11,6 +11,7 @@ import MarchOfTheLastSighEvent from "../Events/MarchOfTheLastSighEvent.js";
 import ShieldOfBalanceEvent from "../Events/ShieldOfBalanceEvent.js";
 import HandOfTheSoulThiefEvent from "../Events/HandOfTheSoulThiefEvent.js";
 import StolenFateEvent from "../Events/StolenFateEvent.js";
+import globals from "../Game/globals.js";
 import {
   CardCategory,
   CardState,
@@ -21,7 +22,6 @@ import {
   SpecialEventID,
   RareEventID,
 } from "../Game/constants.js";
-import { globals } from "../index.js";
 
 export default class PerformEventPhase extends Phase {
   #events;

@@ -1,5 +1,5 @@
 import Message from "./Message.js";
-import { globals } from "../index.js";
+import globals from "../Game/globals.js";
 
 export default class StateMessage extends Message {
   #content;

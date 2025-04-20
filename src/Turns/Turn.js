@@ -9,6 +9,7 @@ import EquipWeaponOrArmorEvent from "../Events/EquipWeaponOrArmorEvent.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
 import MinionTooltip from "../ToolTips/MinionToolTip.js";
+import globals from "../Game/globals.js";
 import {
   PlayerID,
   CardState,
@@ -22,7 +23,6 @@ import {
   BoxState,
   MinionTypeID,
 } from "../Game/constants.js";
-import { globals } from "../index.js";
 
 export default class Turn {
   #isCurrentPhaseCanceled;

@@ -1,10 +1,10 @@
 import Event from "./Event.js";
 import StateMessage from "../Messages/StateMessage.js";
-import { ArmorID, PlayerID, WeaponTypeID } from "../Game/constants.js";
-import { globals } from "../index.js";
 import CloakOfEternalShadowSpecialEffect from "./CloakOfEternalShadowSpecialEffect.js";
 import ShieldOfTheAncestralOakEffect from "./ShieldOfTheAncestralOakEffect.js";
 import BracersOfTheWarLionSpecialEffect from "./BracersOfTheWarLionSpecialEffect.js";
+import globals from "../Game/globals.js";
+import { ArmorID, PlayerID, WeaponTypeID } from "../Game/constants.js";
 
 export default class AttackEvent extends Event {
   #attacker;
