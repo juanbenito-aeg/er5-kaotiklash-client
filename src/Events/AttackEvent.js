@@ -1,6 +1,12 @@
 import Event from "./Event.js";
 import StateMessage from "../Messages/StateMessage.js";
-import { ArmorID, PlayerID, WeaponTypeID } from "../Game/constants.js";
+import {
+  ArmorID,
+  ArmorTypeID,
+  MinionTypeID,
+  PlayerID,
+  WeaponTypeID,
+} from "../Game/constants.js";
 import { globals } from "../index.js";
 import CloakOfEternalShadowSpecialEffect from "./CloakOfEternalShadowSpecialEffect.js";
 import ShieldOfTheAncestralOakEffect from "./ShieldOfTheAncestralOakEffect.js";
@@ -42,6 +48,23 @@ export default class AttackEvent extends Event {
   }
 
   execute() {
+    this.#shouldActivateArmorPower(this.#isArmorPowerChosen, this.#target);
+
+    if (this.#isArmorPowerChosen) {
+      const armor = this.#target.getArmor();
+      if (armor) {
+        switch (armor.getID()) {
+          case ArmorID.BREASTPLATE_PRIMORDIAL_COLOSSUS:
+            //INSERT THE METHOD
+            return;
+
+          case ArmorID.CLOAK_ETERNAL_SHADOW:
+            this.#handleCloakPower();
+            return;
+        }
+      }
+    }
+
     if (
       globals.shieldOfBalanceActive &&
       this.#player.getID() !== globals.shieldOfBalanceOwner
@@ -64,30 +87,6 @@ export default class AttackEvent extends Event {
       this.#stateMessages.push(nullifiedMessage);
 
       return;
-    }
-
-    if (this.#isArmorPowerChosen) {
-      const canDodge = CloakOfEternalShadowSpecialEffect.canDodge(
-        this.#target,
-        this.#isArmorPowerChosen,
-        this.#attacker.getWeaponTypeID()
-      );
-
-      if (canDodge) {
-        const dodgeMessage = new StateMessage(
-          "WIZARD DODGED THE ATTACK USING CLOAK OF ETERNAL SHADOW!",
-          "45px MedievalSharp",
-          "aqua",
-          3,
-          this.#target.getXCoordinate(),
-          this.#target.getYCoordinate() - 30
-        );
-        this.#stateMessages.push(dodgeMessage);
-        this.#isArmorPowerChosen = false;
-        this.#eventDeck.insertCard(this.#target.getArmor());
-        this.#target.removeArmor();
-        return;
-      }
     }
 
     const targetHasBreastplatePrimordialColossus =
@@ -683,5 +682,61 @@ export default class AttackEvent extends Event {
     this.#target.setCurrentHP(Math.max(0, newHP));
 
     this.damageMessage(overflow, targetBox, "lightblue");
+  }
+
+  #shouldActivateArmorPower(isArmorPowerChosen, target) {
+    if (isArmorPowerChosen) return true;
+    const armor = target.getArmor();
+    if (!armor) return false;
+
+    const armorId = armor.getID();
+    const minionClass = target.getMinionTypeID();
+
+    if (
+      armorId === ArmorID.CLOAK_ETERNAL_SHADOW ||
+      armorId === ArmorID.BREASTPLATE_PRIMORDIAL_COLOSSUS
+    ) {
+      return true;
+    }
+
+    if (
+      minionClass === MinionTypeID.WIZARD &&
+      armor.getArmorTypeID() === ArmorTypeID.LIGHT
+    ) {
+      return true;
+    }
+
+    if (
+      minionClass === MinionTypeID.WARRIOR &&
+      armor.getArmorTypeID() === ArmorTypeID.HEAVY
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  #handleCloakPower() {
+    const canDodge = CloakOfEternalShadowSpecialEffect.canDodge(
+      this.#target,
+      this.#isArmorPowerChosen,
+      this.#attacker.getWeaponTypeID()
+    );
+
+    if (canDodge) {
+      const dodgeMessage = new StateMessage(
+        "WIZARD DODGED THE ATTACK USING CLOAK OF ETERNAL SHADOW!",
+        "45px MedievalSharp",
+        "aqua",
+        3,
+        this.#target.getXCoordinate(),
+        this.#target.getYCoordinate() - 30
+      );
+      this.#stateMessages.push(dodgeMessage);
+      this.#isArmorPowerChosen = false;
+      this.#eventDeck.insertCard(this.#target.getArmor());
+      this.#target.removeArmor();
+      return;
+    }
   }
 }
