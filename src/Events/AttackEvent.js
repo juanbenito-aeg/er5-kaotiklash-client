@@ -48,21 +48,12 @@ export default class AttackEvent extends Event {
   }
 
   execute() {
-    this.#shouldActivateArmorPower(this.#isArmorPowerChosen, this.#target);
-
-    if (this.#isArmorPowerChosen) {
-      const armor = this.#target.getArmor();
-      if (armor) {
-        switch (armor.getID()) {
-          case ArmorID.BREASTPLATE_PRIMORDIAL_COLOSSUS:
-            //INSERT THE METHOD
-            return;
-
-          case ArmorID.CLOAK_ETERNAL_SHADOW:
-            this.#handleCloakPower();
-            return;
-        }
-      }
+    if (
+      this.#isArmorPowerChosen &&
+      this.#target.getArmorID() === ArmorID.CLOAK_ETERNAL_SHADOW
+    ) {
+      this.#handleCloakPower();
+      return;
     }
 
     if (
@@ -621,7 +612,7 @@ export default class AttackEvent extends Event {
     this.#createAndStoreArmorBrokeMsg(breastplatePrimordialColossusOwnerBox);
 
     // RESET THE ARMOR'S ATTRIBUTES, INSERT IT INTO THE EVENTS DECK & REMOVE IT FROM ITS OWNER
-    /*    breastplatePrimordialColossusOwner.resetArmorAttributes(); */
+    breastplatePrimordialColossusOwner.resetArmorAttributes();
     this.#eventDeck.insertCard(breastplatePrimordialColossusOwner.getArmor());
     breastplatePrimordialColossusOwner.removeArmor();
   }
@@ -682,38 +673,6 @@ export default class AttackEvent extends Event {
     this.#target.setCurrentHP(Math.max(0, newHP));
 
     this.damageMessage(overflow, targetBox, "lightblue");
-  }
-
-  #shouldActivateArmorPower(isArmorPowerChosen, target) {
-    if (isArmorPowerChosen) return true;
-    const armor = target.getArmor();
-    if (!armor) return false;
-
-    const armorId = armor.getID();
-    const minionClass = target.getMinionTypeID();
-
-    if (
-      armorId === ArmorID.CLOAK_ETERNAL_SHADOW ||
-      armorId === ArmorID.BREASTPLATE_PRIMORDIAL_COLOSSUS
-    ) {
-      return true;
-    }
-
-    if (
-      minionClass === MinionTypeID.WIZARD &&
-      armor.getArmorTypeID() === ArmorTypeID.LIGHT
-    ) {
-      return true;
-    }
-
-    if (
-      minionClass === MinionTypeID.WARRIOR &&
-      armor.getArmorTypeID() === ArmorTypeID.HEAVY
-    ) {
-      return true;
-    }
-
-    return false;
   }
 
   #handleCloakPower() {
