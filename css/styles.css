@@ -12,13 +12,29 @@
 
 body {
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .error-message {
   color: red;
+}
+
+#lang-btns {
+  position: absolute;
+}
+
+#eng-btn,
+#eus-btn {
+  width: 60px;
+  height: 34px;
+  background-size: cover;
+}
+
+#eng-btn {
+  background-image: url("../images/eng-flag.png");
+}
+
+#eus-btn {
+  background-image: url("../images/eus-flag.png");
 }
 
 #register-screen {
@@ -114,21 +130,6 @@ input:focus {
   width: 400px;
   color: white;
   text-align: left;
-}
-
-#eus-btn {
-  width: 75px;
-  height: 45px;
-  background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Flag_of_the_Basque_Country.svg/2560px-Flag_of_the_Basque_Country.svg.png);
-  background-size: 75px;
-}
-
-#eng-btn {
-  position: absolute;
-  width: 75px;
-  height: 45px;
-  background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/1280px-Flag_of_the_United_Kingdom_%283-5%29.svg.png);
-  background-size: 75px;
 }
 
 #login-btn,
