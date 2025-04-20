@@ -24,38 +24,38 @@
     <div id="login-screen">
       <!-- LOGIN FORM -->
       <form id="login-form">
-        <label for="login-email">Email:</label>
+        <label for="login-email" data-i18n="email">Email</label>
         <input type="email" id="login-email" name="email" required />
 
-        <label for="login-password">Password:</label>
+        <label for="login-password" data-i18n="password">Password</label>
         <input type="password" id="login-password" name="password" required />
 
         <p id="login-error-message" class="error-message"></p>
 
-        <button type="submit" id="login-btn">Log in</button>
-        <button type="reset" id="reset-btn">Reset</button>
+        <button type="submit" id="login-btn" data-i18n="log_in">Log in</button>
+        <button type="reset" id="reset-btn" data-i18n="reset">Reset</button>
 
-        <p id="login-para">
-          Don't have an account?
-          <a href="#" id="login-screen-register-btn">Register</a>
-        </p>
+        <p id="login-para" data-i18n="no_account">Don't have an account?</p>
+        <a href="#" id="login-screen-register-btn" data-i18n="register_para"
+          >Register</a
+        >
       </form>
     </div>
 
     <!-- REGISTRATION SCREEN -->
     <div id="register-screen">
       <div id="register-box">
-        <h2>REGISTER</h2>
+        <h2 data-i18n="register_heading">REGISTER</h2>
 
         <!-- REGISTRATION FORM -->
         <form id="register-form">
-          <label for="name">Name</label>
+          <label for="name" data-i18n="name">Name</label>
           <input type="text" id="name" maxlength="50" required />
 
-          <label for="register-email">Email</label>
+          <label for="register-email" data-i18n="email">Email</label>
           <input type="email" id="register-email" maxlength="254" required />
 
-          <label for="register-password">Password</label>
+          <label for="register-password" data-i18n="password">Password</label>
           <input
             type="password"
             id="register-password"
@@ -63,17 +63,23 @@
             required
           />
 
-          <label for="confirm-password">Confirm Password</label>
+          <label for="confirm-password" data-i18n="confirm_password"
+            >Confirm password</label
+          >
           <input type="password" id="confirm-password" minlength="6" required />
 
           <p id="register-error-message" class="error-message"></p>
 
-          <button type="submit" id="register-btn">Register</button>
+          <button type="submit" id="register-btn" data-i18n="register_para">
+            Register
+          </button>
 
-          <p id="register-para">
+          <p id="register-para" data-i18n="got_account">
             Already got an account?
-            <a href="#" id="register-screen-login-btn">Log in</a>
           </p>
+          <a href="#" id="register-screen-login-btn" data-i18n="log_in"
+            >Log in</a
+          >
         </form>
       </div>
     </div>
@@ -81,19 +87,36 @@
     <!-- PLAYER SESSION SCREEN -->
     <div id="player-session-screen">
       <div id="player-session-container">
-        <p id="player-data"></p>
+        <div id="player-data">
+          <p id="player-email"></p>
 
-        <button type="button" id="log-out-btn">Log out</button>
+          <p id="player-name"><span data-i18n="greeting">Hi</span></p>
+        </div>
+
+        <button type="button" id="log-out-btn" data-i18n="log_out">
+          Log out
+        </button>
 
         <div id="opponent-select-container">
-          <label for="opponent-select">Choose an opponent:</label>
+          <label for="opponent-select" data-i18n="choose_opponent"
+            >Choose an opponent</label
+          >
           <select name="opponents" id="opponent-select">
-            <option value="">Please choose an option</option>
+            <option value="" data-i18n="choose_option">
+              Please choose an option
+            </option>
             <hr />
           </select>
         </div>
 
-        <button type="button" id="start-game-btn" disabled>START GAME</button>
+        <button
+          type="button"
+          id="start-game-btn"
+          disabled
+          data-i18n="start_game"
+        >
+          START GAME
+        </button>
       </div>
     </div>
 

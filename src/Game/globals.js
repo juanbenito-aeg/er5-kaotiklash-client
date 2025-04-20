@@ -1,4 +1,4 @@
-import { GameState, Language } from "./constants";
+import { GameState, Language } from "./constants.js";
 
 export default {
   previousCycleMilliseconds: -1, // PREVIOUS CYCLE TIME (MILLISECONDS)

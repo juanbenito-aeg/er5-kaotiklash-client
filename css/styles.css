@@ -12,6 +12,9 @@
 
 body {
   min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .error-message {
@@ -20,6 +23,8 @@ body {
 
 #lang-btns {
   position: absolute;
+  top: 0;
+  left: 0;
 }
 
 #eng-btn,
