@@ -356,4 +356,8 @@ export default class CardMovement {
   removeArmor() {
     this.#card.removeArmor();
   }
+
+  resetArmorAttributes() {
+    this.#card.resetArmorAttributes();
+  }
 }
