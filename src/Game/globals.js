@@ -33,7 +33,6 @@ export default {
   gameWinner: null,
   isScreenInitialized: {
     register: false,
-    playerSession: false,
   },
   activeVisibilitySkill: null,
   decrepitThroneSkillData: {

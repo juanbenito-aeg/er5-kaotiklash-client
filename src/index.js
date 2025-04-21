@@ -5,6 +5,9 @@ import { GameState, FPS, Language } from "./Game/constants.js";
 window.onload = initEssentials;
 
 async function initEssentials() {
+  initInnDoor();
+  initLanguageBtns();
+
   // SHOW THE WEBSITE IN THE USER'S PREFERRED LANGUAGE (OR IN ENGLISH BY DEFAULT)
   const preferredLanguage = localStorage.getItem("language") || "eng";
   const languageData = await loadLanguageData(preferredLanguage);
@@ -13,24 +16,18 @@ async function initEssentials() {
   globals.language =
     preferredLanguage === "eng" ? Language.ENGLISH : Language.BASQUE;
 
-  initLanguageBtns();
-  initLogInScreen();
-}
+  const isPlayerAlreadyLoggedIn = localStorage.getItem("email");
+  if (isPlayerAlreadyLoggedIn) {
+    hideMainScreen();
 
-async function loadLanguageData(language) {
-  const response = await fetch(`./src/${language}Content.json`);
-  const languageData = await response.json();
-  return languageData;
-}
-
-function updateContent(languageData) {
-  const contentToUpdate = document.querySelectorAll("[data-i18n]");
-
-  for (let i = 0; i < contentToUpdate.length; i++) {
-    const currentElement = contentToUpdate[i];
-    const keyToLookFor = currentElement.getAttribute("data-i18n");
-    currentElement.innerHTML = languageData[keyToLookFor];
+    // REDIRECT TO THE PLAYER SESSION SCREEN
+    initPlayerSessionScreen();
   }
+}
+
+function initInnDoor() {
+  const innDoor = document.getElementById("inn-door");
+  innDoor.addEventListener("click", initLoginScreen);
 }
 
 function initLanguageBtns() {
@@ -59,6 +56,22 @@ function setLanguagePreference(language) {
   localStorage.setItem("language", language);
 }
 
+async function loadLanguageData(language) {
+  const response = await fetch(`./src/${language}Content.json`);
+  const languageData = await response.json();
+  return languageData;
+}
+
+function updateContent(languageData) {
+  const contentToUpdate = document.querySelectorAll("[data-i18n]");
+
+  for (let i = 0; i < contentToUpdate.length; i++) {
+    const currentElement = contentToUpdate[i];
+    const keyToLookFor = currentElement.getAttribute("data-i18n");
+    currentElement.innerHTML = languageData[keyToLookFor];
+  }
+}
+
 function clearErrorMessages() {
   const errorMessages = document.querySelectorAll(".error-message");
 
@@ -67,12 +80,28 @@ function clearErrorMessages() {
   }
 }
 
-// HIDE/SHOW SCREEN FUNCTIONS
+// HIDE/SHOW "X" FUNCTIONS
 
 function hideRegisterAndShowLoginScreen() {
   hideRegisterScreen();
 
   showLoginScreen();
+}
+
+// MAIN SCREEN
+function hideMainScreen() {
+  const mainScreen = document.getElementById("main-screen");
+  mainScreen.style.display = "none";
+}
+
+// LANGUAGE BUTTONS
+function showLanguageBtns() {
+  const languageBtnsContainer = document.getElementById("lang-btns");
+  languageBtnsContainer.style.display = "block";
+}
+function hideLanguageBtns() {
+  const languageBtnsContainer = document.getElementById("lang-btns");
+  languageBtnsContainer.style.display = "none";
 }
 
 // LOGIN SCREEN
@@ -126,7 +155,12 @@ function hidePlayerSessionScreen() {
 
 // INITIALIZE SCREEN FUNCTIONS
 
-function initLogInScreen() {
+function initLoginScreen() {
+  hideMainScreen();
+
+  showLoginScreen();
+  showLanguageBtns();
+
   const loginForm = document.getElementById("login-form");
   loginForm.addEventListener("submit", checkFormDataAndLogIn);
 
@@ -134,14 +168,6 @@ function initLogInScreen() {
     "login-screen-register-btn"
   );
   loginScreenRegisterBtn.addEventListener("click", showOrInitRegisterScreen);
-
-  const isPlayerAlreadyLoggedIn = localStorage.getItem("email");
-  if (isPlayerAlreadyLoggedIn) {
-    hideLoginScreen();
-
-    // REDIRECT TO THE PLAYER SESSION SCREEN
-    initPlayerSessionScreen();
-  }
 }
 
 function checkFormDataAndLogIn(e) {
@@ -186,11 +212,7 @@ async function logInPlayer(email, password) {
 
     hideLoginScreen();
 
-    if (globals.isScreenInitialized.playerSession) {
-      showPlayerSessionScreen();
-    } else {
-      initPlayerSessionScreen();
-    }
+    initPlayerSessionScreen();
   } else {
     const errorMessage = document.getElementById("login-error-message");
     errorMessage.innerHTML = data.message;
@@ -263,7 +285,7 @@ async function registerPlayer(username, email, password) {
   if (response.ok) {
     alert(data.message);
 
-    // AUTOMATICALLY REDIRECT TO LOGIN SCREEN AFTER REGISTERING
+    // AUTOMATICALLY REDIRECT TO LOGIN SCREEN (!!!!!!!!!!!!!!!!!!!!!) AFTER REGISTERING
     window.location.reload();
   } else {
     errorMessage.innerHTML = data.message;
@@ -271,9 +293,8 @@ async function registerPlayer(username, email, password) {
 }
 
 function initPlayerSessionScreen() {
-  globals.isScreenInitialized.playerSession = true;
-
   showPlayerSessionScreen();
+  showLanguageBtns();
 
   // GET THE LOGGED IN PLAYER'S DATA & INSERT IT INTO A PARAGRAPH ELEMENT
 
@@ -362,11 +383,6 @@ async function initGameScreen() {
 
   // LOAD DB CARDS DATA AND ASSETS
   loadDBCardsDataAndAssets();
-}
-
-function hideLanguageBtns() {
-  const languageBtnsContainer = document.getElementById("lang-btns");
-  languageBtnsContainer.style.display = "none";
 }
 
 function initVars() {
@@ -650,5 +666,3 @@ function executeGameLoop(timeStamp) {
     globals.deltaTime = 0;
   }
 }
-
-export { globals };

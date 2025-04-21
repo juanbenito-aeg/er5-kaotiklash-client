@@ -1,6 +1,5 @@
 import Event from "./Event.js";
 import StateMessage from "../Messages/StateMessage.js";
-import { globals } from "../index.js";
 import CloakOfEternalShadowSpecialEffect from "./CloakOfEternalShadowSpecialEffect.js";
 import ShieldOfTheAncestralOakEffect from "./ShieldOfTheAncestralOakEffect.js";
 import BracersOfTheWarLionSpecialEffect from "./BracersOfTheWarLionSpecialEffect.js";
