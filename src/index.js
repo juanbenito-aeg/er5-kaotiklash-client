@@ -650,5 +650,3 @@ function executeGameLoop(timeStamp) {
     globals.deltaTime = 0;
   }
 }
-
-export { globals };
