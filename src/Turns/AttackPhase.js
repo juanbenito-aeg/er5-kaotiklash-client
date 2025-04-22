@@ -432,11 +432,16 @@ export default class AttackPhase extends Phase {
       target.getMinionTypeID() === MinionTypeID.WIZARD &&
       target.getArmorID() === ArmorID.CLOAK_ETERNAL_SHADOW;
 
-    if (
-      isWarriorAndHasBreastplatePrimordialColossus ||
-      isWizardAndHasCloakEternalShadow
-    ) {
+    if (isWarriorAndHasBreastplatePrimordialColossus) {
       canArmorPowerBeUsed = true;
+    } else if (isWizardAndHasCloakEternalShadow) {
+      const attacker =
+        this.#currentPlayerMovementGridDeck.lookForSelectedCard();
+      const attackerHasMeleeWeapon =
+        attacker.getWeapon() &&
+        attacker.getMinionWeaponTypeID() === WeaponTypeID.MELEE;
+
+      canArmorPowerBeUsed = attackerHasMeleeWeapon;
     }
 
     return canArmorPowerBeUsed;
