@@ -11,6 +11,7 @@ import MarchOfTheLastSighEvent from "../Events/MarchOfTheLastSighEvent.js";
 import ShieldOfBalanceEvent from "../Events/ShieldOfBalanceEvent.js";
 import HandOfTheSoulThiefEvent from "../Events/HandOfTheSoulThiefEvent.js";
 import StolenFateEvent from "../Events/StolenFateEvent.js";
+import StateMessage from "../Messages/StateMessage.js";
 import globals from "../Game/globals.js";
 import {
   CardCategory,
@@ -22,6 +23,7 @@ import {
   SpecialEventID,
   RareEventID,
 } from "../Game/constants.js";
+import RayOfCelestialRuinEvent from "../Events/RayOfCelestialRuinEvent.js";
 
 export default class PerformEventPhase extends Phase {
   #events;
@@ -291,6 +293,27 @@ export default class PerformEventPhase extends Phase {
       hoveredCard.getCategory() !== CardCategory.ARMOR &&
       hoveredCard.getCurrentPrepTimeInRounds() === 0
     ) {
+      if (hoveredCard.getID() === SpecialEventID.RAY_OF_CELESTIAL_RUIN) {
+        if (!this.#enemyHasArmor()) {
+          this.#stateMessages.push(
+            new StateMessage(
+              "REQUIRES THE ENEMY TO HAVE ARMOR",
+              "30px MedievalSharp",
+              "red",
+              0.1,
+              hoveredCard.getXCoordinate() +
+                globals.imagesDestinationSizes.minionsAndEventsSmallVersion
+                  .width /
+                  2,
+              hoveredCard.getYCoordinate() +
+                globals.imagesDestinationSizes.minionsAndEventsSmallVersion
+                  .height /
+                  2
+            )
+          );
+          return;
+        }
+      }
       // MAKE IT IMPOSSIBLE FOR THE PLAYER TO USE THE "Summon Character" EVENT IF ONE IS ALREADY ACTIVE
       if (
         hoveredCard.getCategory() === CardCategory.SPECIAL &&
@@ -414,6 +437,15 @@ export default class PerformEventPhase extends Phase {
             selectedCard
           );
           break;
+
+        case SpecialEventID.RAY_OF_CELESTIAL_RUIN:
+          selectedEventInstance = new RayOfCelestialRuinEvent(
+            this.#player,
+            selectedCard,
+            this.#enemyMinionsInPlayDeck,
+            this.#stateMessages
+          );
+          break;
       }
     } else {
       switch (selectedCard.getID()) {
@@ -512,6 +544,16 @@ export default class PerformEventPhase extends Phase {
     }
 
     this._state = PerformEventState.INIT;
+  }
+
+  #enemyHasArmor() {
+    const enemyMinions = this.#enemyMinionsInPlayDeck.getCards();
+    for (let i = 0; i < enemyMinions.length; i++) {
+      if (enemyMinions[i].getArmor()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   reset() {
