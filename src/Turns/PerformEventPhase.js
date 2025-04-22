@@ -465,7 +465,8 @@ export default class PerformEventPhase extends Phase {
               this.#enemyEventsInPrepGrid,
               this.#stateMessages,
               this.#eventWithoutDurationData,
-              this.#events
+              this.#events,
+              this._phaseMessage
             );
 
           break;

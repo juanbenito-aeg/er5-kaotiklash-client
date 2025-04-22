@@ -1,4 +1,5 @@
 import Event from "./Event.js";
+import globals from "../Game/globals.js";
 import PrepareEvent from "./PrepareEvent.js";
 import StateMessage from "../Messages/StateMessage.js";
 import {
@@ -6,6 +7,7 @@ import {
   BoxState,
   CardState,
 } from "../Game/constants.js";
+import PhaseMessage from "../Messages/PhaseMessage.js";
 
 export default class EchoOfTheStratagenEvent extends Event {
   #currentPlayerPrepEventDeck;
@@ -14,6 +16,7 @@ export default class EchoOfTheStratagenEvent extends Event {
   #enemyPrepEventGrid;
   #state;
   #stateMessages;
+  #phaseMessage;
   #eventWithoutDurationData;
   #events;
 
@@ -26,7 +29,8 @@ export default class EchoOfTheStratagenEvent extends Event {
     enemyPrepEventGrid,
     stateMessages,
     eventWithoutDurationData,
-    events
+    events,
+    phaseMessage
   ) {
     super(executeBy, eventCard);
 
@@ -38,6 +42,7 @@ export default class EchoOfTheStratagenEvent extends Event {
     this.#stateMessages = stateMessages;
     this.#eventWithoutDurationData = eventWithoutDurationData;
     this.#events = events;
+    this.#phaseMessage = phaseMessage;
   }
 
   execute() {
@@ -61,6 +66,10 @@ export default class EchoOfTheStratagenEvent extends Event {
   }
 
   #selectEnemyPrepEvent() {
+    this.#phaseMessage.setCurrentContent(
+      PhaseMessage.content.echoOfTheStratagen.selectEnemyCard[globals.language]
+    );
+
     const hoveredCard = this.#enemyPrepEventDeck.lookForHoveredCard();
 
     if (hoveredCard) {

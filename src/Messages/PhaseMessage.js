@@ -136,6 +136,15 @@ export default class PhaseMessage extends Message {
         "",
       ],
     },
+    echoOfTheStratagen: {
+      selectEnemyCard: [
+        //ENG
+        "Select a enemy event to steal.",
+
+        // EUS
+        "",
+      ],
+    },
 
     handOfTheSoulThief: {
       selectEnemyCard: [
