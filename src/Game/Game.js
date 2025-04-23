@@ -25,6 +25,7 @@ import {
   MainCharacterID,
   GridType,
   PhaseButtonData,
+  Language,
 } from "./constants.js";
 
 export default class Game {
@@ -2032,11 +2033,17 @@ export default class Game {
     globals.ctx.font = "18px MedievalSharp";
 
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 700);
+
+    const chaoticEventString =
+      globals.language === Language.ENGLISH
+        ? "Chaotic Event: "
+        : "Gertaera Kaotikoa: ";
     globals.ctx.fillText(
-      `Chaotic Event: ${card.getChaoticEventName()}`,
+      chaoticEventString + card.getChaoticEventName(),
       canvasWidthDividedBy2,
       760
     );
+
     globals.ctx.fillText(
       card.getChaoticEventDescription(),
       canvasWidthDividedBy2,
@@ -2060,7 +2067,13 @@ export default class Game {
     globals.ctx.font = "18px MedievalSharp";
 
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 700);
-    globals.ctx.fillText("Special Skill:", canvasWidthDividedBy2, 760);
+
+    const specialSkillString =
+      globals.language === Language.ENGLISH
+        ? "Special Skill:"
+        : "Trebetasun Berezia:";
+    globals.ctx.fillText(specialSkillString, canvasWidthDividedBy2, 760);
+
     globals.ctx.fillText(card.getSpecialSkill(), canvasWidthDividedBy2, 780);
   }
 
@@ -2248,16 +2261,18 @@ export default class Game {
       let specialEffectUsableBy;
 
       if (card.getArmorTypeID() === ArmorTypeID.HEAVY) {
-        specialEffectUsableBy = "Warriors";
+        specialEffectUsableBy =
+          globals.language === Language.ENGLISH ? "Warriors" : "Gudariek";
       } else {
-        specialEffectUsableBy = "Wizards";
+        specialEffectUsableBy =
+          globals.language === Language.ENGLISH ? "Wizards" : "Magoek";
       }
 
-      globals.ctx.fillText(
-        `Special Effect Usable by ${specialEffectUsableBy}:`,
-        canvasWidthDividedBy2,
-        715
-      );
+      const specialEffectString =
+        globals.language === Language.ENGLISH
+          ? `Special Effect Usable by ${specialEffectUsableBy}:`
+          : `${specialEffectUsableBy} Erabil Dezaketen Efektu Berezia:`;
+      globals.ctx.fillText(specialEffectString, canvasWidthDividedBy2, 715);
 
       globals.ctx.fillText(card.getSpecialEffect(), canvasWidthDividedBy2, 740);
     } else {
@@ -2326,7 +2341,11 @@ export default class Game {
     globals.ctx.fillStyle = "black";
 
     globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 12, 340);
-    globals.ctx.fillText("Effect:", canvasWidthDividedBy2, 730);
+
+    const effectString =
+      globals.language === Language.ENGLISH ? "Effect:" : "Efektua:";
+    globals.ctx.fillText(effectString, canvasWidthDividedBy2, 730);
+
     globals.ctx.fillText(card.getEffect(), canvasWidthDividedBy2, 750);
     globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1110, 785);
     globals.ctx.fillText(card.getInitialDurationInRounds(), 1180, 785);
@@ -2385,7 +2404,11 @@ export default class Game {
     globals.ctx.fillStyle = "black";
 
     globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 12, 340);
-    globals.ctx.fillText("Effect:", canvasWidthDividedBy2, 730);
+
+    const effectString =
+      globals.language === Language.ENGLISH ? "Effect:" : "Efektua:";
+    globals.ctx.fillText(effectString, canvasWidthDividedBy2, 730);
+
     globals.ctx.fillText(card.getEffect(), canvasWidthDividedBy2, 750);
     globals.ctx.fillText(0, 1110, 785);
     globals.ctx.fillText(card.getInitialDurationInRounds(), 1180, 785);

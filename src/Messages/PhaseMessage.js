@@ -1,4 +1,3 @@
-import { HandOfTheSoulThiefState } from "../Game/constants.js";
 import Message from "./Message.js";
 
 export default class PhaseMessage extends Message {
@@ -8,7 +7,7 @@ export default class PhaseMessage extends Message {
       "Select a phase.",
 
       // EUS
-      "",
+      "Fase bat hautatu.",
     ],
 
     drawCard: {
@@ -17,14 +16,14 @@ export default class PhaseMessage extends Message {
         "Drawing cards from the events deck...",
 
         // EUS
-        "",
+        "Kartak hartzen gertaeren karta-sortatik...",
       ],
       subsequentDraw: [
         // ENG
         "Drawing a card from the events deck...",
 
         // EUS
-        "",
+        "Karta bat hartzen gertaeren karta-sortatik...",
       ],
     },
 
@@ -34,21 +33,21 @@ export default class PhaseMessage extends Message {
         "Select a card from your hand.",
 
         // EUS
-        "",
+        "Karta bat aukeratu zure eskutik.",
       ],
       selectTargetGrid: [
         // ENG
         "Choose a destination.",
 
         // EUS
-        "",
+        "Helmuga bat aukeratu.",
       ],
       moveCard: [
         // ENG
         "Moving card...",
 
         // EUS
-        "",
+        "Karta mugitzen...",
       ],
     },
 
@@ -58,21 +57,21 @@ export default class PhaseMessage extends Message {
         "Select a minion to move.",
 
         // EUS
-        "",
+        "Mugitu beharreko mendeko bat aukeratu.",
       ],
       selectTarget: [
         // ENG
         "Choose a destination.",
 
         // EUS
-        "",
+        "Helmuga bat aukeratu.",
       ],
       moveCard: [
         // ENG
         "Moving minion...",
 
         // EUS
-        "",
+        "Mendekoa mugitzen...",
       ],
     },
 
@@ -82,14 +81,14 @@ export default class PhaseMessage extends Message {
         "Select the attacking minion.",
 
         // EUS
-        "",
+        "Erasotzailea hautatu.",
       ],
       selectTarget: [
         // ENG
         "Select the target.",
 
         // EUS
-        "",
+        "Itua aukeratu.",
       ],
     },
 
@@ -99,14 +98,14 @@ export default class PhaseMessage extends Message {
         "Select a card to discard to leave a box free.",
 
         // EUS
-        "",
+        "Karta bat hautatu, baztertzeko eta lauki bat libre uzteko.",
       ],
       optionalDiscard: [
         // ENG
         "Optionally select a card to discard.",
 
         // EUS
-        "",
+        "Nahi izanez gero, karta bat aukeratu baztertzeko.",
       ],
     },
 
@@ -116,14 +115,14 @@ export default class PhaseMessage extends Message {
         "Choose a minion to equip.",
 
         // EUS
-        "",
+        "Hornitu beharreko mendeko bat hautatu.",
       ],
       equip: [
         // ENG
         "Equipping minion...",
 
         // EUS
-        "",
+        "Mendekoa hornitzen...",
       ],
     },
 
@@ -133,33 +132,33 @@ export default class PhaseMessage extends Message {
         "Select a minion to heal.",
 
         // EUS
-        "",
+        "Sendatu beharreko mendeko bat hautatu.",
       ],
     },
     echoOfTheStratagen: {
       selectEnemyCard: [
         //ENG
-        "Select a enemy event to steal.",
+        "Select an enemy event to steal.",
 
         // EUS
-        "",
+        "Lapurtu beharreko etsaiaren gertaera-karta bat hautatu.",
       ],
     },
 
     handOfTheSoulThief: {
       selectEnemyCard: [
         // ENG
-        "Select a enemy card to steal.",
+        "Select an enemy card to steal.",
 
         // EUS
-        "",
+        "Lapurtu beharreko etsaiaren karta bat hautatu.",
       ],
       selectCardInHand: [
         // ENG
         "Select a card to exchange.",
 
         // EUS
-        "",
+        "Trukatu beharreko karta bat aukeratu.",
       ],
     },
 
@@ -169,7 +168,7 @@ export default class PhaseMessage extends Message {
         "Discard cards in hand to leave 2 boxes free.",
 
         // EUS
-        "",
+        "Baztertu behar adina karta zure eskutik, 2 lauki libre uzteko.",
       ],
     },
   };
