@@ -1,0 +1,249 @@
+{
+  "main_characters": [
+    {
+      "card_id": 0,
+      "name": "Lucretia",
+      "quantity": 1
+    },
+    {
+      "card_id": 1,
+      "name": "Angelo Di Mortis",
+      "quantity": 1
+    },
+    {
+      "card_id": 2,
+      "name": "The Erudite XG",
+      "quantity": 1
+    },
+    {
+      "card_id": 3,
+      "name": "The Decrepit Throne",
+      "quantity": 1
+    },
+    {
+      "card_id": 4,
+      "name": "Joseph",
+      "quantity": 1
+    }
+  ],
+  "minions": [
+    {
+      "card_id": 0,
+      "name": "Deer",
+      "quantity": 3
+    },
+    {
+      "card_id": 1,
+      "name": "Dredgar Ironfist",
+      "quantity": 2
+    },
+    {
+      "card_id": 2,
+      "name": "Thalrik the Unbroken",
+      "quantity": 2
+    },
+    {
+      "card_id": 3,
+      "name": "Vorrak Bloodfang",
+      "quantity": 2
+    },
+    {
+      "card_id": 4,
+      "name": "Draska the Crimson",
+      "quantity": 2
+    },
+    {
+      "card_id": 5,
+      "name": "Varrek",
+      "quantity": 2
+    },
+    {
+      "card_id": 6,
+      "name": "Vaelora Moonshade",
+      "quantity": 2
+    },
+    {
+      "card_id": 7,
+      "name": "Morgathis the Doomseer",
+      "quantity": 2
+    },
+    {
+      "card_id": 8,
+      "name": "Eryndra the Frostborn",
+      "quantity": 2
+    },
+    {
+      "card_id": 9,
+      "name": "Kaedor the Emberborn",
+      "quantity": 2
+    },
+    {
+      "card_id": 10,
+      "name": "Nareth the Hollow",
+      "quantity": 2
+    }
+  ],
+  "weapons": [
+    {
+      "card_id": 0,
+      "name": "Sword of Supreme Judgment",
+      "quantity": 3
+    },
+    {
+      "card_id": 1,
+      "name": "Claw of the Celestial Beast",
+      "quantity": 3
+    },
+    {
+      "card_id": 2,
+      "name": "Crossbow of Silent Death",
+      "quantity": 3
+    },
+    {
+      "card_id": 3,
+      "name": "The Cursed Spoon",
+      "quantity": 3
+    },
+    {
+      "card_id": 4,
+      "name": "Jug of Eternal Wrath",
+      "quantity": 3
+    },
+    {
+      "card_id": 5,
+      "name": "Fork of Despair",
+      "quantity": 3
+    },
+    {
+      "card_id": 6,
+      "name": "Bottle of the Last Breath",
+      "quantity": 3
+    },
+    {
+      "card_id": 7,
+      "name": "Knife of the Forgotten Bartender",
+      "quantity": 3
+    }
+  ],
+  "armor": [
+    {
+      "card_id": 0,
+      "name": "Breastplate of the Primordial Colossus",
+      "quantity": 3
+    },
+    {
+      "card_id": 1,
+      "name": "Cloak of Eternal Shadow",
+      "quantity": 3
+    },
+    {
+      "card_id": 2,
+      "name": "Armor of Titanic Fury",
+      "quantity": 3
+    },
+    {
+      "card_id": 3,
+      "name": "Bracers of the War Lion",
+      "quantity": 3
+    },
+    {
+      "card_id": 4,
+      "name": "Cloak of the Resurgent Phoenix",
+      "quantity": 3
+    },
+    {
+      "card_id": 5,
+      "name": "Shield of the Ancestral Oak",
+      "quantity": 4
+    },
+    {
+      "card_id": 6,
+      "name": "Vest of the Spectral Bartender",
+      "quantity": 3
+    },
+    {
+      "card_id": 7,
+      "name": "Helmet of the Last Round",
+      "quantity": 3
+    }
+  ],
+  "special_events": [
+    {
+      "card_id": 0,
+      "name": "Hand of God",
+      "quantity": 2
+    },
+    {
+      "card_id": 1,
+      "name": "Judgment of the Ancients",
+      "quantity": 2
+    },
+    {
+      "card_id": 2,
+      "name": "Ray of Celestial Ruin",
+      "quantity": 2
+    },
+    {
+      "card_id": 3,
+      "name": "Poison of the Abyss",
+      "quantity": 2
+    },
+    {
+      "card_id": 4,
+      "name": "Curse of the Bound Titan",
+      "quantity": 3
+    },
+    {
+      "card_id": 5,
+      "name": "The Bartender's Power",
+      "quantity": 3
+    },
+    {
+      "card_id": 6,
+      "name": "The Broom's Fury",
+      "quantity": 3
+    },
+    {
+      "card_id": 7,
+      "name": "Blessing of the Waitress",
+      "quantity": 3
+    },
+    {
+      "card_id": 8,
+      "name": "Potion of the Eternal Night",
+      "quantity": 0
+    }
+  ],
+  "rare_events": [
+    {
+      "card_id": 0,
+      "name": "Stolen Fate",
+      "quantity": 1
+    },
+    {
+      "card_id": 1,
+      "name": "Hand of the Soul Thief",
+      "quantity": 1
+    },
+    {
+      "card_id": 2,
+      "name": "Echo of the Stratagem",
+      "quantity": 1
+    },
+    {
+      "card_id": 3,
+      "name": "Shield of Balance",
+      "quantity": 1
+    },
+    {
+      "card_id": 4,
+      "name": "March of the Last Sigh",
+      "quantity": 1
+    },
+    {
+      "card_id": 5,
+      "name": "The Cup of the Last Breath",
+      "quantity": 1
+    }
+  ]
+}
