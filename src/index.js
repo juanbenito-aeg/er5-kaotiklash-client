@@ -285,7 +285,7 @@ async function registerPlayer(username, email, password) {
   if (response.ok) {
     alert(data.message);
 
-    // AUTOMATICALLY REDIRECT TO LOGIN SCREEN (!!!!!!!!!!!!!!!!!!!!!) AFTER REGISTERING
+    // AUTOMATICALLY REDIRECT TO THE MAIN SCREEN AFTER REGISTERING
     window.location.reload();
   } else {
     errorMessage.innerHTML = data.message;
