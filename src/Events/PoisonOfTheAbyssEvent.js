@@ -15,9 +15,11 @@ export default class PoisonOfTheAbyssEvent extends Event {
 
     globals.poisonOfTheAbyssEventData.isActive = true;
     if (this._executedBy.getID() === PlayerID.PLAYER_1) {
-      globals.poisonOfTheAbyssEventData.isPlayer1Affected = true;
-    } else {
+      console.log("Player 2 is affected by Poison of the Abyss");
       globals.poisonOfTheAbyssEventData.isPlayer2Affected = true;
+    } else {
+      console.log("Player 1 is affected by Poison of the Abyss");
+      globals.poisonOfTheAbyssEventData.isPlayer1Affected = true;
     }
 
     if (!this.isActive()) {

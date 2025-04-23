@@ -491,39 +491,33 @@ export default class Game {
       this.#healHarmedMinions();
       if(globals.poisonOfTheAbyssEventData.isActive === true) {
       this.#poisonMinions();
-      } else if(globals.theCupOfTheLastBreathEventData.isActive === true) {
-        let grids = [this.#board.getGrids()[GridType.PLAYER_1_BATTLEFIELD],
-                     this.#board.getGrids()[GridType.PLAYER_2_BATTLEFIELD]];
-        let p1firstBox = grids.getBoxes()[0];
-        let p1lastBox = grids.getBoxes()[grid.getBoxes().length - 1];
-        let p2firstBox = grids.getBoxes()[0];
-        let p2lastBox = grids.getBoxes()[grid.getBoxes().length - 1];
+      }
+      
+      if(globals.theCupOfTheLastBreathEventData.isActive === true) {
+
         if(globals.theCupOfTheLastBreathEventData.isPlayer1Affected) {
           console.log("Player 1 Cannot heal minions");
           let message = new StateMessage(
           "Player 1 Cannot heal minions",
           `30px MedievalSharp`,
           "silver",
-          3,
-          p1firstBox.getXCoordinate(),
-          p1firstBox.getYCoordinate()
+          2,
+          globals.canvas.width/2,
+          globals.canvas.height/2
         );
         this.#stateMessages.push(message);
-        grid = this.#board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
-        p2firstBox = grid.getBoxes()[0];
-        p2lastBox = grid.getBoxes()[grid.getBoxes().length - 1];
-        }
-      } else if(globals.theCupOfTheLastBreathEventData.isPlayer2Affected) {
+        } else if(globals.theCupOfTheLastBreathEventData.isPlayer2Affected) {
         console.log("Player 2 Cannot heal minions");
         let message = new StateMessage(
           "Player 2 Cannot heal minions",
           `30px MedievalSharp`,
           "silver",
-          3,
-          p2firstBox.getXCoordinate(),
-          p2firstBox.getYCoordinate()
+          2,
+          globals.canvas.width/2,
+          globals.canvas.height/2
         );
         this.#stateMessages.push(message);
+        }
       }
 
       if (globals.decrepitThroneSkillData.isActive) {
@@ -572,32 +566,50 @@ export default class Game {
     ];
 
     let isPlayer1Antiheal = false;
+    let isPlayer1Halfheal = false;
     let isPlayer2Antiheal = false;
+    let isPlayer2Halfheal = false;
 
-    if(globals.poisonOfTheAbyssEventData.isActive === true || 
-       globals.theCupOfTheLastBreathEventData.isActive === true) { 
+    console.log(globals.poisonOfTheAbyssEventData.isPlayer1Affected)
+    console.log(globals.poisonOfTheAbyssEventData.isPlayer2Affected)
+
+    if(globals.poisonOfTheAbyssEventData.isActive === true) { 
         
-      if(globals.theCupOfTheLastBreathEventData.isPlayer1Affected || 
-      globals.poisonOfTheAbyssEventData.isPlayer1Affected) {
-        isPlayer1Antiheal = true; 
+      if(globals.poisonOfTheAbyssEventData.isPlayer1Affected) {
+        isPlayer1Halfheal = true; 
       } 
-      if (globals.theCupOfTheLastBreathEventData.isPlayer2Affected ||
-       globals.poisonOfTheAbyssEventData.isPlayer2Affected) {
-        isPlayer2Antiheal = true; 
+      if (globals.poisonOfTheAbyssEventData.isPlayer2Affected) {
+        isPlayer2Halfheal = true; 
+      }
+    }
+
+    if(globals.theCupOfTheLastBreathEventData.isActive === true) {
+      if(globals.theCupOfTheLastBreathEventData.isPlayer1Affected) {
+        isPlayer1Antiheal = true;
+      } else if (globals.theCupOfTheLastBreathEventData.isPlayer2Affected) {
+        isPlayer2Antiheal = true;
       }
     }
 
     const Player1Deck = minionsInPlayDecks[0];
     const Player2Deck = minionsInPlayDecks[1];
-    console.log(isPlayer1Antiheal)
-    console.log(isPlayer2Antiheal)
+    console.log(" player 1 half" + isPlayer1Halfheal)
+    console.log(" player 2 half" + isPlayer2Halfheal)
 
       for (let i = 0; i < Player1Deck.getCards().length; i++) {
         const currentCard = Player1Deck.getCards()[i];
 
         if (currentCard.getCurrentHP() < currentCard.getInitialHP() && !isPlayer1Antiheal) {
-          console.log("minions healed")
-          currentCard.setCurrentHP(currentCard.getInitialHP());
+          console.log("player 1 minions healed")
+          let currentHP = currentCard.getCurrentHP();
+          let initialHP = currentCard.getInitialHP();
+          let healAmount = initialHP - currentHP;
+          if (isPlayer1Halfheal) {
+            healAmount = Math.floor(healAmount / 2);
+            currentCard.setCurrentHP(currentHP + healAmount);
+          } else {
+            currentCard.setCurrentHP(currentCard.getInitialHP());
+          }
         }
 
       }
@@ -606,8 +618,16 @@ export default class Game {
         const currentCard = Player2Deck.getCards()[i];
 
         if (currentCard.getCurrentHP() < currentCard.getInitialHP() && !isPlayer2Antiheal) {
-          console.log("minions healed")
-          currentCard.setCurrentHP(currentCard.getInitialHP());
+          console.log("player 2 minions healed")
+          let currentHP = currentCard.getCurrentHP();
+          let initialHP = currentCard.getInitialHP();
+          let healAmount = initialHP - currentHP;
+          if (isPlayer2Halfheal) {
+            healAmount = Math.floor(healAmount / 2);
+            currentCard.setCurrentHP(currentHP + healAmount);
+          } else {
+            currentCard.setCurrentHP(currentCard.getInitialHP());
+          }
         }
       }
     
@@ -615,22 +635,15 @@ export default class Game {
   }
 
   #poisonMinions() {
-    let minionsInPlayDecks = [];
-    if(this.#currentPlayer.getID() === PlayerID.PLAYER_1) {
-      minionsInPlayDecks = [
+    let minionsInPlayDecks = [
         this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY],
         this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY],
       ];
-    } else {
-      minionsInPlayDecks = [
-        this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY],
-        this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY],
-      ];
-    }
+
 
     if(globals.poisonOfTheAbyssEventData.isPlayer2Affected) {
-      for(let i = 0; i < minionsInPlayDecks[0].getCards().length; i++) {
-        const currentCard = minionsInPlayDecks[0].getCards()[i];
+      for(let i = 0; i < minionsInPlayDecks[1].getCards().length; i++) {
+        const currentCard = minionsInPlayDecks[1].getCards()[i];
 
           currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
           let message = new StateMessage(
@@ -646,8 +659,8 @@ export default class Game {
       
   } 
   if(globals.poisonOfTheAbyssEventData.isPlayer1Affected) {
-    for(let i = 0; i < minionsInPlayDecks[1].getCards().length; i++) {
-      const currentCard = minionsInPlayDecks[1].getCards()[i];
+    for(let i = 0; i < minionsInPlayDecks[0].getCards().length; i++) {
+      const currentCard = minionsInPlayDecks[0].getCards()[i];
 
         currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
         let message = new StateMessage(
