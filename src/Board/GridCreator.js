@@ -76,7 +76,7 @@ export default class GridCreator {
     const messagesBox = new Box(
       1790,
       25,
-      420,
+      565,
       185,
       false,
       false,
