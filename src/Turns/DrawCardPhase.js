@@ -8,6 +8,8 @@ import {
   CardCategory,
   GridType,
   MainCharacterID,
+  RareEventID,
+  ArmorID,
 } from "../Game/constants.js";
 
 export default class DrawCardPhase extends Phase {
@@ -123,8 +125,8 @@ export default class DrawCardPhase extends Phase {
 
     // (!) REMOVE WHEN CARDS TESTING FINISHES
     const drawnCard = this.#getSpecifiedCard(
-      CardCategory.MAIN_CHARACTER,
-      MainCharacterID.JOSEPH
+      CardCategory.ARMOR,
+      ArmorID.CLOAK_ETERNAL_SHADOW
     );
     if (!drawnCard) {
       return;
