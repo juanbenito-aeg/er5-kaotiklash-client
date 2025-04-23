@@ -687,6 +687,7 @@ export default class AttackEvent extends Event {
       );
       this.#stateMessages.push(dodgeMessage);
       this.#isArmorPowerChosen = false;
+      this.#target.resetArmorAttributes();
       this.#eventDeck.insertCard(this.#target.getArmor());
       this.#target.removeArmor();
       return;
