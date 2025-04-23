@@ -1,4 +1,4 @@
-import ToolTip from "./ToolTip.js";
+import ToolTip from "./Tooltip.js";
 import { WeaponTypeID } from "../Game/constants.js";
 
 export default class MinionTooltip extends ToolTip {
