@@ -112,7 +112,7 @@ function showLoginScreen() {
   clearErrorMessages();
 
   const loginScreen = document.getElementById("login-screen");
-  loginScreen.style.display = "block";
+  loginScreen.style.display = "flex";
 }
 function hideLoginScreen() {
   const loginScreen = document.getElementById("login-screen");

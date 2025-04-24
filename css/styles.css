@@ -10,11 +10,39 @@
   font-family: MedievalSharp;
 }
 
+/* GENERAL STYLES */
+
 body {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+h2 {
+  margin-bottom: 30px;
+  font-size: 2.25rem;
+  text-align: center;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-bottom: 2px solid white;
+  margin: 12px 0;
+  font-size: 1.25rem;
+  color: white;
+  background-color: transparent;
+}
+
+input:focus {
+  outline: none;
+  border-bottom: 2px solid rgb(255 255 255 / 0.75);
+}
+
+button {
+  font-size: 1.25rem;
 }
 
 /* UTILITIES */
@@ -111,147 +139,79 @@ body {
 #register-screen,
 #player-session-screen {
   display: none;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   min-height: 100vh;
 }
 
 #login-screen,
 #register-screen {
+  font-size: 1.25rem;
   background: url("../images/entrance_door.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-/* LOGIN SCREEN */
-
-#login-screen {
-  font-size: xx-large;
-}
-
-#login-form {
-  position: absolute;
-  margin-top: 25vh;
-  margin-left: 80vh;
-  background: rgba(0, 0, 0, 0.8);
+#login-box,
+#register-box {
+  width: 400px;
+  background-color: rgba(0 0 0 / 0.8);
   padding: 30px;
   border-radius: 10px;
-  width: 400px;
   color: white;
   text-align: left;
 }
 
 #login-btn,
-#reset-btn {
+#register-btn {
   width: 100%;
+  height: 50px;
   padding: 12px;
-  margin-top: 15px;
   border: none;
-  background: white;
+  border-radius: 5px;
+  margin-top: 15px;
   color: black;
-  font-size: 1.2rem;
+  background-color: white;
   font-weight: bold;
   cursor: pointer;
-  border-radius: 5px;
 }
 
 #login-btn:hover,
-#reset-btn:hover {
-  text-decoration: underline;
-  color: #ddd1d1af;
-}
-
-#login-email {
-  width: 300px;
-  height: 30px;
-  font-size: x-large;
-}
-
-#login-password {
-  width: 300px;
-  height: 30px;
-  font-size: x-large;
-}
-
-#login-btn {
-  width: 145px;
-  height: 50px;
-  font-size: x-large;
-}
-
-#login-para {
-  margin-top: 20px;
-  font-size: 1.2rem;
-  text-align: center;
-}
-
-/* REGISTRATION SCREEN */
-
-#register-screen {
-  justify-content: center;
-  align-items: center;
-}
-
-#register-box {
-  background: rgba(0, 0, 0, 0.8);
-  padding: 30px;
-  border-radius: 10px;
-  width: 400px;
-  color: white;
-  text-align: left;
-}
-
-h2 {
-  margin-bottom: 30px;
-  text-align: center;
-  font-size: 2rem;
-}
-
-input {
-  width: 100%;
-  padding: 12px;
-  margin: 12px 0;
-  border: none;
-  border-bottom: 2px solid white;
-  background: transparent;
-  color: white;
-  font-size: 1rem;
-}
-
-input:focus {
-  outline: none;
-  border-bottom: 2px solid lightblue;
-}
-
-#register-btn {
-  width: 100%;
-  padding: 12px;
-  margin-top: 15px;
-  border: none;
-  background: white;
-  color: black;
-  font-size: 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
 #register-btn:hover {
-  text-decoration: underline;
-  color: #ddd1d1af;
+  color: rgb(0 0 0 / 0.65);
 }
 
+#login-btn:active,
+#register-btn:active {
+  color: rgb(0 0 0 / 0.3);
+}
+
+#login-para,
 #register-para {
+  display: inline-block;
   margin-top: 20px;
-  font-size: 1.2rem;
-  text-align: left;
+}
+
+#login-screen-register-btn,
+#register-screen-login-btn {
+  color: rgb(103 129 180);
+}
+
+#login-screen-register-btn:hover,
+#register-screen-login-btn:hover {
+  color: rgb(103 129 180 / 0.85);
+}
+
+#login-screen-register-btn:active,
+#register-screen-login-btn:active {
+  color: rgb(103 129 180 / 0.7);
 }
 
 /* PLAYER SESSION SCREEN */
 
 #player-session-screen {
-  justify-content: center;
-  align-items: center;
   background-image: url("../images/player_session_background.png");
   background-size: cover;
   background-position: center;
