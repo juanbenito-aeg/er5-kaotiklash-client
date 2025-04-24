@@ -26,7 +26,7 @@ async function initEssentials() {
 }
 
 function initInnDoor() {
-  const innDoor = document.getElementById("inn-door");
+  const innDoor = document.getElementById("main-screen-inn-door");
   innDoor.addEventListener("click", initLoginScreen);
 }
 

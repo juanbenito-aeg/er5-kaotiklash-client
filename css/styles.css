@@ -36,6 +36,9 @@ body {
 }
 
 #main-screen-elems-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 47.75vh;
   height: 61.5vh;
   position: absolute;
@@ -44,7 +47,26 @@ body {
   translate: -50% -50%;
 }
 
-#inn-door {
+#main-screen-title {
+  font-size: 6rem;
+  letter-spacing: 0.6em;
+  text-shadow: 0 0 0.05em rgb(255 255 255),
+    0 0.1em 0.1em rgb(255 255 255 / 0.25), 0 0.2em 0.2em rgb(255 255 255 / 0.25),
+    0 0.3em 0.3em rgb(255 255 255 / 0.25), 0 0.4em 0.4em rgb(255 255 255 / 0.25);
+  transition: letter-spacing 0.85s, text-shadow 0.85s;
+  color: rgb(255 255 255);
+}
+
+#main-screen-title:hover {
+  letter-spacing: 0.25em;
+  text-shadow: 0 0 0.15em rgb(255 255 255);
+}
+
+.main-screen-title-k-letter {
+  font-size: 8rem;
+}
+
+#main-screen-inn-door {
   width: 6.25vh;
   height: 13.75vh;
   border-radius: 1rem;
@@ -55,7 +77,7 @@ body {
   cursor: pointer;
 }
 
-#inn-door:hover {
+#main-screen-inn-door:hover {
   box-shadow: 0 0 1.25rem rgb(252 231 172) inset;
 }
 
