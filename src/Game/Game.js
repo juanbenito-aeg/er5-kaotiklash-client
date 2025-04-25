@@ -9,7 +9,7 @@ import MouseInput from "./MouseInput.js";
 import ImageSet from "./ImageSet.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
-import MinionTooltip from "../ToolTips/MinionToolTip.js";
+import MinionTooltip from "../Tooltips/MinionTooltip.js";
 import globals from "./globals.js";
 import {
   GameState,

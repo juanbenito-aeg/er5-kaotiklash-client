@@ -35,6 +35,10 @@ export default class Weapon extends Card {
     return this.#weaponTypeID;
   }
 
+  getWeaponTypeName() {
+    return this.#weaponTypeName;
+  }
+
   getInitialDamage() {
     return this.#initialDamage;
   }
