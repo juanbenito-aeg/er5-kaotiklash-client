@@ -11,8 +11,9 @@
   "reset": "Berrasieratu",
   "no_account": "Ez duzu konturik?",
   "got_account": "Konturik al duzu dagoeneko?",
-  "greeting": "Kaixo",
+  "greeting": "Ongi etorri",
   "choose_opponent": "Hautatu aurkari bat",
   "choose_option": "Mesedez, hautatu aukera bat",
-  "start_game": "HASI JOKOA"
+  "start_game": "HASI JOKOA",
+  "stats": "Estatistikak"
 }
