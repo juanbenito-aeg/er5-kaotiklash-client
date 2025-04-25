@@ -219,15 +219,16 @@ button {
 }
 
 #player-session-container {
-  width: 500px;
+  width: 900px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-areas:
     "data     log-out"
     "opp-sel  opp-sel"
-    "start    start";
+    "stats      start"
+    "tips       tips";
   gap: 2em;
-  padding: 2.5em;
+  padding: 3em;
   border-radius: 16px;
   background-color: rgb(0 0 0 / 0.8);
   color: white;
@@ -237,20 +238,76 @@ button {
   grid-area: data;
 }
 
+#player-name {
+  font-size: 2.8rem;
+}
+
+#player-email {
+  font-size: 1.1rem;
+  color: #ccc;
+}
+
 #log-out-btn {
   grid-area: log-out;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  height: 70px;
 }
 
 #opponent-select-container {
   grid-area: opp-sel;
   display: flex;
   flex-direction: column;
+  font-size: 1.8rem;
+  gap: 0.3em;
+}
+
+#opponent-select {
+  font-size: 1.1rem;
+  padding: 0.4em 0.6em;
+  border-radius: 6px;
+  width: 100%;
+  height: 60px;
+}
+
+#stats-btn {
+  grid-area: stats;
+  font-size: 1.45rem;
+  padding: 0.5em 1em;
+  border-radius: 12px;
+}
+
+#tips-section {
+  grid-area: tips;
+  font-size: 2rem;
+  text-align: left;
+  padding: 1.5em;
+  border-radius: 16px;
+  font-weight: normal;
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.07);
+  border-left: 6px solid #fbfbfb;
+  box-shadow: 0 0 10px rgba(246, 246, 246, 0.934);
+  animation: fadeInUp 0.6s ease-out;
+  transition: all 0.3s ease-in-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 #start-game-btn {
   grid-area: start;
-  padding: 0.5em 1.25em;
-  font-size: 1.25rem;
+  font-size: 1.45rem;
+  padding: 0.75em 1.5em;
+  border-radius: 12px;
 }
 
 /* GAME SCREEN */
