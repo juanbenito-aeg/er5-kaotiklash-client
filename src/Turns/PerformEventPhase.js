@@ -23,7 +23,6 @@ import {
   SpecialEventID,
   RareEventID,
 } from "../Game/constants.js";
-import globals from "../Game/globals.js";
 import TheCupOfTheLastBreathEvent from "../Events/TheCupOfTheLastBreathEvent.js";
 import RayOfCelestialRuinEvent from "../Events/RayOfCelestialRuinEvent.js";
 

@@ -1,6 +1,6 @@
 import Event from "./Event.js";
 import { PlayerID } from "../Game/constants.js";
-import { globals } from "../index.js";
+import globals from "../Game/globals.js";
 
 export default class TheCupOfTheLastBreathEvent extends Event {
   constructor(

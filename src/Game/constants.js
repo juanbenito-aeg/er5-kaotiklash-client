@@ -262,16 +262,13 @@ const RareEventID = {
   ECHO_OF_THE_STRATAGEN: 2,
   SHIELD_OF_BALANCE: 3,
   MARCH_OF_THE_LAST_SIGH: 4,
+  THE_CUP_OF_THE_LAST_BREATH: 5,
 };
 
 const EchoOfTheStratagenState = {
   INIT: 0,
   SELECT_ENEMY_PREP_EVENT: 1,
   END: 2,
-};
-
-const RareEventID = {
-  THE_CUP_OF_THE_LAST_BREATH: 5,
 };
 
 const BlessingWaitressState = {
@@ -337,7 +334,6 @@ export {
   SpecialEventID,
   RareEventID,
   BlessingWaitressState,
-  RareEventID,
   EchoOfTheStratagenState,
   HandOfTheSoulThiefState,
   StolenFateState,

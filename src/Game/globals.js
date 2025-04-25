@@ -61,6 +61,11 @@ export default {
     isPlayer1Affected: false,
     isPlayer2Affected: false,
   },
+  theCupOfTheLastBreathEventData: {
+    isActive: false,
+    isPlayer1Affected: false,
+    isPlayer2Affected: false,
+  },
   shieldOfBalanceActive: false,
   shieldOfBalanceOwner: null,
 };
