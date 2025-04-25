@@ -146,9 +146,9 @@ const AttackPhaseState = {
   INIT: 0,
   SELECT_ATTACKER: 1,
   SELECT_TARGET: 2,
-  CALC_AND_APPLY_DMG: 3,
-  END: 4,
-  PARRY_SELECION: 5,
+  ATTACK_MENU: 3,
+  CALC_AND_APPLY_DMG: 4,
+  END: 5,
 };
 
 const DiscardCardState = {
@@ -232,11 +232,11 @@ const PhaseButtonData = {
   NAME: 4,
 };
 
-const EquipWeaponState = {
+const EquipWeaponOrArmorState = {
   INIT: 0,
-  SELECT_WEAPON: 1,
+  SELECT_WEAPON_OR_ARMOR: 1,
   SELECT_MINION: 2,
-  EQUIP_WEAPON: 3,
+  EQUIP_WEAPON_OR_ARMOR: 3,
   END: 4,
 };
 
@@ -248,12 +248,26 @@ const EventCooldownState = {
 const SpecialEventID = {
   SUMMON_CHARACTER: 0,
   JUDGMENT_ANCIENTS: 1,
+  RAY_OF_CELESTIAL_RUIN: 2,
   POISON_OF_THE_ABYSS: 3,
   CURSE_OF_THE_BOUND_TITAN: 4,
   BARTENDERS_POWER: 5,
   BROOM_FURY: 6,
   BLESSING_WAITRESS: 7,
+};
 
+const RareEventID = {
+  STOLEN_FATE: 0,
+  HAND_OF_THE_SOUL_THIEF: 1,
+  ECHO_OF_THE_STRATAGEN: 2,
+  SHIELD_OF_BALANCE: 3,
+  MARCH_OF_THE_LAST_SIGH: 4,
+};
+
+const EchoOfTheStratagenState = {
+  INIT: 0,
+  SELECT_ENEMY_PREP_EVENT: 1,
+  END: 2,
 };
 
 const RareEventID = {
@@ -264,6 +278,32 @@ const BlessingWaitressState = {
   INIT: 0,
   SELECT_MINION: 1,
   HEAL: 2,
+};
+
+const HandOfTheSoulThiefState = {
+  INIT: 0,
+  SELECT_ENEMY_CARD_TO_STEAL: 1,
+  SELECT_CARD_TO_EXCHANGE: 2,
+  END: 3,
+};
+
+const StolenFateState = {
+  DISCARD_CARDS: 0,
+  DRAW_CARDS: 1,
+};
+
+const AttackMenuBtn = {
+  BLOCK_ATTACK: 0,
+  ARMOR_POWER: 1,
+  PASS: 2,
+};
+
+const ArmorID = {
+  BREASTPLATE_PRIMORDIAL_COLOSSUS: 0,
+  CLOAK_ETERNAL_SHADOW: 1,
+  BRACERS_OF_THE_WAR_LION: 3,
+  SHIELD_OF_THE_ANCESTRAL_OAK: 5,
+  VEST_OF_THE_SPECTRAL_BARTENDER: 6,
 };
 
 export {
@@ -292,9 +332,15 @@ export {
   PhaseType,
   PhaseButton,
   PhaseButtonData,
-  EquipWeaponState,
+  EquipWeaponOrArmorState,
   EventCooldownState,
   SpecialEventID,
   RareEventID,
   BlessingWaitressState,
+  RareEventID,
+  EchoOfTheStratagenState,
+  HandOfTheSoulThiefState,
+  StolenFateState,
+  AttackMenuBtn,
+  ArmorID,
 };

@@ -3,8 +3,8 @@ import SpecialSkillXG from "./SpecialSkillXG.js";
 import LucretiaSpecialSkill from "./LucretiaSpecialSkill.js";
 import SpecialSkillDecrepitThrone from "./SpecialSkillDecrepitThrone.js";
 import SpecialSkillAngelo from "./SpecialSkillAngelo.js";
+import globals from "../Game/globals.js";
 import { MainCharacterID } from "../Game/constants.js";
-import { globals } from "../index.js";
 
 export default class SummonCharacterEvent extends Event {
   #mainCharacterID;
@@ -64,7 +64,8 @@ export default class SummonCharacterEvent extends Event {
       case MainCharacterID.THE_ERUDITE_XG:
         if (!this.#specialSkill) {
           const xgSkill = new SpecialSkillXG(
-            this.#currentPlayerMinionsInPlayDeck
+            this.#currentPlayerMinionsInPlayDeck,
+            this.#stateMessages
           );
 
           this.#specialSkill = xgSkill;
@@ -106,21 +107,26 @@ export default class SummonCharacterEvent extends Event {
         break;
 
       case MainCharacterID.ANGELO_DI_MORTIS:
-        const angeloSkill = new SpecialSkillAngelo(
-          this.#enemyBattlefieldGrid,
-          this.#enemyEventsInPrepGrid,
-          this.#mouseInput,
-          currentPlayer,
-          this.#stateMessages
-        );
+        if (!this.#specialSkill) {
+          const angeloSkill = new SpecialSkillAngelo(
+            this.#enemyBattlefieldGrid,
+            this.#enemyEventsInPrepGrid,
+            this.#mouseInput,
+            currentPlayer,
+            this.#stateMessages
+          );
 
-        if (!this.#isFinished) {
-          angeloSkill.execute();
-          this.#isFinished = true;
+          this.#specialSkill = angeloSkill;
+
+          this.#specialSkill.execute();
         }
 
         if (!this.isActive()) {
           angeloSkill.restore();
+
+          globals.isPlayersSummonCharacterActive[
+            this._executedBy.getID()
+          ] = false;
         }
 
         break;

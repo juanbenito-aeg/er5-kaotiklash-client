@@ -1,9 +1,13 @@
+import StateMessage from "../Messages/StateMessage.js";
+
 export default class SpecialSkillXG {
   #currentPlayerMinionsInPlayDeck;
+  #stateMessages;
   #isFinished;
 
-  constructor(currentPlayerMinionsInPlayDeck) {
+  constructor(currentPlayerMinionsInPlayDeck, stateMessages) {
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
+    this.#stateMessages = stateMessages;
     this.#isFinished = false;
   }
 
@@ -27,12 +31,46 @@ export default class SpecialSkillXG {
 
         let defense = Math.max(
           1,
-          Math.ceil(minion.getInitialConstitution() - madness / 2)
+          Math.ceil(minion.getCurrentDefense() - newMadness / 2)
         );
 
         minion.setCurrentAttack(attack);
         minion.setCurrentDefense(defense);
       }
+
+      let message = new StateMessage(
+        "MINIONS GOT CRAZY!!",
+        "50px MedievalSharp",
+        "blue",
+        2,
+        1200,
+        520
+      );
+
+      this.#stateMessages.push(message);
+
+      let attackMessage = new StateMessage(
+        "ATTACK ↑",
+        "40px MedievalSharp",
+        "green",
+        2,
+        1200,
+        570
+      );
+
+      this.#stateMessages.push(attackMessage);
+
+      let DefenseMessage = new StateMessage(
+        "DEFENSE ↓",
+        "40px MedievalSharp",
+        "red",
+        2,
+        1200,
+        630
+      );
+
+      this.#stateMessages.push(DefenseMessage);
+
       this.#isFinished = true;
     }
   }
@@ -50,7 +88,7 @@ export default class SpecialSkillXG {
       minion.setCurrentStrength(strength);
 
       let attack = minion.getInitialAttack();
-      let defense = minion.getInitialConstitution();
+      let defense = minion.getInitialDefense();
 
       minion.setCurrentAttack(attack);
       minion.setCurrentDefense(defense);

@@ -1,3 +1,4 @@
+import { HandOfTheSoulThiefState } from "../Game/constants.js";
 import Message from "./Message.js";
 
 export default class PhaseMessage extends Message {
@@ -109,7 +110,7 @@ export default class PhaseMessage extends Message {
       ],
     },
 
-    equipWeapon: {
+    equipWeaponOrArmor: {
       selectMinion: [
         // ENG
         "Choose a minion to equip.",
@@ -117,9 +118,9 @@ export default class PhaseMessage extends Message {
         // EUS
         "",
       ],
-      equipWeapon: [
+      equip: [
         // ENG
-        "Equipping weapon...",
+        "Equipping minion...",
 
         // EUS
         "",
@@ -130,6 +131,42 @@ export default class PhaseMessage extends Message {
       selectMinion: [
         // ENG
         "Select a minion to heal.",
+
+        // EUS
+        "",
+      ],
+    },
+    echoOfTheStratagen: {
+      selectEnemyCard: [
+        //ENG
+        "Select a enemy event to steal.",
+
+        // EUS
+        "",
+      ],
+    },
+
+    handOfTheSoulThief: {
+      selectEnemyCard: [
+        // ENG
+        "Select a enemy card to steal.",
+
+        // EUS
+        "",
+      ],
+      selectCardInHand: [
+        // ENG
+        "Select a card to exchange.",
+
+        // EUS
+        "",
+      ],
+    },
+
+    stolenFate: {
+      discardCardsInHand: [
+        // ENG
+        "Discard cards in hand to leave 2 boxes free.",
 
         // EUS
         "",

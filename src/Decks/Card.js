@@ -17,6 +17,16 @@ export default class Card {
     this.#isRightClicked = false;
   }
 
+  static isCardWithinDeck(card, deck) {
+    for (let i = 0; i < deck.getCards().length; i++) {
+      const currentCard = deck.getCards()[i];
+
+      if (currentCard === card) {
+        return true;
+      }
+    }
+  }
+
   getCategory() {
     return this.#category;
   }
@@ -32,6 +42,8 @@ export default class Card {
   getDescription() {
     return this.#description;
   }
+
+  resetAttributes() {}
 
   isMouseOver() {
     return this.#isMouseOver;

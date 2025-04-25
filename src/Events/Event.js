@@ -12,6 +12,14 @@ export default class Event {
 
   execute() {}
 
+  getExecutor() {
+    return this._executedBy;
+  }
+
+  getEventCard() {
+    return this._eventCard;
+  }
+
   reduceDuration(currentPlayer) {
     if (currentPlayer !== this._lastPlayer) {
       this._lastPlayer = currentPlayer;

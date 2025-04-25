@@ -1,85 +1,86 @@
 import Game from "./Game/Game.js";
-import { GameState, FPS } from "./Game/constants.js";
+import globals from "./Game/globals.js";
+import { GameState, FPS, Language } from "./Game/constants.js";
 
-// GLOBAL VARIABLES CREATION
-const globals = {
-  previousCycleMilliseconds: -1, // PREVIOUS CYCLE TIME (MILLISECONDS)
-  deltaTime: 0, // ACTUAL GAME CYCLE TIME (SECONDS)
-  frameTimeObj: 0, // GOAL CYCLE TIME (SECONDS, CONSTANT)
-  cycleRealTime: 0,
-  canvas: {},
-  ctx: {},
-  boardImage: {},
-  cardsData: {},
-  cardsReverseImage: {},
-  cardsImages: {
-    armor: [],
-    main_characters: [],
-    minions: [],
-    rare_events: [],
-    special_events: [],
-    weapons: [],
-  },
-  cardsTemplatesImages: [],
-  cardsIconsImages: [],
-  imagesDestinationSizes: {},
-  assetsToLoad: [], // HOLDS THE ELEMENTS TO LOAD
-  assetsLoaded: 0, // INDICATES THE NUMBER OF ELEMENTS THAT HAVE BEEN LOADED SO FAR
-  gameState: GameState.INVALID,
-  game: {},
-  language: 0,
-  isCurrentTurnFinished: false,
-  buttonDataGlobal: [],
-  firstActivePlayerID: -1, // (!) DELETE AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
-  phaseMessage: {},
-  gameWinner: null,
-  damageMessages: [],
-  isScreenInitialized: {
-    register: false,
-    playerSession: false,
-  },
-  isParryMenuOpen: false,
-  activeVisibilitySkill: null,
-  decrepitThroneSkillData: {
-    isActive: false,
-    playerWithDecrepitThrone: {},
-    turnsSinceActivation: 0,
-  },
-  isPlayersSummonCharacterActive: [
-    // PLAYER 1
-    false,
+window.onload = initEssentials;
 
-    // PLAYER 2
-    false,
-  ],
-  judgmentAncientsEventData: {
-    isActive: false,
-    affectedPlayerID: -1,
-  },
-  blessingWaitressCardData: {
-    isEventActive: false,
-    eventInstance: {},
-  },
-  poisonOfTheAbyssEventData: {
-    isActive: false,
-    isPlayer1Affected: false,
-    isPlayer2Affected: false,
-  },
-  curseOfTheBoundTitanEventData: {
-    isActive: false,
-    isPlayer1Affected: false,
-    isPlayer2Affected: false,
-  },
-  theCupOfTheLastBreathEventData: {
-    isActive: false,
-    isPlayer1Affected: false,
-    isPlayer2Affected: false,
-  },
-};
+async function initEssentials() {
+  initInnDoor();
+  initLanguageBtns();
 
-window.onload = initLogInScreen;
+  // SHOW THE WEBSITE IN THE USER'S PREFERRED LANGUAGE (OR IN ENGLISH BY DEFAULT)
+  const preferredLanguage = localStorage.getItem("language") || "eng";
+  const languageData = await loadLanguageData(preferredLanguage);
+  updateContent(languageData);
 
-// HIDE/SHOW SCREEN FUNCTIONS
+  globals.language =
+    preferredLanguage === "eng" ? Language.ENGLISH : Language.BASQUE;
+
+  const isPlayerAlreadyLoggedIn = localStorage.getItem("email");
+  if (isPlayerAlreadyLoggedIn) {
+    hideMainScreen();
+
+    // REDIRECT TO THE PLAYER SESSION SCREEN
+    initPlayerSessionScreen();
+  }
+}
+
+function initInnDoor() {
+  const innDoor = document.getElementById("inn-door");
+  innDoor.addEventListener("click", initLoginScreen);
+}
+
+function initLanguageBtns() {
+  const languageBtns = document.querySelectorAll("#lang-btns > *");
+
+  for (let i = 0; i < languageBtns.length; i++) {
+    languageBtns[i].addEventListener("click", changeLanguage);
+  }
+}
+
+async function changeLanguage(e) {
+  const languageBtnID = e.target.getAttribute("id");
+  const language = languageBtnID === "eng-btn" ? "eng" : "eus";
+
+  setLanguagePreference(language);
+
+  const languageData = await loadLanguageData(language);
+  updateContent(languageData);
+
+  globals.language = language === "eng" ? Language.ENGLISH : Language.BASQUE;
+
+  clearErrorMessages();
+}
+
+function setLanguagePreference(language) {
+  localStorage.setItem("language", language);
+}
+
+async function loadLanguageData(language) {
+  const response = await fetch(`./src/${language}Content.json`);
+  const languageData = await response.json();
+  return languageData;
+}
+
+function updateContent(languageData) {
+  const contentToUpdate = document.querySelectorAll("[data-i18n]");
+
+  for (let i = 0; i < contentToUpdate.length; i++) {
+    const currentElement = contentToUpdate[i];
+    const keyToLookFor = currentElement.getAttribute("data-i18n");
+    currentElement.innerHTML = languageData[keyToLookFor];
+  }
+}
+
+function clearErrorMessages() {
+  const errorMessages = document.querySelectorAll(".error-message");
+
+  for (let i = 0; i < errorMessages.length; i++) {
+    errorMessages[i].innerHTML = "";
+  }
+}
+
+// HIDE/SHOW "X" FUNCTIONS
 
 function hideRegisterAndShowLoginScreen() {
   hideRegisterScreen();
@@ -87,13 +88,28 @@ function hideRegisterAndShowLoginScreen() {
   showLoginScreen();
 }
 
+// MAIN SCREEN
+function hideMainScreen() {
+  const mainScreen = document.getElementById("main-screen");
+  mainScreen.style.display = "none";
+}
+
+// LANGUAGE BUTTONS
+function showLanguageBtns() {
+  const languageBtnsContainer = document.getElementById("lang-btns");
+  languageBtnsContainer.style.display = "block";
+}
+function hideLanguageBtns() {
+  const languageBtnsContainer = document.getElementById("lang-btns");
+  languageBtnsContainer.style.display = "none";
+}
+
 // LOGIN SCREEN
 function showLoginScreen() {
   const loginForm = document.getElementById("login-form");
   loginForm.reset();
 
-  const errorMessage = document.getElementById("login-error-message");
-  errorMessage.textContent = "";
+  clearErrorMessages();
 
   const loginScreen = document.getElementById("login-screen");
   loginScreen.style.display = "block";
@@ -117,8 +133,7 @@ function showRegisterScreen() {
   const registerForm = document.getElementById("register-form");
   registerForm.reset();
 
-  const errorMessage = document.getElementById("register-error-message");
-  errorMessage.textContent = "";
+  clearErrorMessages();
 
   const registerScreen = document.getElementById("register-screen");
   registerScreen.style.display = "flex";
@@ -140,7 +155,12 @@ function hidePlayerSessionScreen() {
 
 // INITIALIZE SCREEN FUNCTIONS
 
-function initLogInScreen() {
+function initLoginScreen() {
+  hideMainScreen();
+
+  showLoginScreen();
+  showLanguageBtns();
+
   const loginForm = document.getElementById("login-form");
   loginForm.addEventListener("submit", checkFormDataAndLogIn);
 
@@ -148,14 +168,6 @@ function initLogInScreen() {
     "login-screen-register-btn"
   );
   loginScreenRegisterBtn.addEventListener("click", showOrInitRegisterScreen);
-
-  const isPlayerAlreadyLoggedIn = localStorage.getItem("email");
-  if (isPlayerAlreadyLoggedIn) {
-    hideLoginScreen();
-
-    // REDIRECT TO THE PLAYER SESSION SCREEN
-    initPlayerSessionScreen();
-  }
 }
 
 function checkFormDataAndLogIn(e) {
@@ -171,14 +183,15 @@ function checkFormDataAndLogIn(e) {
 }
 
 async function logInPlayer(email, password) {
-  const errorMessage = document.getElementById("login-error-message");
-  errorMessage.textContent = "";
+  clearErrorMessages();
 
   const url = "https://er5-kaotiklash-server.onrender.com/api/login";
 
+  const preferredLanguage = localStorage.getItem("language") || "eng";
   const playerData = {
     email_address: email,
     password: password,
+    preferred_language: preferredLanguage,
   };
 
   const response = await fetch(url, {
@@ -199,13 +212,10 @@ async function logInPlayer(email, password) {
 
     hideLoginScreen();
 
-    if (globals.isScreenInitialized.playerSession) {
-      showPlayerSessionScreen();
-    } else {
-      initPlayerSessionScreen();
-    }
+    initPlayerSessionScreen();
   } else {
-    errorMessage.textContent = data.message;
+    const errorMessage = document.getElementById("login-error-message");
+    errorMessage.innerHTML = data.message;
   }
 }
 
@@ -229,16 +239,21 @@ function initRegisterScreen() {
 function checkFormDataAndRegister(e) {
   e.preventDefault();
 
+  clearErrorMessages();
+
   const username = document.getElementById("name").value;
   const email = document.getElementById("register-email").value;
   const password = document.getElementById("register-password").value;
   const confirmPassword = document.getElementById("confirm-password").value;
 
-  const errorMessage = document.getElementById("register-error-message");
-  errorMessage.textContent = "";
-
   if (password !== confirmPassword) {
-    errorMessage.textContent = "Error: The passwords do not match";
+    const passwordsMismatchMsg =
+      globals.language === Language.ENGLISH
+        ? "Error: The passwords do not match"
+        : "Errorea: pasahitzak ez datoz bat";
+
+    const errorMessage = document.getElementById("register-error-message");
+    errorMessage.innerHTML = passwordsMismatchMsg;
   } else {
     registerPlayer(username, email, password);
   }
@@ -249,10 +264,12 @@ async function registerPlayer(username, email, password) {
 
   const url = "https://er5-kaotiklash-server.onrender.com/api/players";
 
+  const preferredLanguage = localStorage.getItem("language") || "eng";
   const playerData = {
     name: username,
     email_address: email,
     password: password,
+    preferred_language: preferredLanguage,
   };
 
   const response = await fetch(url, {
@@ -268,25 +285,26 @@ async function registerPlayer(username, email, password) {
   if (response.ok) {
     alert(data.message);
 
-    // AUTOMATICALLY REDIRECT TO LOGIN SCREEN AFTER REGISTERING
+    // AUTOMATICALLY REDIRECT TO LOGIN SCREEN (!!!!!!!!!!!!!!!!!!!!!) AFTER REGISTERING
     window.location.reload();
   } else {
-    errorMessage.textContent = data.message;
+    errorMessage.innerHTML = data.message;
   }
 }
 
 function initPlayerSessionScreen() {
-  globals.isScreenInitialized.playerSession = true;
-
   showPlayerSessionScreen();
+  showLanguageBtns();
 
   // GET THE LOGGED IN PLAYER'S DATA & INSERT IT INTO A PARAGRAPH ELEMENT
 
   const playerEmail = localStorage.getItem("email");
-  const playerName = localStorage.getItem("playerName");
+  const playerEmailParagraph = document.getElementById("player-email");
+  playerEmailParagraph.innerHTML = playerEmail;
 
-  const playerDataParagraph = document.getElementById("player-data");
-  playerDataParagraph.innerHTML = `${playerEmail}<br>Hi, ${playerName}!`;
+  const playerName = localStorage.getItem("playerName");
+  const playerNameParagraph = document.getElementById("player-name");
+  playerNameParagraph.innerHTML += `, ${playerName}!`;
 
   // TERMINATE THE CURRENT SESSION WHEN THE "Log out" BUTTON IS PRESSED
   const logOutBtn = document.getElementById("log-out-btn");
@@ -354,6 +372,8 @@ function hidePlayerSessionAndInitGameScreen() {
 }
 
 async function initGameScreen() {
+  hideLanguageBtns();
+
   initVars();
 
   // INITIALIZE CANVAS AND ITS CONTEXT
@@ -646,5 +666,3 @@ function executeGameLoop(timeStamp) {
     globals.deltaTime = 0;
   }
 }
-
-export { globals };

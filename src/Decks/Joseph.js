@@ -4,6 +4,7 @@ export default class Joseph extends Card {
   #chaoticEventID;
   #chaoticEventName;
   #chaoticEventDescription;
+  #durationInRounds;
 
   constructor(
     category,
@@ -12,13 +13,15 @@ export default class Joseph extends Card {
     description,
     chaoticEventID,
     chaoticEventName,
-    chaoticEventDescription
+    chaoticEventDescription,
+    durationInRounds
   ) {
     super(category, id, name, description);
 
     this.#chaoticEventID = chaoticEventID;
     this.#chaoticEventName = chaoticEventName;
     this.#chaoticEventDescription = chaoticEventDescription;
+    this.#durationInRounds = durationInRounds;
   }
 
   getChaoticEventName() {
@@ -27,5 +30,13 @@ export default class Joseph extends Card {
 
   getChaoticEventDescription() {
     return this.#chaoticEventDescription;
+  }
+
+  getCurrentDurationInRounds() {
+    return this.#durationInRounds;
+  }
+
+  setCurrentDurationInRounds(newDuration) {
+    this.#durationInRounds = newDuration;
   }
 }

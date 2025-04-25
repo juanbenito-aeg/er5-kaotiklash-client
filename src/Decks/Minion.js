@@ -13,9 +13,11 @@ export default class Minion extends Card {
   #currentAttack;
   #initialConstitution;
   #currentConstitution;
+  #hasUsedArmorPower;
   #initialDefense;
   #currentDefense;
   #weapon;
+  #armor;
 
   constructor(
     category,
@@ -41,7 +43,9 @@ export default class Minion extends Card {
     this.#initialAttack = this.#currentAttack = initialAttack;
     this.#initialConstitution = this.#currentConstitution = initialConstitution;
     this.#initialDefense = this.#currentDefense = initialDefense;
+    this.#hasUsedArmorPower = false;
     this.#weapon = null;
+    this.#armor = null;
   }
 
   getMinionTypeID() {
@@ -56,6 +60,10 @@ export default class Minion extends Card {
     return this.#currentHP;
   }
 
+  setCurrentHP(newHP) {
+    this.#currentHP = newHP;
+  }
+
   getInitialMadness() {
     return this.#initialMadness;
   }
@@ -64,12 +72,20 @@ export default class Minion extends Card {
     return this.#currentMadness;
   }
 
+  setCurrentMadness(newMadness) {
+    this.#currentMadness = newMadness;
+  }
+
   getInitialAttack() {
     return this.#initialAttack;
   }
 
   getCurrentAttack() {
     return this.#currentAttack;
+  }
+
+  setCurrentAttack(newAttack) {
+    this.#currentAttack = newAttack;
   }
 
   getInitialConstitution() {
@@ -88,16 +104,16 @@ export default class Minion extends Card {
     return this.#currentDefense;
   }
 
+  setCurrentDefense(newDefense) {
+    this.#currentDefense = newDefense;
+  }
+
   getInitialStrength() {
     return this.#initialStrength;
   }
 
   getCurrentStrength() {
     return this.#currentStrength;
-  }
-
-  setCurrentMadness(newMadness) {
-    this.#currentMadness = newMadness;
   }
 
   setCurrentStrength(newStrength) {
@@ -108,28 +124,24 @@ export default class Minion extends Card {
     return this.#weapon;
   }
 
+  setWeapon(weapon) {
+    this.#weapon = weapon;
+  }
+
+  removeWeapon() {
+    this.#weapon = null;
+  }
+
+  resetWeaponAttributes() {
+    this.#weapon.resetAttributes();
+  }
+
   getWeaponTypeID() {
     return this.#weapon.getWeaponTypeID();
   }
 
   getWeaponCurrentDamage() {
     return this.#weapon.getCurrentDamage();
-  }
-
-  setCurrentHP(newHP) {
-    this.#currentHP = newHP;
-  }
-
-  setCurrentAttack(newAttack) {
-    this.#currentAttack = newAttack;
-  }
-
-  setCurrentDefense(newDefense) {
-    this.#currentDefense = newDefense;
-  }
-
-  setWeapon(weapon) {
-    this.#weapon = weapon;
   }
 
   getBoxIsPositionedIn(gridWhereToLookForBox, minion) {
@@ -143,7 +155,7 @@ export default class Minion extends Card {
   }
 
   getCritChance() {
-    //Critical Hit Probability (%) = ((Madness + Strength + Attack) / 3) * 0.4
+    // Critical Hit Probability (%) = ((Madness + Strength + Attack) / 3) * 0.4
     const critChance =
       ((this.#currentMadness + this.#currentStrength + this.#currentAttack) /
         3) *
@@ -152,7 +164,7 @@ export default class Minion extends Card {
   }
 
   getFumbleChance() {
-    //Fumble/Self-Damage Probability (%) = ((Madness + Attack) / 2) * 0.2
+    // Fumble/Self-Damage Probability (%) = ((Madness + Attack) / 2) * 0.2
     const fumbleChance =
       ((this.#currentMadness + this.#currentAttack) / 2) * 0.2;
     return fumbleChance;
@@ -163,26 +175,57 @@ export default class Minion extends Card {
   }
 
   getParryFumbleChance() {
-    //Probability (%) = (Madness * 0.005) * 100    const fumbleChance =
-    const fumbleChance = (this.#currentMadness * 0.005) * 100;
+    // Probability (%) = (Madness * 0.005) * 100    const fumbleChance =
+    const fumbleChance = this.#currentMadness * 0.005 * 100;
     return fumbleChance;
   }
 
   getParryCritChance() {
     // Probability (%) = (Madness * 0.0035) * 100
-    const critChance = (this.#currentMadness * 0.0035) * 100;
+    const critChance = this.#currentMadness * 0.0035 * 100;
     return critChance;
   }
 
   getHalfParryFumbleChance() {
-    //The weapon blocks the damage previously calculated * 1.25.
+    // The weapon blocks the damage previously calculated * 1.25.
     // Probability (%) = (Madness * 0.01) * 100
-    const HalffumbleChance = (this.#currentMadness * 0.01) * 100;
+    const HalffumbleChance = this.#currentMadness * 0.01 * 100;
     return HalffumbleChance;
   }
 
-  removeWeapon() {
-    this.#weapon = null;
+  getArmor() {
+    return this.#armor;
   }
 
+  setArmor(armor) {
+    this.#armor = armor;
+  }
+
+  removeArmor() {
+    this.#armor = null;
+  }
+
+  resetArmorAttributes() {
+    this.#armor.resetAttributes();
+  }
+
+  getArmorID() {
+    return this.#armor.getID();
+  }
+
+  getArmorTypeID() {
+    return this.#armor.getArmorTypeID();
+  }
+
+  getArmorCurrentDurability() {
+    return this.#armor.getCurrentDurability();
+  }
+
+  setCurrentDurability(newDurability) {
+    this.#armor.setCurrentDurability(newDurability);
+  }
+
+  resetArmorAttributes() {
+    this.#armor.resetAttributes();
+  }
 }

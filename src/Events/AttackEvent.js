@@ -1,7 +1,10 @@
 import Event from "./Event.js";
 import StateMessage from "../Messages/StateMessage.js";
-import { PlayerID, WeaponTypeID } from "../Game/constants.js";
-import { globals } from "../index.js";
+import CloakOfEternalShadowSpecialEffect from "./CloakOfEternalShadowSpecialEffect.js";
+import ShieldOfTheAncestralOakEffect from "./ShieldOfTheAncestralOakEffect.js";
+import BracersOfTheWarLionSpecialEffect from "./BracersOfTheWarLionSpecialEffect.js";
+import globals from "../Game/globals.js";
+import { ArmorID, PlayerID, WeaponTypeID } from "../Game/constants.js";
 
 export default class AttackEvent extends Event {
   #attacker;
@@ -9,8 +12,9 @@ export default class AttackEvent extends Event {
   #currentPlayerMovementGrid;
   #enemyMovementGrid;
   #parry;
+  #isArmorPowerChosen;
   #eventDeck;
-  #stateMessage;
+  #stateMessages;
   #player;
 
   constructor(
@@ -19,8 +23,9 @@ export default class AttackEvent extends Event {
     currentPlayerMovementGrid,
     enemyMovementGrid,
     parry,
+    isArmorPowerChosen,
     eventDeck,
-    stateMessage,
+    stateMessages,
     player
   ) {
     super();
@@ -30,36 +35,54 @@ export default class AttackEvent extends Event {
     this.#currentPlayerMovementGrid = currentPlayerMovementGrid;
     this.#enemyMovementGrid = enemyMovementGrid;
     this.#parry = parry;
+    this.#isArmorPowerChosen = isArmorPowerChosen;
     this.#eventDeck = eventDeck;
-    this.#stateMessage = stateMessage;
+    this.#stateMessages = stateMessages;
     this.#player = player;
   }
 
-  static create(
-    attacker,
-    target,
-    currentPlayerMovementGrid,
-    enemyMovementGrid,
-    parry,
-    eventDeck,
-    stateMessage,
-    player
-  ) {
-    const attackEvent = new AttackEvent(
-      attacker,
-      target,
-      currentPlayerMovementGrid,
-      enemyMovementGrid,
-      parry,
-      eventDeck,
-      stateMessage,
-      player
-    );
-
-    return attackEvent;
-  }
-
   execute() {
+    if (
+      this.#isArmorPowerChosen &&
+      this.#target.getArmorID() === ArmorID.CLOAK_ETERNAL_SHADOW
+    ) {
+      this.#handleCloakPower();
+      return;
+    }
+
+    if (
+      globals.shieldOfBalanceActive &&
+      this.#player.getID() !== globals.shieldOfBalanceOwner
+    ) {
+      let targetBox = this.#target.getBoxIsPositionedIn(
+        this.#enemyMovementGrid,
+        this.#target
+      );
+
+      let nullifiedMessage = new StateMessage(
+        "ATTACK NULLIFIED BY SHIELD OF BALANCE!",
+        "50px MedievalSharp",
+        "red",
+        2,
+        targetBox.getCard().getXCoordinate() +
+          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width / 2,
+        targetBox.getCard().getYCoordinate() +
+          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2
+      );
+      this.#stateMessages.push(nullifiedMessage);
+
+      return;
+    }
+
+    const targetHasBreastplatePrimordialColossus =
+      this.#isArmorPowerChosen &&
+      this.#target.getArmorID() === ArmorID.BREASTPLATE_PRIMORDIAL_COLOSSUS;
+
+    let breastplatePrimordialColossusOwner;
+    if (targetHasBreastplatePrimordialColossus) {
+      breastplatePrimordialColossusOwner = this.#target;
+    }
+
     let damageToInflict;
 
     let roll = Math.floor(Math.random() * 100 + 1);
@@ -67,31 +90,42 @@ export default class AttackEvent extends Event {
     let fumbreProb = this.#attacker.getFumbleChance();
     let chances = critProb + fumbreProb;
     let fumble = false;
-    let targetWeapon = this.#target.getWeapon();
+
+    if (
+      !targetHasBreastplatePrimordialColossus &&
+      roll > critProb &&
+      roll <= chances
+    ) {
+      // FUMBLE
+      console.log("Fumble");
+      fumble = true;
+    }
+
+    if (targetHasBreastplatePrimordialColossus || fumble) {
+      this.#target = this.#attacker;
+    }
+
     let attackerWeapon = this.#attacker.getWeapon();
+    let targetWeapon = this.#target.getWeapon();
+    let targetArmor = this.#target.getArmor();
 
     let isPlayer1Debuffed = false;
     let isPlayer2Debuffed = false;
     let debuff = 10;
 
-    if(globals.curseOfTheBoundTitanEventData.isActive === true) {
-      if(this.#player.getID() === PlayerID.PLAYER_1 && globals.curseOfTheBoundTitanEventData.isPlayer1Affected) {
+    if (globals.curseOfTheBoundTitanEventData.isActive === true) {
+      if (
+        this.#player.getID() === PlayerID.PLAYER_1 &&
+        globals.curseOfTheBoundTitanEventData.isPlayer1Affected
+      ) {
         isPlayer1Debuffed = true;
       }
-      if(this.#player.getID() === PlayerID.PLAYER_2 && globals.curseOfTheBoundTitanEventData.isPlayer2Affected) {
+      if (
+        this.#player.getID() === PlayerID.PLAYER_2 &&
+        globals.curseOfTheBoundTitanEventData.isPlayer2Affected
+      ) {
         isPlayer2Debuffed = true;
       }
-    }
-
-    if (roll > critProb && roll <= chances) {
-      // FUMBLE
-
-      console.log("Fumble");
-      fumble = true;
-    }
-
-    if (fumble) {
-      this.#target = this.#attacker;
     }
 
     if (!attackerWeapon && this.#parry === false) {
@@ -225,7 +259,7 @@ export default class AttackEvent extends Event {
     }
 
     let targetBox;
-    if (fumble) {
+    if (targetHasBreastplatePrimordialColossus || fumble) {
       targetBox = this.#target.getBoxIsPositionedIn(
         this.#currentPlayerMovementGrid,
         this.#target
@@ -247,6 +281,7 @@ export default class AttackEvent extends Event {
     if (damageToInflict < 0) {
       damageToInflict = 0;
     }
+
     let crit = false;
     if (roll <= critProb) {
       // CRITICAL HIT
@@ -268,15 +303,9 @@ export default class AttackEvent extends Event {
         this.#attacker
       );
       if (attackerWeapon.getCurrentDurability() <= 0) {
-        const weaponMessage = new StateMessage(
-          "weapon broke!",
-          "20px MedievalSharp",
-          "red",
-          4,
-          attackerBox.getCard().getXCoordinate(),
-          attackerBox.getCard().getYCoordinate() + 10
-        );
-        this.#stateMessage.push(weaponMessage);
+        this.weaponMessage(attackerBox);
+        this.#attacker.resetWeaponAttributes();
+        this.#eventDeck.insertCard(this.#attacker.getWeapon());
         this.#attacker.removeWeapon();
       }
     }
@@ -297,82 +326,162 @@ export default class AttackEvent extends Event {
 
     if (this.#parry) {
       console.log("Parry");
-      if (parryRoll <= parryCritProb) {                                                   // PARRY CRIT
+      if (parryRoll <= parryCritProb) {
+        // PARRY CRIT
         console.log("Parry Crit");
-        parryCrit = true; 
-      } else if(parryRoll > parryCritProb && parryRoll <= parryFumbleChances) {           // PARRY FUMBLE
+        parryCrit = true;
+      } else if (parryRoll > parryCritProb && parryRoll <= parryFumbleChances) {
+        // PARRY FUMBLE
         console.log("Parry Fumble");
         parryFumble = true;
-      } else if(parryRoll > parryFumbleChances && parryRoll <= parryHalfFumbleChances) {  // PARRY HALF FUMBLE
+      } else if (
+        parryRoll > parryFumbleChances &&
+        parryRoll <= parryHalfFumbleChances
+      ) {
+        // PARRY HALF FUMBLE
         console.log("Parry Half Fumble");
         parryHalfFumble = true;
-      } 
+      }
     }
-    
-    if (roll <= critProb) { // CRITICAL HIT
+
+    if (roll <= critProb) {
+      // CRITICAL HIT
       console.log("Critical Hit");
       damageToInflict = damageToInflict * 1.75;
-      damageToInflict = Math.floor(damageToInflict)
-    } 
-
-    if(this.#parry === true && !fumble && this.#target.getWeapon()) {  // PARRY
-      
-      if(targetWeapon.getCurrentDurability() >= damageToInflict) {
-      if(parryFumble) {             // PARRY FUMBLE
-        damageToInflict = targetWeapon.getCurrentDurability();
-        this.parryFumbleMessage(damageToInflict,targetBox);
-      } else if (parryHalfFumble) { // PARRY HALF FUMBLE
-        damageToInflict = damageToInflict * 1.25;
-        damageToInflict = Math.floor(damageToInflict)
-        this.parryHalfFumbleMessage(damageToInflict,targetBox);
-      } else if(parryCrit) {        // PARRY CRIT 
-        damageToInflict = 0;
-        this.parryCritMessage(damageToInflict,targetBox);
-      } else {
-        this.parryMessage(damageToInflict,targetBox);
-      }
-    } else { //NO DURABILITY PARRY
-      if(noDurabilityRoll === 1 && noDurabilityRoll === 2) {  //NO DURABILITY CRIT
-        damageToInflict = targetWeapon.getCurrentDurability();
-        this.parryCritMessage(damageToInflict,targetBox);
-      } else if(noDurabilityRoll === 3) {                     //NO DURABILITY FUMBLE
-        storedDamage = damageToInflict
-        damageToInflict = targetWeapon.getCurrentDurability();
-        this.parryFumbleMessage(damageToInflict,targetBox);
-        this.damageMessage(storedDamage,targetBox,"red");
-      } else {
-        let NewDurability = targetWeapon.getCurrentDurability() - damageToInflict
-        console.log("currentDurability: " + targetWeapon.getCurrentDurability())
-        console.log("damageToInflict: " + damageToInflict)
-        console.log("NewDurability: " + NewDurability)
-        console.log(targetWeapon.getCurrentDurability() - NewDurability)
-
-        this.parryMessage((targetWeapon.getCurrentDurability() - NewDurability) ,targetBox);
-      }
-      
+      damageToInflict = Math.floor(damageToInflict);
     }
-      let targetNewDurability = targetWeapon.getCurrentDurability() - damageToInflict;
+
+    if (this.#parry === true && !fumble && this.#target.getWeapon()) {
+      // PARRY
+
+      if (
+        this.#attacker.getArmor() &&
+        this.#attacker.getArmor().getID() ===
+          ArmorID.SHIELD_OF_THE_ANCESTRAL_OAK
+      ) {
+        ShieldOfTheAncestralOakEffect.applyCounterAttack(
+          this.#target,
+          this.#stateMessages
+        );
+      } else if (
+        this.#target.getArmor() &&
+        this.#target.getArmor().getID() === ArmorID.SHIELD_OF_THE_ANCESTRAL_OAK
+      ) {
+        ShieldOfTheAncestralOakEffect.applyCounterAttack(
+          this.#attacker,
+          this.#stateMessages
+        );
+      }
+
+      if (
+        this.#attacker.getArmor() &&
+        this.#attacker.getArmor().getID() === ArmorID.BRACERS_OF_THE_WAR_LION
+      ) {
+        damageToInflict = BracersOfTheWarLionSpecialEffect.activeBoost(
+          damageToInflict,
+          this.#attacker,
+          this.#stateMessages
+        );
+      }
+
+      if (targetWeapon.getCurrentDurability() >= damageToInflict) {
+        if (parryFumble) {
+          // PARRY FUMBLE
+          damageToInflict = targetWeapon.getCurrentDurability();
+          this.parryFumbleMessage(damageToInflict, targetBox);
+        } else if (parryHalfFumble) {
+          // PARRY HALF FUMBLE
+          damageToInflict = damageToInflict * 1.25;
+          damageToInflict = Math.floor(damageToInflict);
+          this.parryHalfFumbleMessage(damageToInflict, targetBox);
+        } else if (parryCrit) {
+          // PARRY CRIT
+          damageToInflict = 0;
+          this.parryCritMessage(damageToInflict, targetBox);
+        } else {
+          this.parryMessage(damageToInflict, targetBox);
+        }
+      } else {
+        //NO DURABILITY PARRY
+        if (noDurabilityRoll === 1 && noDurabilityRoll === 2) {
+          //NO DURABILITY CRIT
+          damageToInflict = targetWeapon.getCurrentDurability();
+          this.parryCritMessage(damageToInflict, targetBox);
+        } else if (noDurabilityRoll === 3) {
+          //NO DURABILITY FUMBLE
+          storedDamage = damageToInflict;
+          damageToInflict = targetWeapon.getCurrentDurability();
+          this.parryFumbleMessage(damageToInflict, targetBox);
+          this.damageMessage(storedDamage, targetBox, "red");
+        } else {
+          let NewDurability =
+            targetWeapon.getCurrentDurability() - damageToInflict;
+          console.log(
+            "currentDurability: " + targetWeapon.getCurrentDurability()
+          );
+          console.log("damageToInflict: " + damageToInflict);
+          console.log("NewDurability: " + NewDurability);
+          console.log(targetWeapon.getCurrentDurability() - NewDurability);
+
+          this.parryMessage(
+            targetWeapon.getCurrentDurability() - NewDurability,
+            targetBox
+          );
+        }
+      }
+      let targetNewDurability =
+        targetWeapon.getCurrentDurability() - damageToInflict;
       if (targetNewDurability < 0) {
         storedDamage = Math.abs(targetNewDurability);
         targetNewDurability = 0;
-        this.damageMessage(storedDamage,targetBox,"lightblue");
+        this.damageMessage(storedDamage, targetBox, "lightblue");
       }
       targetWeapon.setCurrentDurability(targetNewDurability);
 
       if (targetWeapon.getCurrentDurability() <= 0) {
-        const weaponMessage = new StateMessage(
-          "weapon broke!",
-          "20px MedievalSharp",
-          "red",
-          4,
-          targetBox.getCard().getXCoordinate(),
-          targetBox.getCard().getYCoordinate() + 10
-        );
+        this.weaponMessage(targetBox);
+        this.#target.resetWeaponAttributes();
         this.#eventDeck.insertCard(targetWeapon);
         this.#target.removeWeapon();
+
+        if (targetArmor) {
+          let armorNewDurability =
+            targetArmor.getCurrentDurability() - storedDamage;
+          if (armorNewDurability < 0) {
+            this.#applyOverflowDamage(targetArmor, targetBox);
+          }
+
+          targetArmor.setCurrentDurability(armorNewDurability);
+
+          if (targetArmor.getCurrentDurability() <= 0) {
+            this.#createAndStoreArmorBrokeMsg(targetBox);
+            this.#target.resetArmorAttributes();
+            this.#eventDeck.insertCard(this.#target.getArmor());
+            this.#target.removeArmor();
+          }
+        }
+      }
+    } else {
+      if (targetArmor && damageToInflict > 0) {
+        let armorNewDurability =
+          targetArmor.getCurrentDurability() - damageToInflict;
+
+        if (armorNewDurability < 0) {
+          this.#applyOverflowDamage(targetArmor, targetBox);
+        }
+
+        targetArmor.setCurrentDurability(armorNewDurability);
+
+        if (targetArmor.getCurrentDurability() <= 0) {
+          this.#createAndStoreArmorBrokeMsg(targetBox);
+          this.#target.resetArmorAttributes();
+          this.#eventDeck.insertCard(this.#target.getArmor());
+          this.#target.removeArmor();
+        }
+
+        damageToInflict = 0;
       }
 
-    } else {
       let targetNewCurrentHP = this.#target.getCurrentHP() - damageToInflict;
 
       if (targetNewCurrentHP < 0) {
@@ -381,26 +490,32 @@ export default class AttackEvent extends Event {
 
       this.#target.setCurrentHP(targetNewCurrentHP);
     }
-    let targetNewCurrentHPstored = this.#target.getCurrentHP() - storedDamage;
-    if (targetNewCurrentHPstored < 0) {
-      targetNewCurrentHPstored = 0;
+
+    let targetNewCurrentHPStored = this.#target.getCurrentHP() - storedDamage;
+    if (targetNewCurrentHPStored < 0) {
+      targetNewCurrentHPStored = 0;
     }
-    this.#target.setCurrentHP(targetNewCurrentHPstored);
-  
+    this.#target.setCurrentHP(targetNewCurrentHPStored);
+
+    if (targetHasBreastplatePrimordialColossus) {
+      // IF THE TARGET HAS THE "Breastplate of the Primordial Colossus" EQUIPPED & USED ITS POWER, RESET THE ARMOR'S ATTRIBUTES, INSERT IT INTO THE EVENTS DECK & REMOVE IT FROM ITS OWNER
+      this.#finishBreastplatePrimordialColossusPower(
+        breastplatePrimordialColossusOwner
+      );
+    }
+
     if (damageToInflict > 0) {
       damageToInflict = damageToInflict * -1;
     }
-    
-    if (fumble) { 
-        this.fumbleMessage(targetBox)
-        this.damageMessage(damageToInflict,targetBox,"red");
 
-        fumble = false;
+    if (fumble) {
+      this.fumbleMessage(targetBox);
+      this.damageMessage(damageToInflict, targetBox, "red");
     } else if (crit) {
       this.critMessage(targetBox);
-      this.damageMessage(damageToInflict,targetBox,"gold");
+      this.damageMessage(damageToInflict, targetBox, "gold");
     } else if (!this.#parry) {
-    this.damageMessage(damageToInflict,targetBox,"red");
+      this.damageMessage(damageToInflict, targetBox, "red");
     }
   }
 
@@ -419,64 +534,81 @@ export default class AttackEvent extends Event {
     return newdamageToInflict;
   }
 
-  parryMessage(damageToInflict,targetBox) {
+  parryMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
       `Parry!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
-      4,
+      2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
-    this.#stateMessage.push(parryMessage);
+    this.#stateMessages.push(parryMessage);
   }
 
-  parryFumbleMessage(damageToInflict,targetBox) {
+  parryFumbleMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
       `Parry fumble!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
-      4,
+      2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
-    this.#stateMessage.push(parryMessage);
+    this.#stateMessages.push(parryMessage);
   }
 
-  parryHalfFumbleMessage(damageToInflict,targetBox) {
+  parryHalfFumbleMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
       `Parry Half Fumble!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
-      4,
+      2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
-    this.#stateMessage.push(parryMessage);
+    this.#stateMessages.push(parryMessage);
   }
 
-  parryCritMessage(damageToInflict,targetBox) {
+  parryCritMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
       `Parry Crit!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
-      4,
+      2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
-    this.#stateMessage.push(parryMessage);
+    this.#stateMessages.push(parryMessage);
   }
 
-  damageMessage(damageToInflict,targetBox,color) {
+  damageMessage(damageToInflict, targetBox, color) {
     const damageMessage = new StateMessage(
       damageToInflict,
-      "40px MedievalSharp",
+      "20px MedievalSharp",
       color,
-      4,
+      2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() + 55
     );
-    this.#stateMessage.push(damageMessage);
+    this.#stateMessages.push(damageMessage);
+  }
+
+  #finishBreastplatePrimordialColossusPower(
+    breastplatePrimordialColossusOwner
+  ) {
+    // CREATE AND STORE THE "ARMOR BROKE!" STATE MESSAGE
+    const breastplatePrimordialColossusOwnerBox =
+      breastplatePrimordialColossusOwner.getBoxIsPositionedIn(
+        this.#enemyMovementGrid,
+        breastplatePrimordialColossusOwner
+      );
+    this.#createAndStoreArmorBrokeMsg(breastplatePrimordialColossusOwnerBox);
+
+    // RESET THE ARMOR'S ATTRIBUTES, INSERT IT INTO THE EVENTS DECK & REMOVE IT FROM ITS OWNER
+    breastplatePrimordialColossusOwner.resetArmorAttributes();
+    this.#eventDeck.insertCard(breastplatePrimordialColossusOwner.getArmor());
+    breastplatePrimordialColossusOwner.removeArmor();
   }
 
   critMessage(targetBox) {
@@ -484,11 +616,11 @@ export default class AttackEvent extends Event {
       "Critical Hit!",
       "60px MedievalSharp",
       "gold",
-      4,
+      2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
-    this.#stateMessage.push(critMessage);
+    this.#stateMessages.push(critMessage);
   }
 
   fumbleMessage(targetBox) {
@@ -496,23 +628,68 @@ export default class AttackEvent extends Event {
       "Fumble!",
       "60px MedievalSharp",
       "red",
-      4,
+      2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55
     );
-    this.#stateMessage.push(fumbleMessage);
+    this.#stateMessages.push(fumbleMessage);
   }
 
   weaponMessage(targetBox) {
     const weaponMessage = new StateMessage(
-      "weapon broke!",
+      "WEAPON BROKE!",
       "20px MedievalSharp",
-      "red",
+      "gray",
       4,
-      targetBox.getCard().getXCoordinate(),
+      targetBox.getCard().getXCoordinate() - 100,
       targetBox.getCard().getYCoordinate() + 10
     );
-    this.#stateMessage.push(weaponMessage);
+    this.#stateMessages.push(weaponMessage);
+  }
+
+  #createAndStoreArmorBrokeMsg(armorOwnerBox) {
+    const armorBrokeMsg = new StateMessage(
+      "ARMOR BROKE!",
+      "20px MedievalSharp",
+      "gray",
+      4,
+      armorOwnerBox.getCard().getXCoordinate() + 208,
+      armorOwnerBox.getCard().getYCoordinate() + 10
+    );
+    this.#stateMessages.push(armorBrokeMsg);
+  }
+
+  #applyOverflowDamage(armor, targetBox) {
+    const overflow = Math.abs(armor.getCurrentDurability());
+    armor.setCurrentDurability(0);
+
+    const newHP = this.#target.getCurrentHP() - overflow;
+    this.#target.setCurrentHP(Math.max(0, newHP));
+
+    this.damageMessage(overflow, targetBox, "lightblue");
+  }
+
+  #handleCloakPower() {
+    const canDodge = CloakOfEternalShadowSpecialEffect.canDodge(
+      this.#target,
+      this.#isArmorPowerChosen,
+      this.#attacker.getWeaponTypeID()
+    );
+
+    if (canDodge) {
+      const dodgeMessage = new StateMessage(
+        "WIZARD DODGED THE ATTACK USING CLOAK OF ETERNAL SHADOW!",
+        "45px MedievalSharp",
+        "aqua",
+        3,
+        this.#target.getXCoordinate(),
+        this.#target.getYCoordinate() - 30
+      );
+      this.#stateMessages.push(dodgeMessage);
+      this.#isArmorPowerChosen = false;
+      this.#eventDeck.insertCard(this.#target.getArmor());
+      this.#target.removeArmor();
+      return;
+    }
   }
 }
-

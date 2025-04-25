@@ -17,24 +17,157 @@ body {
   align-items: center;
 }
 
+/* UTILITIES */
+
 .error-message {
   color: red;
 }
 
-#register-screen {
+/* MAIN SCREEN */
+
+#main-screen {
   width: 100%;
   min-height: 100vh;
-  display: none;
-  justify-content: center;
-  align-items: center;
+  background-color: rgb(10 14 23);
+  background-image: url("../images/inn-outside.png");
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  background-position: center;
 }
 
+#main-screen-elems-container {
+  width: 47.75vh;
+  height: 61.5vh;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+}
+
+#inn-door {
+  width: 6.25vh;
+  height: 13.75vh;
+  border-radius: 1rem;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  transition: box-shadow 0.85s;
+  cursor: pointer;
+}
+
+#inn-door:hover {
+  box-shadow: 0 0 1.25rem rgb(252 231 172) inset;
+}
+
+/* LANGUAGE BUTTONS */
+
+#lang-btns {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#eng-btn,
+#eus-btn {
+  width: 60px;
+  height: 34px;
+  background-size: cover;
+}
+
+#eng-btn {
+  background-image: url("../images/eng-flag.png");
+}
+
+#eus-btn {
+  background-image: url("../images/eus-flag.png");
+}
+
+/* COMMON STYLES */
+
+#login-screen,
 #register-screen,
-#login-screen {
+#player-session-screen {
+  display: none;
+  width: 100%;
+  min-height: 100vh;
+}
+
+#login-screen,
+#register-screen {
   background: url("../images/entrance_door.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+/* LOGIN SCREEN */
+
+#login-screen {
+  font-size: xx-large;
+}
+
+#login-form {
+  position: absolute;
+  margin-top: 25vh;
+  margin-left: 80vh;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 30px;
+  border-radius: 10px;
+  width: 400px;
+  color: white;
+  text-align: left;
+}
+
+#login-btn,
+#reset-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  border: none;
+  background: white;
+  color: black;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#login-btn:hover,
+#reset-btn:hover {
+  text-decoration: underline;
+  color: #ddd1d1af;
+}
+
+#login-email {
+  width: 300px;
+  height: 30px;
+  font-size: x-large;
+}
+
+#login-password {
+  width: 300px;
+  height: 30px;
+  font-size: x-large;
+}
+
+#login-btn {
+  width: 145px;
+  height: 50px;
+  font-size: x-large;
+}
+
+#login-para {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+/* REGISTRATION SCREEN */
+
+#register-screen {
+  justify-content: center;
+  align-items: center;
 }
 
 #register-box {
@@ -92,99 +225,9 @@ input:focus {
   text-align: left;
 }
 
-#login-para {
-  margin-top: 20px;
-  font-size: 1.2rem;
-  text-align: center;
-}
-
-#login-screen {
-  font-size: xx-large;
-  width: 100%;
-  min-height: 100vh;
-}
-
-#login-form {
-  position: absolute;
-  margin-top: 25vh;
-  margin-left: 80vh;
-  background: rgba(0, 0, 0, 0.8);
-  padding: 30px;
-  border-radius: 10px;
-  width: 400px;
-  color: white;
-  text-align: left;
-}
-
-#eus-btn {
-  width: 75px;
-  height: 45px;
-  background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Flag_of_the_Basque_Country.svg/2560px-Flag_of_the_Basque_Country.svg.png);
-  background-size: 75px;
-}
-
-#eng-btn {
-  position: absolute;
-  width: 75px;
-  height: 45px;
-  background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/1280px-Flag_of_the_United_Kingdom_%283-5%29.svg.png);
-  background-size: 75px;
-}
-
-#login-btn,
-#reset-btn {
-  width: 100%;
-  padding: 12px;
-  margin-top: 15px;
-  border: none;
-  background: white;
-  color: black;
-  font-size: 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-#login-btn:hover,
-#reset-btn:hover {
-  text-decoration: underline;
-  color: #ddd1d1af;
-}
-
-#delete-ls-btn {
-  width: 300px;
-  height: 30px;
-  background-size: 75px;
-}
-
-#login-email {
-  width: 300px;
-  height: 30px;
-  font-size: x-large;
-}
-
-#login-password {
-  width: 300px;
-  height: 30px;
-  font-size: x-large;
-}
-
-#login-btn {
-  width: 145px;
-  height: 50px;
-  font-size: x-large;
-}
-
-#reset {
-  width: 145px;
-  height: 30px;
-  font-size: x-large;
-}
+/* PLAYER SESSION SCREEN */
 
 #player-session-screen {
-  width: 100%;
-  min-height: 100vh;
-  display: none;
   justify-content: center;
   align-items: center;
   background-image: url("../images/player_session_background.png");
@@ -227,6 +270,8 @@ input:focus {
   padding: 0.5em 1.25em;
   font-size: 1.25rem;
 }
+
+/* GAME SCREEN */
 
 #game-screen {
   display: none;

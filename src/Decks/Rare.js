@@ -4,6 +4,8 @@ export default class Rare extends Card {
   #effect;
   #initialDurationInRounds;
   #currentDurationInRounds;
+  #initialPrepTimeInRounds;
+  #currentPrepTimeInRounds;
 
   constructor(
     category,
@@ -11,13 +13,16 @@ export default class Rare extends Card {
     name,
     description,
     effect,
-    initialDurationInRounds
+    initialDurationInRounds,
+    initialPrepTimeInRounds
   ) {
     super(category, id, name, description);
 
     this.#effect = effect;
     this.#initialDurationInRounds = this.#currentDurationInRounds =
       initialDurationInRounds;
+    this.#initialPrepTimeInRounds = this.#currentPrepTimeInRounds =
+      initialPrepTimeInRounds;
   }
 
   getEffect() {
@@ -32,11 +37,24 @@ export default class Rare extends Card {
     return this.#currentDurationInRounds;
   }
 
-  getCurrentPrepTimeInRounds() {
-    return 0;
+  setCurrentDurationInRounds(newDuration) {
+    this.#currentDurationInRounds = newDuration;
   }
 
-  setCurrentDurationInRounds(currentDurationInRounds) {
-    this.#currentDurationInRounds = currentDurationInRounds;
+  getInitialPrepTimeInRounds() {
+    return this.#initialPrepTimeInRounds;
+  }
+
+  getCurrentPrepTimeInRounds() {
+    return this.#currentPrepTimeInRounds;
+  }
+
+  setCurrentPrepTimeInRounds(newPrepTimeInRounds) {
+    this.#currentPrepTimeInRounds = newPrepTimeInRounds;
+  }
+
+  resetAttributes() {
+    this.#currentDurationInRounds = this.#initialDurationInRounds;
+    this.#currentPrepTimeInRounds = this.#initialPrepTimeInRounds;
   }
 }

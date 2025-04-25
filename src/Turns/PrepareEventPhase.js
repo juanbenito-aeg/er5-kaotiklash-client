@@ -1,6 +1,7 @@
 import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import PrepareEvent from "../Events/PrepareEvent.js";
+import globals from "../Game/globals.js";
 import {
   PrepareEventState,
   CardState,
@@ -9,7 +10,6 @@ import {
   DeckType,
   GridType,
 } from "../Game/constants.js";
-import { globals } from "../index.js";
 
 export default class PrepareEventPhase extends Phase {
   #player;
@@ -189,11 +189,7 @@ export default class PrepareEventPhase extends Phase {
 
     selectedCard.setState(CardState.PLACED);
 
-    const prepareEvent = PrepareEvent.create(
-      this.#player,
-      this.#decksRelevants[1]
-    );
-
+    const prepareEvent = PrepareEvent.create(this.#player, selectedCard);
     this.#events.push(prepareEvent);
 
     this._state = PrepareEventState.INIT;

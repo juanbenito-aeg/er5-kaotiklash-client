@@ -2,18 +2,16 @@ import Event from "./Event.js";
 import { EventCooldownState } from "../Game/constants.js";
 
 export default class PrepareEvent extends Event {
-  #preparationEventDeck;
   #currentState;
 
-  constructor(executedBy, preparationEventDeck) {
-    super(executedBy);
+  constructor(executedBy, eventCard) {
+    super(executedBy, eventCard);
 
-    this.#preparationEventDeck = preparationEventDeck;
     this.#currentState = EventCooldownState.UNINITIALIZED;
   }
 
-  static create(executedBy, preparationEventDeck) {
-    return new PrepareEvent(executedBy, preparationEventDeck);
+  static create(executedBy, eventCard) {
+    return new PrepareEvent(executedBy, eventCard);
   }
 
   execute(currentPlayer) {
@@ -22,7 +20,6 @@ export default class PrepareEvent extends Event {
       case EventCooldownState.UNINITIALIZED:
         if (currentPlayer === this._executedBy) {
           this.#currentState = EventCooldownState.INITIALIZED;
-          this._lastPlayer = currentPlayer;
         }
         break;
 
@@ -45,29 +42,16 @@ export default class PrepareEvent extends Event {
   }
 
   #reducePreparationTime() {
-    let cards = this.#preparationEventDeck.getCards();
-    let reductionOccurred = false;
+    let remainingTime = this._eventCard.getCurrentPrepTimeInRounds();
 
-    for (let i = 0; i < cards.length; i++) {
-      let remainingTime = cards[i].getCurrentPrepTimeInRounds();
-
-      if (remainingTime > 0) {
-        cards[i].setCurrentPrepTimeInRounds(remainingTime - 1);
-        reductionOccurred = true;
-        break;
-      }
+    if (remainingTime > 0) {
+      this._eventCard.setCurrentPrepTimeInRounds(remainingTime - 1);
     }
   }
 
   isActive() {
-    let cards = this.#preparationEventDeck.getCards();
-
-    for (let i = 0; i < cards.length; i++) {
-      if (cards[i].getCurrentPrepTimeInRounds() > 0) {
-        return true;
-      }
+    if (this._eventCard.getCurrentPrepTimeInRounds() > 0) {
+      return true;
     }
-
-    return false;
   }
 }

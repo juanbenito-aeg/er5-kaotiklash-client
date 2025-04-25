@@ -1,7 +1,8 @@
 import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
-import AttackEvent from "../Events/AttackEvent.js";
 import StateMessage from "../Messages/StateMessage.js";
+import AttackEvent from "../Events/AttackEvent.js";
+import globals from "../Game/globals.js";
 import {
   PlayerID,
   CardState,
@@ -9,8 +10,10 @@ import {
   GridType,
   AttackPhaseState,
   WeaponTypeID,
+  AttackMenuBtn,
+  MinionTypeID,
+  ArmorID,
 } from "../Game/constants.js";
-import { globals } from "../index.js";
 
 export default class AttackPhase extends Phase {
   #enemyMovementGrid;
@@ -19,10 +22,12 @@ export default class AttackPhase extends Phase {
   #enemyMinionsDeck;
   #currentPlayerMovementGridDeck;
   #currentPlayerMinionsDeck;
-  #parry;
+  #isParryChosen;
+  #isArmorPowerChosen;
   #eventDeck;
   #stateMessages;
   #player;
+  #attackMenuData;
 
   constructor(
     state,
@@ -36,7 +41,8 @@ export default class AttackPhase extends Phase {
     currentPlayerMinionsDeck,
     eventDeck,
     stateMessages,
-    player
+    player,
+    attackMenuData
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -46,10 +52,12 @@ export default class AttackPhase extends Phase {
     this.#enemyMinionsDeck = enemyMinionsDeck;
     this.#currentPlayerMovementGridDeck = currentPlayerMovementGridDeck;
     this.#currentPlayerMinionsDeck = currentPlayerMinionsDeck;
-    this.#parry = false;
+    this.#isParryChosen = false;
+    this.#isArmorPowerChosen = false;
     this.#eventDeck = eventDeck;
     this.#stateMessages = stateMessages;
     this.#player = player;
+    this.#attackMenuData = attackMenuData;
   }
 
   static create(
@@ -60,7 +68,8 @@ export default class AttackPhase extends Phase {
     events,
     currentPlayer,
     phaseMessage,
-    stateMessages
+    stateMessages,
+    attackMenuData
   ) {
     let enemyMovementGrid;
     let currentPlayerMovementGrid;
@@ -116,7 +125,8 @@ export default class AttackPhase extends Phase {
       currentPlayerMinionsDeck,
       eventDeck,
       stateMessages,
-      player
+      player,
+      attackMenuData
     );
 
     return attackPhase;
@@ -125,178 +135,49 @@ export default class AttackPhase extends Phase {
   execute() {
     let isPhaseFinished = false;
 
-    let attacker;
-    let target;
     switch (this._state) {
       // PHASE INITIALIZATION
       case AttackPhaseState.INIT:
-        console.log("INIT");
-
-        this.#resetRelevantCardsStates([
-          this.#enemyMovementGridDeck,
-          this.#currentPlayerMovementGridDeck,
-        ]);
-
-        this._state = AttackPhaseState.SELECT_ATTACKER;
-
+        this.#initializePhase();
         break;
 
       // ATTACKER SELECTION
       case AttackPhaseState.SELECT_ATTACKER:
-        console.log("ATTACKER SELECTION");
-
-        this._phaseMessage.setCurrentContent(
-          PhaseMessage.content.attack.selectAttacker[globals.language]
-        );
-
-        attacker = this.#currentPlayerMovementGridDeck.lookForHoveredCard();
-        
-
-        
-        if (attacker) {
-          if(this.#player.getID() === PlayerID.PLAYER_1 && globals.curseOfTheBoundTitanEventData.isPlayer1Affected) {
-            console.log("CURSE OF THE BOUND TITAN EVENT DATA PLAYER 1 AFFECTED");
-            const debuffMessage = new StateMessage(
-              "Minion Debuffed",
-              "20px MedievalSharp",
-              "red",
-              0.01,
-              attacker.getXCoordinate() + 55,
-              attacker.getYCoordinate() + 10
-            );
-            this.#stateMessages.push(debuffMessage);
-          }
-          if(this.#player.getID() === PlayerID.PLAYER_2 && globals.curseOfTheBoundTitanEventData.isPlayer2Affected) {
-            const debuffMessage = new StateMessage(
-              "Minion Debuffed",
-              "20px MedievalSharp",
-              "red",
-              0.01,
-              attacker.getXCoordinate() + 55,
-              attacker.getYCoordinate() + 10
-            );
-            this.#stateMessages.push(debuffMessage);
-          }
-          if (!attacker.isLeftClicked()) {
-            attacker.setState(CardState.HOVERED);
-          } else {
-          
-            console.log("ATTACKER SELECTED");
-
-            attacker.setState(CardState.SELECTED);
-
-            this._state = AttackPhaseState.SELECT_TARGET;
-          }
-        }
-
+        this.#selectAttacker();
         break;
 
       // TARGET SELECTION
       case AttackPhaseState.SELECT_TARGET:
-        console.log("TARGET SELECTION");
-
-        this._phaseMessage.setCurrentContent(
-          PhaseMessage.content.attack.selectTarget[globals.language]
-        );
-
-        attacker = this.#currentPlayerMovementGridDeck.lookForSelectedCard();
-
-        if (attacker.isLeftClicked()) {
-          console.log("ATTACKER DESELECTED");
-
-          // THE PREVIOUSLY SELECTED ATTACKER WAS DESELECTED
-          attacker.setState(CardState.PLACED);
-          this._state = AttackPhaseState.SELECT_ATTACKER;
-        } else {
-          target = this.#enemyMovementGridDeck.lookForHoveredCard();
-          if (target) {
-            const attackerBox = attacker.getBoxIsPositionedIn(
-              this.#currentPlayerMovementGrid,
-              attacker
-            );
-            const targetBox = target.getBoxIsPositionedIn(
-              this.#enemyMovementGrid,
-              target
-            );
-
-            let isTargetWithinReach = this.#checkIfTargetIsWithinReach(
-              attacker,
-              attackerBox,
-              targetBox
-            );
-
-            if (isTargetWithinReach) {
-              if (!target.isLeftClicked()) {
-                target.setState(CardState.HOVERED);
-              } else {
-                target.setState(CardState.SELECTED);
-                if (target.getWeapon() !== null) {
-                  globals.isParryMenuOpen = true;
-                  this._state = AttackPhaseState.PARRY_SELECION;
-                } else {
-                  this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
-                }
-              }
-            }
-          }
-        }
-
+        this.#selectTarget();
         break;
 
-      // PARRY SELECTION
-      case AttackPhaseState.PARRY_SELECION:
-        console.log("PARRY SELECTION");
-
-        let isParryActivated = this.#isMouseOnButtons();
-        if (isParryActivated) {
-          this.#parry = true;
-          this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
-        } else if (isParryActivated === false) {
-          this.#parry = false;
-          this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
-        }
-
+      // ATTACK MENU
+      case AttackPhaseState.ATTACK_MENU:
+        this.#checkWhichBtnIsPressed();
         break;
 
       // CALCULATION AND APPLICATION OF DAMAGE
       case AttackPhaseState.CALC_AND_APPLY_DMG:
-        console.log("CALC. & APPLICATION OF DMG");
-
-        attacker = this.#currentPlayerMovementGridDeck.lookForSelectedCard();
-        target = this.#enemyMovementGridDeck.lookForSelectedCard();
-        const attackEvent = AttackEvent.create(
-          attacker,
-          target,
-          this.#currentPlayerMovementGrid,
-          this.#enemyMovementGrid,
-          this.#parry,
-          this.#eventDeck,
-          this.#stateMessages,
-          this.#player
-        );
-        attackEvent.execute();
-
-        this._state = AttackPhaseState.END;
-
+        this.#calcAndApplyDmg();
         break;
 
       // PHASE END
       case AttackPhaseState.END:
-        console.log("END");
-
-        this.#updateDecksAndGrids([
-          this.#enemyMovementGridDeck,
-          this.#currentPlayerMovementGridDeck,
-        ]);
-        this.#parry = false;
+        this.#finalizePhase();
         isPhaseFinished = true;
-
-        this._state = AttackPhaseState.INIT;
-
         break;
     }
 
     return isPhaseFinished;
+  }
+
+  #initializePhase() {
+    this.#resetRelevantCardsStates([
+      this.#enemyMovementGridDeck,
+      this.#currentPlayerMovementGridDeck,
+    ]);
+
+    this._state = AttackPhaseState.SELECT_ATTACKER;
   }
 
   #resetRelevantCardsStates(decks) {
@@ -306,6 +187,131 @@ export default class AttackPhase extends Phase {
       for (let j = 0; j < currentDeck.getCards().length; j++) {
         const currentCard = currentDeck.getCards()[j];
         currentCard.setState(CardState.PLACED);
+      }
+    }
+  }
+
+  #selectAttacker() {
+    this._phaseMessage.setCurrentContent(
+      PhaseMessage.content.attack.selectAttacker[globals.language]
+    );
+
+    const attacker = this.#currentPlayerMovementGridDeck.lookForHoveredCard();
+
+    if (attacker) {
+      if (
+        this.#player.getID() === PlayerID.PLAYER_1 &&
+        globals.curseOfTheBoundTitanEventData.isPlayer1Affected
+      ) {
+        console.log("CURSE OF THE BOUND TITAN EVENT DATA PLAYER 1 AFFECTED");
+
+        const debuffMessage = new StateMessage(
+          "Minion Debuffed",
+          "20px MedievalSharp",
+          "red",
+          0.01,
+          attacker.getXCoordinate() + 55,
+          attacker.getYCoordinate() + 10
+        );
+        this.#stateMessages.push(debuffMessage);
+      }
+
+      if (
+        this.#player.getID() === PlayerID.PLAYER_2 &&
+        globals.curseOfTheBoundTitanEventData.isPlayer2Affected
+      ) {
+        const debuffMessage = new StateMessage(
+          "Minion Debuffed",
+          "20px MedievalSharp",
+          "red",
+          0.01,
+          attacker.getXCoordinate() + 55,
+          attacker.getYCoordinate() + 10
+        );
+        this.#stateMessages.push(debuffMessage);
+      }
+
+      if (!attacker.isLeftClicked()) {
+        attacker.setState(CardState.HOVERED);
+      } else {
+        attacker.setState(CardState.SELECTED);
+
+        this._state = AttackPhaseState.SELECT_TARGET;
+      }
+    }
+  }
+
+  #selectTarget() {
+    this._phaseMessage.setCurrentContent(
+      PhaseMessage.content.attack.selectTarget[globals.language]
+    );
+
+    const attacker = this.#currentPlayerMovementGridDeck.lookForSelectedCard();
+
+    if (attacker.isLeftClicked()) {
+      // THE PREVIOUSLY SELECTED ATTACKER WAS DESELECTED
+      attacker.setState(CardState.PLACED);
+
+      this._state = AttackPhaseState.SELECT_ATTACKER;
+    } else {
+      const target = this.#enemyMovementGridDeck.lookForHoveredCard();
+
+      if (target) {
+        const attackerBox = attacker.getBoxIsPositionedIn(
+          this.#currentPlayerMovementGrid,
+          attacker
+        );
+        const targetBox = target.getBoxIsPositionedIn(
+          this.#enemyMovementGrid,
+          target
+        );
+
+        let isTargetWithinReach = this.#checkIfTargetIsWithinReach(
+          attacker,
+          attackerBox,
+          targetBox
+        );
+
+        if (isTargetWithinReach) {
+          if (!target.isLeftClicked()) {
+            target.setState(CardState.HOVERED);
+          } else {
+            target.setState(CardState.SELECTED);
+
+            if (target.getWeapon()) {
+              this.#attackMenuData.btns[
+                AttackMenuBtn.BLOCK_ATTACK
+              ].isActive = true;
+            } else {
+              this.#attackMenuData.btns[
+                AttackMenuBtn.BLOCK_ATTACK
+              ].isActive = false;
+            }
+
+            let canArmorPowerBeUsed = false;
+            if (target.getArmor()) {
+              canArmorPowerBeUsed = this.#checkIfArmorPowerCanBeUsed(target);
+            }
+
+            if (canArmorPowerBeUsed) {
+              this.#attackMenuData.btns[
+                AttackMenuBtn.ARMOR_POWER
+              ].isActive = true;
+            } else {
+              this.#attackMenuData.btns[
+                AttackMenuBtn.ARMOR_POWER
+              ].isActive = false;
+            }
+
+            if (target.getWeapon() || canArmorPowerBeUsed) {
+              this.#attackMenuData.isOpen = true;
+
+              this._state = AttackPhaseState.ATTACK_MENU;
+            } else {
+              this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
+            }
+          }
+        }
       }
     }
   }
@@ -350,111 +356,186 @@ export default class AttackPhase extends Phase {
         isTargetWithinReach = true;
       }
     } else if (
-        !attacker.getWeapon() ||
-        attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE
+      !attacker.getWeapon() ||
+      attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE
+    ) {
+      console.log("MISSILE WEAPON");
+      let isYCoordinateLimitExceeded = false;
+      let isXCoordinateLimitExceeded = false;
+      if (
+        this.#currentPlayerMovementGrid.getGridType() ===
+        GridType.PLAYER_1_BATTLEFIELD
       ) {
-        console.log("MISSILE WEAPON");
-        let isYCoordinateLimitExceeded = false;
-        let isXCoordinateLimitExceeded = false;
-        if (
-          this.#currentPlayerMovementGrid.getGridType() ===
-          GridType.PLAYER_1_BATTLEFIELD
-        ) {
-          console.log("PLAYER 1 BATTLEFIELD");
-          const targetMinYCoordinate =
-            attackerBox.getYCoordinate() - 135 - attackerBox.getHeight();
-  
-          if (targetBox.getYCoordinate() >= targetMinYCoordinate) {
-            isYCoordinateLimitExceeded = true;
-          }
+        console.log("PLAYER 1 BATTLEFIELD");
+        const targetMinYCoordinate =
+          attackerBox.getYCoordinate() - 135 - attackerBox.getHeight();
 
-          const targetMinXCoordinate =
-          attackerBox.getXCoordinate() - 135 ;
-          const targetMaxXCoordinate =
-            attackerBox.getXCoordinate() + 135 + attackerBox.getWidth();
-
-          if (targetBox.getXCoordinate() >= targetMinXCoordinate && targetBox.getXCoordinate() <= targetMaxXCoordinate) {
-            isXCoordinateLimitExceeded = true;
-          }
-        } else {
-          const targetMaxYCoordinate =
-            attackerBox.getYCoordinate() + 135 + attackerBox.getHeight();
-  
-          if (targetBox.getYCoordinate() <= targetMaxYCoordinate) {
-            isYCoordinateLimitExceeded = true;
-          }
-
-          const targetMinXCoordinate =
-          attackerBox.getXCoordinate() - 135;
-          const targetMaxXCoordinate =
-            attackerBox.getXCoordinate() + 135 + attackerBox.getWidth();
-
-          if (targetBox.getXCoordinate() >= targetMinXCoordinate && targetBox.getXCoordinate() <= targetMaxXCoordinate) {
-            isXCoordinateLimitExceeded = true;
-          }
+        if (targetBox.getYCoordinate() >= targetMinYCoordinate) {
+          isYCoordinateLimitExceeded = true;
         }
 
-        if (
-          isXCoordinateLimitExceeded &&
-          isYCoordinateLimitExceeded
-        ) {
-          console.log("TARGET NOT WITHIN REACH");
-          isTargetWithinReach = false;
-        } else {
-          console.log("TARGET WITHIN REACH");
-          isTargetWithinReach = true;
+        const targetMinXCoordinate = attackerBox.getXCoordinate() - 135;
+        const targetMaxXCoordinate =
+          attackerBox.getXCoordinate() + 135 + attackerBox.getWidth();
 
+        if (
+          targetBox.getXCoordinate() >= targetMinXCoordinate &&
+          targetBox.getXCoordinate() <= targetMaxXCoordinate
+        ) {
+          isXCoordinateLimitExceeded = true;
         }
-      } else if (
+      } else {
+        const targetMaxYCoordinate =
+          attackerBox.getYCoordinate() + 135 + attackerBox.getHeight();
+
+        if (targetBox.getYCoordinate() <= targetMaxYCoordinate) {
+          isYCoordinateLimitExceeded = true;
+        }
+
+        const targetMinXCoordinate = attackerBox.getXCoordinate() - 135;
+        const targetMaxXCoordinate =
+          attackerBox.getXCoordinate() + 135 + attackerBox.getWidth();
+
+        if (
+          targetBox.getXCoordinate() >= targetMinXCoordinate &&
+          targetBox.getXCoordinate() <= targetMaxXCoordinate
+        ) {
+          isXCoordinateLimitExceeded = true;
+        }
+      }
+
+      if (isXCoordinateLimitExceeded && isYCoordinateLimitExceeded) {
+        console.log("TARGET NOT WITHIN REACH");
+        isTargetWithinReach = false;
+      } else {
+        console.log("TARGET WITHIN REACH");
+        isTargetWithinReach = true;
+      }
+    } else if (
       !attacker.getWeapon() ||
       attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID
     ) {
-        isTargetWithinReach = true;
+      isTargetWithinReach = true;
     }
-
 
     return isTargetWithinReach;
   }
 
-  #isMouseOnButtons(isParryActivated) {
-    const mouseX = this._mouseInput.getMouseXCoordinate();
-    const mouseY = this._mouseInput.getMouseYCoordinate();
+  #checkIfArmorPowerCanBeUsed(target) {
+    let canArmorPowerBeUsed = false;
 
-    const buttonWidth = 150;
-    const buttonHeight = 50;
-    const buttonSpacing = 50;
-    const canvasWidthDividedBy2 = globals.canvas.width / 2;
-    const buttonY = globals.canvas.height / 2 + 100;
+    const isWarriorAndHasBreastplatePrimordialColossus =
+      target.getMinionTypeID() === MinionTypeID.WARRIOR &&
+      target.getArmorID() === ArmorID.BREASTPLATE_PRIMORDIAL_COLOSSUS;
 
-    const buttons = [
-      {
-        text: "YES",
-        x: canvasWidthDividedBy2 - buttonWidth - buttonSpacing / 2,
-        y: buttonY,
-      },
-      { text: "NO", x: canvasWidthDividedBy2 + buttonSpacing / 2, y: buttonY },
-    ];
+    const isWizardAndHasCloakEternalShadow =
+      target.getMinionTypeID() === MinionTypeID.WIZARD &&
+      target.getArmorID() === ArmorID.CLOAK_ETERNAL_SHADOW;
 
-    for (let i = 0; i < buttons.length; i++) {
-      const button = buttons[i];
+    if (isWarriorAndHasBreastplatePrimordialColossus) {
+      canArmorPowerBeUsed = true;
+    } else if (isWizardAndHasCloakEternalShadow) {
+      const attacker =
+        this.#currentPlayerMovementGridDeck.lookForSelectedCard();
+      const attackerHasMeleeWeapon =
+        attacker.getWeapon() &&
+        attacker.getMinionWeaponTypeID() === WeaponTypeID.MELEE;
 
-      if (
-        mouseX >= button.x &&
-        mouseX <= button.x + buttonWidth &&
-        mouseY >= button.y &&
-        mouseY <= button.y + buttonHeight &&
-        this._mouseInput.isLeftButtonPressed()
-      ) {
-        if (button.text === "YES") {
-          globals.isParryMenuOpen = false;
-          return true;
-        } else if (button.text === "NO") {
-          globals.isParryMenuOpen = false;
-          return false;
+      canArmorPowerBeUsed = attackerHasMeleeWeapon;
+    }
+
+    return canArmorPowerBeUsed;
+  }
+
+  #checkWhichBtnIsPressed() {
+    const { blockAttack, armorPower, pass } = this.#checkIfAnyBtnIsPressed();
+
+    if (blockAttack || armorPower || pass) {
+      this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
+
+      if (blockAttack) {
+        this.#isParryChosen = true;
+      } else if (armorPower) {
+        this.#isArmorPowerChosen = true;
+      }
+    }
+  }
+
+  #checkIfAnyBtnIsPressed() {
+    const isBtnPressed = {
+      blockAttack: false,
+      armorPower: false,
+      pass: false,
+    };
+
+    if (this._mouseInput.isLeftButtonPressed()) {
+      const mouseX = this._mouseInput.getMouseXCoordinate();
+      const mouseY = this._mouseInput.getMouseYCoordinate();
+
+      for (let i = 0; i < this.#attackMenuData.btns.length; i++) {
+        const currentBtn = this.#attackMenuData.btns[i];
+
+        if (
+          currentBtn.isActive &&
+          mouseX >= this.#attackMenuData.btnsXCoordinate &&
+          mouseX <=
+            this.#attackMenuData.btnsXCoordinate +
+              this.#attackMenuData.btnsWidth &&
+          mouseY >= currentBtn.yCoordinate &&
+          mouseY <= currentBtn.yCoordinate + this.#attackMenuData.btnsHeight
+        ) {
+          if (
+            currentBtn.text ===
+            this.#attackMenuData.btns[AttackMenuBtn.BLOCK_ATTACK].text
+          ) {
+            isBtnPressed.blockAttack = true;
+          } else if (
+            currentBtn.text ===
+            this.#attackMenuData.btns[AttackMenuBtn.ARMOR_POWER].text
+          ) {
+            isBtnPressed.armorPower = true;
+          } else {
+            isBtnPressed.pass = true;
+          }
+
+          this.#attackMenuData.isOpen = false;
         }
       }
     }
-    return isParryActivated;
+
+    return isBtnPressed;
+  }
+
+  #calcAndApplyDmg() {
+    const attacker = this.#currentPlayerMovementGridDeck.lookForSelectedCard();
+    const target = this.#enemyMovementGridDeck.lookForSelectedCard();
+
+    const attackEvent = new AttackEvent(
+      attacker,
+      target,
+      this.#currentPlayerMovementGrid,
+      this.#enemyMovementGrid,
+      this.#isParryChosen,
+      this.#isArmorPowerChosen,
+      this.#eventDeck,
+      this.#stateMessages,
+      this.#player
+    );
+    attackEvent.execute();
+
+    this._state = AttackPhaseState.END;
+  }
+
+  #finalizePhase() {
+    this.#updateDecksAndGrids([
+      this.#enemyMovementGridDeck,
+      this.#currentPlayerMovementGridDeck,
+    ]);
+
+    this.#isParryChosen = false;
+    this.#isArmorPowerChosen = false;
+
+    this._state = AttackPhaseState.INIT;
   }
 
   #updateDecksAndGrids(decksToCheck) {

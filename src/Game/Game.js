@@ -1,4 +1,5 @@
 import Player from "./Player.js";
+import Card from "../Decks/Card.js";
 import CardView from "../Decks/CardView.js";
 import Deck from "../Decks/Deck.js";
 import DeckCreator from "../Decks/DeckCreator.js";
@@ -8,6 +9,8 @@ import MouseInput from "./MouseInput.js";
 import ImageSet from "./ImageSet.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
+import MinionTooltip from "../ToolTips/MinionToolTip.js";
+import globals from "./globals.js";
 import {
   GameState,
   CardCategory,
@@ -23,7 +26,6 @@ import {
   GridType,
   PhaseButtonData,
 } from "./constants.js";
-import { globals } from "../index.js";
 
 export default class Game {
   #players;
@@ -35,6 +37,9 @@ export default class Game {
   #events;
   #phaseMessage;
   #stateMessages;
+  #attackMenuData;
+  #activeEventsTableData;
+  #minionTooltip;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -85,6 +90,35 @@ export default class Game {
 
     game.#stateMessages = [];
 
+    // ATTACK MENU DATA OBJECT CREATION
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+    const canvasHeightDividedBy2 = globals.canvas.height / 2;
+    game.#attackMenuData = {
+      isOpen: false,
+      btns: [
+        {
+          text: "TRY TO BLOCK ATTACK",
+          isActive: false,
+          yCoordinate: canvasHeightDividedBy2 - 20,
+        },
+        {
+          isActive: false,
+          text: "USE POWER OF ARMOR",
+          yCoordinate: canvasHeightDividedBy2 + 80,
+        },
+        {
+          text: "PASS",
+          isActive: true,
+          yCoordinate: canvasHeightDividedBy2 + 180,
+        },
+      ],
+      btnsWidth: 350,
+      btnsHeight: 70,
+      btnsXCoordinate: canvasWidthDividedBy2 - 175,
+    };
+
+    game.#minionTooltip = new MinionTooltip();
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
@@ -93,7 +127,9 @@ export default class Game {
       game.#players[PlayerID.PLAYER_1],
       game.#events,
       game.#phaseMessage,
-      game.#stateMessages
+      game.#stateMessages,
+      game.#attackMenuData,
+      game.#minionTooltip
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -103,7 +139,9 @@ export default class Game {
       game.#players[PlayerID.PLAYER_2],
       game.#events,
       game.#phaseMessage,
-      game.#stateMessages
+      game.#stateMessages,
+      game.#attackMenuData,
+      game.#minionTooltip
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -111,6 +149,8 @@ export default class Game {
     game.#createPhaseButtons();
 
     game.#setInitialCardsCoordinates();
+
+    game.#fillActiveEventsTableData();
 
     return game;
   }
@@ -176,9 +216,10 @@ export default class Game {
                 globals.cardsIconsImages[IconID.WEAPON_MELEE_TYPE],
                 globals.cardsIconsImages[IconID.WEAPON_HYBRID_TYPE],
                 globals.cardsIconsImages[IconID.WEAPON_MISSILE_TYPE],
-                // globals.cardsIconsImages[IconID.ARMOR_LIGHT_TYPE],
-                // globals.cardsIconsImages[IconID.ARMOR_MEDIUM_TYPE],
-                // globals.cardsIconsImages[IconID.ARMOR_HEAVY_TYPE],
+                globals.cardsIconsImages[IconID.EVENT_TYPE_CIRCLE],
+                globals.cardsIconsImages[IconID.ARMOR_LIGHT_TYPE],
+                globals.cardsIconsImages[IconID.ARMOR_MEDIUM_TYPE],
+                globals.cardsIconsImages[IconID.ARMOR_HEAVY_TYPE],
               ],
               bigVersion: [
                 globals.cardsIconsImages[IconID.MINION_HP],
@@ -456,17 +497,8 @@ export default class Game {
       for (let j = 0; j < 3; j++) {
         const currentMinionCard = currentPlayer.minionsInPlayDeck.getCards()[j];
 
-        let currentBattlefieldBoxIndex = j + 1;
-        if (
-          currentPlayer.minionsInPlayGrid ===
-          this.#board.getGrids()[GridType.PLAYER_1_BATTLEFIELD]
-        ) {
-          currentBattlefieldBoxIndex = j + 2;
-        }
         const currentBattlefieldBox =
-          currentPlayer.minionsInPlayGrid.getBoxes()[
-            currentBattlefieldBoxIndex
-          ];
+          currentPlayer.minionsInPlayGrid.getBoxes()[j + 2];
         currentBattlefieldBox.setCard(currentMinionCard);
 
         currentMinionCard.setXCoordinate(
@@ -475,6 +507,87 @@ export default class Game {
         currentMinionCard.setYCoordinate(
           currentBattlefieldBox.getYCoordinate()
         );
+      }
+    }
+  }
+
+  #fillActiveEventsTableData() {
+    const tableX = this.#board
+      .getGrids()
+      [GridType.ACTIVE_EVENTS_TABLE].getBoxes()[0]
+      .getXCoordinate();
+    const tableY = this.#board
+      .getGrids()
+      [GridType.ACTIVE_EVENTS_TABLE].getBoxes()[0]
+      .getYCoordinate();
+    const tableWidth = this.#board
+      .getGrids()
+      [GridType.ACTIVE_EVENTS_TABLE].getBoxes()[0]
+      .getWidth();
+    const tableHeight = this.#board
+      .getGrids()
+      [GridType.ACTIVE_EVENTS_TABLE].getBoxes()[0]
+      .getHeight();
+
+    this.#activeEventsTableData = {
+      columns: [
+        {
+          header: "Performed By",
+          width: tableWidth * 0.4,
+          lineXCoordinate: -1,
+        },
+        {
+          header: "Event",
+          width: tableWidth * 0.4,
+          lineXCoordinate: -1,
+        },
+        {
+          header: "Duration",
+          width: tableWidth * 0.2,
+          lineXCoordinate: -1,
+        },
+      ],
+      rows: [
+        {
+          header: "",
+          height: tableHeight * 0.15,
+          lineYCoordinate: -1,
+        },
+        {
+          header: this.#players[0].getName(),
+          height: tableHeight * 0.35,
+          lineYCoordinate: -1,
+        },
+        {
+          header: this.#players[1].getName(),
+          height: tableHeight * 0.35,
+          lineYCoordinate: -1,
+        },
+        {
+          header: "...",
+          height: tableHeight * 0.15,
+          lineYCoordinate: -1,
+        },
+      ],
+    };
+
+    for (let i = 0; i < this.#activeEventsTableData.rows.length; i++) {
+      const currentColumn = this.#activeEventsTableData.columns[i];
+      const currentRow = this.#activeEventsTableData.rows[i];
+
+      if (i === 0) {
+        currentColumn.lineXCoordinate = tableX + currentColumn.width;
+        currentRow.lineYCoordinate = tableY + currentRow.height;
+      } else {
+        if (i !== this.#activeEventsTableData.rows.length - 1) {
+          currentColumn.lineXCoordinate =
+            this.#activeEventsTableData.columns[i - 1].lineXCoordinate +
+            currentColumn.width;
+        }
+
+        currentRow.lineYCoordinate =
+          this.#activeEventsTableData.rows[i - 1].lineYCoordinate +
+          currentRow.height;
       }
     }
   }
@@ -552,7 +665,6 @@ export default class Game {
     this.#executeEvents();
 
     this.#updateStateMessages();
-    this.#updateDamageMessages();
 
     this.#updatePlayersTotalHP();
 
@@ -672,9 +784,25 @@ export default class Game {
           currentCard.getYCoordinate() + 55
         );
         this.#stateMessages.push(message);
+      }
+    }
+    if (globals.poisonOfTheAbyssEventData.isPlayer1Affected) {
+      for (let i = 0; i < minionsInPlayDecks[1].getCards().length; i++) {
+        const currentCard = minionsInPlayDecks[1].getCards()[i];
+
+        currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
+        let message = new StateMessage(
+          "-5",
+          `50px MedievalSharp`,
+          "green",
+          1,
+          currentCard.getXCoordinate() + 55,
+          currentCard.getYCoordinate() + 55
+        );
+        this.#stateMessages.push(message);
+      }
     }
   }
-}
 
   #updatePlayersTotalHP() {
     // PLAYER 1
@@ -718,11 +846,41 @@ export default class Game {
 
   #executeEvents() {
     for (let i = 0; i < this.#events.length; i++) {
-      let event = this.#events[i];
-      event.execute(this.#currentPlayer);
+      const event = this.#events[i];
+
+      let enemy;
+      if (this.#currentPlayer.getID() === PlayerID.PLAYER_1) {
+        enemy = this.#players[PlayerID.PLAYER_2];
+      } else {
+        enemy = this.#players[PlayerID.PLAYER_1];
+      }
+
+      event.execute(this.#currentPlayer, enemy);
 
       if (!event.isActive()) {
+        const eventCard = event.getEventCard();
+
+        const activeEventsDeck =
+          this.#deckContainer.getDecks()[DeckType.ACTIVE_EVENTS];
+
+        if (Card.isCardWithinDeck(eventCard, activeEventsDeck)) {
+          if (
+            !(
+              eventCard.getCategory() === CardCategory.MAIN_CHARACTER &&
+              eventCard.getID() === MainCharacterID.JOSEPH
+            )
+          ) {
+            eventCard.resetAttributes();
+
+            const eventsDeck = this.#deckContainer.getDecks()[DeckType.EVENTS];
+            eventsDeck.insertCard(eventCard);
+          }
+
+          activeEventsDeck.removeCard(eventCard);
+        }
+
         this.#events.splice(i, 1);
+
         i--;
       }
     }
@@ -750,18 +908,6 @@ export default class Game {
     }
   }
 
-  #updateDamageMessages() {
-    for (let i = 0; i < globals.damageMessages.length; i++) {
-      let message = globals.damageMessages[i];
-
-      let isFinished = message.execute();
-
-      if (isFinished) {
-        globals.damageMessages.splice(i, 1);
-      }
-    }
-  }
-
   #render() {
     // CLEAR SCREEN
     globals.ctx.clearRect(0, 0, globals.canvas.width, globals.canvas.height);
@@ -775,12 +921,17 @@ export default class Game {
             this.#currentPlayer.getID()
           );
         }
-        if (globals.gameWinner) {
-          this.#renderGameWinner();
+
+        if (this.#minionTooltip.hasTooltip()) {
+          this.#minionTooltip.render();
         }
 
-        if (globals.isParryMenuOpen) {
-          this.#renderParryMenu();
+        if (this.#attackMenuData.isOpen) {
+          this.#renderAttackMenu();
+        }
+
+        if (globals.gameWinner) {
+          this.#renderGameWinner();
         }
 
         break;
@@ -797,7 +948,6 @@ export default class Game {
     this.#renderCardsReverse();
     this.#renderCards();
     this.#renderStateMessages();
-    this.#renderDamageMessages();
   }
 
   #renderBoard() {
@@ -1036,76 +1186,126 @@ export default class Game {
     globals.ctx.shadowOffsetX = 0;
     globals.ctx.shadowOffsetY = 0;
 
+    this.#renderColumnAndRowLinesAndHeaders(
+      tableY,
+      tableX,
+      tableWidth,
+      tableHeight
+    );
+
+    this.#renderActiveEventsData();
+  }
+
+  #renderColumnAndRowLinesAndHeaders(tableY, tableX, tableWidth, tableHeight) {
     globals.ctx.strokeStyle = "black";
     globals.ctx.lineWidth = 2;
-
-    let columnWidth = tableWidth / 3;
-
-    for (let i = 1; i <= 2; i++) {
-      let columnX = tableX + columnWidth * i;
-      globals.ctx.beginPath();
-      globals.ctx.moveTo(columnX, tableY);
-      globals.ctx.lineTo(columnX, tableY + tableHeight);
-      globals.ctx.stroke();
-    }
-
-    let lineY = tableY + (tableHeight / 4) * 1;
-    globals.ctx.beginPath();
-    globals.ctx.moveTo(tableX, lineY);
-    globals.ctx.lineTo(tableX + tableWidth, lineY);
-    globals.ctx.stroke();
 
     globals.ctx.fillStyle = "white";
     globals.ctx.font = "18px MedievalSharp";
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
 
-    globals.ctx.fillText(
-      "Player",
-      tableX + columnWidth / 2,
-      tableY + tableHeight / 8
-    );
-    globals.ctx.fillText(
-      "Event",
-      tableX + columnWidth * 1.5,
-      tableY + tableHeight / 8
-    );
-    globals.ctx.fillText(
-      "Duration",
-      tableX + columnWidth * 2.5,
-      tableY + tableHeight / 8
-    );
+    const isJosephChaoticEventActive =
+      this.#deckContainer.getDecks()[DeckType.JOSEPH].getCards().length === 1;
+    this.#activeEventsTableData.rows[3].header = isJosephChaoticEventActive
+      ? "Joseph"
+      : "...";
 
-    let rowIndex = 1;
+    for (let i = 0; i < this.#activeEventsTableData.rows.length; i++) {
+      const currentColumn = this.#activeEventsTableData.columns[i];
 
-    const events = this.#deckContainer.getDecks()[DeckType.ACTIVE_EVENTS];
-    const eventCards = events.getCards();
-    for (let i = 0; i < eventCards.length; i++) {
-      const event = eventCards[i];
+      if (i !== this.#activeEventsTableData.rows.length - 1) {
+        // COLUMN LINE
+        globals.ctx.beginPath();
+        globals.ctx.moveTo(currentColumn.lineXCoordinate, tableY);
+        globals.ctx.lineTo(currentColumn.lineXCoordinate, tableY + tableHeight);
+        globals.ctx.stroke();
 
-      const duration = event.getCurrentDurationInRounds();
-
-      if (duration <= 0) {
-        events.removeCard(event);
-        i--;
-        continue;
+        // COLUMN HEADER
+        globals.ctx.fillText(
+          currentColumn.header,
+          currentColumn.lineXCoordinate - currentColumn.width / 2,
+          tableY + this.#activeEventsTableData.rows[0].height / 2
+        );
       }
 
-      const eventName = event.getName();
-      const playerName = this.#currentPlayer.getName();
+      const currentRow = this.#activeEventsTableData.rows[i];
 
-      const rowY = tableY + tableHeight / 4 + 30 * rowIndex;
-      globals.ctx.fillStyle = "black";
-      globals.ctx.font = "14px MedievalSharp";
-      globals.ctx.fillText(playerName, tableX + columnWidth / 2, rowY);
-      globals.ctx.fillText(eventName, tableX + columnWidth * 1.5, rowY);
+      // ROW LINE
+      globals.ctx.beginPath();
+      globals.ctx.moveTo(tableX, currentRow.lineYCoordinate);
+      globals.ctx.lineTo(tableX + tableWidth, currentRow.lineYCoordinate);
+      globals.ctx.stroke();
+
+      // ROW HEADER
       globals.ctx.fillText(
-        duration.toString(),
-        tableX + columnWidth * 2.5,
-        rowY
+        currentRow.header,
+        tableX + this.#activeEventsTableData.columns[0].width / 2,
+        currentRow.lineYCoordinate - currentRow.height / 2
       );
+    }
+  }
 
-      rowIndex++;
+  #renderActiveEventsData() {
+    globals.ctx.fillStyle = "black";
+    globals.ctx.font = "14px MedievalSharp";
+
+    const activeEventsDeck =
+      this.#deckContainer.getDecks()[DeckType.ACTIVE_EVENTS];
+
+    let player1EventsCounter = 0;
+    let player2EventsCounter = 0;
+
+    for (let i = 0; i < this.#events.length; i++) {
+      const currentEvent = this.#events[i];
+      const currentEventCard = currentEvent.getEventCard();
+
+      if (Card.isCardWithinDeck(currentEventCard, activeEventsDeck)) {
+        let eventName = currentEventCard.getName();
+        const currentDuration = currentEventCard.getCurrentDurationInRounds();
+
+        const currentEventExecutor = currentEvent.getExecutor();
+
+        let currentEntryY;
+
+        if (
+          currentEventCard.getCategory() === CardCategory.MAIN_CHARACTER &&
+          currentEventCard.getID() === MainCharacterID.JOSEPH
+        ) {
+          eventName = currentEventCard.getChaoticEventName();
+
+          currentEntryY =
+            this.#activeEventsTableData.rows[3].lineYCoordinate -
+            this.#activeEventsTableData.rows[3].height / 2;
+        } else if (currentEventExecutor === this.#players[0]) {
+          player1EventsCounter++;
+
+          currentEntryY =
+            this.#activeEventsTableData.rows[1].lineYCoordinate -
+            this.#activeEventsTableData.rows[1].height +
+            21 * player1EventsCounter;
+        } else {
+          player2EventsCounter++;
+
+          currentEntryY =
+            this.#activeEventsTableData.rows[2].lineYCoordinate -
+            this.#activeEventsTableData.rows[2].height +
+            21 * player2EventsCounter;
+        }
+
+        globals.ctx.fillText(
+          eventName,
+          this.#activeEventsTableData.columns[1].lineXCoordinate -
+            this.#activeEventsTableData.columns[1].width / 2,
+          currentEntryY
+        );
+        globals.ctx.fillText(
+          `${currentDuration} Round${currentDuration > 1 ? "s" : ""}`,
+          this.#activeEventsTableData.columns[2].lineXCoordinate -
+            this.#activeEventsTableData.columns[2].width / 2,
+          currentEntryY
+        );
+      }
     }
   }
 
@@ -1334,9 +1534,13 @@ export default class Game {
 
     this.#renderCardImageAndTemplate(card, xCoordinate, yCoordinate);
 
-    // RENDER ICONS
+    this.#renderMinionIcons(card, xCoordinate, yCoordinate);
 
-    const icons = card.getImageSet().getIcons().smallVersion;
+    this.#renderMinionAttributesValues(card, xCoordinate, yCoordinate);
+  }
+
+  #renderMinionIcons(minion, xCoordinate, yCoordinate) {
+    const icons = minion.getImageSet().getIcons().smallVersion;
 
     const iconsPositions = [
       {
@@ -1367,136 +1571,198 @@ export default class Game {
         width: 35,
         height: 35,
       },
+      {
+        // (WEAPON) TYPE CIRCLE
+        x: xCoordinate - 17,
+        y: yCoordinate - 17,
+        width: minion.getWeapon() ? 35 : 0,
+        height: minion.getWeapon() ? 35 : 0,
+      },
+      {
+        // (WEAPON) MELEE TYPE
+        x: xCoordinate - 10,
+        y: yCoordinate - 10,
+        width:
+          minion.getWeapon() && minion.getWeaponTypeID() === WeaponTypeID.MELEE
+            ? 20
+            : 0,
+        height:
+          minion.getWeapon() && minion.getWeaponTypeID() === WeaponTypeID.MELEE
+            ? 20
+            : 0,
+      },
+      {
+        // (WEAPON) HYBRID TYPE
+        x: xCoordinate - 10,
+        y: yCoordinate - 10,
+        width:
+          minion.getWeapon() && minion.getWeaponTypeID() === WeaponTypeID.HYBRID
+            ? 20
+            : 0,
+        height:
+          minion.getWeapon() && minion.getWeaponTypeID() === WeaponTypeID.HYBRID
+            ? 20
+            : 0,
+      },
+      {
+        // (WEAPON) MISSILE TYPE
+        x: xCoordinate - 10,
+        y: yCoordinate - 10,
+        width:
+          minion.getWeapon() &&
+          minion.getWeaponTypeID() === WeaponTypeID.MISSILE
+            ? 20
+            : 0,
+        height:
+          minion.getWeapon() &&
+          minion.getWeaponTypeID() === WeaponTypeID.MISSILE
+            ? 20
+            : 0,
+      },
+      {
+        // (ARMOR) TYPE CIRCLE
+        x:
+          xCoordinate +
+          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width -
+          17,
+        y: yCoordinate - 17,
+        width: minion.getArmor() ? 35 : 0,
+        height: minion.getArmor() ? 35 : 0,
+      },
+      {
+        // (ARMOR) LIGHT TYPE
+        x:
+          xCoordinate +
+          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width -
+          10,
+        y: yCoordinate - 10,
+        width:
+          minion.getArmor() && minion.getArmorTypeID() === ArmorTypeID.LIGHT
+            ? 20
+            : 0,
+        height:
+          minion.getArmor() && minion.getArmorTypeID() === ArmorTypeID.LIGHT
+            ? 20
+            : 0,
+      },
+      {
+        // (ARMOR) MEDIUM TYPE
+        x:
+          xCoordinate +
+          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width -
+          10,
+        y: yCoordinate - 10,
+        width:
+          minion.getArmor() && minion.getArmorTypeID() === ArmorTypeID.MEDIUM
+            ? 20
+            : 0,
+        height:
+          minion.getArmor() && minion.getArmorTypeID() === ArmorTypeID.MEDIUM
+            ? 20
+            : 0,
+      },
+      {
+        // (ARMOR) HEAVY TYPE
+        x:
+          xCoordinate +
+          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width -
+          10,
+        y: yCoordinate - 10,
+        width:
+          minion.getArmor() && minion.getArmorTypeID() === ArmorTypeID.HEAVY
+            ? 20
+            : 0,
+        height:
+          minion.getArmor() && minion.getArmorTypeID() === ArmorTypeID.HEAVY
+            ? 20
+            : 0,
+      },
     ];
 
-    if (card.getWeapon()) {
-      if(card.getWeapon().getWeaponTypeID() === WeaponTypeID.MELEE) {
-        iconsPositions.push(
-          {
-            // (WEAPON) TYPE CIRCLE
-            x: xCoordinate - 17,
-            y: yCoordinate - 17,
-            width: 35,
-            height: 35,
-          },
-          {
-            // (WEAPON) TYPE
-            x: xCoordinate - 10,
-            y: yCoordinate - 10,
-            width: 20,
-            height: 20,
-          }
-        );
-      } else if(card.getWeapon().getWeaponTypeID() === WeaponTypeID.HYBRID) {
-        iconsPositions.push(
-          {
-            // (WEAPON) TYPE CIRCLE
-            x: xCoordinate - 17,
-            y: yCoordinate - 17,
-            width: 35,
-            height: 35,
-          },
-          {
-            // (WEAPON) TYPE
-            x: xCoordinate - 10,
-            y: yCoordinate - 10,
-            width: 0,
-            height: 0,
-          },
-          {
-            // (WEAPON) TYPE
-            x: xCoordinate - 10,
-            y: yCoordinate - 10,
-            width: 20,
-            height: 20,
-          }
-        );
-      } else if(card.getWeapon().getWeaponTypeID() === WeaponTypeID.MISSILE) {
-        iconsPositions.push(
-          {
-            // (WEAPON) TYPE CIRCLE
-            x: xCoordinate - 17,
-            y: yCoordinate - 17,
-            width: 35,
-            height: 35,
-          },
-          {
-            // (WEAPON) TYPE
-            x: xCoordinate - 10,
-            y: yCoordinate - 10,
-            width: 0,
-            height: 0,
-          },
-          {
-            // (WEAPON) TYPE
-            x: xCoordinate - 10,
-            y: yCoordinate - 10,
-            width: 0,
-            height: 0,
-          },
-          {
-            // (WEAPON) TYPE
-            x: xCoordinate - 10,
-            y: yCoordinate - 10,
-            width: 20,
-            height: 20,
-          }
-        );
-      }
-    }
-
-
-    let numOfIconsToRender = iconsPositions.length;
-
-    for (let i = 0; i < numOfIconsToRender; i++) {
+    for (let i = 0; i < icons.length; i++) {
       const { x, y, width, height } = iconsPositions[i];
       globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
     }
+  }
 
-    // RENDER ATTRIBUTES VALUES
+  #renderMinionAttributesValues(minion, xCoordinate, yCoordinate) {
+    const attributesRenderingData = {
+      attack: {
+        value: minion.getCurrentAttack(),
+        x: xCoordinate,
+        y: yCoordinate + 59,
+        hasBoostIndicator: false,
+      },
+      hp: {
+        value: minion.getCurrentHP(),
+        x: xCoordinate + 55,
+        y: yCoordinate + 111,
+        hasBoostIndicator: false,
+      },
+      defense: {
+        value: minion.getCurrentDefense(),
+        x: xCoordinate + 110,
+        y: yCoordinate + 59,
+        hasBoostIndicator: false,
+        hasNerfIndicator: false,
+      },
+    };
+
+    if (
+      minion.getCurrentAttack() > minion.getInitialAttack() ||
+      minion.getWeapon()
+    ) {
+      if (minion.getWeapon()) {
+        attributesRenderingData.attack.value += minion.getWeaponCurrentDamage();
+      }
+
+      attributesRenderingData.attack.hasBoostIndicator = true;
+    }
+
+    if (minion.getArmor()) {
+      attributesRenderingData.hp.value += minion.getArmorCurrentDurability();
+      attributesRenderingData.hp.hasBoostIndicator = true;
+    }
+
+    if (minion.getCurrentDefense() > minion.getInitialDefense()) {
+      attributesRenderingData.defense.hasBoostIndicator = true;
+    } else if (minion.getCurrentDefense() < minion.getInitialDefense()) {
+      attributesRenderingData.defense.hasNerfIndicator = true;
+    }
+
+    globals.ctx.save();
 
     globals.ctx.textAlign = "center";
     globals.ctx.font = "14px MedievalSharp";
+    globals.ctx.lineWidth = "3.5";
     globals.ctx.fillStyle = "black";
 
-    // CURRENT HP
-    globals.ctx.fillText(
-      card.getCurrentHP(),
-      xCoordinate + 55,
-      yCoordinate + 111
-    );
+    for (const attribute in attributesRenderingData) {
+      globals.ctx.strokeStyle = "black";
 
-    // CURRENT ATTACK
+      if (attributesRenderingData[attribute].hasBoostIndicator) {
+        globals.ctx.fillStyle = "yellow";
+      } else if (attributesRenderingData[attribute].hasNerfIndicator) {
+        globals.ctx.fillStyle = "rgb(255 186 162)";
+      } else {
+        globals.ctx.strokeStyle = "transparent";
+        globals.ctx.fillStyle = "black";
+      }
 
-    let numOfTimesToFillText = 1;
+      globals.ctx.strokeText(
+        attributesRenderingData[attribute].value,
+        attributesRenderingData[attribute].x,
+        attributesRenderingData[attribute].y
+      );
 
-    let currentAttackToRender = card.getCurrentAttack();
-
-    if (card.getWeapon()) {
-      numOfTimesToFillText = 7;
-
-      currentAttackToRender += card.getWeaponCurrentDamage();
-      globals.ctx.shadowBlur = 5;
-      globals.ctx.shadowColor = "rgb(255 0 0 / 0.25)";
-    }
-
-    for (let i = 0; i < numOfTimesToFillText; i++) {
       globals.ctx.fillText(
-        currentAttackToRender,
-        xCoordinate,
-        yCoordinate + 59
+        attributesRenderingData[attribute].value,
+        attributesRenderingData[attribute].x,
+        attributesRenderingData[attribute].y
       );
     }
 
-    globals.ctx.shadowBlur = 0;
-    globals.ctx.shadowColor = "transparent";
-
-    // CURRENT DEFENSE
-    globals.ctx.fillText(
-      card.getCurrentDefense(),
-      xCoordinate + 110,
-      yCoordinate + 59
-    );
+    globals.ctx.restore();
   }
 
   #renderWeapon(card) {
@@ -2229,6 +2495,132 @@ export default class Game {
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
   }
 
+  #renderStateMessages() {
+    globals.ctx.save();
+
+    for (let i = 0; i < this.#stateMessages.length; i++) {
+      const currentMessage = this.#stateMessages[i];
+
+      globals.ctx.shadowBlur = 20;
+      globals.ctx.shadowColor = "black";
+      globals.ctx.font = currentMessage.getFont();
+      globals.ctx.fillStyle = currentMessage.getColor();
+
+      for (let i = 0; i < 15; i++) {
+        globals.ctx.fillText(
+          currentMessage.getContent(),
+          currentMessage.getXPosition(),
+          currentMessage.getYPosition()
+        );
+      }
+    }
+
+    globals.ctx.restore();
+  }
+
+  #renderAttackMenu() {
+    globals.ctx.save();
+
+    globals.ctx.globalAlpha = 0.5;
+    globals.ctx.fillStyle = "black";
+    globals.ctx.fillRect(0, 0, globals.canvas.width, globals.canvas.height);
+    globals.ctx.globalAlpha = 1;
+
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+    const canvasHeightDividedBy2 = globals.canvas.height / 2;
+    globals.ctx.textAlign = "center";
+
+    globals.ctx.shadowBlur = 20;
+    globals.ctx.shadowColor = "black";
+
+    globals.ctx.fillStyle = "white";
+    globals.ctx.font = "100px MedievalSharp";
+    globals.ctx.fillText(
+      "WHAT DO YOU WANT TO DO?",
+      canvasWidthDividedBy2,
+      canvasHeightDividedBy2 - 200
+    );
+
+    globals.ctx.shadowBlur = 10;
+    globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+    globals.ctx.font = "24px MedievalSharp";
+    globals.ctx.textBaseline = "middle";
+
+    for (let i = 0; i < this.#attackMenuData.btns.length; i++) {
+      const currentBtn = this.#attackMenuData.btns[i];
+
+      if (currentBtn.isActive) {
+        globals.ctx.globalAlpha = 1;
+      } else {
+        globals.ctx.globalAlpha = 0.65;
+      }
+
+      globals.ctx.fillStyle = "darkcyan";
+
+      globals.ctx.beginPath();
+      globals.ctx.moveTo(
+        this.#attackMenuData.btnsXCoordinate + 10,
+        currentBtn.yCoordinate
+      );
+      globals.ctx.lineTo(
+        this.#attackMenuData.btnsXCoordinate +
+          this.#attackMenuData.btnsWidth -
+          10,
+        currentBtn.yCoordinate
+      );
+      globals.ctx.quadraticCurveTo(
+        this.#attackMenuData.btnsXCoordinate + this.#attackMenuData.btnsWidth,
+        currentBtn.yCoordinate,
+        this.#attackMenuData.btnsXCoordinate + this.#attackMenuData.btnsWidth,
+        currentBtn.yCoordinate + 10
+      );
+      globals.ctx.lineTo(
+        this.#attackMenuData.btnsXCoordinate + this.#attackMenuData.btnsWidth,
+        currentBtn.yCoordinate + this.#attackMenuData.btnsHeight - 10
+      );
+      globals.ctx.quadraticCurveTo(
+        this.#attackMenuData.btnsXCoordinate + this.#attackMenuData.btnsWidth,
+        currentBtn.yCoordinate + this.#attackMenuData.btnsHeight,
+        this.#attackMenuData.btnsXCoordinate +
+          this.#attackMenuData.btnsWidth -
+          10,
+        currentBtn.yCoordinate + this.#attackMenuData.btnsHeight
+      );
+      globals.ctx.lineTo(
+        this.#attackMenuData.btnsXCoordinate + 10,
+        currentBtn.yCoordinate + this.#attackMenuData.btnsHeight
+      );
+      globals.ctx.quadraticCurveTo(
+        this.#attackMenuData.btnsXCoordinate,
+        currentBtn.yCoordinate + this.#attackMenuData.btnsHeight,
+        this.#attackMenuData.btnsXCoordinate,
+        currentBtn.yCoordinate + this.#attackMenuData.btnsHeight - 10
+      );
+      globals.ctx.lineTo(
+        this.#attackMenuData.btnsXCoordinate,
+        currentBtn.yCoordinate + 10
+      );
+      globals.ctx.quadraticCurveTo(
+        this.#attackMenuData.btnsXCoordinate,
+        currentBtn.yCoordinate,
+        this.#attackMenuData.btnsXCoordinate + 10,
+        currentBtn.yCoordinate
+      );
+      globals.ctx.closePath();
+      globals.ctx.fill();
+
+      globals.ctx.fillStyle = "white";
+      globals.ctx.fillText(
+        currentBtn.text,
+        this.#attackMenuData.btnsXCoordinate +
+          this.#attackMenuData.btnsWidth / 2,
+        currentBtn.yCoordinate + this.#attackMenuData.btnsHeight / 2
+      );
+    }
+
+    globals.ctx.restore();
+  }
+
   #renderGameWinner() {
     globals.ctx.globalAlpha = 0.35;
     globals.ctx.fillStyle = "black";
@@ -2259,132 +2651,6 @@ export default class Game {
         "WON",
         canvasWidthDividedBy2,
         canvasHeightDividedBy2 + 100
-      );
-    }
-  }
-
-  #renderParryMenu() {
-    globals.ctx.globalAlpha = 0.35;
-    globals.ctx.fillStyle = "black";
-    globals.ctx.fillRect(0, 0, globals.canvas.width, globals.canvas.height);
-    globals.ctx.globalAlpha = 1;
-
-    const canvasWidthDividedBy2 = globals.canvas.width / 2;
-    const canvasHeightDividedBy2 = globals.canvas.height / 2;
-    globals.ctx.textAlign = "center";
-
-    globals.ctx.shadowBlur = 20;
-    globals.ctx.shadowColor = "black";
-    globals.ctx.fillStyle = "white";
-
-    globals.ctx.font = "100px MedievalSharp";
-    globals.ctx.fillText(
-      "Do you want to parry?",
-      canvasWidthDividedBy2,
-      canvasHeightDividedBy2
-    );
-
-    const buttonWidth = 150;
-    const buttonHeight = 50;
-    const buttonSpacing = 50;
-    const buttonY = canvasHeightDividedBy2 + 100;
-
-    const buttons = [
-      {
-        text: "YES",
-        x: canvasWidthDividedBy2 - buttonWidth - buttonSpacing / 2,
-        y: buttonY,
-      },
-      { text: "NO", x: canvasWidthDividedBy2 + buttonSpacing / 2, y: buttonY },
-    ];
-
-    for (let i = 0; i < buttons.length; i++) {
-      const button = buttons[i];
-      globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-      globals.ctx.shadowBlur = 10;
-      globals.ctx.shadowOffsetX = 4;
-      globals.ctx.shadowOffsetY = 4;
-
-      globals.ctx.fillStyle = "darkcyan";
-      globals.ctx.beginPath();
-      globals.ctx.moveTo(button.x + 10, button.y);
-      globals.ctx.lineTo(button.x + buttonWidth - 10, button.y);
-      globals.ctx.quadraticCurveTo(
-        button.x + buttonWidth,
-        button.y,
-        button.x + buttonWidth,
-        button.y + 10
-      );
-      globals.ctx.lineTo(button.x + buttonWidth, button.y + buttonHeight - 10);
-      globals.ctx.quadraticCurveTo(
-        button.x + buttonWidth,
-        button.y + buttonHeight,
-        button.x + buttonWidth - 10,
-        button.y + buttonHeight
-      );
-      globals.ctx.lineTo(button.x + 10, button.y + buttonHeight);
-      globals.ctx.quadraticCurveTo(
-        button.x,
-        button.y + buttonHeight,
-        button.x,
-        button.y + buttonHeight - 10
-      );
-      globals.ctx.lineTo(button.x, button.y + 10);
-      globals.ctx.quadraticCurveTo(button.x, button.y, button.x + 10, button.y);
-      globals.ctx.closePath();
-      globals.ctx.fill();
-
-      globals.ctx.fillStyle = "white";
-      globals.ctx.font = "24px MedievalSharp";
-      globals.ctx.textAlign = "center";
-      globals.ctx.textBaseline = "middle";
-      globals.ctx.fillText(
-        button.text,
-        button.x + buttonWidth / 2,
-        button.y + buttonHeight / 2
-      );
-    }
-  }
-
-  #renderStateMessages() {
-    globals.ctx.save();
-
-    for (let i = 0; i < this.#stateMessages.length; i++) {
-      const currentMessage = this.#stateMessages[i];
-
-      globals.ctx.shadowBlur = 20;
-      globals.ctx.shadowColor = "black";
-      globals.ctx.font = currentMessage.getFont();
-      globals.ctx.fillStyle = currentMessage.getColor();
-
-      for (let i = 0; i < 10; i++) {
-        globals.ctx.fillText(
-          currentMessage.getContent(),
-          currentMessage.getXPosition(),
-          currentMessage.getYPosition()
-        );
-      }
-    }
-
-    globals.ctx.restore();
-  }
-
-  #renderDamageMessages() {
-    const damageMsgsFontSize = 75;
-
-    for (let i = 0; i < globals.damageMessages.length; i++) {
-      let message = globals.damageMessages[i];
-
-      let fontSize = 60;
-
-
-
-      globals.ctx.font = `${fontSize}px MedievalSharp`;
-      globals.ctx.fillStyle = message.getColor();
-      globals.ctx.fillText(
-        message.getContent(),
-        message.getXPosition(),
-        message.getYPosition()
       );
     }
   }

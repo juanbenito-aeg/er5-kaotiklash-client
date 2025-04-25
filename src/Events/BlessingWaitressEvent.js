@@ -1,21 +1,23 @@
 import Event from "./Event.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
+import globals from "../Game/globals.js";
 import { BlessingWaitressState, CardState } from "../Game/constants.js";
-import { globals } from "../index.js";
 
 export default class BlessingWaitressEvent extends Event {
   #state;
   #phaseMessage;
   #stateMessages;
   #currentPlayerMinionsInPlayDeck;
+  #eventWithoutDurationData;
 
   constructor(
     executedBy,
     eventCard,
     phaseMessage,
     stateMessages,
-    currentPlayerMinionsInPlayDeck
+    currentPlayerMinionsInPlayDeck,
+    eventWithoutDurationData
   ) {
     super(executedBy, eventCard);
 
@@ -23,6 +25,7 @@ export default class BlessingWaitressEvent extends Event {
     this.#phaseMessage = phaseMessage;
     this.#stateMessages = stateMessages;
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
+    this.#eventWithoutDurationData = eventWithoutDurationData;
   }
 
   execute() {
@@ -118,7 +121,7 @@ export default class BlessingWaitressEvent extends Event {
 
     this.#stateMessages.push(restoredHPMsg);
 
-    globals.blessingWaitressCardData.isEventActive = false;
-    globals.blessingWaitressCardData.eventInstance = {};
+    this.#eventWithoutDurationData.isActive = false;
+    this.#eventWithoutDurationData.instance = {};
   }
 }

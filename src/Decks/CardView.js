@@ -27,6 +27,10 @@ export default class CardView {
     return this.#card.getDescription();
   }
 
+  resetAttributes() {
+    this.#card.resetAttributes();
+  }
+
   getSpecialSkill() {
     return this.#card.getSpecialSkill();
   }
@@ -215,6 +219,18 @@ export default class CardView {
     return this.#card.getWeapon();
   }
 
+  setWeapon(weapon) {
+    this.#card.setWeapon(weapon);
+  }
+
+  removeWeapon() {
+    this.#card.removeWeapon();
+  }
+
+  resetWeaponAttributes() {
+    this.#card.resetWeaponAttributes();
+  }
+
   getMinionWeaponTypeID() {
     return this.#card.getWeapon().getWeaponTypeID();
   }
@@ -227,12 +243,12 @@ export default class CardView {
     this.#card.setCurrentHP(newHP);
   }
 
-  setWeapon(weapon) {
-    this.#card.setWeapon(weapon);
-  }
-
   setCurrentPrepTimeInRounds(newPrepTimeInRounds) {
     this.#card.setCurrentPrepTimeInRounds(newPrepTimeInRounds);
+  }
+
+  setCurrentDurationInRounds(newDuration) {
+    this.#card.setCurrentDurationInRounds(newDuration);
   }
 
   setCurrentDurationInRounds(newDuration) {
@@ -291,7 +307,43 @@ export default class CardView {
     return this.#card.getHalfParryFumbleChance();
   }
 
-  removeWeapon() {
-    this.#card.removeWeapon();
+  getInitialPrepTimeInRounds() {
+    return this.#card.getInitialPrepTimeInRounds();
+  }
+
+  getCurrentInitialPrepTimeInRounds() {
+    return this.#card.getCurrentPrepTimeInRounds;
+  }
+
+  setCurrentPrepTimeInRounds(newPrepTimeInRounds) {
+    this.#card.setCurrentPrepTimeInRounds(newPrepTimeInRounds);
+  }
+
+  getArmor() {
+    return this.#card.getArmor();
+  }
+
+  setArmor(armor) {
+    this.#card.setArmor(armor);
+  }
+
+  getArmorID() {
+    return this.#card.getArmorID();
+  }
+
+  getArmorCurrentDurability() {
+    return this.#card.getArmor().getCurrentDurability();
+  }
+
+  setCurrentDurability(newDurability) {
+    this.#card.setCurrentDurability(newDurability);
+  }
+
+  removeArmor() {
+    this.#card.removeArmor();
+  }
+
+  resetArmorAttributes() {
+    this.#card.resetArmorAttributes();
   }
 }

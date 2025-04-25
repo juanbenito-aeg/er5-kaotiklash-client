@@ -10,7 +10,7 @@ export default class GridCreator {
     // EVENTS DECK GRID
     const eventsDeckBox = new Box(
       1890,
-      550,
+      615,
       200,
       200,
       false,
@@ -23,9 +23,9 @@ export default class GridCreator {
     // ACTIVE EVENTS GRID
     const activeEventsBox = new Box(
       1790,
-      210,
-      400,
-      300,
+      235,
+      565,
+      355,
       false,
       false,
       BoxState.INACTIVE,
@@ -75,7 +75,7 @@ export default class GridCreator {
     // MESSAGES GRID
     const messagesBox = new Box(
       1790,
-      10,
+      25,
       420,
       185,
       false,
@@ -189,7 +189,7 @@ export default class GridCreator {
 
     // PLAYER 1 PREPARE EVENT BOXES AND GRID
     const prepareEventBoxes = [];
-    let prepareEventBoxYCoordinate = 579;
+    let prepareEventBoxYCoordinate = 849;
     for (let i = 0; i < 3; i++) {
       const prepareEventBox = new Box(
         1510,
@@ -204,7 +204,7 @@ export default class GridCreator {
 
       prepareEventBoxes.push(prepareEventBox);
 
-      prepareEventBoxYCoordinate += 135;
+      prepareEventBoxYCoordinate -= 135;
     }
     const player1PrepareEventGrid = new Grid(
       GridType.PLAYER_1_PREPARE_EVENT,
@@ -271,10 +271,10 @@ export default class GridCreator {
 
     // PLAYER 2 BATTLEFIELD BOXES
     const player2BattlefieldBoxes = [];
-    let player2BattlefieldBoxXCoordinate = 700;
+    let player2BattlefieldBoxXCoordinate = 1645;
     let player2BattlefieldBoxYCoordinate = 175;
     for (let i = 0; i < 18; i++) {
-      player2BattlefieldBoxXCoordinate += 135;
+      player2BattlefieldBoxXCoordinate -= 135;
 
       let battlefieldArea;
 
@@ -282,14 +282,14 @@ export default class GridCreator {
         battlefieldArea = BattlefieldArea.REAR;
       } else if (i < 12) {
         if (i === 6) {
-          player2BattlefieldBoxXCoordinate = 835;
+          player2BattlefieldBoxXCoordinate = 1510;
           player2BattlefieldBoxYCoordinate = 310;
         }
 
         battlefieldArea = BattlefieldArea.MIDDLE;
       } else {
         if (i === 12) {
-          player2BattlefieldBoxXCoordinate = 835;
+          player2BattlefieldBoxXCoordinate = 1510;
           player2BattlefieldBoxYCoordinate = 445;
         }
 

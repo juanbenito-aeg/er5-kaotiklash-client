@@ -1,4 +1,5 @@
-import { globals } from "../index.js";
+import globals from "../Game/globals.js";
+
 export default class SpecialSkillAngelo {
   #enemyBattlefieldGrid;
   #enemyEventsInPrepGrid;
@@ -34,7 +35,7 @@ export default class SpecialSkillAngelo {
     const fieldX = (globals.canvas.width - fieldWidth) / 2;
     const fieldY = globals.canvas.height * 0.1;
 
-    //MESSAGE COORDINATES
+    // MESSAGE COORDINATES
     const centerX = fieldX + fieldWidth / 2;
     const centerY = fieldY + fieldHeight / 2;
 

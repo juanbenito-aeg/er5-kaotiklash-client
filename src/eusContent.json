@@ -1,0 +1,17 @@
+{
+  "name": "Izena",
+  "email": "Posta elektronikoa",
+  "password": "Pasahitza",
+  "confirm_password": "Pasahitza berretsi",
+  "log_in": "Saioa hasi",
+  "log_out": "Saioa amaitu",
+  "register_para": "Izena eman",
+  "register_heading": "IZENA EMAN",
+  "reset": "Berrasieratu",
+  "no_account": "Ez duzu konturik?",
+  "got_account": "Konturik al duzu dagoeneko?",
+  "greeting": "Kaixo",
+  "choose_opponent": "Hautatu aurkari bat",
+  "choose_option": "Mesedez, hautatu aukera bat",
+  "start_game": "HASI JOKOA"
+}
