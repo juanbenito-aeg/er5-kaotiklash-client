@@ -2094,29 +2094,29 @@ export default class Game {
         // HP
         x: 1100,
         y: 750,
-        width: 25,
-        height: 25,
+        width: 42,
+        height: 42,
       },
       {
         // MADNESS
         x: 1147,
         y: 750,
-        width: 25,
-        height: 25,
+        width: 35,
+        height: 35,
       },
       {
         // ATTACK
         x: 1200,
         y: 752,
-        width: 20,
-        height: 20,
+        width: 28,
+        height: 28,
       },
       {
         // DEFENSE
         x: 1250,
         y: 750,
-        width: 25,
-        height: 25,
+        width: 35,
+        height: 35,
       },
     ];
     for (let i = 0; i < icons.length; i++) {
