@@ -103,10 +103,6 @@ export default class CardView {
     return this.#card.getCurrentDefense();
   }
 
-  getWeaponTypeID() {
-    return this.#card.getWeaponTypeID();
-  }
-
   getInitialDamage() {
     return this.#card.getInitialDamage();
   }
@@ -129,10 +125,6 @@ export default class CardView {
 
   getCurrentPrepTimeInRounds() {
     return this.#card.getCurrentPrepTimeInRounds();
-  }
-
-  getArmorTypeID() {
-    return this.#card.getArmorTypeID();
   }
 
   getInitialDurability() {
@@ -231,6 +223,14 @@ export default class CardView {
     this.#card.resetWeaponAttributes();
   }
 
+  getWeaponTypeID() {
+    return this.#card.getWeaponTypeID();
+  }
+
+  getWeaponTypeName() {
+    return this.#card.getWeaponTypeName();
+  }
+
   getMinionWeaponTypeID() {
     return this.#card.getWeapon().getWeaponTypeID();
   }
@@ -327,6 +327,22 @@ export default class CardView {
     this.#card.setArmor(armor);
   }
 
+  removeArmor() {
+    this.#card.removeArmor();
+  }
+
+  resetArmorAttributes() {
+    this.#card.resetArmorAttributes();
+  }
+
+  getArmorTypeID() {
+    return this.#card.getArmorTypeID();
+  }
+
+  getArmorTypeName() {
+    return this.#card.getArmorTypeName();
+  }
+
   getArmorID() {
     return this.#card.getArmorID();
   }
@@ -337,13 +353,5 @@ export default class CardView {
 
   setCurrentDurability(newDurability) {
     this.#card.setCurrentDurability(newDurability);
-  }
-
-  removeArmor() {
-    this.#card.removeArmor();
-  }
-
-  resetArmorAttributes() {
-    this.#card.resetArmorAttributes();
   }
 }
