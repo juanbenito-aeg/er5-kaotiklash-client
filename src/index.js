@@ -26,7 +26,7 @@ async function initEssentials() {
 }
 
 function initInnDoor() {
-  const innDoor = document.getElementById("inn-door");
+  const innDoor = document.getElementById("main-screen-inn-door");
   innDoor.addEventListener("click", initLoginScreen);
 }
 
@@ -50,6 +50,7 @@ async function changeLanguage(e) {
   globals.language = language === "eng" ? Language.ENGLISH : Language.BASQUE;
 
   clearErrorMessages();
+  setUpGameTips();
 }
 
 function setLanguagePreference(language) {
@@ -112,7 +113,7 @@ function showLoginScreen() {
   clearErrorMessages();
 
   const loginScreen = document.getElementById("login-screen");
-  loginScreen.style.display = "block";
+  loginScreen.style.display = "flex";
 }
 function hideLoginScreen() {
   const loginScreen = document.getElementById("login-screen");
@@ -310,9 +311,16 @@ function initPlayerSessionScreen() {
   const logOutBtn = document.getElementById("log-out-btn");
   logOutBtn.addEventListener("click", clearLocalStorageAndReload);
 
+  //STATS BUTTON (!) FILLING FOR THE FUTURE
+  const statsBtn = document.getElementById("stats-btn");
+  statsBtn.addEventListener("click", showStatsScreen);
+
   // GET OPPONENTS' DATA & USE THEM TO CREATE HTML ELEMENTS
   const opponentSelect = document.getElementById("opponent-select");
   createOpponentsSelOptions(playerName, opponentSelect);
+
+  //RANDOM TIPS FOR THE PLAYER
+  setUpGameTips();
 
   // ACTIVATE THE "Start Game" BUTTON WHEN AN OPPONENT IS SELECTED & DISABLE IT WHEN THE DEFAULT OPTION IS SELECTED AGAIN
   opponentSelect.addEventListener("change", activateOrDisableStartGameBtn);
@@ -363,6 +371,46 @@ function activateOrDisableStartGameBtn(e) {
   } else {
     startGameBtn.disabled = true;
   }
+}
+
+function showStatsScreen() {
+  //INSERT LOGIC
+}
+
+function setUpGameTips() {
+  const tips = {
+    [Language.ENGLISH]: [
+      "Old gambler's wisdom: 'When in doubt, blame the tavern wench!'",
+      "A good hand beats a strong arm. Usually.",
+      "Bartender's advice: 'The card up your sleeve should stay there!'",
+      "Drunkard's tip: 'Count your cards, not your drinks!'",
+      "Bar fight wisdom: 'Cheat first, apologize later'",
+      "Grizzled mercenary mutters: 'Fold early, live longer'",
+      "Tavern rule #7: 'Never gamble with a man named 'Two-Thumbs''",
+      "Sage gambler's tip: 'Never trust a man who orders water at the bar!'",
+      "Barkeep’s wisdom: 'The best way to fold is to do it with style!'",
+      "Tavern wisdom: 'If you can't win a fight, make sure you're too drunk to care!'",
+      "Drunken fighter’s rule: 'The only thing that beats a punch is a well-timed burp!'",
+    ],
+    [Language.BASQUE]: [
+      "Jokalari zaharren jakinduria: 'Zalantza baduzu, blame tabernako neskari!'",
+      "Esku ona beso indartsua gainditzen du. Ohikoan.",
+      "Tabernariaren aholkua: 'Mahukako karta han egon behar da!'",
+      "Mozkorren aholkua: 'Kontatu zure kartak, ez zure edariak!'",
+      "Taberna-liskar jakinduria: 'Engainatu lehen, barkatu gero'",
+      "Mertzenario zaharrak marmar: 'Laster utzi, luzaroago bizi'",
+      "Taberna araua #7: 'Ez jokatu inoiz Bi Erizo ezizeneko gizonekin'",
+      "Jokalari zaharren aholkua: 'Ez fidatu tabernan ura eskatzen duen gizonarekin!'",
+      "Tabernariaren jakinduria: 'Txarto jokatzen duzun karta, estiloz jokatuz ordaindu!'",
+      "Taberna jakinduria: 'Borrokaren hasierako momentuan ezin baduzu irabazi, ziurtatu edateko momentu gutxienekoa izatea!'",
+      "Mozkor borrokalarien araua: 'Kolpe batek ez du ezer irabazten, burp batek baizik!'",
+    ],
+  };
+
+  const currentLang = globals.language;
+  const randomTip =
+    tips[currentLang][Math.floor(Math.random() * tips[currentLang].length)];
+  document.getElementById("game-tip").textContent = randomTip;
 }
 
 function hidePlayerSessionAndInitGameScreen() {
