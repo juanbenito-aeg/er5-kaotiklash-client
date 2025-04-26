@@ -536,7 +536,7 @@ export default class AttackEvent extends Event {
 
   parryMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
-      `Parry!: ${damageToInflict}`,
+      `PARRY!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
       2,
@@ -548,7 +548,7 @@ export default class AttackEvent extends Event {
 
   parryFumbleMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
-      `Parry fumble!: ${damageToInflict}`,
+      `PARRY FUMBLE!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
       2,
@@ -560,7 +560,7 @@ export default class AttackEvent extends Event {
 
   parryHalfFumbleMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
-      `Parry Half Fumble!: ${damageToInflict}`,
+      `PARRY HALF FUMBLE!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
       2,
@@ -572,7 +572,7 @@ export default class AttackEvent extends Event {
 
   parryCritMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
-      `Parry Crit!: ${damageToInflict}`,
+      `PARRY CRIT!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
       2,
@@ -597,6 +597,19 @@ export default class AttackEvent extends Event {
   #finishBreastplatePrimordialColossusPower(
     breastplatePrimordialColossusOwner
   ) {
+    // CREATE AND STORE THE ARMOR'S POWER STATE MESSAGE
+    let dmgReflectedBackOntoAttackerMsg =
+      "THE DAMAGE WAS REFLECTED BACK ONTO THE ATTACKER!";
+    dmgReflectedBackOntoAttackerMsg = new StateMessage(
+      dmgReflectedBackOntoAttackerMsg,
+      "20px MedievalSharp",
+      "aqua",
+      4,
+      globals.canvas.width / 2 - dmgReflectedBackOntoAttackerMsg.length / 2,
+      globals.canvas.height / 2
+    );
+    this.#stateMessages.push(dmgReflectedBackOntoAttackerMsg);
+
     // CREATE AND STORE THE "ARMOR BROKE!" STATE MESSAGE
     const breastplatePrimordialColossusOwnerBox =
       breastplatePrimordialColossusOwner.getBoxIsPositionedIn(
@@ -613,7 +626,7 @@ export default class AttackEvent extends Event {
 
   critMessage(targetBox) {
     const critMessage = new StateMessage(
-      "Critical Hit!",
+      "CRITICAL HIT!",
       "60px MedievalSharp",
       "gold",
       2,
@@ -625,7 +638,7 @@ export default class AttackEvent extends Event {
 
   fumbleMessage(targetBox) {
     const fumbleMessage = new StateMessage(
-      "Fumble!",
+      "FUMBLE!",
       "60px MedievalSharp",
       "red",
       2,
