@@ -486,6 +486,7 @@ export default class AttackEvent extends Event {
 
       if (targetNewCurrentHP < 0) {
         targetNewCurrentHP = 0;
+        this.deathMessage(this.#target);
       }
 
       this.#target.setCurrentHP(targetNewCurrentHP);
@@ -494,6 +495,7 @@ export default class AttackEvent extends Event {
     let targetNewCurrentHPStored = this.#target.getCurrentHP() - storedDamage;
     if (targetNewCurrentHPStored < 0) {
       targetNewCurrentHPStored = 0;
+      this.deathMessage(this.#target);
     }
     this.#target.setCurrentHP(targetNewCurrentHPStored);
 
@@ -536,7 +538,7 @@ export default class AttackEvent extends Event {
 
   parryMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
-      `Parry!: ${damageToInflict}`,
+      `WEAPON DURABILITY!: -${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
       2,
@@ -548,7 +550,7 @@ export default class AttackEvent extends Event {
 
   parryFumbleMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
-      `Parry fumble!: ${damageToInflict}`,
+      `PARRY FAILED!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
       2,
@@ -560,7 +562,7 @@ export default class AttackEvent extends Event {
 
   parryHalfFumbleMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
-      `Parry Half Fumble!: ${damageToInflict}`,
+      `PARRY HALF FUMBLE!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
       2,
@@ -572,7 +574,7 @@ export default class AttackEvent extends Event {
 
   parryCritMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
-      `Parry Crit!: ${damageToInflict}`,
+      `PARRY CRIT!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
       2,
@@ -613,7 +615,7 @@ export default class AttackEvent extends Event {
 
   critMessage(targetBox) {
     const critMessage = new StateMessage(
-      "Critical Hit!",
+      "CRITICAL HIT!",
       "60px MedievalSharp",
       "gold",
       2,
@@ -625,7 +627,7 @@ export default class AttackEvent extends Event {
 
   fumbleMessage(targetBox) {
     const fumbleMessage = new StateMessage(
-      "Fumble!",
+      "FUMBLE!",
       "60px MedievalSharp",
       "red",
       2,
@@ -645,6 +647,18 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getYCoordinate() + 10
     );
     this.#stateMessages.push(weaponMessage);
+  }
+
+  deathMessage(target) {
+    const deathMessage = new StateMessage(
+      "MINION DIED!",
+      "20px MedievalSharp",
+      "red",
+      2,
+      target.getXCoordinate() + 55,
+      target.getYCoordinate() + 110
+    );
+    this.#stateMessages.push(deathMessage);
   }
 
   #createAndStoreArmorBrokeMsg(armorOwnerBox) {

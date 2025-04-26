@@ -719,8 +719,26 @@ export default class Game {
           if (isPlayer1Halfheal) {
             healAmount = Math.floor(healAmount / 2);
             currentCard.setCurrentHP(currentHP + healAmount);
+            const healMessage = new StateMessage(
+              `+${healAmount}`,
+              "20px MedievalSharp",
+              "lightgreen",
+              1,
+              currentCard.getXCoordinate() + 55,
+              currentCard.getYCoordinate() + 110
+            );
+            this.#stateMessages.push(healMessage);
           } else {
             currentCard.setCurrentHP(currentCard.getInitialHP());
+            const healMessage = new StateMessage(
+              `+${healAmount}`,
+              "20px MedievalSharp",
+              "lightgreen",
+              1,
+              currentCard.getXCoordinate() + 55,
+              currentCard.getYCoordinate() + 110
+            );
+            this.#stateMessages.push(healMessage);
           }
         }
 
@@ -737,8 +755,26 @@ export default class Game {
           if (isPlayer2Halfheal) {
             healAmount = Math.floor(healAmount / 2);
             currentCard.setCurrentHP(currentHP + healAmount);
+            const healMessage = new StateMessage(
+              `+${healAmount}`,
+              "20px MedievalSharp",
+              "lightgreen",
+              1,
+              currentCard.getXCoordinate() + 55,
+              currentCard.getYCoordinate() + 110
+            );
+            this.#stateMessages.push(healMessage);
           } else {
             currentCard.setCurrentHP(currentCard.getInitialHP());
+            const healMessage = new StateMessage(
+              `+${healAmount}`,
+              "20px MedievalSharp",
+              "lightgreen",
+              1,
+              currentCard.getXCoordinate() + 55,
+              currentCard.getYCoordinate() + 110
+            );
+            this.#stateMessages.push(healMessage);
           }
         }
       }

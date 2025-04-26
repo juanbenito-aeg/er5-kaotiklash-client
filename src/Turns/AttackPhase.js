@@ -311,6 +311,16 @@ export default class AttackPhase extends Phase {
               this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
             }
           }
+        } else {
+          const errorMessage = new StateMessage(
+            "Target not within reach",
+            "20px MedievalSharp",
+            "red",
+            0.01,
+            target.getXCoordinate() + 55,
+            target.getYCoordinate() + 10
+          );
+          this.#stateMessages.push(errorMessage);
         }
       }
     }
