@@ -968,7 +968,7 @@ export default class Game {
     globals.ctx.font = "24px MedievalSharp";
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
-    globals.ctx.fillText(phaseText, 500, 675);
+    globals.ctx.fillText(phaseText, 500, 705);
 
     for (let i = 0; i < globals.buttonDataGlobal.length; i++) {
       const currentButton = globals.buttonDataGlobal[i];
