@@ -4,6 +4,7 @@ import CloakOfEternalShadowSpecialEffect from "./CloakOfEternalShadowSpecialEffe
 import ShieldOfTheAncestralOakEffect from "./ShieldOfTheAncestralOakEffect.js";
 import BracersOfTheWarLionSpecialEffect from "./BracersOfTheWarLionSpecialEffect.js";
 import VestOfTheSpectralBartenderEffect from "./VestOfTheSpectralBartender.js";
+import ArmorOfTitanicFuryEffect from "./ArmorOfTitanicFury.js";
 import globals from "../Game/globals.js";
 import { ArmorID, PlayerID, WeaponTypeID , MinionTypeID} from "../Game/constants.js";
 
@@ -113,6 +114,9 @@ export default class AttackEvent extends Event {
     let isPlayer1Debuffed = false;
     let isPlayer2Debuffed = false;
     let debuff = 10;
+
+    let armorOfTitanicFuryBoostAttacker;
+    let armorOfTitanicFuryBoostTarget;
 
     if (globals.curseOfTheBoundTitanEventData.isActive === true) {
       if (
@@ -259,6 +263,15 @@ export default class AttackEvent extends Event {
       }
     }
 
+    if(targetArmor) {
+      if(this.#target.getArmorID() === ArmorID.ARMOR_OF_TITANIC_FURY) {
+        ArmorOfTitanicFuryEffect.activeBoost(
+          this.#target,
+          this.#stateMessages
+        );
+      }
+    }
+
     let targetBox;
     if (targetHasBreastplatePrimordialColossus || fumble) {
       targetBox = this.#target.getBoxIsPositionedIn(
@@ -335,6 +348,7 @@ export default class AttackEvent extends Event {
         parryHalfFumble = true;
       }
     }
+
     let crit = false;
     if (roll <= critProb) {
       // CRITICAL HIT
@@ -509,6 +523,13 @@ export default class AttackEvent extends Event {
       // IF THE TARGET HAS THE "Breastplate of the Primordial Colossus" EQUIPPED & USED ITS POWER, RESET THE ARMOR'S ATTRIBUTES, INSERT IT INTO THE EVENTS DECK & REMOVE IT FROM ITS OWNER
       this.#finishBreastplatePrimordialColossusPower(
         breastplatePrimordialColossusOwner
+      );
+    }
+
+    if(!attackerWeapon) {
+      //RESET TITANIC FURY BOOST AFTER THE ATTACK IS FINISHED
+      ArmorOfTitanicFuryEffect.resetBoost(
+        this.#attacker
       );
     }
 

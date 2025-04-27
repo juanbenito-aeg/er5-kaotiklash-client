@@ -127,7 +127,7 @@ export default class DrawCardPhase extends Phase {
     // (!) REMOVE WHEN CARDS TESTING FINISHES
     const drawnCard = this.#getSpecifiedCard(
       CardCategory.ARMOR,
-      ArmorID.VEST_OF_THE_SPECTRAL_BARTENDER
+      ArmorID.ARMOR_OF_TITANIC_FURY
     );
     if (!drawnCard) {
       return;
