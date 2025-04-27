@@ -3,8 +3,9 @@ import StateMessage from "../Messages/StateMessage.js";
 import CloakOfEternalShadowSpecialEffect from "./CloakOfEternalShadowSpecialEffect.js";
 import ShieldOfTheAncestralOakEffect from "./ShieldOfTheAncestralOakEffect.js";
 import BracersOfTheWarLionSpecialEffect from "./BracersOfTheWarLionSpecialEffect.js";
+import VestOfTheSpectralBartenderEffect from "./VestOfTheSpectralBartender.js";
 import globals from "../Game/globals.js";
-import { ArmorID, PlayerID, WeaponTypeID } from "../Game/constants.js";
+import { ArmorID, PlayerID, WeaponTypeID , MinionTypeID} from "../Game/constants.js";
 
 export default class AttackEvent extends Event {
   #attacker;
@@ -282,15 +283,6 @@ export default class AttackEvent extends Event {
       damageToInflict = 0;
     }
 
-    let crit = false;
-    if (roll <= critProb) {
-      // CRITICAL HIT
-      console.log("Critical Hit");
-      damageToInflict = damageToInflict * 1.75;
-      damageToInflict = Math.floor(damageToInflict);
-      crit = true;
-    }
-
     if (attackerWeapon) {
       let attackerNewDurability =
         attackerWeapon.getCurrentDurability() - damageToInflict;
@@ -343,12 +335,26 @@ export default class AttackEvent extends Event {
         parryHalfFumble = true;
       }
     }
-
+    let crit = false;
     if (roll <= critProb) {
       // CRITICAL HIT
+      crit = true;
       console.log("Critical Hit");
+      let baseDamage = damageToInflict;
       damageToInflict = damageToInflict * 1.75;
       damageToInflict = Math.floor(damageToInflict);
+      if (
+        this.#target.getArmor() &&
+        this.#target.getArmor().getID() === ArmorID.VEST_OF_THE_SPECTRAL_BARTENDER &&
+        this.#target.getMinionTypeID() === MinionTypeID.WIZARD
+      ) {
+        damageToInflict = VestOfTheSpectralBartenderEffect.blockCrit(
+          baseDamage,
+          this.#target,
+          this.#stateMessages
+        );
+        crit = false;
+      } 
     }
 
     if (this.#parry === true && !fumble && this.#target.getWeapon()) {

@@ -10,6 +10,7 @@ import {
   SpecialEventID,
   RareEventID,
   MainCharacterID,
+  ArmorID,
 } from "../Game/constants.js";
 
 export default class DrawCardPhase extends Phase {
@@ -125,8 +126,8 @@ export default class DrawCardPhase extends Phase {
 
     // (!) REMOVE WHEN CARDS TESTING FINISHES
     const drawnCard = this.#getSpecifiedCard(
-      CardCategory.MAIN_CHARACTER,
-      MainCharacterID.JOSEPH
+      CardCategory.ARMOR,
+      ArmorID.VEST_OF_THE_SPECTRAL_BARTENDER
     );
     if (!drawnCard) {
       return;
