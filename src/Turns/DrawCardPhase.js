@@ -127,7 +127,7 @@ export default class DrawCardPhase extends Phase {
     // (!) REMOVE WHEN CARDS TESTING FINISHES
     const drawnCard = this.#getSpecifiedCard(
       CardCategory.ARMOR,
-      ArmorID.ARMOR_OF_TITANIC_FURY
+      ArmorID.CLOAK_ETERNAL_SHADOW
     );
     if (!drawnCard) {
       return;

@@ -10,11 +10,39 @@
   font-family: MedievalSharp;
 }
 
+/* GENERAL STYLES */
+
 body {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+h2 {
+  margin-bottom: 30px;
+  font-size: 2.25rem;
+  text-align: center;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-bottom: 2px solid white;
+  margin: 12px 0;
+  font-size: 1.25rem;
+  color: white;
+  background-color: transparent;
+}
+
+input:focus {
+  outline: none;
+  border-bottom: 2px solid rgb(255 255 255 / 0.75);
+}
+
+button {
+  font-size: 1.25rem;
 }
 
 /* UTILITIES */
@@ -36,6 +64,9 @@ body {
 }
 
 #main-screen-elems-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 47.75vh;
   height: 61.5vh;
   position: absolute;
@@ -44,7 +75,26 @@ body {
   translate: -50% -50%;
 }
 
-#inn-door {
+#main-screen-title {
+  font-size: 6rem;
+  letter-spacing: 0.6em;
+  text-shadow: 0 0 0.05em rgb(255 255 255),
+    0 0.1em 0.1em rgb(255 255 255 / 0.25), 0 0.2em 0.2em rgb(255 255 255 / 0.25),
+    0 0.3em 0.3em rgb(255 255 255 / 0.25), 0 0.4em 0.4em rgb(255 255 255 / 0.25);
+  transition: letter-spacing 0.85s, text-shadow 0.85s;
+  color: rgb(255 255 255);
+}
+
+#main-screen-title:hover {
+  letter-spacing: 0.25em;
+  text-shadow: 0 0 0.15em rgb(255 255 255);
+}
+
+.main-screen-title-k-letter {
+  font-size: 8rem;
+}
+
+#main-screen-inn-door {
   width: 6.25vh;
   height: 13.75vh;
   border-radius: 1rem;
@@ -55,7 +105,7 @@ body {
   cursor: pointer;
 }
 
-#inn-door:hover {
+#main-screen-inn-door:hover {
   box-shadow: 0 0 1.25rem rgb(252 231 172) inset;
 }
 
@@ -89,147 +139,79 @@ body {
 #register-screen,
 #player-session-screen {
   display: none;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   min-height: 100vh;
 }
 
 #login-screen,
 #register-screen {
+  font-size: 1.25rem;
   background: url("../images/entrance_door.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-/* LOGIN SCREEN */
-
-#login-screen {
-  font-size: xx-large;
-}
-
-#login-form {
-  position: absolute;
-  margin-top: 25vh;
-  margin-left: 80vh;
-  background: rgba(0, 0, 0, 0.8);
+#login-box,
+#register-box {
+  width: 400px;
+  background-color: rgba(0 0 0 / 0.8);
   padding: 30px;
   border-radius: 10px;
-  width: 400px;
   color: white;
   text-align: left;
 }
 
 #login-btn,
-#reset-btn {
+#register-btn {
   width: 100%;
+  height: 50px;
   padding: 12px;
-  margin-top: 15px;
   border: none;
-  background: white;
+  border-radius: 5px;
+  margin-top: 15px;
   color: black;
-  font-size: 1.2rem;
+  background-color: white;
   font-weight: bold;
   cursor: pointer;
-  border-radius: 5px;
 }
 
 #login-btn:hover,
-#reset-btn:hover {
-  text-decoration: underline;
-  color: #ddd1d1af;
-}
-
-#login-email {
-  width: 300px;
-  height: 30px;
-  font-size: x-large;
-}
-
-#login-password {
-  width: 300px;
-  height: 30px;
-  font-size: x-large;
-}
-
-#login-btn {
-  width: 145px;
-  height: 50px;
-  font-size: x-large;
-}
-
-#login-para {
-  margin-top: 20px;
-  font-size: 1.2rem;
-  text-align: center;
-}
-
-/* REGISTRATION SCREEN */
-
-#register-screen {
-  justify-content: center;
-  align-items: center;
-}
-
-#register-box {
-  background: rgba(0, 0, 0, 0.8);
-  padding: 30px;
-  border-radius: 10px;
-  width: 400px;
-  color: white;
-  text-align: left;
-}
-
-h2 {
-  margin-bottom: 30px;
-  text-align: center;
-  font-size: 2rem;
-}
-
-input {
-  width: 100%;
-  padding: 12px;
-  margin: 12px 0;
-  border: none;
-  border-bottom: 2px solid white;
-  background: transparent;
-  color: white;
-  font-size: 1rem;
-}
-
-input:focus {
-  outline: none;
-  border-bottom: 2px solid lightblue;
-}
-
-#register-btn {
-  width: 100%;
-  padding: 12px;
-  margin-top: 15px;
-  border: none;
-  background: white;
-  color: black;
-  font-size: 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
 #register-btn:hover {
-  text-decoration: underline;
-  color: #ddd1d1af;
+  color: rgb(0 0 0 / 0.65);
 }
 
+#login-btn:active,
+#register-btn:active {
+  color: rgb(0 0 0 / 0.3);
+}
+
+#login-para,
 #register-para {
+  display: inline-block;
   margin-top: 20px;
-  font-size: 1.2rem;
-  text-align: left;
+}
+
+#login-screen-register-btn,
+#register-screen-login-btn {
+  color: rgb(103 129 180);
+}
+
+#login-screen-register-btn:hover,
+#register-screen-login-btn:hover {
+  color: rgb(103 129 180 / 0.85);
+}
+
+#login-screen-register-btn:active,
+#register-screen-login-btn:active {
+  color: rgb(103 129 180 / 0.7);
 }
 
 /* PLAYER SESSION SCREEN */
 
 #player-session-screen {
-  justify-content: center;
-  align-items: center;
   background-image: url("../images/player_session_background.png");
   background-size: cover;
   background-position: center;
@@ -237,15 +219,16 @@ input:focus {
 }
 
 #player-session-container {
-  width: 500px;
+  width: 900px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-areas:
     "data     log-out"
     "opp-sel  opp-sel"
-    "start    start";
+    "stats      start"
+    "tips       tips";
   gap: 2em;
-  padding: 2.5em;
+  padding: 3em;
   border-radius: 16px;
   background-color: rgb(0 0 0 / 0.8);
   color: white;
@@ -255,20 +238,76 @@ input:focus {
   grid-area: data;
 }
 
+#player-name {
+  font-size: 2.8rem;
+}
+
+#player-email {
+  font-size: 1.1rem;
+  color: #ccc;
+}
+
 #log-out-btn {
   grid-area: log-out;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  height: 70px;
 }
 
 #opponent-select-container {
   grid-area: opp-sel;
   display: flex;
   flex-direction: column;
+  font-size: 1.8rem;
+  gap: 0.3em;
+}
+
+#opponent-select {
+  font-size: 1.1rem;
+  padding: 0.4em 0.6em;
+  border-radius: 6px;
+  width: 100%;
+  height: 60px;
+}
+
+#stats-btn {
+  grid-area: stats;
+  font-size: 1.45rem;
+  padding: 0.5em 1em;
+  border-radius: 12px;
+}
+
+#tips-section {
+  grid-area: tips;
+  font-size: 2rem;
+  text-align: left;
+  padding: 1.5em;
+  border-radius: 16px;
+  font-weight: normal;
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.07);
+  border-left: 6px solid #fbfbfb;
+  box-shadow: 0 0 10px rgba(246, 246, 246, 0.934);
+  animation: fadeInUp 0.6s ease-out;
+  transition: all 0.3s ease-in-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 #start-game-btn {
   grid-area: start;
-  padding: 0.5em 1.25em;
-  font-size: 1.25rem;
+  font-size: 1.45rem;
+  padding: 0.75em 1.5em;
+  border-radius: 12px;
 }
 
 /* GAME SCREEN */

@@ -294,7 +294,10 @@ export default class PerformEventPhase extends Phase {
       hoveredCard.getCategory() !== CardCategory.ARMOR &&
       hoveredCard.getCurrentPrepTimeInRounds() === 0
     ) {
-      if (hoveredCard.getID() === SpecialEventID.RAY_OF_CELESTIAL_RUIN) {
+      if (
+        hoveredCard.getID() === SpecialEventID.RAY_OF_CELESTIAL_RUIN &&
+        hoveredCard.getCategory() === CardCategory.SPECIAL
+      ) {
         if (!this.#enemyHasArmor()) {
           this.#stateMessages.push(
             new StateMessage(

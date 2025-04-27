@@ -626,6 +626,19 @@ export default class AttackEvent extends Event {
   #finishBreastplatePrimordialColossusPower(
     breastplatePrimordialColossusOwner
   ) {
+    // CREATE AND STORE THE ARMOR'S POWER STATE MESSAGE
+    let dmgReflectedBackOntoAttackerMsg =
+      "THE DAMAGE WAS REFLECTED BACK ONTO THE ATTACKER!";
+    dmgReflectedBackOntoAttackerMsg = new StateMessage(
+      dmgReflectedBackOntoAttackerMsg,
+      "20px MedievalSharp",
+      "aqua",
+      4,
+      globals.canvas.width / 2 - dmgReflectedBackOntoAttackerMsg.length / 2,
+      globals.canvas.height / 2
+    );
+    this.#stateMessages.push(dmgReflectedBackOntoAttackerMsg);
+
     // CREATE AND STORE THE "ARMOR BROKE!" STATE MESSAGE
     const breastplatePrimordialColossusOwnerBox =
       breastplatePrimordialColossusOwner.getBoxIsPositionedIn(
@@ -728,6 +741,7 @@ export default class AttackEvent extends Event {
       );
       this.#stateMessages.push(dodgeMessage);
       this.#isArmorPowerChosen = false;
+      this.#target.resetArmorAttributes();
       this.#eventDeck.insertCard(this.#target.getArmor());
       this.#target.removeArmor();
       return;

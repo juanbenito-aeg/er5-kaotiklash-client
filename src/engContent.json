@@ -6,12 +6,14 @@
   "log_in": "Log in",
   "log_out": "Log out",
   "register_para": "Register",
-  "register_heading": "REGISTER",
+  "login_heading": "LOGIN",
+  "registration_heading": "REGISTRATION",
   "reset": "Reset",
   "no_account": "Don't have an account?",
   "got_account": "Already got an account?",
-  "greeting": "Hi",
+  "greeting": "Welcome",
   "choose_opponent": "Choose an opponent",
   "choose_option": "Please choose an option",
-  "start_game": "START GAME"
+  "start_game": "START GAME",
+  "stats": "Stats"
 }

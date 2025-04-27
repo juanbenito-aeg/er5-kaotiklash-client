@@ -6,12 +6,14 @@
   "log_in": "Saioa hasi",
   "log_out": "Saioa amaitu",
   "register_para": "Izena eman",
-  "register_heading": "IZENA EMAN",
+  "login_heading": "SAIO-HASIERA",
+  "registration_heading": "IZEN-EMATEA",
   "reset": "Berrasieratu",
   "no_account": "Ez duzu konturik?",
   "got_account": "Konturik al duzu dagoeneko?",
-  "greeting": "Kaixo",
+  "greeting": "Ongi etorri",
   "choose_opponent": "Hautatu aurkari bat",
   "choose_option": "Mesedez, hautatu aukera bat",
-  "start_game": "HASI JOKOA"
+  "start_game": "HASI JOKOA",
+  "stats": "Estatistikak"
 }

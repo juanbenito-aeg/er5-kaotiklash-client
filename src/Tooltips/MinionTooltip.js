@@ -1,43 +1,36 @@
-import ToolTip from "./ToolTip.js";
-import { WeaponTypeID } from "../Game/constants.js";
+import Tooltip from "./Tooltip.js";
 
-export default class MinionTooltip extends ToolTip {
+export default class MinionTooltip extends Tooltip {
   constructor() {
     super();
   }
 
   getContent(minion) {
-    let content = [];
+    const content = [];
 
     content.push(`HP: ${minion.getCurrentHP()}`);
     content.push(`Attack: ${minion.getCurrentAttack()}`);
     content.push(`Defense: ${minion.getCurrentDefense()}`);
 
     if (minion.getWeapon()) {
-      let weapon = minion.getWeapon();
+      const weapon = minion.getWeapon();
+
       content.push("--- WEAPON ---");
+      content.push(`Type: ${weapon.getWeaponTypeName()}`);
       content.push(`Name: ${weapon.getName()}`);
-      content.push(`Damage: +${weapon.getCurrentDamage()}`);
+      content.push(`Damage: ${weapon.getCurrentDamage()}`);
       content.push(`Durability: ${weapon.getCurrentDurability()}`);
-      content.push(`Type: ${this.getWeaponTypeName(weapon.getWeaponTypeID())}`);
     }
 
     if (minion.getArmor()) {
-      let armor = minion.getArmor();
+      const armor = minion.getArmor();
+
       content.push("--- ARMOR ---");
+      content.push(`Type: ${armor.getArmorTypeName()}`);
       content.push(`Name: ${armor.getName()}`);
       content.push(`Durability: ${armor.getCurrentDurability()}`);
     }
 
     return content;
-  }
-
-  getWeaponTypeName(typeId) {
-    let typeNames = {
-      [WeaponTypeID.MELEE]: "MELEE",
-      [WeaponTypeID.MISSILE]: "MISSILE",
-      [WeaponTypeID.HYBRID]: "HYBRID",
-    };
-    return typeNames[typeId];
   }
 }

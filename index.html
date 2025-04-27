@@ -17,7 +17,14 @@
     <!-- MAIN SCREEN -->
     <div id="main-screen">
       <div id="main-screen-elems-container">
-        <div id="inn-door"></div>
+        <h1 id="main-screen-title">
+          <span class="main-screen-title-k-letter">K</span>AOTI<span
+            class="main-screen-title-k-letter"
+            >K</span
+          >LASH
+        </h1>
+
+        <div id="main-screen-inn-door"></div>
       </div>
     </div>
 
@@ -29,35 +36,40 @@
 
     <!-- LOGIN SCREEN -->
     <div id="login-screen">
-      <!-- LOGIN FORM -->
-      <form id="login-form">
-        <label for="login-email" data-i18n="email">Email</label>
-        <input type="email" id="login-email" name="email" required />
+      <div id="login-box">
+        <h2 data-i18n="login_heading">LOGIN</h2>
 
-        <label for="login-password" data-i18n="password">Password</label>
-        <input type="password" id="login-password" name="password" required />
+        <!-- LOGIN FORM -->
+        <form id="login-form">
+          <label for="login-email" data-i18n="email">Email</label>
+          <input type="email" id="login-email" name="email" required />
 
-        <p id="login-error-message" class="error-message"></p>
+          <label for="login-password" data-i18n="password">Password</label>
+          <input type="password" id="login-password" name="password" required />
 
-        <button type="submit" id="login-btn" data-i18n="log_in">Log in</button>
-        <button type="reset" id="reset-btn" data-i18n="reset">Reset</button>
+          <p id="login-error-message" class="error-message"></p>
 
-        <p id="login-para" data-i18n="no_account">Don't have an account?</p>
-        <a href="#" id="login-screen-register-btn" data-i18n="register_para"
-          >Register</a
-        >
-      </form>
+          <button type="submit" id="login-btn" data-i18n="log_in">
+            Log in
+          </button>
+
+          <p id="login-para" data-i18n="no_account">Don't have an account?</p>
+          <a href="#" id="login-screen-register-btn" data-i18n="register_para"
+            >Register</a
+          >
+        </form>
+      </div>
     </div>
 
     <!-- REGISTRATION SCREEN -->
     <div id="register-screen">
       <div id="register-box">
-        <h2 data-i18n="register_heading">REGISTER</h2>
+        <h2 data-i18n="registration_heading">REGISTRATION</h2>
 
         <!-- REGISTRATION FORM -->
         <form id="register-form">
           <label for="name" data-i18n="name">Name</label>
-          <input type="text" id="name" maxlength="50" required />
+          <input type="text" id="name" maxlength="14" required />
 
           <label for="register-email" data-i18n="email">Email</label>
           <input type="email" id="register-email" maxlength="254" required />
@@ -95,9 +107,8 @@
     <div id="player-session-screen">
       <div id="player-session-container">
         <div id="player-data">
+          <p id="player-name"><span data-i18n="greeting">Welcome</span></p>
           <p id="player-email"></p>
-
-          <p id="player-name"><span data-i18n="greeting">Hi</span></p>
         </div>
 
         <button type="button" id="log-out-btn" data-i18n="log_out">
@@ -116,6 +127,8 @@
           </select>
         </div>
 
+        <button type="button" id="stats-btn" data-i18n="stats">Stats</button>
+
         <button
           type="button"
           id="start-game-btn"
@@ -124,6 +137,10 @@
         >
           START GAME
         </button>
+
+        <div id="tips-section">
+          <p id="game-tip"></p>
+        </div>
       </div>
     </div>
 
