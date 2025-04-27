@@ -31,6 +31,7 @@ export default {
   firstActivePlayerID: -1, // (!) DELETE AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
   phaseMessage: {},
   gameWinner: null,
+  gameLoser: null,
   isScreenInitialized: {
     register: false,
   },

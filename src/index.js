@@ -713,4 +713,27 @@ function executeGameLoop(timeStamp) {
     globals.cycleRealTime -= globals.frameTimeObj;
     globals.deltaTime = 0;
   }
+
+  if(globals.gameWinner){
+    saveGameData(globals.gameWinner, globals.gameLoser);
+  }
+
+  async function saveGameData(winner, loser) {
+
+    const url = "https://er5-kaotiklash-server.onrender.com/api/player_stats";
+
+    const gameData = {
+      winner: winner,
+      loser: loser,
+      date: new Date().toISOString(),
+    };
+  
+    await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(gameData),
+    });
+  }
 }

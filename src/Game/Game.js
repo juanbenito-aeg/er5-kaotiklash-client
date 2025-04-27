@@ -929,6 +929,12 @@ export default class Game {
 
       if (currentPlayer.getTotalHP() === 0) {
         globals.gameWinner = this.#players[1 - i];
+
+        if(globals.gameWinner === this.#players[PlayerID.PLAYER_1]) {
+          globals.gameLoser = this.#players[PlayerID.PLAYER_2];
+        } else {
+          globals.gameLoser = this.#players[PlayerID.PLAYER_1];
+        }
       }
     }
   }
