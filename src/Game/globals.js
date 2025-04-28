@@ -34,38 +34,4 @@ export default {
   isScreenInitialized: {
     register: false,
   },
-  activeVisibilitySkill: null,
-  decrepitThroneSkillData: {
-    isActive: false,
-    playerWithDecrepitThrone: {},
-    turnsSinceActivation: 0,
-  },
-  isPlayersSummonCharacterActive: [
-    // PLAYER 1
-    false,
-
-    // PLAYER 2
-    false,
-  ],
-  judgmentAncientsEventData: {
-    isActive: false,
-    affectedPlayerID: -1,
-  },
-  poisonOfTheAbyssEventData: {
-    isActive: false,
-    isPlayer1Affected: false,
-    isPlayer2Affected: false,
-  },
-  curseOfTheBoundTitanEventData: {
-    isActive: false,
-    isPlayer1Affected: false,
-    isPlayer2Affected: false,
-  },
-  theCupOfTheLastBreathEventData: {
-    isActive: false,
-    isPlayer1Affected: false,
-    isPlayer2Affected: false,
-  },
-  shieldOfBalanceActive: false,
-  shieldOfBalanceOwner: null,
 };
