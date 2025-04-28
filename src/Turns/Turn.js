@@ -41,6 +41,7 @@ export default class Turn {
   #minionTooltip;
   #hoverTime;
   #lastHoveredCardId;
+  #eventsData;
 
   constructor(
     deckContainer,
@@ -51,7 +52,8 @@ export default class Turn {
     phaseMessage,
     stateMessages,
     attackMenuData,
-    minionTooltip
+    minionTooltip,
+    eventsData
   ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
@@ -70,6 +72,7 @@ export default class Turn {
     this.#minionTooltip = minionTooltip;
     this.#hoverTime = 0;
     this.#lastHoveredCardId = null;
+    this.#eventsData = eventsData;
   }
 
   fillPhases(currentPlayer) {
@@ -97,7 +100,8 @@ export default class Turn {
         currentPlayer,
         this.#phaseMessage,
         this.#stateMessages,
-        this.#attackMenuData
+        this.#attackMenuData,
+        this.#eventsData
       );
 
       this.#phases.push(currentPhase);
@@ -607,9 +611,9 @@ export default class Turn {
               this.#numOfExecutedPhases++;
             } else if (
               i === PhaseType.ATTACK &&
-              globals.judgmentAncientsEventData.isActive &&
+              this.#eventsData.judgmentAncients.isActive &&
               this.#player.getID() ===
-                globals.judgmentAncientsEventData.affectedPlayerID
+                this.#eventsData.judgmentAncients.affectedPlayerID
             ) {
               const cannotAttackDueToActiveEventMsg = new StateMessage(
                 "CANNOT ATTACK DUE TO ACTIVE EVENT",
@@ -622,10 +626,10 @@ export default class Turn {
 
               this.#stateMessages.push(cannotAttackDueToActiveEventMsg);
             } else if (
-              globals.decrepitThroneSkillData.isActive &&
+              this.#eventsData.decrepitThroneSkill.isActive &&
               this.#player !==
-                globals.decrepitThroneSkillData.playerWithDecrepitThrone &&
-              globals.decrepitThroneSkillData.turnsSinceActivation !== 3
+                this.#eventsData.decrepitThroneSkill.playerWithDecrepitThrone &&
+              this.#eventsData.decrepitThroneSkill.turnsSinceActivation !== 3
             ) {
               const cannotDoAnythingDueToActiveEventMsg = new StateMessage(
                 "CANNOT DO (ALMOST) ANYTHING DUE TO ACTIVE EVENT",
@@ -639,10 +643,11 @@ export default class Turn {
               this.#stateMessages.push(cannotDoAnythingDueToActiveEventMsg);
             } else if (
               this.#currentPhase === PhaseType.INVALID &&
-              (!globals.decrepitThroneSkillData.isActive ||
+              (!this.#eventsData.decrepitThroneSkill.isActive ||
                 this.#player ===
-                  globals.decrepitThroneSkillData.playerWithDecrepitThrone ||
-                globals.decrepitThroneSkillData.turnsSinceActivation === 3)
+                  this.#eventsData.decrepitThroneSkill
+                    .playerWithDecrepitThrone ||
+                this.#eventsData.decrepitThroneSkill.turnsSinceActivation === 3)
             ) {
               this.#currentPhase = i;
 
