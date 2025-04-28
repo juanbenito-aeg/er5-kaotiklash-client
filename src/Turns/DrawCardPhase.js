@@ -121,14 +121,8 @@ export default class DrawCardPhase extends Phase {
   #drawCard() {
     this.#eventsDeck.shuffle();
 
-    // (!) UNCOMMENT WHEN CARDS TESTING FINISHES
-    // const drawnCard = this.#eventsDeck.getCards()[0];
+    const drawnCard = this.#eventsDeck.getCards()[0];
 
-    // (!) REMOVE WHEN CARDS TESTING FINISHES
-    const drawnCard = this.#getSpecifiedCard(
-      CardCategory.ARMOR,
-      ArmorID.CLOAK_ETERNAL_SHADOW
-    );
     if (!drawnCard) {
       return;
     }
