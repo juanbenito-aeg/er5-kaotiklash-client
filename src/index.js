@@ -441,8 +441,8 @@ function initVars() {
 
   globals.imagesDestinationSizes = {
     allCardsBigVersion: {
-      width: 425,
-      height: 501,
+      width: 550,
+      height: 625,
     },
     mainCharactersSmallVersion: {
       width: 200,

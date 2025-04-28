@@ -2186,9 +2186,9 @@ export default class Game {
 
     globals.ctx.textAlign = "center";
     globals.ctx.fillStyle = "black";
-    globals.ctx.font = "24px MedievalSharp";
+    globals.ctx.font = "28px MedievalSharp";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 365);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 311);
 
     globals.ctx.font = "18px MedievalSharp";
 
@@ -2220,9 +2220,9 @@ export default class Game {
 
     globals.ctx.textAlign = "center";
     globals.ctx.fillStyle = "white";
-    globals.ctx.font = "22px MedievalSharp";
+    globals.ctx.font = "24px MedievalSharp";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 365);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 308);
 
     globals.ctx.font = "18px MedievalSharp";
 
@@ -2245,38 +2245,38 @@ export default class Game {
     const iconsPositions = [
       {
         // TYPE
-        x: 1075,
-        y: 327,
-        width: 35,
-        height: 35,
+        x: 1042,
+        y: 271,
+        width: 40,
+        height: 40,
       },
       {
         // HP
-        x: 1100,
-        y: 750,
+        x: 1045,
+        y: 789,
+        width: 50,
+        height: 50,
+      },
+      {
+        // MADNESS
+        x: 1130,
+        y: 793,
         width: 42,
         height: 42,
       },
       {
-        // MADNESS
-        x: 1147,
-        y: 750,
-        width: 35,
-        height: 35,
-      },
-      {
         // ATTACK
-        x: 1200,
-        y: 752,
-        width: 28,
-        height: 28,
+        x: 1215,
+        y: 797,
+        width: 34,
+        height: 34,
       },
       {
         // DEFENSE
-        x: 1250,
-        y: 750,
-        width: 35,
-        height: 35,
+        x: 1290,
+        y: 793,
+        width: 41,
+        height: 40,
       },
     ];
     for (let i = 0; i < icons.length; i++) {
@@ -2289,17 +2289,15 @@ export default class Game {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
 
     globals.ctx.textAlign = "center";
+    globals.ctx.font = "18px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText(card.getInitialHP(), 1112, 792);
-    globals.ctx.fillText(card.getInitialMadness(), 1160, 792);
-    globals.ctx.fillText(card.getInitialAttack(), 1210, 792);
-    globals.ctx.fillText(card.getInitialDefense(), 1262, 792);
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 12, 347);
-
-    globals.ctx.font = "18px MedievalSharp";
-
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 19, 292);
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 690);
+    globals.ctx.fillText(card.getInitialHP(), 1070, 852);
+    globals.ctx.fillText(card.getInitialMadness(), 1151, 852);
+    globals.ctx.fillText(card.getInitialAttack(), 1231, 852);
+    globals.ctx.fillText(card.getInitialDefense(), 1311, 852);
   }
 
   #renderExpandedWeapon(card) {
@@ -2310,15 +2308,15 @@ export default class Game {
     const iconsPositions = [
       {
         // TYPE CIRCLE
-        x: 1065,
-        y: 321,
-        width: 28,
-        height: 28,
+        x: 1024,
+        y: 263,
+        width: 31,
+        height: 31,
       },
       {
         // TYPE
-        x: 1070,
-        y: 325,
+        x: 1030,
+        y: 269,
         width: 20,
         height: 20,
       },
@@ -2357,10 +2355,10 @@ export default class Game {
     globals.ctx.font = "16px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 16, 281);
     globals.ctx.fillText(card.getInitialDamage(), 1105, 792);
     globals.ctx.fillText(card.getInitialDurability(), 1190, 792);
     globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1270, 792);
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 12, 342);
 
     globals.ctx.font = "18px MedievalSharp";
 
