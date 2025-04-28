@@ -1,6 +1,6 @@
 import globals from "../Game/globals.js";
 
-export default class ToolTip {
+export default class Tooltip {
   #currentTooltip;
   #tooltipElements;
   #style;
@@ -83,7 +83,7 @@ export default class ToolTip {
 
     globals.ctx.save();
 
-    //DRAW BACKGROUND
+    // DRAW BACKGROUND
     globals.ctx.fillStyle = this.#style.bgColor;
     globals.ctx.fillRect(tooltipX, tooltipY, tooltipWidth, tooltipHeight);
 

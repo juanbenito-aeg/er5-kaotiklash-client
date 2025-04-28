@@ -3,8 +3,15 @@ import StateMessage from "../Messages/StateMessage.js";
 import CloakOfEternalShadowSpecialEffect from "./CloakOfEternalShadowSpecialEffect.js";
 import ShieldOfTheAncestralOakEffect from "./ShieldOfTheAncestralOakEffect.js";
 import BracersOfTheWarLionSpecialEffect from "./BracersOfTheWarLionSpecialEffect.js";
+import VestOfTheSpectralBartenderEffect from "./VestOfTheSpectralBartender.js";
+import ArmorOfTitanicFuryEffect from "./ArmorOfTitanicFury.js";
 import globals from "../Game/globals.js";
-import { ArmorID, PlayerID, WeaponTypeID } from "../Game/constants.js";
+import {
+  ArmorID,
+  PlayerID,
+  WeaponTypeID,
+  MinionTypeID,
+} from "../Game/constants.js";
 
 export default class AttackEvent extends Event {
   #attacker;
@@ -16,6 +23,7 @@ export default class AttackEvent extends Event {
   #eventDeck;
   #stateMessages;
   #player;
+  #eventsData;
 
   constructor(
     attacker,
@@ -26,7 +34,8 @@ export default class AttackEvent extends Event {
     isArmorPowerChosen,
     eventDeck,
     stateMessages,
-    player
+    player,
+    eventsData
   ) {
     super();
 
@@ -39,6 +48,7 @@ export default class AttackEvent extends Event {
     this.#eventDeck = eventDeck;
     this.#stateMessages = stateMessages;
     this.#player = player;
+    this.#eventsData = eventsData;
   }
 
   execute() {
@@ -51,8 +61,8 @@ export default class AttackEvent extends Event {
     }
 
     if (
-      globals.shieldOfBalanceActive &&
-      this.#player.getID() !== globals.shieldOfBalanceOwner
+      this.#eventsData.shieldOfBalanceActive &&
+      this.#player.getID() !== this.#eventsData.shieldOfBalanceOwner
     ) {
       let targetBox = this.#target.getBoxIsPositionedIn(
         this.#enemyMovementGrid,
@@ -113,16 +123,19 @@ export default class AttackEvent extends Event {
     let isPlayer2Debuffed = false;
     let debuff = 10;
 
-    if (globals.curseOfTheBoundTitanEventData.isActive === true) {
+    let armorOfTitanicFuryBoostAttacker;
+    let armorOfTitanicFuryBoostTarget;
+
+    if (this.#eventsData.curseOfTheBoundTitan.isActive === true) {
       if (
         this.#player.getID() === PlayerID.PLAYER_1 &&
-        globals.curseOfTheBoundTitanEventData.isPlayer1Affected
+        this.#eventsData.curseOfTheBoundTitan.isPlayer1Affected
       ) {
         isPlayer1Debuffed = true;
       }
       if (
         this.#player.getID() === PlayerID.PLAYER_2 &&
-        globals.curseOfTheBoundTitanEventData.isPlayer2Affected
+        this.#eventsData.curseOfTheBoundTitan.isPlayer2Affected
       ) {
         isPlayer2Debuffed = true;
       }
@@ -258,6 +271,12 @@ export default class AttackEvent extends Event {
       }
     }
 
+    if (targetArmor) {
+      if (this.#target.getArmorID() === ArmorID.ARMOR_OF_TITANIC_FURY) {
+        ArmorOfTitanicFuryEffect.activeBoost(this.#target, this.#stateMessages);
+      }
+    }
+
     let targetBox;
     if (targetHasBreastplatePrimordialColossus || fumble) {
       targetBox = this.#target.getBoxIsPositionedIn(
@@ -280,15 +299,6 @@ export default class AttackEvent extends Event {
 
     if (damageToInflict < 0) {
       damageToInflict = 0;
-    }
-
-    let crit = false;
-    if (roll <= critProb) {
-      // CRITICAL HIT
-      console.log("Critical Hit");
-      damageToInflict = damageToInflict * 1.75;
-      damageToInflict = Math.floor(damageToInflict);
-      crit = true;
     }
 
     if (attackerWeapon) {
@@ -344,11 +354,27 @@ export default class AttackEvent extends Event {
       }
     }
 
+    let crit = false;
     if (roll <= critProb) {
       // CRITICAL HIT
+      crit = true;
       console.log("Critical Hit");
+      let baseDamage = damageToInflict;
       damageToInflict = damageToInflict * 1.75;
       damageToInflict = Math.floor(damageToInflict);
+      if (
+        this.#target.getArmor() &&
+        this.#target.getArmor().getID() ===
+          ArmorID.VEST_OF_THE_SPECTRAL_BARTENDER &&
+        this.#target.getMinionTypeID() === MinionTypeID.WIZARD
+      ) {
+        damageToInflict = VestOfTheSpectralBartenderEffect.blockCrit(
+          baseDamage,
+          this.#target,
+          this.#stateMessages
+        );
+        crit = false;
+      }
     }
 
     if (this.#parry === true && !fumble && this.#target.getWeapon()) {
@@ -486,6 +512,7 @@ export default class AttackEvent extends Event {
 
       if (targetNewCurrentHP < 0) {
         targetNewCurrentHP = 0;
+        this.deathMessage(this.#target);
       }
 
       this.#target.setCurrentHP(targetNewCurrentHP);
@@ -494,6 +521,7 @@ export default class AttackEvent extends Event {
     let targetNewCurrentHPStored = this.#target.getCurrentHP() - storedDamage;
     if (targetNewCurrentHPStored < 0) {
       targetNewCurrentHPStored = 0;
+      this.deathMessage(this.#target);
     }
     this.#target.setCurrentHP(targetNewCurrentHPStored);
 
@@ -502,6 +530,11 @@ export default class AttackEvent extends Event {
       this.#finishBreastplatePrimordialColossusPower(
         breastplatePrimordialColossusOwner
       );
+    }
+
+    if (!attackerWeapon) {
+      //RESET TITANIC FURY BOOST AFTER THE ATTACK IS FINISHED
+      ArmorOfTitanicFuryEffect.resetBoost(this.#attacker);
     }
 
     if (damageToInflict > 0) {
@@ -536,7 +569,7 @@ export default class AttackEvent extends Event {
 
   parryMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
-      `Parry!: ${damageToInflict}`,
+      `WEAPON DURABILITY!: -${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
       2,
@@ -548,7 +581,7 @@ export default class AttackEvent extends Event {
 
   parryFumbleMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
-      `Parry fumble!: ${damageToInflict}`,
+      `PARRY FAILED!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
       2,
@@ -560,7 +593,7 @@ export default class AttackEvent extends Event {
 
   parryHalfFumbleMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
-      `Parry Half Fumble!: ${damageToInflict}`,
+      `PARRY HALF FUMBLE!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
       2,
@@ -572,7 +605,7 @@ export default class AttackEvent extends Event {
 
   parryCritMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
-      `Parry Crit!: ${damageToInflict}`,
+      `PARRY CRIT!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
       2,
@@ -597,6 +630,19 @@ export default class AttackEvent extends Event {
   #finishBreastplatePrimordialColossusPower(
     breastplatePrimordialColossusOwner
   ) {
+    // CREATE AND STORE THE ARMOR'S POWER STATE MESSAGE
+    let dmgReflectedBackOntoAttackerMsg =
+      "THE DAMAGE WAS REFLECTED BACK ONTO THE ATTACKER!";
+    dmgReflectedBackOntoAttackerMsg = new StateMessage(
+      dmgReflectedBackOntoAttackerMsg,
+      "20px MedievalSharp",
+      "aqua",
+      4,
+      globals.canvas.width / 2 - dmgReflectedBackOntoAttackerMsg.length / 2,
+      globals.canvas.height / 2
+    );
+    this.#stateMessages.push(dmgReflectedBackOntoAttackerMsg);
+
     // CREATE AND STORE THE "ARMOR BROKE!" STATE MESSAGE
     const breastplatePrimordialColossusOwnerBox =
       breastplatePrimordialColossusOwner.getBoxIsPositionedIn(
@@ -613,7 +659,7 @@ export default class AttackEvent extends Event {
 
   critMessage(targetBox) {
     const critMessage = new StateMessage(
-      "Critical Hit!",
+      "CRITICAL HIT!",
       "60px MedievalSharp",
       "gold",
       2,
@@ -625,7 +671,7 @@ export default class AttackEvent extends Event {
 
   fumbleMessage(targetBox) {
     const fumbleMessage = new StateMessage(
-      "Fumble!",
+      "FUMBLE!",
       "60px MedievalSharp",
       "red",
       2,
@@ -645,6 +691,18 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getYCoordinate() + 10
     );
     this.#stateMessages.push(weaponMessage);
+  }
+
+  deathMessage(target) {
+    const deathMessage = new StateMessage(
+      "MINION DIED!",
+      "20px MedievalSharp",
+      "red",
+      2,
+      target.getXCoordinate() + 55,
+      target.getYCoordinate() + 110
+    );
+    this.#stateMessages.push(deathMessage);
   }
 
   #createAndStoreArmorBrokeMsg(armorOwnerBox) {

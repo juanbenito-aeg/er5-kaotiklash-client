@@ -8,7 +8,6 @@ import DiscardCardPhase from "./DiscardCardPhase.js";
 import EquipWeaponOrArmorEvent from "../Events/EquipWeaponOrArmorEvent.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
-import MinionTooltip from "../ToolTips/MinionToolTip.js";
 import globals from "../Game/globals.js";
 import {
   PlayerID,
@@ -42,6 +41,7 @@ export default class Turn {
   #minionTooltip;
   #hoverTime;
   #lastHoveredCardId;
+  #eventsData;
 
   constructor(
     deckContainer,
@@ -52,7 +52,8 @@ export default class Turn {
     phaseMessage,
     stateMessages,
     attackMenuData,
-    minionTooltip
+    minionTooltip,
+    eventsData
   ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
@@ -71,6 +72,7 @@ export default class Turn {
     this.#minionTooltip = minionTooltip;
     this.#hoverTime = 0;
     this.#lastHoveredCardId = null;
+    this.#eventsData = eventsData;
   }
 
   fillPhases(currentPlayer) {
@@ -98,7 +100,8 @@ export default class Turn {
         currentPlayer,
         this.#phaseMessage,
         this.#stateMessages,
-        this.#attackMenuData
+        this.#attackMenuData,
+        this.#eventsData
       );
 
       this.#phases.push(currentPhase);
@@ -192,8 +195,6 @@ export default class Turn {
 
         cards.setXCoordinate(boxes.getXCoordinate());
         cards.setYCoordinate(boxes.getYCoordinate());
-
-        console.log("ola  ");
       }
     }
   }
@@ -208,6 +209,8 @@ export default class Turn {
     const isAnyCardExpanded = this.#expandCard();
 
     if (!isAnyCardExpanded) {
+      this.#updateMinionTooltip();
+
       if (this.#currentPhase === PhaseType.INVALID) {
         this.#equipWeaponOrArmor();
 
@@ -259,6 +262,10 @@ export default class Turn {
         this.#numOfExecutedPhases = 0;
         globals.isCurrentTurnFinished = true;
       }
+    } else {
+      this.#minionTooltip.clearTooltip();
+      this.#hoverTime = 0;
+      this.#lastHoveredCardId = null;
     }
   }
 
@@ -283,52 +290,10 @@ export default class Turn {
 
     decksToCheck.push(DeckType.JOSEPH);
 
-    this.#updateMinionTooltip(decksToCheck);
     this.#setOrUnsetExpandedState(decksToCheck);
 
     const isAnyCardExpanded = this.#checkIfAnyCardIsExpanded(decksToCheck);
     return isAnyCardExpanded;
-  }
-
-  #updateMinionTooltip(decksToCheck) {
-    const tooltipDelay = 1.0;
-    let currentHoveredMinion = null;
-
-    for (let i = 0; i < decksToCheck.length; i++) {
-      const deck = this.#deckContainer.getDecks()[decksToCheck[i]];
-      const hoveredCard = deck.lookForHoveredCard();
-
-      if (hoveredCard && hoveredCard.getCategory() === CardCategory.MINION) {
-        currentHoveredMinion = hoveredCard;
-        break;
-      }
-    }
-
-    if (currentHoveredMinion) {
-      const currentCardId = currentHoveredMinion.getID();
-      const isSameCard = this.#lastHoveredCardId === currentCardId;
-      this.#lastHoveredCardId = currentCardId;
-
-      this.#hoverTime = isSameCard
-        ? this.#hoverTime + globals.deltaTime
-        : globals.deltaTime;
-
-      const cardCenterX =
-        currentHoveredMinion.getXCoordinate() +
-        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width / 2;
-      const cardCenterY =
-        currentHoveredMinion.getYCoordinate() +
-        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2;
-
-      if (this.#hoverTime >= tooltipDelay) {
-        const content = this.#minionTooltip.getContent(currentHoveredMinion);
-        this.#minionTooltip.showTooltip(content, cardCenterX, cardCenterY);
-      }
-    } else {
-      this.#minionTooltip.clearTooltip();
-      this.#hoverTime = 0;
-      this.#lastHoveredCardId = null;
-    }
   }
 
   #setOrUnsetExpandedState(decksToCheck) {
@@ -368,6 +333,43 @@ export default class Turn {
           }
         }
       }
+    }
+  }
+
+  #updateMinionTooltip() {
+    const tooltipDelay = 1.0;
+
+    const playerXMinionsInPlayDeck =
+      this.#player.getID() === PlayerID.PLAYER_1
+        ? this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY]
+        : this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
+
+    const currentHoveredMinion = playerXMinionsInPlayDeck.lookForHoveredCard();
+
+    if (currentHoveredMinion) {
+      const currentCardId = currentHoveredMinion.getID();
+      const isSameCard = this.#lastHoveredCardId === currentCardId;
+      this.#lastHoveredCardId = currentCardId;
+
+      this.#hoverTime = isSameCard
+        ? this.#hoverTime + globals.deltaTime
+        : globals.deltaTime;
+
+      const cardCenterX =
+        currentHoveredMinion.getXCoordinate() +
+        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width / 2;
+      const cardCenterY =
+        currentHoveredMinion.getYCoordinate() +
+        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2;
+
+      if (this.#hoverTime >= tooltipDelay) {
+        const content = this.#minionTooltip.getContent(currentHoveredMinion);
+        this.#minionTooltip.showTooltip(content, cardCenterX, cardCenterY);
+      }
+    } else {
+      this.#minionTooltip.clearTooltip();
+      this.#hoverTime = 0;
+      this.#lastHoveredCardId = null;
     }
   }
 
@@ -609,9 +611,9 @@ export default class Turn {
               this.#numOfExecutedPhases++;
             } else if (
               i === PhaseType.ATTACK &&
-              globals.judgmentAncientsEventData.isActive &&
+              this.#eventsData.judgmentAncients.isActive &&
               this.#player.getID() ===
-                globals.judgmentAncientsEventData.affectedPlayerID
+                this.#eventsData.judgmentAncients.affectedPlayerID
             ) {
               const cannotAttackDueToActiveEventMsg = new StateMessage(
                 "CANNOT ATTACK DUE TO ACTIVE EVENT",
@@ -624,10 +626,10 @@ export default class Turn {
 
               this.#stateMessages.push(cannotAttackDueToActiveEventMsg);
             } else if (
-              globals.decrepitThroneSkillData.isActive &&
+              this.#eventsData.decrepitThroneSkill.isActive &&
               this.#player !==
-                globals.decrepitThroneSkillData.playerWithDecrepitThrone &&
-              globals.decrepitThroneSkillData.turnsSinceActivation !== 3
+                this.#eventsData.decrepitThroneSkill.playerWithDecrepitThrone &&
+              this.#eventsData.decrepitThroneSkill.turnsSinceActivation !== 3
             ) {
               const cannotDoAnythingDueToActiveEventMsg = new StateMessage(
                 "CANNOT DO (ALMOST) ANYTHING DUE TO ACTIVE EVENT",
@@ -641,10 +643,11 @@ export default class Turn {
               this.#stateMessages.push(cannotDoAnythingDueToActiveEventMsg);
             } else if (
               this.#currentPhase === PhaseType.INVALID &&
-              (!globals.decrepitThroneSkillData.isActive ||
+              (!this.#eventsData.decrepitThroneSkill.isActive ||
                 this.#player ===
-                  globals.decrepitThroneSkillData.playerWithDecrepitThrone ||
-                globals.decrepitThroneSkillData.turnsSinceActivation === 3)
+                  this.#eventsData.decrepitThroneSkill
+                    .playerWithDecrepitThrone ||
+                this.#eventsData.decrepitThroneSkill.turnsSinceActivation === 3)
             ) {
               this.#currentPhase = i;
 

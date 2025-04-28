@@ -9,7 +9,7 @@ import MouseInput from "./MouseInput.js";
 import ImageSet from "./ImageSet.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
-import MinionTooltip from "../ToolTips/MinionToolTip.js";
+import MinionTooltip from "../Tooltips/MinionTooltip.js";
 import globals from "./globals.js";
 import {
   GameState,
@@ -41,6 +41,7 @@ export default class Game {
   #attackMenuData;
   #activeEventsTableData;
   #minionTooltip;
+  #eventsData;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -120,6 +121,37 @@ export default class Game {
 
     game.#minionTooltip = new MinionTooltip();
 
+    //EVENTS DATA
+    game.#eventsData = {
+      activeVisibilitySkill: null,
+      decrepitThroneSkill: {
+        isActive: false,
+        playerWithDecrepitThrone: {},
+        turnsSinceActivation: 0,
+      },
+      poisonOfTheAbyss: {
+        isActive: false,
+        isPlayer1Affected: false,
+        isPlayer2Affected: false,
+      },
+      judgmentAncients: {
+        isActive: false,
+        affectedPlayerID: -1,
+      },
+      curseOfTheBoundTitan: {
+        isActive: false,
+        isPlayer1Affected: false,
+        isPlayer2Affected: false,
+      },
+      theCupOfTheLastBreath: {
+        isActive: false,
+        isPlayer1Affected: false,
+        isPlayer2Affected: false,
+      },
+      shieldOfBalanceActive: false,
+      shieldOfBalanceOwner: null,
+    };
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
@@ -130,7 +162,8 @@ export default class Game {
       game.#phaseMessage,
       game.#stateMessages,
       game.#attackMenuData,
-      game.#minionTooltip
+      game.#minionTooltip,
+      game.#eventsData
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -142,7 +175,8 @@ export default class Game {
       game.#phaseMessage,
       game.#stateMessages,
       game.#attackMenuData,
-      game.#minionTooltip
+      game.#minionTooltip,
+      game.#eventsData
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -602,14 +636,37 @@ export default class Game {
     if (globals.isCurrentTurnFinished) {
       globals.isCurrentTurnFinished = false;
 
-      if (globals.poisonOfTheAbyssEventData.isActive === false) {
-        this.#healHarmedMinions();
-      } else if (globals.poisonOfTheAbyssEventData.isActive === true) {
+      this.#healHarmedMinions();
+      if (this.#eventsData.poisonOfTheAbyss.isActive === true) {
         this.#poisonMinions();
       }
 
-      if (globals.decrepitThroneSkillData.isActive) {
-        globals.decrepitThroneSkillData.turnsSinceActivation++;
+      if (this.#eventsData.theCupOfTheLastBreath.isActive === true) {
+        if (this.#eventsData.theCupOfTheLastBreath.isPlayer1Affected) {
+          let message = new StateMessage(
+            "Player 1 Cannot heal minions",
+            `30px MedievalSharp`,
+            "silver",
+            2,
+            globals.canvas.width / 2,
+            globals.canvas.height / 2
+          );
+          this.#stateMessages.push(message);
+        } else if (this.#eventsData.theCupOfTheLastBreath.isPlayer2Affected) {
+          let message = new StateMessage(
+            "Player 2 Cannot heal minions",
+            `30px MedievalSharp`,
+            "silver",
+            2,
+            globals.canvas.width / 2,
+            globals.canvas.height / 2
+          );
+          this.#stateMessages.push(message);
+        }
+      }
+
+      if (this.#eventsData.decrepitThroneSkill.isActive) {
+        this.#eventsData.decrepitThroneSkill.turnsSinceActivation++;
       }
 
       const newCurrentPlayerID = this.#turns[
@@ -652,26 +709,129 @@ export default class Game {
       this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY],
     ];
 
-    for (let i = 0; i < minionsInPlayDecks.length; i++) {
-      const currentDeck = minionsInPlayDecks[i];
+    let isPlayer1Antiheal = false;
+    let isPlayer1Halfheal = false;
+    let isPlayer2Antiheal = false;
+    let isPlayer2Halfheal = false;
 
-      for (let j = 0; j < currentDeck.getCards().length; j++) {
-        const currentCard = currentDeck.getCards()[j];
+    if (this.#eventsData.poisonOfTheAbyss.isActive === true) {
+      if (this.#eventsData.poisonOfTheAbyss.isPlayer1Affected) {
+        isPlayer1Halfheal = true;
+      }
+      if (this.#eventsData.poisonOfTheAbyss.isPlayer2Affected) {
+        isPlayer2Halfheal = true;
+      }
+    }
 
-        if (currentCard.getCurrentHP() < currentCard.getInitialHP()) {
+    if (this.#eventsData.theCupOfTheLastBreath.isActive === true) {
+      if (this.#eventsData.theCupOfTheLastBreath.isPlayer1Affected) {
+        isPlayer1Antiheal = true;
+      } else if (this.#eventsData.theCupOfTheLastBreath.isPlayer2Affected) {
+        isPlayer2Antiheal = true;
+      }
+    }
+
+    const Player1Deck = minionsInPlayDecks[0];
+    const Player2Deck = minionsInPlayDecks[1];
+
+    for (let i = 0; i < Player1Deck.getCards().length; i++) {
+      const currentCard = Player1Deck.getCards()[i];
+
+      if (
+        currentCard.getCurrentHP() < currentCard.getInitialHP() &&
+        !isPlayer1Antiheal
+      ) {
+        let currentHP = currentCard.getCurrentHP();
+        let initialHP = currentCard.getInitialHP();
+        let healAmount = initialHP - currentHP;
+        if (isPlayer1Halfheal) {
+          healAmount = Math.floor(healAmount / 2);
+          currentCard.setCurrentHP(currentHP + healAmount);
+          const healMessage = new StateMessage(
+            `+${healAmount}`,
+            "20px MedievalSharp",
+            "lightgreen",
+            1,
+            currentCard.getXCoordinate() + 55,
+            currentCard.getYCoordinate() + 110
+          );
+          this.#stateMessages.push(healMessage);
+        } else {
           currentCard.setCurrentHP(currentCard.getInitialHP());
+          const healMessage = new StateMessage(
+            `+${healAmount}`,
+            "20px MedievalSharp",
+            "lightgreen",
+            1,
+            currentCard.getXCoordinate() + 55,
+            currentCard.getYCoordinate() + 110
+          );
+          this.#stateMessages.push(healMessage);
+        }
+      }
+    }
+
+    for (let i = 0; i < Player2Deck.getCards().length; i++) {
+      const currentCard = Player2Deck.getCards()[i];
+
+      if (
+        currentCard.getCurrentHP() < currentCard.getInitialHP() &&
+        !isPlayer2Antiheal
+      ) {
+        let currentHP = currentCard.getCurrentHP();
+        let initialHP = currentCard.getInitialHP();
+        let healAmount = initialHP - currentHP;
+        if (isPlayer2Halfheal) {
+          healAmount = Math.floor(healAmount / 2);
+          currentCard.setCurrentHP(currentHP + healAmount);
+          const healMessage = new StateMessage(
+            `+${healAmount}`,
+            "20px MedievalSharp",
+            "lightgreen",
+            1,
+            currentCard.getXCoordinate() + 55,
+            currentCard.getYCoordinate() + 110
+          );
+          this.#stateMessages.push(healMessage);
+        } else {
+          currentCard.setCurrentHP(currentCard.getInitialHP());
+          const healMessage = new StateMessage(
+            `+${healAmount}`,
+            "20px MedievalSharp",
+            "lightgreen",
+            1,
+            currentCard.getXCoordinate() + 55,
+            currentCard.getYCoordinate() + 110
+          );
+          this.#stateMessages.push(healMessage);
         }
       }
     }
   }
 
   #poisonMinions() {
-    const minionsInPlayDecks = [
+    let minionsInPlayDecks = [
       this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY],
       this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY],
     ];
 
-    if (globals.poisonOfTheAbyssEventData.isPlayer2Affected) {
+    if (this.#eventsData.poisonOfTheAbyss.isPlayer2Affected) {
+      for (let i = 0; i < minionsInPlayDecks[1].getCards().length; i++) {
+        const currentCard = minionsInPlayDecks[1].getCards()[i];
+
+        currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
+        let message = new StateMessage(
+          "-5",
+          `50px MedievalSharp`,
+          "green",
+          1,
+          currentCard.getXCoordinate() + 55,
+          currentCard.getYCoordinate() + 55
+        );
+        this.#stateMessages.push(message);
+      }
+    }
+    if (this.#eventsData.poisonOfTheAbyss.isPlayer1Affected) {
       for (let i = 0; i < minionsInPlayDecks[0].getCards().length; i++) {
         const currentCard = minionsInPlayDecks[0].getCards()[i];
 
@@ -687,7 +847,7 @@ export default class Game {
         this.#stateMessages.push(message);
       }
     }
-    if (globals.poisonOfTheAbyssEventData.isPlayer1Affected) {
+    if (this.#eventsData.poisonOfTheAbyss.isPlayer1Affected) {
       for (let i = 0; i < minionsInPlayDecks[1].getCards().length; i++) {
         const currentCard = minionsInPlayDecks[1].getCards()[i];
 
@@ -817,8 +977,8 @@ export default class Game {
       case GameState.PLAYING:
         this.#renderGame();
 
-        if (globals.activeVisibilitySkill) {
-          globals.activeVisibilitySkill.renderVisibilityEffect(
+        if (this.#eventsData.activeVisibilitySkill) {
+          this.#eventsData.activeVisibilitySkill.renderVisibilityEffect(
             this.#currentPlayer.getID()
           );
         }
@@ -968,7 +1128,7 @@ export default class Game {
     globals.ctx.font = "24px MedievalSharp";
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
-    globals.ctx.fillText(phaseText, 500, 675);
+    globals.ctx.fillText(phaseText, 500, 705);
 
     for (let i = 0; i < globals.buttonDataGlobal.length; i++) {
       const currentButton = globals.buttonDataGlobal[i];
@@ -2094,29 +2254,29 @@ export default class Game {
         // HP
         x: 1100,
         y: 750,
-        width: 25,
-        height: 25,
+        width: 42,
+        height: 42,
       },
       {
         // MADNESS
         x: 1147,
         y: 750,
-        width: 25,
-        height: 25,
+        width: 35,
+        height: 35,
       },
       {
         // ATTACK
         x: 1200,
         y: 752,
-        width: 20,
-        height: 20,
+        width: 28,
+        height: 28,
       },
       {
         // DEFENSE
         x: 1250,
         y: 750,
-        width: 25,
-        height: 25,
+        width: 35,
+        height: 35,
       },
     ];
     for (let i = 0; i < icons.length; i++) {

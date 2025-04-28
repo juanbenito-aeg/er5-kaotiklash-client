@@ -1,28 +1,29 @@
 import Event from "./Event.js";
-import globals from "../Game/globals.js";
 import { PlayerID } from "../Game/constants.js";
 
 export default class CurseOfTheBoundTitanEvent extends Event {
-  constructor(executedBy, eventCard) {
+  #eventsData;
+  constructor(executedBy, eventCard, eventsData) {
     super(executedBy, eventCard);
+    this.#eventsData = eventsData;
   }
 
   execute(currentPlayer) {
     this.reduceDuration(currentPlayer);
 
-    globals.curseOfTheBoundTitanEventData.isActive = true;
+    this.#eventsData.curseOfTheBoundTitan.isActive = true;
     if (this._executedBy.getID() === PlayerID.PLAYER_1) {
-      globals.curseOfTheBoundTitanEventData.isPlayer2Affected = true;
+      this.#eventsData.curseOfTheBoundTitan.isPlayer2Affected = true;
     } else {
-      globals.curseOfTheBoundTitanEventData.isPlayer1Affected = true;
+      this.#eventsData.curseOfTheBoundTitan.isPlayer1Affected = true;
     }
 
     if (!this.isActive()) {
-      globals.curseOfTheBoundTitanEventData.isActive = false;
+      this.#eventsData.curseOfTheBoundTitan.isActive = false;
 
-      globals.curseOfTheBoundTitanEventData.isPlayer1Affected = false;
+      this.#eventsData.curseOfTheBoundTitan.isPlayer1Affected = false;
 
-      globals.curseOfTheBoundTitanEventData.isPlayer2Affected = false;
+      this.#eventsData.curseOfTheBoundTitan.isPlayer2Affected = false;
     }
   }
 }

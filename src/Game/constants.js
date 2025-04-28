@@ -262,6 +262,7 @@ const RareEventID = {
   ECHO_OF_THE_STRATAGEN: 2,
   SHIELD_OF_BALANCE: 3,
   MARCH_OF_THE_LAST_SIGH: 4,
+  THE_CUP_OF_THE_LAST_BREATH: 5,
 };
 
 const EchoOfTheStratagenState = {
@@ -297,6 +298,7 @@ const AttackMenuBtn = {
 const ArmorID = {
   BREASTPLATE_PRIMORDIAL_COLOSSUS: 0,
   CLOAK_ETERNAL_SHADOW: 1,
+  ARMOR_OF_TITANIC_FURY: 2,
   BRACERS_OF_THE_WAR_LION: 3,
   SHIELD_OF_THE_ANCESTRAL_OAK: 5,
   VEST_OF_THE_SPECTRAL_BARTENDER: 6,
@@ -331,8 +333,8 @@ export {
   EquipWeaponOrArmorState,
   EventCooldownState,
   SpecialEventID,
-  BlessingWaitressState,
   RareEventID,
+  BlessingWaitressState,
   EchoOfTheStratagenState,
   HandOfTheSoulThiefState,
   StolenFateState,

@@ -1,28 +1,32 @@
 import Event from "./Event.js";
-import globals from "../Game/globals.js";
 import { PlayerID } from "../Game/constants.js";
 
 export default class PoisonOfTheAbyssEvent extends Event {
-  constructor(executedBy, eventCard) {
+  #eventsData;
+
+  constructor(executedBy, eventCard, eventsData) {
     super(executedBy, eventCard);
+    this.#eventsData = eventsData;
   }
 
   execute(currentPlayer) {
     this.reduceDuration(currentPlayer);
 
-    globals.poisonOfTheAbyssEventData.isActive = true;
+    this.#eventsData.poisonOfTheAbyss.isActive = true;
     if (this._executedBy.getID() === PlayerID.PLAYER_1) {
-      globals.poisonOfTheAbyssEventData.isPlayer1Affected = true;
+      console.log("Player 2 is affected by Poison of the Abyss");
+      this.#eventsData.poisonOfTheAbyss.isPlayer2Affected = true;
     } else {
-      globals.poisonOfTheAbyssEventData.isPlayer2Affected = true;
+      console.log("Player 1 is affected by Poison of the Abyss");
+      this.#eventsData.poisonOfTheAbyss.isPlayer1Affected = true;
     }
 
     if (!this.isActive()) {
-      globals.poisonOfTheAbyssEventData.isActive = false;
+      this.#eventsData.poisonOfTheAbyss.isActive = false;
 
-      globals.poisonOfTheAbyssEventData.isPlayer1Affected = false;
+      this.#eventsData.poisonOfTheAbyss.isPlayer1Affected = false;
 
-      globals.poisonOfTheAbyssEventData.isPlayer2Affected = false;
+      this.#eventsData.poisonOfTheAbyss.isPlayer2Affected = false;
     }
   }
 }

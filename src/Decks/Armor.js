@@ -34,6 +34,10 @@ export default class Armor extends Card {
     return this.#armorTypeID;
   }
 
+  getArmorTypeName() {
+    return this.#armorTypeName;
+  }
+
   getSpecialEffect() {
     return this.#specialEffect;
   }
