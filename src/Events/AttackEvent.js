@@ -6,7 +6,12 @@ import BracersOfTheWarLionSpecialEffect from "./BracersOfTheWarLionSpecialEffect
 import VestOfTheSpectralBartenderEffect from "./VestOfTheSpectralBartender.js";
 import ArmorOfTitanicFuryEffect from "./ArmorOfTitanicFury.js";
 import globals from "../Game/globals.js";
-import { ArmorID, PlayerID, WeaponTypeID , MinionTypeID} from "../Game/constants.js";
+import {
+  ArmorID,
+  PlayerID,
+  WeaponTypeID,
+  MinionTypeID,
+} from "../Game/constants.js";
 
 export default class AttackEvent extends Event {
   #attacker;
@@ -18,6 +23,7 @@ export default class AttackEvent extends Event {
   #eventDeck;
   #stateMessages;
   #player;
+  #eventsData;
 
   constructor(
     attacker,
@@ -28,7 +34,8 @@ export default class AttackEvent extends Event {
     isArmorPowerChosen,
     eventDeck,
     stateMessages,
-    player
+    player,
+    eventsData
   ) {
     super();
 
@@ -41,6 +48,7 @@ export default class AttackEvent extends Event {
     this.#eventDeck = eventDeck;
     this.#stateMessages = stateMessages;
     this.#player = player;
+    this.#eventsData = eventsData;
   }
 
   execute() {
@@ -53,8 +61,8 @@ export default class AttackEvent extends Event {
     }
 
     if (
-      globals.shieldOfBalanceActive &&
-      this.#player.getID() !== globals.shieldOfBalanceOwner
+      this.#eventsData.shieldOfBalanceActive &&
+      this.#player.getID() !== this.#eventsData.shieldOfBalanceOwner
     ) {
       let targetBox = this.#target.getBoxIsPositionedIn(
         this.#enemyMovementGrid,
@@ -118,16 +126,16 @@ export default class AttackEvent extends Event {
     let armorOfTitanicFuryBoostAttacker;
     let armorOfTitanicFuryBoostTarget;
 
-    if (globals.curseOfTheBoundTitanEventData.isActive === true) {
+    if (this.#eventsData.curseOfTheBoundTitan.isActive === true) {
       if (
         this.#player.getID() === PlayerID.PLAYER_1 &&
-        globals.curseOfTheBoundTitanEventData.isPlayer1Affected
+        this.#eventsData.curseOfTheBoundTitan.isPlayer1Affected
       ) {
         isPlayer1Debuffed = true;
       }
       if (
         this.#player.getID() === PlayerID.PLAYER_2 &&
-        globals.curseOfTheBoundTitanEventData.isPlayer2Affected
+        this.#eventsData.curseOfTheBoundTitan.isPlayer2Affected
       ) {
         isPlayer2Debuffed = true;
       }
@@ -263,12 +271,9 @@ export default class AttackEvent extends Event {
       }
     }
 
-    if(targetArmor) {
-      if(this.#target.getArmorID() === ArmorID.ARMOR_OF_TITANIC_FURY) {
-        ArmorOfTitanicFuryEffect.activeBoost(
-          this.#target,
-          this.#stateMessages
-        );
+    if (targetArmor) {
+      if (this.#target.getArmorID() === ArmorID.ARMOR_OF_TITANIC_FURY) {
+        ArmorOfTitanicFuryEffect.activeBoost(this.#target, this.#stateMessages);
       }
     }
 
@@ -359,7 +364,8 @@ export default class AttackEvent extends Event {
       damageToInflict = Math.floor(damageToInflict);
       if (
         this.#target.getArmor() &&
-        this.#target.getArmor().getID() === ArmorID.VEST_OF_THE_SPECTRAL_BARTENDER &&
+        this.#target.getArmor().getID() ===
+          ArmorID.VEST_OF_THE_SPECTRAL_BARTENDER &&
         this.#target.getMinionTypeID() === MinionTypeID.WIZARD
       ) {
         damageToInflict = VestOfTheSpectralBartenderEffect.blockCrit(
@@ -368,7 +374,7 @@ export default class AttackEvent extends Event {
           this.#stateMessages
         );
         crit = false;
-      } 
+      }
     }
 
     if (this.#parry === true && !fumble && this.#target.getWeapon()) {
@@ -526,11 +532,9 @@ export default class AttackEvent extends Event {
       );
     }
 
-    if(!attackerWeapon) {
+    if (!attackerWeapon) {
       //RESET TITANIC FURY BOOST AFTER THE ATTACK IS FINISHED
-      ArmorOfTitanicFuryEffect.resetBoost(
-        this.#attacker
-      );
+      ArmorOfTitanicFuryEffect.resetBoost(this.#attacker);
     }
 
     if (damageToInflict > 0) {
