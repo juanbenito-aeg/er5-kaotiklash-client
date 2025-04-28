@@ -4,15 +4,17 @@ import { BattlefieldArea } from "../Game/constants.js";
 export default class SpecialSkillDecrepitThrone {
   #enemyBattlefieldGrid;
   #currentPlayer;
+  #eventsData;
 
-  constructor(enemyBattlefieldGrid, currentPlayer) {
+  constructor(enemyBattlefieldGrid, currentPlayer, eventsData) {
     this.#enemyBattlefieldGrid = enemyBattlefieldGrid;
     this.#currentPlayer = currentPlayer;
+    this.#eventsData = eventsData;
   }
 
   execute() {
-    globals.decrepitThroneSkillData.isActive = true;
-    globals.decrepitThroneSkillData.playerWithDecrepitThrone =
+    this.#eventsData.decrepitThroneSkill.isActive = true;
+    this.#eventsData.decrepitThroneSkill.playerWithDecrepitThrone =
       this.#currentPlayer;
 
     this.applyEffect();
@@ -64,8 +66,8 @@ export default class SpecialSkillDecrepitThrone {
   }
 
   resetRelatedVariables() {
-    globals.decrepitThroneSkillData.isActive = false;
-    globals.decrepitThroneSkillData.playerWithDecrepitThrone = {};
-    globals.decrepitThroneSkillData.turnsSinceActivation = 0;
+    this.#eventsData.decrepitThroneSkill.isActive = false;
+    this.#eventsData.decrepitThroneSkill.playerWithDecrepitThrone = {};
+    this.#eventsData.decrepitThroneSkill.turnsSinceActivation = 0;
   }
 }
