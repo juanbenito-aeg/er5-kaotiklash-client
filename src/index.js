@@ -308,7 +308,9 @@ function initPlayerSessionScreen() {
 
   const playerName = localStorage.getItem("playerName");
   const playerNameParagraph = document.getElementById("player-name");
-  playerNameParagraph.innerHTML += `, ${playerName}!`;
+  if (!playerNameParagraph.textContent.includes(playerName)) {
+    playerNameParagraph.textContent += `, ${playerName}!`;
+  }
 
   // TERMINATE THE CURRENT SESSION WHEN THE "Log out" BUTTON IS PRESSED
   const logOutBtn = document.getElementById("log-out-btn");
@@ -444,7 +446,7 @@ async function getWinRate(loggedInPlayerID) {
 
 async function getMinionsKilled(loggedInPlayerID) {
   let killedMinions = 0;
-  
+
   const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-minions-killed`;
   const response = await fetch(url, {
     method: "GET",
@@ -548,7 +550,6 @@ async function getJosephAppearances(loggedInPlayerID) {
     console.log(`Joseph appearances: ${josephAppearances}`);
   }
 }
-
 
 function hideStatsScreen() {
   const statsScreen = document.getElementById("stats-screen");
