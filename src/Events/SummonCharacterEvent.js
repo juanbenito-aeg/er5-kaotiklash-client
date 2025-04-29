@@ -21,6 +21,8 @@ export default class SummonCharacterEvent extends Event {
   #isFinished;
   #lucretiaDeers;
   #stateMessages;
+  #isPlayersSummonCharacterActive;
+  #eventsData;
 
   constructor(
     executedBy,
@@ -36,7 +38,9 @@ export default class SummonCharacterEvent extends Event {
     enemyMinionsInPlayDeck,
     mouseInput,
     lucretiaDeers,
-    stateMessages
+    stateMessages,
+    isPlayersSummonCharacterActive,
+    eventsData
   ) {
     super(executedBy, eventCard);
 
@@ -55,6 +59,8 @@ export default class SummonCharacterEvent extends Event {
     this.#isFinished = false;
     this.#lucretiaDeers = lucretiaDeers;
     this.#stateMessages = stateMessages;
+    this.#isPlayersSummonCharacterActive = isPlayersSummonCharacterActive;
+    this.#eventsData = eventsData;
   }
 
   execute(currentPlayer) {
@@ -76,7 +82,7 @@ export default class SummonCharacterEvent extends Event {
         if (!this.isActive()) {
           this.#specialSkill.restoreMinionStats();
 
-          globals.isPlayersSummonCharacterActive[
+          this.#isPlayersSummonCharacterActive[
             this._executedBy.getID()
           ] = false;
         }
@@ -99,7 +105,7 @@ export default class SummonCharacterEvent extends Event {
         if (!this.isActive()) {
           this.#specialSkill.undoTransformation();
 
-          globals.isPlayersSummonCharacterActive[
+          this.#isPlayersSummonCharacterActive[
             this._executedBy.getID()
           ] = false;
         }
@@ -113,7 +119,8 @@ export default class SummonCharacterEvent extends Event {
             this.#enemyEventsInPrepGrid,
             this.#mouseInput,
             currentPlayer,
-            this.#stateMessages
+            this.#stateMessages,
+            this.#eventsData
           );
 
           this.#specialSkill = angeloSkill;
@@ -124,7 +131,7 @@ export default class SummonCharacterEvent extends Event {
         if (!this.isActive()) {
           angeloSkill.restore();
 
-          globals.isPlayersSummonCharacterActive[
+          thiss.#isPlayersSummonCharacterActive[
             this._executedBy.getID()
           ] = false;
         }
@@ -135,7 +142,8 @@ export default class SummonCharacterEvent extends Event {
         if (!this.#specialSkill) {
           const decrepitThroneSkill = new SpecialSkillDecrepitThrone(
             this.#enemyBattlefieldGrid,
-            this._executedBy
+            this._executedBy,
+            this.#eventsData
           );
 
           this.#specialSkill = decrepitThroneSkill;
@@ -143,9 +151,9 @@ export default class SummonCharacterEvent extends Event {
           this.#specialSkill.execute();
         }
 
-        if (globals.decrepitThroneSkillData.turnsSinceActivation === 5) {
+        if (this.#eventsData.decrepitThroneSkill.turnsSinceActivation === 5) {
           // INCREMENT "turnsSinceActivation" TO STOP THE EFFECT FROM BEING APPLIED MANY MORE TIMES
-          globals.decrepitThroneSkillData.turnsSinceActivation++;
+          this.#eventsData.decrepitThroneSkill.turnsSinceActivation++;
 
           this.#specialSkill.applyEffect();
         }
@@ -153,7 +161,7 @@ export default class SummonCharacterEvent extends Event {
         if (!this.isActive()) {
           this.#specialSkill.resetRelatedVariables();
 
-          globals.isPlayersSummonCharacterActive[
+          this.#isPlayersSummonCharacterActive[
             this._executedBy.getID()
           ] = false;
         }

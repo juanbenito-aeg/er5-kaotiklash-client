@@ -6,27 +6,30 @@ export default class SpecialSkillAngelo {
   #mouseInput;
   #executeBy;
   #stateMessages;
+  #eventsData;
 
   constructor(
     enemyBattlefieldGrid,
     enemyEventsInPrepGrid,
     mouseInput,
     executeBy,
-    stateMessages
+    stateMessages,
+    eventsData
   ) {
     this.#enemyBattlefieldGrid = enemyBattlefieldGrid;
     this.#enemyEventsInPrepGrid = enemyEventsInPrepGrid;
     this.#mouseInput = mouseInput;
     this.#executeBy = executeBy;
     this.#stateMessages = stateMessages;
+    this.#eventsData = eventsData;
   }
 
   execute() {
-    globals.activeVisibilitySkill = this;
+    this.#eventsData.activeVisibilitySkill = this;
   }
 
   restore() {
-    globals.activeVisibilitySkill = null;
+    this.#eventsData.activeVisibilitySkill = null;
   }
 
   renderVisibilityEffect(visiblePlayer) {

@@ -1,20 +1,21 @@
 import Event from "./Event.js";
-import globals from "../Game/globals.js";
 
 export default class ShieldOfBalanceEvent extends Event {
-  constructor(executeBy, eventCard) {
+  #eventsData;
+  constructor(executeBy, eventCard, eventsData) {
     super(executeBy, eventCard);
+    this.#eventsData = eventsData;
   }
 
   execute(currentPlayer) {
     this.reduceDuration(currentPlayer);
 
-    globals.shieldOfBalanceActive = true;
-    globals.shieldOfBalanceOwner = this._executedBy.getID();
+    this.#eventsData.shieldOfBalanceActive = true;
+    this.#eventsData.shieldOfBalanceOwner = this._executedBy.getID();
 
     if (!this.isActive()) {
-      globals.shieldOfBalanceOwner = null;
-      globals.shieldOfBalanceActive = false;
+      this.#eventsData.shieldOfBalanceOwner = null;
+      this.#eventsData.shieldOfBalanceActive = false;
     }
   }
 }

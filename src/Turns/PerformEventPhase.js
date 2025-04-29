@@ -48,6 +48,8 @@ export default class PerformEventPhase extends Phase {
   #lucretiaDeers;
   #stateMessages;
   #player;
+  #isPlayersSummonCharacterActive;
+  #eventsData;
 
   constructor(
     state,
@@ -72,7 +74,8 @@ export default class PerformEventPhase extends Phase {
     enemyCardsInHandGrid,
     lucretiaDeers,
     player,
-    stateMessages
+    stateMessages,
+    eventsData
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -96,10 +99,18 @@ export default class PerformEventPhase extends Phase {
     this.#stateMessages = stateMessages;
     this.#lucretiaDeers = lucretiaDeers;
     this.#player = player;
+    this.#eventsData = eventsData;
     this.#eventWithoutDurationData = {
       isActive: false,
       instance: {},
     };
+    this.#isPlayersSummonCharacterActive = [
+      // PLAYER 1
+      false,
+
+      // PLAYER 2
+      false,
+    ];
   }
 
   static create(
@@ -110,7 +121,9 @@ export default class PerformEventPhase extends Phase {
     events,
     currentPlayer,
     phaseMessage,
-    stateMessages
+    stateMessages,
+    attackMenuData,
+    eventsData
   ) {
     const eventsDeck = deckContainer.getDecks()[DeckType.EVENTS];
     const activeEventsDeck = deckContainer.getDecks()[DeckType.ACTIVE_EVENTS];
@@ -240,7 +253,8 @@ export default class PerformEventPhase extends Phase {
       enemyCardsInHandGrid,
       lucretiaDeers,
       player,
-      stateMessages
+      stateMessages,
+      eventsData
     );
 
     return performEventPhase;
@@ -323,7 +337,7 @@ export default class PerformEventPhase extends Phase {
       if (
         hoveredCard.getCategory() === CardCategory.SPECIAL &&
         hoveredCard.getID() === SpecialEventID.SUMMON_CHARACTER &&
-        globals.isPlayersSummonCharacterActive[this.#player.getID()]
+        this.#isPlayersSummonCharacterActive[this.#player.getID()]
       ) {
         return;
       }
@@ -381,17 +395,20 @@ export default class PerformEventPhase extends Phase {
             this.#enemyMinionsInPlayDeck,
             this._mouseInput,
             this.#lucretiaDeers,
-            this.#stateMessages
+            this.#stateMessages,
+            this.#isPlayersSummonCharacterActive,
+            this.#eventsData
           );
 
-          globals.isPlayersSummonCharacterActive[this.#player.getID()] = true;
+          this.#isPlayersSummonCharacterActive[this.#player.getID()] = true;
 
           break;
 
         case SpecialEventID.JUDGMENT_ANCIENTS:
           selectedEventInstance = new JudgmentAncientsEvent(
             this.#player,
-            selectedCard
+            selectedCard,
+            this.#eventsData
           );
           break;
 
@@ -432,14 +449,16 @@ export default class PerformEventPhase extends Phase {
         case SpecialEventID.POISON_OF_THE_ABYSS:
           selectedEventInstance = new PoisonOfTheAbyssEvent(
             this.#player,
-            selectedCard
+            selectedCard,
+            this.#eventsData
           );
           break;
 
         case SpecialEventID.CURSE_OF_THE_BOUND_TITAN:
           selectedEventInstance = new CurseOfTheBoundTitanEvent(
             this.#player,
-            selectedCard
+            selectedCard,
+            this.#eventsData
           );
           break;
 
@@ -457,8 +476,11 @@ export default class PerformEventPhase extends Phase {
         case RareEventID.THE_CUP_OF_THE_LAST_BREATH:
           selectedEventInstance = new TheCupOfTheLastBreathEvent(
             this.#player,
-            selectedCard
+            selectedCard,
+            this.#eventsData
           );
+          break;
+
         case RareEventID.STOLEN_FATE:
           this.#eventWithoutDurationData.isActive = true;
 
@@ -516,7 +538,8 @@ export default class PerformEventPhase extends Phase {
         case RareEventID.SHIELD_OF_BALANCE:
           selectedEventInstance = new ShieldOfBalanceEvent(
             this.#player,
-            selectedCard
+            selectedCard,
+            this.#eventsData
           );
           break;
 
@@ -528,8 +551,6 @@ export default class PerformEventPhase extends Phase {
             this.#stateMessages
           );
           break;
-        break;
-
       }
     }
 

@@ -1,31 +1,29 @@
 import Event from "./Event.js";
 import { PlayerID } from "../Game/constants.js";
-import globals from "../Game/globals.js";
 
 export default class TheCupOfTheLastBreathEvent extends Event {
-  constructor(
-    executedBy,
-    eventCard
-  ) {
+  #eventsData;
+  constructor(executedBy, eventCard, eventsData) {
     super(executedBy, eventCard);
+    this.#eventsData = eventsData;
   }
 
   execute(currentPlayer) {
     this.reduceDuration(currentPlayer);
 
-    globals.theCupOfTheLastBreathEventData.isActive = true;
+    this.#eventsData.theCupOfTheLastBreath.isActive = true;
     if (this._executedBy.getID() === PlayerID.PLAYER_1) {
-      globals.theCupOfTheLastBreathEventData.isPlayer2Affected = true;
+      this.#eventsData.theCupOfTheLastBreath.isPlayer2Affected = true;
     } else {
-      globals.theCupOfTheLastBreathEventData.isPlayer1Affected = true;
+      this.#eventsData.theCupOfTheLastBreath.isPlayer1Affected = true;
     }
 
     if (!this.isActive()) {
-      globals.theCupOfTheLastBreathEventData.isActive = false;
+      this.#eventsData.theCupOfTheLastBreath.isActive = false;
 
-      globals.theCupOfTheLastBreathEventData.isPlayer1Affected = false;
+      this.#eventsData.theCupOfTheLastBreath.isPlayer1Affected = false;
 
-      globals.theCupOfTheLastBreathEventData.isPlayer2Affected = false;
+      this.#eventsData.theCupOfTheLastBreath.isPlayer2Affected = false;
     }
   }
 }

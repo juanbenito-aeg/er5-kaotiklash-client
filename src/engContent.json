@@ -15,5 +15,6 @@
   "choose_opponent": "Choose an opponent",
   "choose_option": "Please choose an option",
   "start_game": "START GAME",
-  "stats": "Stats"
+  "stats": "Stats",
+  "exit": "EXIT"
 }

@@ -42,6 +42,7 @@ export default class Game {
   #activeEventsTableData;
   #minionTooltip;
   #stats;
+  #eventsData;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -129,6 +130,37 @@ export default class Game {
     };
     
 
+    //EVENTS DATA
+    game.#eventsData = {
+      activeVisibilitySkill: null,
+      decrepitThroneSkill: {
+        isActive: false,
+        playerWithDecrepitThrone: {},
+        turnsSinceActivation: 0,
+      },
+      poisonOfTheAbyss: {
+        isActive: false,
+        isPlayer1Affected: false,
+        isPlayer2Affected: false,
+      },
+      judgmentAncients: {
+        isActive: false,
+        affectedPlayerID: -1,
+      },
+      curseOfTheBoundTitan: {
+        isActive: false,
+        isPlayer1Affected: false,
+        isPlayer2Affected: false,
+      },
+      theCupOfTheLastBreath: {
+        isActive: false,
+        isPlayer1Affected: false,
+        isPlayer2Affected: false,
+      },
+      shieldOfBalanceActive: false,
+      shieldOfBalanceOwner: null,
+    };
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
@@ -139,7 +171,8 @@ export default class Game {
       game.#phaseMessage,
       game.#stateMessages,
       game.#attackMenuData,
-      game.#minionTooltip
+      game.#minionTooltip,
+      game.#eventsData
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -151,7 +184,8 @@ export default class Game {
       game.#phaseMessage,
       game.#stateMessages,
       game.#attackMenuData,
-      game.#minionTooltip
+      game.#minionTooltip,
+      game.#eventsData
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -612,41 +646,38 @@ export default class Game {
     if (globals.isCurrentTurnFinished) {
       this.#stats.played_turns++;
       globals.isCurrentTurnFinished = false;
-      
-      this.#healHarmedMinions();
-      if(globals.poisonOfTheAbyssEventData.isActive === true) {
-      this.#poisonMinions();
-      }
-      
-      if(globals.theCupOfTheLastBreathEventData.isActive === true) {
 
-        if(globals.theCupOfTheLastBreathEventData.isPlayer1Affected) {
-          console.log("Player 1 Cannot heal minions");
+      this.#healHarmedMinions();
+      if (this.#eventsData.poisonOfTheAbyss.isActive === true) {
+        this.#poisonMinions();
+      }
+
+      if (this.#eventsData.theCupOfTheLastBreath.isActive === true) {
+        if (this.#eventsData.theCupOfTheLastBreath.isPlayer1Affected) {
           let message = new StateMessage(
-          "Player 1 Cannot heal minions",
-          `30px MedievalSharp`,
-          "silver",
-          2,
-          globals.canvas.width/2,
-          globals.canvas.height/2
-        );
-        this.#stateMessages.push(message);
-        } else if(globals.theCupOfTheLastBreathEventData.isPlayer2Affected) {
-        console.log("Player 2 Cannot heal minions");
-        let message = new StateMessage(
-          "Player 2 Cannot heal minions",
-          `30px MedievalSharp`,
-          "silver",
-          2,
-          globals.canvas.width/2,
-          globals.canvas.height/2
-        );
-        this.#stateMessages.push(message);
+            "Player 1 Cannot heal minions",
+            `30px MedievalSharp`,
+            "silver",
+            2,
+            globals.canvas.width / 2,
+            globals.canvas.height / 2
+          );
+          this.#stateMessages.push(message);
+        } else if (this.#eventsData.theCupOfTheLastBreath.isPlayer2Affected) {
+          let message = new StateMessage(
+            "Player 2 Cannot heal minions",
+            `30px MedievalSharp`,
+            "silver",
+            2,
+            globals.canvas.width / 2,
+            globals.canvas.height / 2
+          );
+          this.#stateMessages.push(message);
         }
       }
 
-      if (globals.decrepitThroneSkillData.isActive) {
-        globals.decrepitThroneSkillData.turnsSinceActivation++;
+      if (this.#eventsData.decrepitThroneSkill.isActive) {
+        this.#eventsData.decrepitThroneSkill.turnsSinceActivation++;
       }
 
       const newCurrentPlayerID = this.#turns[
@@ -694,133 +725,110 @@ export default class Game {
     let isPlayer2Antiheal = false;
     let isPlayer2Halfheal = false;
 
-    console.log(globals.poisonOfTheAbyssEventData.isPlayer1Affected)
-    console.log(globals.poisonOfTheAbyssEventData.isPlayer2Affected)
-
-    if(globals.poisonOfTheAbyssEventData.isActive === true) { 
-        
-      if(globals.poisonOfTheAbyssEventData.isPlayer1Affected) {
-        isPlayer1Halfheal = true; 
-      } 
-      if (globals.poisonOfTheAbyssEventData.isPlayer2Affected) {
-        isPlayer2Halfheal = true; 
+    if (this.#eventsData.poisonOfTheAbyss.isActive === true) {
+      if (this.#eventsData.poisonOfTheAbyss.isPlayer1Affected) {
+        isPlayer1Halfheal = true;
+      }
+      if (this.#eventsData.poisonOfTheAbyss.isPlayer2Affected) {
+        isPlayer2Halfheal = true;
       }
     }
 
-    if(globals.theCupOfTheLastBreathEventData.isActive === true) {
-      if(globals.theCupOfTheLastBreathEventData.isPlayer1Affected) {
+    if (this.#eventsData.theCupOfTheLastBreath.isActive === true) {
+      if (this.#eventsData.theCupOfTheLastBreath.isPlayer1Affected) {
         isPlayer1Antiheal = true;
-      } else if (globals.theCupOfTheLastBreathEventData.isPlayer2Affected) {
+      } else if (this.#eventsData.theCupOfTheLastBreath.isPlayer2Affected) {
         isPlayer2Antiheal = true;
       }
     }
 
     const Player1Deck = minionsInPlayDecks[0];
     const Player2Deck = minionsInPlayDecks[1];
-    console.log(" player 1 half" + isPlayer1Halfheal)
-    console.log(" player 2 half" + isPlayer2Halfheal)
 
-      for (let i = 0; i < Player1Deck.getCards().length; i++) {
-        const currentCard = Player1Deck.getCards()[i];
+    for (let i = 0; i < Player1Deck.getCards().length; i++) {
+      const currentCard = Player1Deck.getCards()[i];
 
-        if (currentCard.getCurrentHP() < currentCard.getInitialHP() && !isPlayer1Antiheal) {
-          console.log("player 1 minions healed")
-          let currentHP = currentCard.getCurrentHP();
-          let initialHP = currentCard.getInitialHP();
-          let healAmount = initialHP - currentHP;
-          if (isPlayer1Halfheal) {
-            healAmount = Math.floor(healAmount / 2);
-            currentCard.setCurrentHP(currentHP + healAmount);
-            const healMessage = new StateMessage(
-              `+${healAmount}`,
-              "20px MedievalSharp",
-              "lightgreen",
-              1,
-              currentCard.getXCoordinate() + 55,
-              currentCard.getYCoordinate() + 110
-            );
-            this.#stateMessages.push(healMessage);
-          } else {
-            currentCard.setCurrentHP(currentCard.getInitialHP());
-            const healMessage = new StateMessage(
-              `+${healAmount}`,
-              "20px MedievalSharp",
-              "lightgreen",
-              1,
-              currentCard.getXCoordinate() + 55,
-              currentCard.getYCoordinate() + 110
-            );
-            this.#stateMessages.push(healMessage);
-          }
-        }
-
-      }
-
-      for (let i = 0; i < Player2Deck.getCards().length; i++) {
-        const currentCard = Player2Deck.getCards()[i];
-
-        if (currentCard.getCurrentHP() < currentCard.getInitialHP() && !isPlayer2Antiheal) {
-          console.log("player 2 minions healed")
-          let currentHP = currentCard.getCurrentHP();
-          let initialHP = currentCard.getInitialHP();
-          let healAmount = initialHP - currentHP;
-          if (isPlayer2Halfheal) {
-            healAmount = Math.floor(healAmount / 2);
-            currentCard.setCurrentHP(currentHP + healAmount);
-            const healMessage = new StateMessage(
-              `+${healAmount}`,
-              "20px MedievalSharp",
-              "lightgreen",
-              1,
-              currentCard.getXCoordinate() + 55,
-              currentCard.getYCoordinate() + 110
-            );
-            this.#stateMessages.push(healMessage);
-          } else {
-            currentCard.setCurrentHP(currentCard.getInitialHP());
-            const healMessage = new StateMessage(
-              `+${healAmount}`,
-              "20px MedievalSharp",
-              "lightgreen",
-              1,
-              currentCard.getXCoordinate() + 55,
-              currentCard.getYCoordinate() + 110
-            );
-            this.#stateMessages.push(healMessage);
-          }
+      if (
+        currentCard.getCurrentHP() < currentCard.getInitialHP() &&
+        !isPlayer1Antiheal
+      ) {
+        let currentHP = currentCard.getCurrentHP();
+        let initialHP = currentCard.getInitialHP();
+        let healAmount = initialHP - currentHP;
+        if (isPlayer1Halfheal) {
+          healAmount = Math.floor(healAmount / 2);
+          currentCard.setCurrentHP(currentHP + healAmount);
+          const healMessage = new StateMessage(
+            `+${healAmount}`,
+            "20px MedievalSharp",
+            "lightgreen",
+            1,
+            currentCard.getXCoordinate() + 55,
+            currentCard.getYCoordinate() + 110
+          );
+          this.#stateMessages.push(healMessage);
+        } else {
+          currentCard.setCurrentHP(currentCard.getInitialHP());
+          const healMessage = new StateMessage(
+            `+${healAmount}`,
+            "20px MedievalSharp",
+            "lightgreen",
+            1,
+            currentCard.getXCoordinate() + 55,
+            currentCard.getYCoordinate() + 110
+          );
+          this.#stateMessages.push(healMessage);
         }
       }
-    
-    
+    }
+
+    for (let i = 0; i < Player2Deck.getCards().length; i++) {
+      const currentCard = Player2Deck.getCards()[i];
+
+      if (
+        currentCard.getCurrentHP() < currentCard.getInitialHP() &&
+        !isPlayer2Antiheal
+      ) {
+        let currentHP = currentCard.getCurrentHP();
+        let initialHP = currentCard.getInitialHP();
+        let healAmount = initialHP - currentHP;
+        if (isPlayer2Halfheal) {
+          healAmount = Math.floor(healAmount / 2);
+          currentCard.setCurrentHP(currentHP + healAmount);
+          const healMessage = new StateMessage(
+            `+${healAmount}`,
+            "20px MedievalSharp",
+            "lightgreen",
+            1,
+            currentCard.getXCoordinate() + 55,
+            currentCard.getYCoordinate() + 110
+          );
+          this.#stateMessages.push(healMessage);
+        } else {
+          currentCard.setCurrentHP(currentCard.getInitialHP());
+          const healMessage = new StateMessage(
+            `+${healAmount}`,
+            "20px MedievalSharp",
+            "lightgreen",
+            1,
+            currentCard.getXCoordinate() + 55,
+            currentCard.getYCoordinate() + 110
+          );
+          this.#stateMessages.push(healMessage);
+        }
+      }
+    }
   }
 
   #poisonMinions() {
     let minionsInPlayDecks = [
-        this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY],
-        this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY],
-      ];
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY],
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY],
+    ];
 
-
-    if(globals.poisonOfTheAbyssEventData.isPlayer2Affected) {
-      for(let i = 0; i < minionsInPlayDecks[1].getCards().length; i++) {
+    if (this.#eventsData.poisonOfTheAbyss.isPlayer2Affected) {
+      for (let i = 0; i < minionsInPlayDecks[1].getCards().length; i++) {
         const currentCard = minionsInPlayDecks[1].getCards()[i];
-
-          currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
-          let message = new StateMessage(
-            "-5",
-            `50px MedievalSharp`,
-            "green",
-            1,
-            currentCard.getXCoordinate() + 55,
-            currentCard.getYCoordinate() + 55
-          );
-          this.#stateMessages.push(message);
-      }
-      
-  } 
-  if(globals.poisonOfTheAbyssEventData.isPlayer1Affected) {
-    for(let i = 0; i < minionsInPlayDecks[0].getCards().length; i++) {
-      const currentCard = minionsInPlayDecks[0].getCards()[i];
 
         currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
         let message = new StateMessage(
@@ -834,7 +842,23 @@ export default class Game {
         this.#stateMessages.push(message);
       }
     }
-    if (globals.poisonOfTheAbyssEventData.isPlayer1Affected) {
+    if (this.#eventsData.poisonOfTheAbyss.isPlayer1Affected) {
+      for (let i = 0; i < minionsInPlayDecks[0].getCards().length; i++) {
+        const currentCard = minionsInPlayDecks[0].getCards()[i];
+
+        currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
+        let message = new StateMessage(
+          "-5",
+          `50px MedievalSharp`,
+          "green",
+          1,
+          currentCard.getXCoordinate() + 55,
+          currentCard.getYCoordinate() + 55
+        );
+        this.#stateMessages.push(message);
+      }
+    }
+    if (this.#eventsData.poisonOfTheAbyss.isPlayer1Affected) {
       for (let i = 0; i < minionsInPlayDecks[1].getCards().length; i++) {
         const currentCard = minionsInPlayDecks[1].getCards()[i];
 
@@ -972,8 +996,8 @@ export default class Game {
       case GameState.PLAYING:
         this.#renderGame();
 
-        if (globals.activeVisibilitySkill) {
-          globals.activeVisibilitySkill.renderVisibilityEffect(
+        if (this.#eventsData.activeVisibilitySkill) {
+          this.#eventsData.activeVisibilitySkill.renderVisibilityEffect(
             this.#currentPlayer.getID()
           );
         }
@@ -2181,9 +2205,9 @@ export default class Game {
 
     globals.ctx.textAlign = "center";
     globals.ctx.fillStyle = "black";
-    globals.ctx.font = "24px MedievalSharp";
+    globals.ctx.font = "28px MedievalSharp";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 365);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 311);
 
     globals.ctx.font = "18px MedievalSharp";
 
@@ -2215,9 +2239,9 @@ export default class Game {
 
     globals.ctx.textAlign = "center";
     globals.ctx.fillStyle = "white";
-    globals.ctx.font = "22px MedievalSharp";
+    globals.ctx.font = "24px MedievalSharp";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 365);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 308);
 
     globals.ctx.font = "18px MedievalSharp";
 
@@ -2240,38 +2264,38 @@ export default class Game {
     const iconsPositions = [
       {
         // TYPE
-        x: 1075,
-        y: 327,
-        width: 35,
-        height: 35,
+        x: 1042,
+        y: 271,
+        width: 40,
+        height: 40,
       },
       {
         // HP
-        x: 1100,
-        y: 750,
+        x: 1045,
+        y: 789,
+        width: 50,
+        height: 50,
+      },
+      {
+        // MADNESS
+        x: 1130,
+        y: 793,
         width: 42,
         height: 42,
       },
       {
-        // MADNESS
-        x: 1147,
-        y: 750,
-        width: 35,
-        height: 35,
-      },
-      {
         // ATTACK
-        x: 1200,
-        y: 752,
-        width: 28,
-        height: 28,
+        x: 1215,
+        y: 797,
+        width: 34,
+        height: 34,
       },
       {
         // DEFENSE
-        x: 1250,
-        y: 750,
-        width: 35,
-        height: 35,
+        x: 1290,
+        y: 793,
+        width: 41,
+        height: 40,
       },
     ];
     for (let i = 0; i < icons.length; i++) {
@@ -2284,17 +2308,15 @@ export default class Game {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
 
     globals.ctx.textAlign = "center";
+    globals.ctx.font = "18px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText(card.getInitialHP(), 1112, 792);
-    globals.ctx.fillText(card.getInitialMadness(), 1160, 792);
-    globals.ctx.fillText(card.getInitialAttack(), 1210, 792);
-    globals.ctx.fillText(card.getInitialDefense(), 1262, 792);
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 12, 347);
-
-    globals.ctx.font = "18px MedievalSharp";
-
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 19, 292);
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 690);
+    globals.ctx.fillText(card.getInitialHP(), 1070, 852);
+    globals.ctx.fillText(card.getInitialMadness(), 1151, 852);
+    globals.ctx.fillText(card.getInitialAttack(), 1231, 852);
+    globals.ctx.fillText(card.getInitialDefense(), 1311, 852);
   }
 
   #renderExpandedWeapon(card) {
@@ -2305,38 +2327,38 @@ export default class Game {
     const iconsPositions = [
       {
         // TYPE CIRCLE
-        x: 1065,
-        y: 321,
-        width: 28,
-        height: 28,
+        x: 1024,
+        y: 263,
+        width: 31,
+        height: 31,
       },
       {
         // TYPE
-        x: 1070,
-        y: 325,
+        x: 1030,
+        y: 269,
         width: 20,
         height: 20,
       },
       {
         // DAMAGE
-        x: 1050,
-        y: 768,
-        width: 35,
-        height: 35,
+        x: 1040,
+        y: 820,
+        width: 43,
+        height: 43,
       },
       {
         // DURABILITY
-        x: 1130,
-        y: 758,
-        width: 55,
-        height: 55,
+        x: 1147,
+        y: 810,
+        width: 63,
+        height: 63,
       },
       {
         // PREPARATION TIME
-        x: 1220,
-        y: 765,
-        width: 42,
-        height: 42,
+        x: 1270,
+        y: 816,
+        width: 50,
+        height: 50,
       },
     ];
     for (let i = 0; i < icons.length; i++) {
@@ -2352,14 +2374,14 @@ export default class Game {
     globals.ctx.font = "16px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText(card.getInitialDamage(), 1105, 792);
-    globals.ctx.fillText(card.getInitialDurability(), 1190, 792);
-    globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1270, 792);
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 12, 342);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 16, 281);
 
     globals.ctx.font = "18px MedievalSharp";
 
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 720);
+    globals.ctx.fillText(card.getInitialDamage(), 1104, 843);
+    globals.ctx.fillText(card.getInitialDurability(), 1219, 843);
+    globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1335, 843);
   }
 
   #renderExpandedArmor(card) {
@@ -2370,31 +2392,31 @@ export default class Game {
     const iconsPositions = [
       {
         // TYPE CIRCLE
-        x: 1065,
-        y: 321,
-        width: 28,
-        height: 28,
+        x: 1024,
+        y: 263,
+        width: 31,
+        height: 31,
       },
       {
         // TYPE
-        x: 1070,
-        y: 325,
+        x: 1030,
+        y: 268,
         width: 20,
         height: 20,
       },
       {
         // DURABILITY
-        x: 1050,
-        y: 768,
-        width: 55,
-        height: 55,
+        x: 1068,
+        y: 815,
+        width: 60,
+        height: 60,
       },
       {
         // PREPARATION TIME
-        x: 1130,
-        y: 758,
-        width: 42,
-        height: 42,
+        x: 1217,
+        y: 821,
+        width: 47,
+        height: 47,
       },
     ];
     for (let i = 0; i < icons.length; i++) {
@@ -2410,7 +2432,7 @@ export default class Game {
     globals.ctx.font = "16px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    let descriptionXCoordinate = 640;
+    let descriptionYCoordinate = 640;
 
     if (card.getArmorTypeID() !== ArmorTypeID.MEDIUM) {
       let specialEffectUsableBy;
@@ -2431,20 +2453,20 @@ export default class Game {
 
       globals.ctx.fillText(card.getSpecialEffect(), canvasWidthDividedBy2, 740);
     } else {
-      descriptionXCoordinate = 740;
+      descriptionYCoordinate = 740;
     }
 
-    globals.ctx.fillText(card.getInitialDurability(), 1110, 785);
-    globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1180, 785);
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 12, 340);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 16, 281);
 
     globals.ctx.font = "18px MedievalSharp";
 
     globals.ctx.fillText(
       card.getDescription(),
       canvasWidthDividedBy2,
-      descriptionXCoordinate
+      descriptionYCoordinate
     );
+    globals.ctx.fillText(card.getInitialDurability(), 1140, 847);
+    globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1281, 847);
   }
 
   #renderExpandedSpecial(card) {
@@ -2455,31 +2477,31 @@ export default class Game {
     const iconsPositions = [
       {
         // TYPE CIRCLE
-        x: 1065,
-        y: 321,
-        width: 35,
-        height: 35,
+        x: 1025,
+        y: 269,
+        width: 40,
+        height: 40,
       },
       {
         // TYPE
-        x: 1070,
-        y: 325,
-        width: 30,
-        height: 30,
+        x: 1028,
+        y: 271,
+        width: 35,
+        height: 35,
       },
       {
         // PREPARATION TIME
-        x: 1050,
-        y: 758,
-        width: 42,
-        height: 42,
+        x: 1084,
+        y: 823,
+        width: 47,
+        height: 47,
       },
       {
         // DURATION
-        x: 1130,
-        y: 758,
-        width: 35,
-        height: 35,
+        x: 1227,
+        y: 828,
+        width: 38,
+        height: 38,
       },
     ];
     for (let i = 0; i < icons.length; i++) {
@@ -2492,22 +2514,19 @@ export default class Game {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
 
     globals.ctx.textAlign = "center";
-    globals.ctx.font = "16px MedievalSharp";
+    globals.ctx.font = "18px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 12, 340);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 17, 290);
+    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
 
     const effectString =
       globals.language === Language.ENGLISH ? "Effect:" : "Efektua:";
     globals.ctx.fillText(effectString, canvasWidthDividedBy2, 730);
 
     globals.ctx.fillText(card.getEffect(), canvasWidthDividedBy2, 750);
-    globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1110, 785);
-    globals.ctx.fillText(card.getInitialDurationInRounds(), 1180, 785);
-
-    globals.ctx.font = "18px MedievalSharp";
-
-    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
+    globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1148, 848);
+    globals.ctx.fillText(card.getInitialDurationInRounds(), 1280, 848);
   }
 
   #renderExpandedRare(card) {
@@ -2518,36 +2537,36 @@ export default class Game {
     const iconsPositions = [
       {
         // TYPE CIRCLE
-        x: 1065,
-        y: 321,
-        width: 35,
-        height: 35,
+        x: 1025,
+        y: 270,
+        width: 40,
+        height: 40,
       },
       {
         // TYPE
-        x: 1070,
-        y: 325,
-        width: 30,
-        height: 30,
+        x: 1031,
+        y: 276,
+        width: 28,
+        height: 28,
       },
       {
         // PREPARATION TIME
-        x: 1050,
-        y: 758,
-        width: 42,
-        height: 42,
+        x: 1084,
+        y: 823,
+        width: 47,
+        height: 47,
       },
       {
         // DURATION
-        x: 1130,
-        y: 758,
-        width: 35,
-        height: 35,
+        x: 1227,
+        y: 828,
+        width: 38,
+        height: 38,
       },
     ];
     for (let i = 0; i < icons.length; i++) {
-      const { x, y } = iconsPositions[i];
-      globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, 30, 30);
+      const { x, y, width, height } = iconsPositions[i];
+      globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
     }
 
     // RENDER ATTRIBUTES VALUES
@@ -2555,22 +2574,19 @@ export default class Game {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
 
     globals.ctx.textAlign = "center";
-    globals.ctx.font = "16px MedievalSharp";
+    globals.ctx.font = "18px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 12, 340);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 18, 291);
+    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
 
     const effectString =
       globals.language === Language.ENGLISH ? "Effect:" : "Efektua:";
     globals.ctx.fillText(effectString, canvasWidthDividedBy2, 730);
 
     globals.ctx.fillText(card.getEffect(), canvasWidthDividedBy2, 750);
-    globals.ctx.fillText(0, 1110, 785);
-    globals.ctx.fillText(card.getInitialDurationInRounds(), 1180, 785);
-
-    globals.ctx.font = "18px MedievalSharp";
-
-    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
+    globals.ctx.fillText(0, 1148, 848);
+    globals.ctx.fillText(card.getInitialDurationInRounds(), 1280, 848);
   }
 
   #renderStateMessages() {

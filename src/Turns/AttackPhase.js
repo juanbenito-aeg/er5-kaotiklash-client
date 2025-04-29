@@ -28,6 +28,7 @@ export default class AttackPhase extends Phase {
   #stateMessages;
   #player;
   #attackMenuData;
+  #eventsData;
 
   constructor(
     state,
@@ -42,7 +43,8 @@ export default class AttackPhase extends Phase {
     eventDeck,
     stateMessages,
     player,
-    attackMenuData
+    attackMenuData,
+    eventsData
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -58,6 +60,7 @@ export default class AttackPhase extends Phase {
     this.#stateMessages = stateMessages;
     this.#player = player;
     this.#attackMenuData = attackMenuData;
+    this.#eventsData = eventsData;
   }
 
   static create(
@@ -69,7 +72,8 @@ export default class AttackPhase extends Phase {
     currentPlayer,
     phaseMessage,
     stateMessages,
-    attackMenuData
+    attackMenuData,
+    eventsData
   ) {
     let enemyMovementGrid;
     let currentPlayerMovementGrid;
@@ -126,7 +130,8 @@ export default class AttackPhase extends Phase {
       eventDeck,
       stateMessages,
       player,
-      attackMenuData
+      attackMenuData,
+      eventsData
     );
 
     return attackPhase;
@@ -201,7 +206,7 @@ export default class AttackPhase extends Phase {
     if (attacker) {
       if (
         this.#player.getID() === PlayerID.PLAYER_1 &&
-        globals.curseOfTheBoundTitanEventData.isPlayer1Affected
+        this.#eventsData.curseOfTheBoundTitan.isPlayer1Affected
       ) {
         console.log("CURSE OF THE BOUND TITAN EVENT DATA PLAYER 1 AFFECTED");
 
@@ -218,7 +223,7 @@ export default class AttackPhase extends Phase {
 
       if (
         this.#player.getID() === PlayerID.PLAYER_2 &&
-        globals.curseOfTheBoundTitanEventData.isPlayer2Affected
+        this.#eventsData.curseOfTheBoundTitan.isPlayer2Affected
       ) {
         const debuffMessage = new StateMessage(
           "Minion Debuffed",
@@ -529,7 +534,8 @@ export default class AttackPhase extends Phase {
       this.#isArmorPowerChosen,
       this.#eventDeck,
       this.#stateMessages,
-      this.#player
+      this.#player,
+      this.#eventsData
     );
     attackEvent.execute();
 

@@ -314,7 +314,7 @@ function initPlayerSessionScreen() {
   const logOutBtn = document.getElementById("log-out-btn");
   logOutBtn.addEventListener("click", clearLocalStorageAndReload);
 
-  //STATS BUTTON (!) FILLING FOR THE FUTURE
+  //STATS BUTTON
   const statsBtn = document.getElementById("stats-btn");
   statsBtn.addEventListener("click", showStatsScreen);
 
@@ -381,7 +381,21 @@ function activateOrDisableStartGameBtn(e) {
 }
 
 function showStatsScreen() {
-  //INSERT LOGIC
+  //INSERT THE FUNCTION FOR THE ALL GET STATS
+  hideLanguageBtns();
+  hidePlayerSessionScreen();
+  const statsScreen = document.getElementById("stats-screen");
+  statsScreen.style.display = "flex";
+
+  const exit = document.getElementById("stats-btn-exit");
+  exit.addEventListener("click", hideStatsScreen);
+}
+
+function hideStatsScreen() {
+  const statsScreen = document.getElementById("stats-screen");
+  statsScreen.style.display = "none";
+
+  showPlayerSessionScreen();
 }
 
 function setUpGameTips() {
@@ -451,8 +465,8 @@ function initVars() {
 
   globals.imagesDestinationSizes = {
     allCardsBigVersion: {
-      width: 425,
-      height: 501,
+      width: 550,
+      height: 625,
     },
     mainCharactersSmallVersion: {
       width: 200,
