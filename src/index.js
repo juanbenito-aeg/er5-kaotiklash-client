@@ -397,6 +397,7 @@ async function showStats(loggedInPlayerID) {
   await getFumbles(loggedInPlayerID);
   await getCriticalHits(loggedInPlayerID);
   await getUsedCards(loggedInPlayerID);
+  await getJosephAppearances(loggedInPlayerID);
 }
 
 async function getWinRate(loggedInPlayerID) {
@@ -416,6 +417,10 @@ async function getWinRate(loggedInPlayerID) {
     return;
   }
 
+  if (wins.message) {
+    wins = 0;
+  }
+
   const urlMatches = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-matches`;
   const responseMatches = await fetch(urlMatches, {
     method: "GET",
@@ -429,8 +434,12 @@ async function getWinRate(loggedInPlayerID) {
     return;
   }
 
-  const winRate = (wins / totalMatches) * 100;
-  console.log(`Win rate: ${winRate.toFixed(2)}%`);
+  if (totalMatches.message) {
+    console.log(totalMatches.message);
+  } else {
+    const winRate = (wins / totalMatches) * 100;
+    console.log(`Win rate: ${winRate.toFixed(2)}%`);
+  }
 }
 
 async function getMinionsKilled(loggedInPlayerID) {
@@ -467,7 +476,11 @@ async function getFumbles(loggedInPlayerID) {
     return;
   }
 
-  console.log(`Total fumbles: ${fumbles}`);
+  if (fumbles.message) {
+    console.log(fumbles.message);
+  } else {
+    console.log(`Total fumbles: ${fumbles}`);
+  }
 }
 
 async function getCriticalHits(loggedInPlayerID) {
@@ -485,7 +498,11 @@ async function getCriticalHits(loggedInPlayerID) {
     return;
   }
 
-  console.log(`Total critical hits: ${criticalHits}`);
+  if (criticalHits.message) {
+    console.log(criticalHits.message);
+  } else {
+    console.log(`Total critical hits: ${criticalHits}`);
+  }
 }
 
 async function getUsedCards(loggedInPlayerID) {
@@ -503,8 +520,35 @@ async function getUsedCards(loggedInPlayerID) {
     return;
   }
 
-  console.log(`Total used cards: ${usedCards}`);
+  if (usedCards.message) {
+    console.log(usedCards.message);
+  } else {
+    console.log(`Total used cards: ${usedCards}`);
+  }
 }
+
+async function getJosephAppearances(loggedInPlayerID) {
+  let josephAppearances;
+  const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/joseph-appeared`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (response.ok) {
+    josephAppearances = await response.json();
+  } else {
+    alert(`Communication error (joseph appearances): 0`);
+    return;
+  }
+
+  if (josephAppearances.message) {
+    console.log(josephAppearances.message);
+  } else {
+    console.log(`Joseph appearances: ${josephAppearances}`);
+  }
+}
+
 
 function hideStatsScreen() {
   const statsScreen = document.getElementById("stats-screen");
