@@ -379,11 +379,16 @@ function showStatsScreen() {
   hidePlayerSessionScreen();
   const statsScreen = document.getElementById("stats-screen");
   statsScreen.style.display = "flex";
+
+  const exit = document.getElementById("stats-btn-exit");
+  exit.addEventListener("click", hideStatsScreen);
 }
 
 function hideStatsScreen() {
   const statsScreen = document.getElementById("stats-screen");
   statsScreen.style.display = "none";
+
+  showPlayerSessionScreen();
 }
 
 function setUpGameTips() {
