@@ -2322,24 +2322,24 @@ export default class Game {
       },
       {
         // DAMAGE
-        x: 1050,
-        y: 768,
-        width: 35,
-        height: 35,
+        x: 1040,
+        y: 820,
+        width: 43,
+        height: 43,
       },
       {
         // DURABILITY
-        x: 1130,
-        y: 758,
-        width: 55,
-        height: 55,
+        x: 1147,
+        y: 810,
+        width: 63,
+        height: 63,
       },
       {
         // PREPARATION TIME
-        x: 1220,
-        y: 765,
-        width: 42,
-        height: 42,
+        x: 1270,
+        y: 816,
+        width: 50,
+        height: 50,
       },
     ];
     for (let i = 0; i < icons.length; i++) {
@@ -2356,13 +2356,13 @@ export default class Game {
     globals.ctx.fillStyle = "black";
 
     globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 16, 281);
-    globals.ctx.fillText(card.getInitialDamage(), 1105, 792);
-    globals.ctx.fillText(card.getInitialDurability(), 1190, 792);
-    globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1270, 792);
 
     globals.ctx.font = "18px MedievalSharp";
 
     globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 720);
+    globals.ctx.fillText(card.getInitialDamage(), 1104, 843);
+    globals.ctx.fillText(card.getInitialDurability(), 1219, 843);
+    globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1335, 843);
   }
 
   #renderExpandedArmor(card) {
@@ -2373,31 +2373,31 @@ export default class Game {
     const iconsPositions = [
       {
         // TYPE CIRCLE
-        x: 1065,
-        y: 321,
-        width: 28,
-        height: 28,
+        x: 1024,
+        y: 263,
+        width: 31,
+        height: 31,
       },
       {
         // TYPE
-        x: 1070,
-        y: 325,
+        x: 1030,
+        y: 268,
         width: 20,
         height: 20,
       },
       {
         // DURABILITY
-        x: 1050,
-        y: 768,
-        width: 55,
-        height: 55,
+        x: 1068,
+        y: 815,
+        width: 60,
+        height: 60,
       },
       {
         // PREPARATION TIME
-        x: 1130,
-        y: 758,
-        width: 42,
-        height: 42,
+        x: 1217,
+        y: 821,
+        width: 47,
+        height: 47,
       },
     ];
     for (let i = 0; i < icons.length; i++) {
@@ -2413,7 +2413,7 @@ export default class Game {
     globals.ctx.font = "16px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    let descriptionXCoordinate = 640;
+    let descriptionYCoordinate = 640;
 
     if (card.getArmorTypeID() !== ArmorTypeID.MEDIUM) {
       let specialEffectUsableBy;
@@ -2434,20 +2434,20 @@ export default class Game {
 
       globals.ctx.fillText(card.getSpecialEffect(), canvasWidthDividedBy2, 740);
     } else {
-      descriptionXCoordinate = 740;
+      descriptionYCoordinate = 740;
     }
 
-    globals.ctx.fillText(card.getInitialDurability(), 1110, 785);
-    globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1180, 785);
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 12, 340);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 16, 281);
 
     globals.ctx.font = "18px MedievalSharp";
 
     globals.ctx.fillText(
       card.getDescription(),
       canvasWidthDividedBy2,
-      descriptionXCoordinate
+      descriptionYCoordinate
     );
+    globals.ctx.fillText(card.getInitialDurability(), 1140, 847);
+    globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1281, 847);
   }
 
   #renderExpandedSpecial(card) {
@@ -2458,31 +2458,31 @@ export default class Game {
     const iconsPositions = [
       {
         // TYPE CIRCLE
-        x: 1065,
-        y: 321,
-        width: 35,
-        height: 35,
+        x: 1025,
+        y: 269,
+        width: 40,
+        height: 40,
       },
       {
         // TYPE
-        x: 1070,
-        y: 325,
-        width: 30,
-        height: 30,
+        x: 1028,
+        y: 271,
+        width: 35,
+        height: 35,
       },
       {
         // PREPARATION TIME
-        x: 1050,
-        y: 758,
-        width: 42,
-        height: 42,
+        x: 1068,
+        y: 823,
+        width: 47,
+        height: 47,
       },
       {
         // DURATION
-        x: 1130,
-        y: 758,
-        width: 35,
-        height: 35,
+        x: 1217,
+        y: 829,
+        width: 38,
+        height: 38,
       },
     ];
     for (let i = 0; i < icons.length; i++) {
@@ -2495,10 +2495,11 @@ export default class Game {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
 
     globals.ctx.textAlign = "center";
-    globals.ctx.font = "16px MedievalSharp";
+    globals.ctx.font = "18px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 12, 340);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 17, 290);
+    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
 
     const effectString =
       globals.language === Language.ENGLISH ? "Effect:" : "Efektua:";
@@ -2507,10 +2508,6 @@ export default class Game {
     globals.ctx.fillText(card.getEffect(), canvasWidthDividedBy2, 750);
     globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1110, 785);
     globals.ctx.fillText(card.getInitialDurationInRounds(), 1180, 785);
-
-    globals.ctx.font = "18px MedievalSharp";
-
-    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
   }
 
   #renderExpandedRare(card) {

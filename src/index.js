@@ -338,7 +338,7 @@ function clearLocalStorageAndReload() {
 
 async function createOpponentsSelOptions(playerName, opponentSelect) {
   const url =
-    "https://er5-kaotiklash-server.onrender.com/api/players/opponent-names";
+    "https://er5-kaotiklash-server.onrender.com/api/players/opponents-data";
 
   const response = await fetch(url, {
     method: "POST",
