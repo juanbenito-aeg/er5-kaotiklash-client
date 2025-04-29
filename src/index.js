@@ -392,8 +392,8 @@ function showStatsScreen() {
 }
 
 async function showStats(loggedInPlayerID) {
-  getWinRate(loggedInPlayerID);
-  
+  await getWinRate(loggedInPlayerID);
+  await getMinionsKilled(loggedInPlayerID);
 }
 
 async function getWinRate(loggedInPlayerID) {
@@ -428,6 +428,24 @@ async function getWinRate(loggedInPlayerID) {
 
   const winRate = (wins / totalMatches) * 100;
   console.log(`Win rate: ${winRate.toFixed(2)}%`);
+}
+
+async function getMinionsKilled(loggedInPlayerID) {
+  let killedMinions = 0;
+  const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-minions-killed`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (response.ok) {
+    killedMinions = await response.json();
+  } else {
+    alert(`Communication error (wins): ${response.statusText}`);
+    return;
+  }
+
+  console.log(`Total minions killed: ${killedMinions}`);
 }
 
 function hideStatsScreen() {
