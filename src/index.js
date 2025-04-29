@@ -394,6 +394,7 @@ function showStatsScreen() {
 async function showStats(loggedInPlayerID) {
   await getWinRate(loggedInPlayerID);
   await getMinionsKilled(loggedInPlayerID);
+  await getFumbles(loggedInPlayerID);
 }
 
 async function getWinRate(loggedInPlayerID) {
@@ -432,6 +433,7 @@ async function getWinRate(loggedInPlayerID) {
 
 async function getMinionsKilled(loggedInPlayerID) {
   let killedMinions = 0;
+  
   const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-minions-killed`;
   const response = await fetch(url, {
     method: "GET",
@@ -441,11 +443,29 @@ async function getMinionsKilled(loggedInPlayerID) {
   if (response.ok) {
     killedMinions = await response.json();
   } else {
-    alert(`Communication error (wins): ${response.statusText}`);
+    alert(`Communication error (minions killed): ${response.statusText}`);
     return;
   }
 
   console.log(`Total minions killed: ${killedMinions}`);
+}
+
+async function getFumbles(loggedInPlayerID) {
+  let fumbles = 0;
+  const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-minions-killed`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (response.ok) {
+    fumbles = await response.json();
+  } else {
+    alert(`Communication error (fumbles): ${response.statusText}`);
+    return;
+  }
+
+  console.log(`Total fumbles: ${fumbles}`);
 }
 
 function hideStatsScreen() {
