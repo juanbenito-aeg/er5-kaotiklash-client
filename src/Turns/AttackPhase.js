@@ -208,7 +208,6 @@ export default class AttackPhase extends Phase {
         this.#player.getID() === PlayerID.PLAYER_1 &&
         this.#eventsData.curseOfTheBoundTitan.isPlayer1Affected
       ) {
-        console.log("CURSE OF THE BOUND TITAN EVENT DATA PLAYER 1 AFFECTED");
 
         const debuffMessage = new StateMessage(
           "Minion Debuffed",
@@ -374,14 +373,12 @@ export default class AttackPhase extends Phase {
       !attacker.getWeapon() ||
       attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE
     ) {
-      console.log("MISSILE WEAPON");
       let isYCoordinateLimitExceeded = false;
       let isXCoordinateLimitExceeded = false;
       if (
         this.#currentPlayerMovementGrid.getGridType() ===
         GridType.PLAYER_1_BATTLEFIELD
       ) {
-        console.log("PLAYER 1 BATTLEFIELD");
         const targetMinYCoordinate =
           attackerBox.getYCoordinate() - 135 - attackerBox.getHeight();
 
@@ -420,10 +417,8 @@ export default class AttackPhase extends Phase {
       }
 
       if (isXCoordinateLimitExceeded && isYCoordinateLimitExceeded) {
-        console.log("TARGET NOT WITHIN REACH");
         isTargetWithinReach = false;
       } else {
-        console.log("TARGET WITHIN REACH");
         isTargetWithinReach = true;
       }
     } else if (

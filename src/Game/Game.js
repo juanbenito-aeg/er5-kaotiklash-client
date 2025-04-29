@@ -196,7 +196,6 @@ export default class Game {
 
     game.#fillActiveEventsTableData();
 
-    console.log(game)
     return game;
   }
 

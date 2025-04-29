@@ -311,13 +311,12 @@ export default class AttackEvent extends Event {
         this.#currentPlayerMovementGrid,
         this.#attacker
       );
-      ///////// TO REVERT: UNCOMMENT THE FOLLOWING CODE
-      // if (attackerWeapon.getCurrentDurability() <= 0) {
-      //   this.weaponMessage(attackerBox);
-      //   this.#attacker.resetWeaponAttributes();
-      //   this.#eventDeck.insertCard(this.#attacker.getWeapon());
-      //   this.#attacker.removeWeapon();
-      // }
+      if (attackerWeapon.getCurrentDurability() <= 0) {
+        this.weaponMessage(attackerBox);
+        this.#attacker.resetWeaponAttributes();
+        this.#eventDeck.insertCard(this.#attacker.getWeapon());
+        this.#attacker.removeWeapon();
+      }
     }
 
     let parryRoll = Math.floor(Math.random() * 100 + 1);
@@ -355,14 +354,13 @@ export default class AttackEvent extends Event {
     }
 
     let crit = false;
-    //////////////TO REVERT: 1000 -> critProb & damageToInflict * 1.75
-    if (roll <= 1000) {
+    if (roll <= critProb) {
       // CRITICAL HIT
       this.#player.addCriticalHits();
       crit = true;
       console.log("Critical Hit");
       let baseDamage = damageToInflict;
-      damageToInflict = damageToInflict * 10.75;
+      damageToInflict = damageToInflict * 1.75;
       damageToInflict = Math.floor(damageToInflict);
       if (
         this.#target.getArmor() &&
