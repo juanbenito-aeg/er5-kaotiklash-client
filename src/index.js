@@ -386,9 +386,48 @@ function showStatsScreen() {
   hidePlayerSessionScreen();
   const statsScreen = document.getElementById("stats-screen");
   statsScreen.style.display = "flex";
-
+  showStats(globals.playersIDs.loggedIn);
   const exit = document.getElementById("stats-btn-exit");
   exit.addEventListener("click", hideStatsScreen);
+}
+
+async function showStats(loggedInPlayerID) {
+  getWinRate(loggedInPlayerID);
+  
+}
+
+async function getWinRate(loggedInPlayerID) {
+  let wins = 0;
+  let totalMatches = 0;
+
+  const urlWins = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/winned-matches`;
+  const responseWins = await fetch(urlWins, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (responseWins.ok) {
+    wins = await responseWins.json();
+  } else {
+    alert(`Communication error (wins): ${responseWins.statusText}`);
+    return;
+  }
+
+  const urlMatches = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-matches`;
+  const responseMatches = await fetch(urlMatches, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (responseMatches.ok) {
+    totalMatches = await responseMatches.json();
+  } else {
+    alert(`Communication error (matches): ${responseMatches.statusText}`);
+    return;
+  }
+
+  const winRate = (wins / totalMatches) * 100;
+  console.log(`Win rate: ${winRate.toFixed(2)}%`);
 }
 
 function hideStatsScreen() {
