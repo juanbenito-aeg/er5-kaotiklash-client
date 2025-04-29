@@ -396,6 +396,7 @@ async function showStats(loggedInPlayerID) {
   await getMinionsKilled(loggedInPlayerID);
   await getFumbles(loggedInPlayerID);
   await getCriticalHits(loggedInPlayerID);
+  await getUsedCards(loggedInPlayerID);
 }
 
 async function getWinRate(loggedInPlayerID) {
@@ -485,6 +486,24 @@ async function getCriticalHits(loggedInPlayerID) {
   }
 
   console.log(`Total critical hits: ${criticalHits}`);
+}
+
+async function getUsedCards(loggedInPlayerID) {
+  let usedCards = 0;
+  const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-used-cards`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (response.ok) {
+    usedCards = await response.json();
+  } else {
+    alert(`Communication error (used cards): ${response.statusText}`);
+    return;
+  }
+
+  console.log(`Total used cards: ${usedCards}`);
 }
 
 function hideStatsScreen() {
