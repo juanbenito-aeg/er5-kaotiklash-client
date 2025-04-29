@@ -395,6 +395,7 @@ async function showStats(loggedInPlayerID) {
   await getWinRate(loggedInPlayerID);
   await getMinionsKilled(loggedInPlayerID);
   await getFumbles(loggedInPlayerID);
+  await getCriticalHits(loggedInPlayerID);
 }
 
 async function getWinRate(loggedInPlayerID) {
@@ -452,7 +453,7 @@ async function getMinionsKilled(loggedInPlayerID) {
 
 async function getFumbles(loggedInPlayerID) {
   let fumbles = 0;
-  const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-minions-killed`;
+  const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-fumbles`;
   const response = await fetch(url, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
@@ -466,6 +467,24 @@ async function getFumbles(loggedInPlayerID) {
   }
 
   console.log(`Total fumbles: ${fumbles}`);
+}
+
+async function getCriticalHits(loggedInPlayerID) {
+  let criticalHits = 0;
+  const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-critical-hits`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (response.ok) {
+    criticalHits = await response.json();
+  } else {
+    alert(`Communication error (critical hits): ${response.statusText}`);
+    return;
+  }
+
+  console.log(`Total critical hits: ${criticalHits}`);
 }
 
 function hideStatsScreen() {
