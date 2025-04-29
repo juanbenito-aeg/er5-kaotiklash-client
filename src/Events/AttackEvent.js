@@ -44,6 +44,7 @@ export default class AttackEvent extends Event {
   }
 
   execute() {
+
     if (
       this.#isArmorPowerChosen &&
       this.#target.getArmorID() === ArmorID.CLOAK_ETERNAL_SHADOW
@@ -99,8 +100,9 @@ export default class AttackEvent extends Event {
       roll <= chances
     ) {
       // FUMBLE
+      this.#player.addFumbles();
       console.log("Fumble");
-      fumble = true;
+      fumble = false;
     }
 
     if (targetHasBreastplatePrimordialColossus || fumble) {
@@ -114,9 +116,6 @@ export default class AttackEvent extends Event {
     let isPlayer1Debuffed = false;
     let isPlayer2Debuffed = false;
     let debuff = 10;
-
-    let armorOfTitanicFuryBoostAttacker;
-    let armorOfTitanicFuryBoostTarget;
 
     if (globals.curseOfTheBoundTitanEventData.isActive === true) {
       if (
@@ -307,12 +306,13 @@ export default class AttackEvent extends Event {
         this.#currentPlayerMovementGrid,
         this.#attacker
       );
-      if (attackerWeapon.getCurrentDurability() <= 0) {
-        this.weaponMessage(attackerBox);
-        this.#attacker.resetWeaponAttributes();
-        this.#eventDeck.insertCard(this.#attacker.getWeapon());
-        this.#attacker.removeWeapon();
-      }
+      ///////// TO REVERT: UNCOMMENT THE FOLLOWING CODE
+      // if (attackerWeapon.getCurrentDurability() <= 0) {
+      //   this.weaponMessage(attackerBox);
+      //   this.#attacker.resetWeaponAttributes();
+      //   this.#eventDeck.insertCard(this.#attacker.getWeapon());
+      //   this.#attacker.removeWeapon();
+      // }
     }
 
     let parryRoll = Math.floor(Math.random() * 100 + 1);
@@ -350,12 +350,14 @@ export default class AttackEvent extends Event {
     }
 
     let crit = false;
-    if (roll <= critProb) {
+    //////////////TO REVERT: 1000 -> critProb & damageToInflict * 1.75
+    if (roll <= 1000) {
       // CRITICAL HIT
+      this.#player.addCriticalHits();
       crit = true;
       console.log("Critical Hit");
       let baseDamage = damageToInflict;
-      damageToInflict = damageToInflict * 1.75;
+      damageToInflict = damageToInflict * 10.75;
       damageToInflict = Math.floor(damageToInflict);
       if (
         this.#target.getArmor() &&
@@ -436,12 +438,6 @@ export default class AttackEvent extends Event {
         } else {
           let NewDurability =
             targetWeapon.getCurrentDurability() - damageToInflict;
-          console.log(
-            "currentDurability: " + targetWeapon.getCurrentDurability()
-          );
-          console.log("damageToInflict: " + damageToInflict);
-          console.log("NewDurability: " + NewDurability);
-          console.log(targetWeapon.getCurrentDurability() - NewDurability);
 
           this.parryMessage(
             targetWeapon.getCurrentDurability() - NewDurability,
@@ -507,6 +503,7 @@ export default class AttackEvent extends Event {
       if (targetNewCurrentHP < 0) {
         targetNewCurrentHP = 0;
         this.deathMessage(this.#target);
+        this.#player.addMinionsKilled();
       }
 
       this.#target.setCurrentHP(targetNewCurrentHP);
@@ -516,6 +513,7 @@ export default class AttackEvent extends Event {
     if (targetNewCurrentHPStored < 0) {
       targetNewCurrentHPStored = 0;
       this.deathMessage(this.#target);
+      this.#player.addMinionsKilled();
     }
     this.#target.setCurrentHP(targetNewCurrentHPStored);
 

@@ -41,6 +41,7 @@ export default class Game {
   #attackMenuData;
   #activeEventsTableData;
   #minionTooltip;
+  #stats;
 
   static async create() {
     // "game" OBJECT CREATION
@@ -120,6 +121,13 @@ export default class Game {
 
     game.#minionTooltip = new MinionTooltip();
 
+    game.#stats = {
+      date: new Date(),
+      game_start_time: Date.now(),
+      played_turns: 1,
+      joseph_appeared: false,
+    }
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
@@ -153,6 +161,7 @@ export default class Game {
 
     game.#fillActiveEventsTableData();
 
+    console.log(game)
     return game;
   }
 
@@ -600,6 +609,7 @@ export default class Game {
 
   #update() {
     if (globals.isCurrentTurnFinished) {
+      this.#stats.played_turns++;
       globals.isCurrentTurnFinished = false;
       
       this.#healHarmedMinions();
@@ -929,7 +939,9 @@ export default class Game {
 
       if (currentPlayer.getTotalHP() === 0) {
         globals.gameWinner = this.#players[1 - i];
-
+        globals.gameOver = true;
+        globals.gameStats = this.#stats;
+        globals.gamePlayers = this.#players;
         if(globals.gameWinner === this.#players[PlayerID.PLAYER_1]) {
           globals.gameLoser = this.#players[PlayerID.PLAYER_2];
         } else {
@@ -2719,4 +2731,14 @@ export default class Game {
       );
     }
   }
+
+  getStats() {
+    return this.#stats;
+  }
+
+  getPlayers() {
+    return this.#players;
+  }
+
+  
 }

@@ -506,6 +506,7 @@ export default class Turn {
                 nMsgYCoordinate
               );
               this.#stateMessages.push(gearedUpMsg);
+              this.#player.addUsedCards();
 
               minion.setState(CardState.SELECTED);
 

@@ -1,6 +1,7 @@
 import Game from "./Game/Game.js";
 import globals from "./Game/globals.js";
 import { GameState, FPS, Language } from "./Game/constants.js";
+import { PlayerID } from "./Game/constants.js";
 
 window.onload = initEssentials;
 
@@ -207,7 +208,7 @@ async function logInPlayer(email, password) {
 
   if (response.ok) {
     alert(data.message);
-
+    localStorage.setItem("playerID", data.player.player_id);
     localStorage.setItem("playerName", data.player.name);
     localStorage.setItem("email", data.player.email_address);
 
@@ -297,6 +298,8 @@ function initPlayerSessionScreen() {
   showPlayerSessionScreen();
   showLanguageBtns();
 
+  globals.playersIDs.loggedIn = localStorage.getItem("playerID");
+
   // GET THE LOGGED IN PLAYER'S DATA & INSERT IT INTO A PARAGRAPH ELEMENT
 
   const playerEmail = localStorage.getItem("email");
@@ -317,7 +320,7 @@ function initPlayerSessionScreen() {
 
   // GET OPPONENTS' DATA & USE THEM TO CREATE HTML ELEMENTS
   const opponentSelect = document.getElementById("opponent-select");
-  createOpponentsSelOptions(playerName, opponentSelect);
+  createOpponentsSelOptions(opponentSelect);
 
   //RANDOM TIPS FOR THE PLAYER
   setUpGameTips();
@@ -336,16 +339,16 @@ function clearLocalStorageAndReload() {
   window.location.reload();
 }
 
-async function createOpponentsSelOptions(playerName, opponentSelect) {
+async function createOpponentsSelOptions(opponentSelect) {
   const url =
-    "https://er5-kaotiklash-server.onrender.com/api/players/opponent-names";
+    "https://er5-kaotiklash-server.onrender.com/api/players/opponents-data";
 
   const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ playerName }),
+    body: JSON.stringify({ loggedInPlayerID: globals.playersIDs.loggedIn }),
   });
 
   let opponentNames;
@@ -357,8 +360,9 @@ async function createOpponentsSelOptions(playerName, opponentSelect) {
   }
 
   for (let i = 0; i < opponentNames.length; i++) {
+    const currentOpponentID = opponentNames[i].player_id;
     const currentOpponentName = opponentNames[i].name;
-    const currentOpponentSelOption = new Option(currentOpponentName);
+    const currentOpponentSelOption = new Option(currentOpponentName, currentOpponentID);
     opponentSelect.appendChild(currentOpponentSelOption);
   }
 }
@@ -434,6 +438,10 @@ async function initGameScreen() {
 }
 
 function initVars() {
+  const opponentSelect = document.getElementById("opponent-select");
+  globals.playersIDs.lastOpponent = opponentSelect.value;
+
+
   // INITIALIZE TIME MANAGEMENT VARIABLES
   globals.previousCycleMilliseconds = 0;
   globals.deltaTime = 0;
@@ -714,18 +722,73 @@ function executeGameLoop(timeStamp) {
     globals.deltaTime = 0;
   }
 
-  if(globals.gameWinner){
-    saveGameData(globals.gameWinner, globals.gameLoser);
+  if(globals.gameOver){
+    let duration_ms = Date.now() - globals.gameStats.game_start_time;
+    let minutes = Math.floor(duration_ms / 60000);
+    let seconds = Math.round((duration_ms % 60000) / 1000);
+    let duration_in_minutes = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+    let player1 = globals.gamePlayers[0];
+    let player2 = globals.gamePlayers[1];
+    let winnerID;
+    if(globals.gameWinner.getID() === PlayerID.PLAYER_1){
+      winnerID = globals.playersIDs.loggedIn;
+    } else if (globals.gameWinner.getID() === PlayerID.PLAYER_2){
+      winnerID = globals.playersIDs.lastOpponent;
+    }
+
+    saveGameData(
+      globals.playersIDs.loggedIn, 
+      globals.playersIDs.lastOpponent, 
+      winnerID, 
+      duration_in_minutes, 
+      globals.gameStats.played_turns, 
+      globals.gameStats.joseph_appeared, 
+      player1.getMinionsKilled(), 
+      player2.getMinionsKilled(), 
+      player1.getFumbles(), 
+      player2.getFumbles(), 
+      player1.getCriticalHits(), 
+      player2.getCriticalHits(), 
+      player1.getUsedCards(), 
+      player2.getUsedCards());
+    globals.gameOver = false;
   }
 
-  async function saveGameData(winner, loser) {
+  async function saveGameData(
+    loggedInPlayerID, 
+    lastOpponentID, 
+    winnerID,
+    date, 
+    duration_in_minutes, 
+    played_rounds, 
+    joseph_appeared, 
+    player_1_minions_killed, 
+    player_2_minions_killed, 
+    player_1_fumbles, 
+    player_2_fumbles, 
+    player_1_critical_hits, 
+    player_2_critical_hits, 
+    player_1_used_cards, 
+    player_2_used_cards) {
 
     const url = "https://er5-kaotiklash-server.onrender.com/api/player_stats";
 
     const gameData = {
-      winner: winner,
-      loser: loser,
-      date: new Date().toISOString(),
+      player_1: loggedInPlayerID,
+      player_2: lastOpponentID,
+      winner: winnerID,
+      date: date,
+      duration_in_minutes: duration_in_minutes,
+      played_rounds: played_rounds,
+      joseph_appeared: joseph_appeared,
+      player_1_minions_killed: player_1_minions_killed,
+      player_2_minions_killed: player_2_minions_killed,
+      player_1_fumbles: player_1_fumbles,
+      player_2_fumbles: player_2_fumbles,
+      player_1_critical_hits: player_1_critical_hits,
+      player_2_critical_hits: player_2_critical_hits,
+      player_1_used_cards: player_1_used_cards,
+      player_2_used_cards: player_2_used_cards
     };
   
     await fetch(url, {

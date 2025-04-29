@@ -69,4 +69,11 @@ export default {
   },
   shieldOfBalanceActive: false,
   shieldOfBalanceOwner: null,
+  playersIDs : {
+    loggedIn: -1,
+    lastOpponent: -1,
+  },
+  gameStats: null,
+  gamePlayers: null,
+  gameOver: false,
 };

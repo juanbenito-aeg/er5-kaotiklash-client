@@ -25,6 +25,7 @@ export default class DrawCardPhase extends Phase {
   #currentPlayerCardsInHandGrid;
   #deckContainer;
   #board;
+  #stats;
 
   constructor(
     state,
@@ -39,7 +40,8 @@ export default class DrawCardPhase extends Phase {
     currentPlayerCardsInHandDeck,
     currentPlayerCardsInHandGrid,
     deckContainer,
-    board
+    board,
+    stats
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -54,6 +56,7 @@ export default class DrawCardPhase extends Phase {
     this.#currentPlayerCardsInHandGrid = currentPlayerCardsInHandGrid;
     this.#deckContainer = deckContainer;
     this.#board = board;
+    this.#stats = stats;
   }
 
   static create(
@@ -63,7 +66,10 @@ export default class DrawCardPhase extends Phase {
     mouseInput,
     events,
     currentPlayer,
-    phaseMessage
+    phaseMessage,
+    attackMenuData,
+    stats
+
   ) {
     // DECKS VARIABLES
     const eventsDeck = deckContainer.getDecks()[DeckType.EVENTS];
@@ -94,7 +100,8 @@ export default class DrawCardPhase extends Phase {
       currentPlayerCardsInHandDeck,
       currentPlayerCardsInHandGrid,
       deckContainer,
-      board
+      board,
+      stats
     );
 
     return drawCardPhase;
@@ -139,6 +146,7 @@ export default class DrawCardPhase extends Phase {
       drawnCard.getCategory() === CardCategory.MAIN_CHARACTER &&
       drawnCard.getID() === MainCharacterID.JOSEPH
     ) {
+      this.#stats.joseph_appeared = true;
       this.#activeEventsDeck.insertCard(drawnCard);
       this.#josephDeck.insertCard(drawnCard);
 

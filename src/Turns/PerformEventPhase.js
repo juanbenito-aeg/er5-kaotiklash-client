@@ -268,6 +268,7 @@ export default class PerformEventPhase extends Phase {
       case PerformEventState.END:
         console.log("END");
         this.#updateDecksAndGrids();
+        this.#player.addUsedCards();
         isPhaseFinished = true;
         break;
     }
