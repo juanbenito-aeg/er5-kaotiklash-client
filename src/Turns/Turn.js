@@ -313,6 +313,7 @@ export default class Turn {
               hoveredCard.setState(CardState.EXPANDED);
             } else if (hoveredCard.getState() === CardState.EXPANDED) {
               hoveredCard.setState(hoveredCard.getPreviousState());
+              return;
             }
           }
         }
