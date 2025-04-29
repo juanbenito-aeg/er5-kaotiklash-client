@@ -120,13 +120,14 @@ export default class Game {
     };
 
     game.#minionTooltip = new MinionTooltip();
-
+    
     game.#stats = {
-      date: new Date(),
+      date: new Date().toISOString().split('T')[0],
       game_start_time: Date.now(),
       played_turns: 1,
       joseph_appeared: false,
-    }
+    };
+    
 
     // TURNS CREATION
     const turnPlayer1 = new Turn(

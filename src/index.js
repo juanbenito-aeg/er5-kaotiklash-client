@@ -722,11 +722,12 @@ function executeGameLoop(timeStamp) {
     globals.deltaTime = 0;
   }
 
-  if(globals.gameOver){
+  if (globals.gameOver && !globals.statsAlreadySent) {
+    globals.statsAlreadySent = true;
     let duration_ms = Date.now() - globals.gameStats.game_start_time;
-    let minutes = Math.floor(duration_ms / 60000);
-    let seconds = Math.round((duration_ms % 60000) / 1000);
-    let duration_in_minutes = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+    let minutes = Math.floor(duration_ms / 60000); 
+    let seconds = Math.round((duration_ms % 60000) / 1000); 
+    let duration_in_minutes = minutes; 
     let player1 = globals.gamePlayers[0];
     let player2 = globals.gamePlayers[1];
     let winnerID;
@@ -736,6 +737,24 @@ function executeGameLoop(timeStamp) {
       winnerID = globals.playersIDs.lastOpponent;
     }
 
+    console.log("JSON para testing manual en Thunder/Postman:\n", JSON.stringify({
+      player_1: globals.playersIDs.loggedIn,
+      player_2: globals.playersIDs.lastOpponent,
+      winner: winnerID,
+      date: new Date().toISOString().split('T')[0], // formato YYYY-MM-DD
+      duration_in_minutes: duration_in_minutes,
+      played_rounds: globals.gameStats.played_turns,
+      joseph_appeared: globals.gameStats.joseph_appeared,
+      player_1_minions_killed: player1.getMinionsKilled(),
+      player_2_minions_killed: player2.getMinionsKilled(),
+      player_1_fumbles: player1.getFumbles(),
+      player_2_fumbles: player2.getFumbles(),
+      player_1_critical_hits: player1.getCriticalHits(),
+      player_2_critical_hits: player2.getCriticalHits(),
+      player_1_used_cards: player1.getUsedCards(),
+      player_2_used_cards: player2.getUsedCards()
+    }, null, 2));
+    
     saveGameData(
       globals.playersIDs.loggedIn, 
       globals.playersIDs.lastOpponent, 
@@ -751,7 +770,6 @@ function executeGameLoop(timeStamp) {
       player2.getCriticalHits(), 
       player1.getUsedCards(), 
       player2.getUsedCards());
-    globals.gameOver = false;
   }
 
   async function saveGameData(
@@ -791,12 +809,20 @@ function executeGameLoop(timeStamp) {
       player_2_used_cards: player_2_used_cards
     };
   
-    await fetch(url, {
+    let response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(gameData),
     });
+
+    if (response.ok) {
+      console.log("Game data saved successfully");
+    } else {
+      console.error("Error saving game data:", response.statusText);
+    }
+
+    globals.gameOver = false;
   }
 }

@@ -76,4 +76,5 @@ export default {
   gameStats: null,
   gamePlayers: null,
   gameOver: false,
+  statsAlreadySent: false,
 };
