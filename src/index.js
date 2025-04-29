@@ -362,7 +362,10 @@ async function createOpponentsSelOptions(opponentSelect) {
   for (let i = 0; i < opponentNames.length; i++) {
     const currentOpponentID = opponentNames[i].player_id;
     const currentOpponentName = opponentNames[i].name;
-    const currentOpponentSelOption = new Option(currentOpponentName, currentOpponentID);
+    const currentOpponentSelOption = new Option(
+      currentOpponentName,
+      currentOpponentID
+    );
     opponentSelect.appendChild(currentOpponentSelOption);
   }
 }
@@ -440,7 +443,6 @@ async function initGameScreen() {
 function initVars() {
   const opponentSelect = document.getElementById("opponent-select");
   globals.playersIDs.lastOpponent = opponentSelect.value;
-
 
   // INITIALIZE TIME MANAGEMENT VARIABLES
   globals.previousCycleMilliseconds = 0;
@@ -725,70 +727,55 @@ function executeGameLoop(timeStamp) {
   if (globals.gameOver && !globals.statsAlreadySent) {
     globals.statsAlreadySent = true;
     let duration_ms = Date.now() - globals.gameStats.game_start_time;
-    let minutes = Math.floor(duration_ms / 60000); 
-    let seconds = Math.round((duration_ms % 60000) / 1000); 
-    let duration_in_minutes = minutes; 
+    let minutes = Math.floor(duration_ms / 60000);
+    let seconds = Math.round((duration_ms % 60000) / 1000);
+    let duration_in_minutes = minutes;
+    let date = new Date().toISOString().split("T")[0];
     let player1 = globals.gamePlayers[0];
     let player2 = globals.gamePlayers[1];
     let winnerID;
-    if(globals.gameWinner.getID() === PlayerID.PLAYER_1){
+    if (globals.gameWinner.getID() === PlayerID.PLAYER_1) {
       winnerID = globals.playersIDs.loggedIn;
-    } else if (globals.gameWinner.getID() === PlayerID.PLAYER_2){
+    } else if (globals.gameWinner.getID() === PlayerID.PLAYER_2) {
       winnerID = globals.playersIDs.lastOpponent;
     }
 
-    console.log("JSON para testing manual en Thunder/Postman:\n", JSON.stringify({
-      player_1: globals.playersIDs.loggedIn,
-      player_2: globals.playersIDs.lastOpponent,
-      winner: winnerID,
-      date: new Date().toISOString().split('T')[0], // formato YYYY-MM-DD
-      duration_in_minutes: duration_in_minutes,
-      played_rounds: globals.gameStats.played_turns,
-      joseph_appeared: globals.gameStats.joseph_appeared,
-      player_1_minions_killed: player1.getMinionsKilled(),
-      player_2_minions_killed: player2.getMinionsKilled(),
-      player_1_fumbles: player1.getFumbles(),
-      player_2_fumbles: player2.getFumbles(),
-      player_1_critical_hits: player1.getCriticalHits(),
-      player_2_critical_hits: player2.getCriticalHits(),
-      player_1_used_cards: player1.getUsedCards(),
-      player_2_used_cards: player2.getUsedCards()
-    }, null, 2));
-    
     saveGameData(
-      globals.playersIDs.loggedIn, 
-      globals.playersIDs.lastOpponent, 
-      winnerID, 
-      duration_in_minutes, 
-      globals.gameStats.played_turns, 
-      globals.gameStats.joseph_appeared, 
-      player1.getMinionsKilled(), 
-      player2.getMinionsKilled(), 
-      player1.getFumbles(), 
-      player2.getFumbles(), 
-      player1.getCriticalHits(), 
-      player2.getCriticalHits(), 
-      player1.getUsedCards(), 
-      player2.getUsedCards());
+      globals.playersIDs.loggedIn,
+      globals.playersIDs.lastOpponent,
+      winnerID,
+      date,
+      duration_in_minutes,
+      globals.gameStats.played_turns,
+      globals.gameStats.joseph_appeared,
+      player1.getMinionsKilled(),
+      player2.getMinionsKilled(),
+      player1.getFumbles(),
+      player2.getFumbles(),
+      player1.getCriticalHits(),
+      player2.getCriticalHits(),
+      player1.getUsedCards(),
+      player2.getUsedCards()
+    );
   }
 
   async function saveGameData(
-    loggedInPlayerID, 
-    lastOpponentID, 
+    loggedInPlayerID,
+    lastOpponentID,
     winnerID,
-    date, 
-    duration_in_minutes, 
-    played_rounds, 
-    joseph_appeared, 
-    player_1_minions_killed, 
-    player_2_minions_killed, 
-    player_1_fumbles, 
-    player_2_fumbles, 
-    player_1_critical_hits, 
-    player_2_critical_hits, 
-    player_1_used_cards, 
-    player_2_used_cards) {
-
+    date,
+    duration_in_minutes,
+    played_rounds,
+    joseph_appeared,
+    player_1_minions_killed,
+    player_2_minions_killed,
+    player_1_fumbles,
+    player_2_fumbles,
+    player_1_critical_hits,
+    player_2_critical_hits,
+    player_1_used_cards,
+    player_2_used_cards
+  ) {
     const url = "https://er5-kaotiklash-server.onrender.com/api/player_stats";
 
     const gameData = {
@@ -806,9 +793,9 @@ function executeGameLoop(timeStamp) {
       player_1_critical_hits: player_1_critical_hits,
       player_2_critical_hits: player_2_critical_hits,
       player_1_used_cards: player_1_used_cards,
-      player_2_used_cards: player_2_used_cards
+      player_2_used_cards: player_2_used_cards,
     };
-  
+
     let response = await fetch(url, {
       method: "POST",
       headers: {
