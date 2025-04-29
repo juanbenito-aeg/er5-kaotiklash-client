@@ -2472,15 +2472,15 @@ export default class Game {
       },
       {
         // PREPARATION TIME
-        x: 1068,
+        x: 1084,
         y: 823,
         width: 47,
         height: 47,
       },
       {
         // DURATION
-        x: 1217,
-        y: 829,
+        x: 1227,
+        y: 828,
         width: 38,
         height: 38,
       },
@@ -2506,8 +2506,8 @@ export default class Game {
     globals.ctx.fillText(effectString, canvasWidthDividedBy2, 730);
 
     globals.ctx.fillText(card.getEffect(), canvasWidthDividedBy2, 750);
-    globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1110, 785);
-    globals.ctx.fillText(card.getInitialDurationInRounds(), 1180, 785);
+    globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1148, 848);
+    globals.ctx.fillText(card.getInitialDurationInRounds(), 1280, 848);
   }
 
   #renderExpandedRare(card) {
@@ -2518,36 +2518,36 @@ export default class Game {
     const iconsPositions = [
       {
         // TYPE CIRCLE
-        x: 1065,
-        y: 321,
-        width: 35,
-        height: 35,
+        x: 1025,
+        y: 270,
+        width: 40,
+        height: 40,
       },
       {
         // TYPE
-        x: 1070,
-        y: 325,
-        width: 30,
-        height: 30,
+        x: 1031,
+        y: 276,
+        width: 28,
+        height: 28,
       },
       {
         // PREPARATION TIME
-        x: 1050,
-        y: 758,
-        width: 42,
-        height: 42,
+        x: 1084,
+        y: 823,
+        width: 47,
+        height: 47,
       },
       {
         // DURATION
-        x: 1130,
-        y: 758,
-        width: 35,
-        height: 35,
+        x: 1227,
+        y: 828,
+        width: 38,
+        height: 38,
       },
     ];
     for (let i = 0; i < icons.length; i++) {
-      const { x, y } = iconsPositions[i];
-      globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, 30, 30);
+      const { x, y, width, height } = iconsPositions[i];
+      globals.ctx.drawImage(icons[i], 0, 0, 100, 100, x, y, width, height);
     }
 
     // RENDER ATTRIBUTES VALUES
@@ -2555,22 +2555,19 @@ export default class Game {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
 
     globals.ctx.textAlign = "center";
-    globals.ctx.font = "16px MedievalSharp";
+    globals.ctx.font = "18px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 12, 340);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 18, 291);
+    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
 
     const effectString =
       globals.language === Language.ENGLISH ? "Effect:" : "Efektua:";
     globals.ctx.fillText(effectString, canvasWidthDividedBy2, 730);
 
     globals.ctx.fillText(card.getEffect(), canvasWidthDividedBy2, 750);
-    globals.ctx.fillText(0, 1110, 785);
-    globals.ctx.fillText(card.getInitialDurationInRounds(), 1180, 785);
-
-    globals.ctx.font = "18px MedievalSharp";
-
-    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
+    globals.ctx.fillText(0, 1148, 848);
+    globals.ctx.fillText(card.getInitialDurationInRounds(), 1280, 848);
   }
 
   #renderStateMessages() {
