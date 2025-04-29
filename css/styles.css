@@ -315,12 +315,18 @@ button {
   padding: 12px;
   color: black;
   background-color: rgb(0 0 0 / 0.8);
-  font-weight: bold;
-  text-align: left;
   padding: 1.5em;
   border-radius: 16px;
   animation: fadeInUp 0.6s ease-out;
   transition: all 0.3s ease-in-out;
+}
+
+#stats-btn-exit {
+  font-size: 1.9rem;
+  padding: 0.5em 1.3em;
+  border-radius: 12px;
+  margin-top: 0%;
+  margin-left: 95%;
 }
 
 #start-game-btn {
