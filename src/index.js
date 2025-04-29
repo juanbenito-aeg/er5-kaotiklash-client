@@ -311,7 +311,7 @@ function initPlayerSessionScreen() {
   const logOutBtn = document.getElementById("log-out-btn");
   logOutBtn.addEventListener("click", clearLocalStorageAndReload);
 
-  //STATS BUTTON (!) FILLING FOR THE FUTURE
+  //STATS BUTTON
   const statsBtn = document.getElementById("stats-btn");
   statsBtn.addEventListener("click", showStatsScreen);
 
@@ -338,7 +338,7 @@ function clearLocalStorageAndReload() {
 
 async function createOpponentsSelOptions(playerName, opponentSelect) {
   const url =
-    "https://er5-kaotiklash-server.onrender.com/api/players/opponent-names";
+    "https://er5-kaotiklash-server.onrender.com/api/players/opponents-data";
 
   const response = await fetch(url, {
     method: "POST",
@@ -374,7 +374,16 @@ function activateOrDisableStartGameBtn(e) {
 }
 
 function showStatsScreen() {
-  //INSERT LOGIC
+  //INSERT THE FUNCTION FOR THE ALL GET STATS
+  hideLanguageBtns();
+  hidePlayerSessionScreen();
+  const statsScreen = document.getElementById("stats-screen");
+  statsScreen.style.display = "flex";
+}
+
+function hideStatsScreen() {
+  const statsScreen = document.getElementById("stats-screen");
+  statsScreen.style.display = "none";
 }
 
 function setUpGameTips() {
