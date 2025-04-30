@@ -459,8 +459,11 @@ async function getMinionsKilled(loggedInPlayerID) {
     alert(`Communication error (minions killed): ${response.statusText}`);
     return;
   }
-
-  console.log(`Total minions killed: ${killedMinions}`);
+  if (killedMinions.message) {
+    console.log(killedMinions.message);
+  } else {
+    console.log(`Total minions killed: ${killedMinions}`);
+  }
 }
 
 async function getFumbles(loggedInPlayerID) {
