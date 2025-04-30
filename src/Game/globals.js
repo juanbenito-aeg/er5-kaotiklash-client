@@ -34,8 +34,9 @@ export default {
   gameLoser: null,
   isScreenInitialized: {
     register: false,
+    playerSessionScreen: false,
   },
-  playersIDs : {
+  playersIDs: {
     loggedIn: -1,
     lastOpponent: -1,
   },
