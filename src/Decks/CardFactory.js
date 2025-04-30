@@ -5,6 +5,7 @@ import Weapon from "./Weapon.js";
 import Armor from "./Armor.js";
 import Special from "./Special.js";
 import Rare from "./Rare.js";
+import Text from "../Game/Text.js";
 import globals from "../Game/globals.js";
 import { Language, CardCategory, MainCharacterID } from "../Game/constants.js";
 
@@ -19,6 +20,9 @@ export default class CardFactory {
       rawCardDescription = rawCard.description_eus;
       rawCardSpecialSkill = rawCard.special_skill_eus;
     }
+
+    rawCardDescription = Text.create(rawCardDescription, 10, 100, 100);
+    console.log(rawCardDescription);
 
     const processedCard = new MainCharacter(
       CardCategory.MAIN_CHARACTER,
