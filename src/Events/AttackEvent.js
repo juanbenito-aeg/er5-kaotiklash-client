@@ -52,7 +52,6 @@ export default class AttackEvent extends Event {
   }
 
   execute() {
-
     if (
       this.#isArmorPowerChosen &&
       this.#target.getArmorID() === ArmorID.CLOAK_ETERNAL_SHADOW
@@ -680,8 +679,8 @@ export default class AttackEvent extends Event {
   weaponMessage(targetBox) {
     const weaponMessage = new StateMessage(
       "WEAPON BROKE!",
-      "20px MedievalSharp",
-      "gray",
+      "40px MedievalSharp",
+      "red",
       4,
       targetBox.getCard().getXCoordinate() - 100,
       targetBox.getCard().getYCoordinate() + 10
@@ -692,7 +691,7 @@ export default class AttackEvent extends Event {
   deathMessage(target) {
     const deathMessage = new StateMessage(
       "MINION DIED!",
-      "20px MedievalSharp",
+      "25px MedievalSharp",
       "red",
       2,
       target.getXCoordinate() + 55,
@@ -704,8 +703,8 @@ export default class AttackEvent extends Event {
   #createAndStoreArmorBrokeMsg(armorOwnerBox) {
     const armorBrokeMsg = new StateMessage(
       "ARMOR BROKE!",
-      "20px MedievalSharp",
-      "gray",
+      "40px MedievalSharp",
+      "red",
       4,
       armorOwnerBox.getCard().getXCoordinate() + 208,
       armorOwnerBox.getCard().getYCoordinate() + 10
