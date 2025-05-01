@@ -24,8 +24,22 @@ export default class Tooltip {
     const startY = y - content.length * this.#style.lineHeight - 10;
 
     for (let i = 0; i < content.length; i++) {
+      let text = "";
+      let color = this.#style.textColor;
+
+      if (content[i] && content[i].text) {
+        text = content[i].text;
+
+        if (content[i].color) {
+          color = content[i].color;
+        }
+      } else {
+        text = content[i];
+      }
+
       this.#tooltipElements.push({
-        text: content[i],
+        text: text,
+        color: color,
         x: x,
         y: startY + i * this.#style.lineHeight,
       });
@@ -96,8 +110,9 @@ export default class Tooltip {
     for (let i = 0; i < this.#tooltipElements.length; i++) {
       const textX = tooltipX + this.#style.padding;
       const textY = tooltipY + this.#style.padding + i * this.#style.lineHeight;
-
-      globals.ctx.fillText(this.#tooltipElements[i].text, textX, textY);
+      const elem = this.#tooltipElements[i];
+      globals.ctx.fillStyle = elem.color;
+      globals.ctx.fillText(elem.text, textX, textY);
     }
 
     globals.ctx.restore();
