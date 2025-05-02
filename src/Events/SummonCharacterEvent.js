@@ -3,7 +3,6 @@ import SpecialSkillXG from "./SpecialSkillXG.js";
 import LucretiaSpecialSkill from "./LucretiaSpecialSkill.js";
 import SpecialSkillDecrepitThrone from "./SpecialSkillDecrepitThrone.js";
 import SpecialSkillAngelo from "./SpecialSkillAngelo.js";
-import globals from "../Game/globals.js";
 import { MainCharacterID } from "../Game/constants.js";
 
 export default class SummonCharacterEvent extends Event {
@@ -129,7 +128,7 @@ export default class SummonCharacterEvent extends Event {
         }
 
         if (!this.isActive()) {
-          angeloSkill.restore();
+          this.#specialSkill.restore();
 
           thiss.#isPlayersSummonCharacterActive[
             this._executedBy.getID()

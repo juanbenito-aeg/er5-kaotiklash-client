@@ -1,4 +1,5 @@
 import globals from "../Game/globals.js";
+import StateMessage from "../Messages/StateMessage.js";
 
 export default class SpecialSkillAngelo {
   #enemyBattlefieldGrid;
@@ -25,6 +26,16 @@ export default class SpecialSkillAngelo {
   }
 
   execute() {
+    let message = new StateMessage(
+      "DARKNESS FALLS... ANGELO TAKES CONTROL",
+      "40px MedievalSharp",
+      "blue",
+      2,
+      1200,
+      520
+    );
+    this.#stateMessages.push(message);
+
     this.#eventsData.activeVisibilitySkill = this;
   }
 
@@ -63,7 +74,7 @@ export default class SpecialSkillAngelo {
       globals.ctx.globalCompositeOperation = "source-over";
       globals.ctx.strokeStyle = "rgba(226, 22, 22, 0.3)";
       globals.ctx.lineWidth = 2;
-      1;
+
       const enemieBoxes = [
         ...this.#enemyEventsInPrepGrid.getBoxes(),
         ...this.#enemyBattlefieldGrid.getBoxes(),
