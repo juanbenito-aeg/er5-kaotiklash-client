@@ -93,7 +93,8 @@ export default class SummonCharacterEvent extends Event {
           const lucretiaSpecialSkill = new LucretiaSpecialSkill(
             this.#lucretiaDeers,
             this.#enemyMinionsInPlayDeck,
-            this.#enemyBattlefieldGrid
+            this.#enemyBattlefieldGrid,
+            this.#stateMessages
           );
 
           this.#specialSkill = lucretiaSpecialSkill;
