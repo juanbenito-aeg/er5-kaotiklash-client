@@ -7,7 +7,12 @@ import Special from "./Special.js";
 import Rare from "./Rare.js";
 import Text from "../Game/Text.js";
 import globals from "../Game/globals.js";
-import { Language, CardCategory, MainCharacterID } from "../Game/constants.js";
+import {
+  Language,
+  CardCategory,
+  MainCharacterID,
+  ArmorTypeID,
+} from "../Game/constants.js";
 
 export default class CardFactory {
   #createMainCharacter(rawCard) {
@@ -21,8 +26,19 @@ export default class CardFactory {
       rawCardSpecialSkill = rawCard.special_skill_eus;
     }
 
-    rawCardDescription = Text.create(rawCardDescription, 10, 100, 100);
-    console.log(rawCardDescription);
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+    rawCardDescription = Text.create(
+      rawCardDescription,
+      40,
+      canvasWidthDividedBy2,
+      700
+    );
+    rawCardSpecialSkill = Text.create(
+      rawCardSpecialSkill,
+      40,
+      canvasWidthDividedBy2,
+      840
+    );
 
     const processedCard = new MainCharacter(
       CardCategory.MAIN_CHARACTER,
@@ -59,6 +75,20 @@ export default class CardFactory {
       chaoticEventDescription = gottenChaoticEvent.description_eus;
     }
 
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+    rawCardDescription = Text.create(
+      rawCardDescription,
+      40,
+      canvasWidthDividedBy2,
+      700
+    );
+    chaoticEventDescription = Text.create(
+      chaoticEventDescription,
+      40,
+      canvasWidthDividedBy2,
+      850
+    );
+
     // DETERMINE HOW MANY ROUNDS WILL JOSEPH'S CHAOTIC EVENT LAST WHEN HIS CARD IS DRAWN FROM THE EVENTS DECK
     const MIN_ROUNDS = 3;
     const MAX_ROUNDS = 6;
@@ -90,6 +120,13 @@ export default class CardFactory {
       rawCardTypeName = rawCard.category.name_eus;
     }
 
+    rawCardDescription = Text.create(
+      rawCardDescription,
+      40,
+      globals.canvas.width / 2,
+      690
+    );
+
     const processedCard = new Minion(
       CardCategory.MINION,
       rawCard.minion_id - 1,
@@ -119,6 +156,13 @@ export default class CardFactory {
       rawCardTypeName = rawCard.type.name_eus;
     }
 
+    rawCardDescription = Text.create(
+      rawCardDescription,
+      40,
+      globals.canvas.width / 2,
+      720
+    );
+
     const processedCard = new Weapon(
       CardCategory.WEAPON,
       rawCard.id - 1,
@@ -147,6 +191,25 @@ export default class CardFactory {
       rawCardSpecialEffect = rawCard.special_effect_eus;
     }
 
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+
+    const descriptionInitialYCoordinate =
+      rawCard.type_id - 1 === ArmorTypeID.MEDIUM ? 740 : 640;
+
+    rawCardDescription = Text.create(
+      rawCardDescription,
+      40,
+      canvasWidthDividedBy2,
+      descriptionInitialYCoordinate
+    );
+
+    rawCardSpecialEffect = Text.create(
+      rawCardSpecialEffect || "",
+      40,
+      canvasWidthDividedBy2,
+      740
+    );
+
     const processedCard = new Armor(
       CardCategory.ARMOR,
       rawCard.id - 1,
@@ -173,6 +236,15 @@ export default class CardFactory {
       rawCardEffect = rawCard.effect_eus;
     }
 
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+    rawCardDescription = Text.create(
+      rawCardDescription,
+      40,
+      canvasWidthDividedBy2,
+      670
+    );
+    rawCardEffect = Text.create(rawCardEffect, 40, canvasWidthDividedBy2, 750);
+
     const processedCard = new Special(
       CardCategory.SPECIAL,
       rawCard.special_event_id - 1,
@@ -196,6 +268,15 @@ export default class CardFactory {
       rawCardDescription = rawCard.description_eus;
       rawCardEffect = rawCard.effect_eus;
     }
+
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+    rawCardDescription = Text.create(
+      rawCardDescription,
+      40,
+      canvasWidthDividedBy2,
+      670
+    );
+    rawCardEffect = Text.create(rawCardEffect, 40, canvasWidthDividedBy2, 750);
 
     const processedCard = new Rare(
       CardCategory.RARE,
