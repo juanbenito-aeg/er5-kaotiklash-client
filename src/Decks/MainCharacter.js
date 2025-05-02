@@ -1,4 +1,6 @@
 import Card from "./Card.js";
+import globals from "../Game/globals.js";
+import { Language } from "../Game/constants.js";
 
 export default class MainCharacter extends Card {
   #specialSkill;
@@ -11,5 +13,15 @@ export default class MainCharacter extends Card {
 
   getSpecialSkill() {
     return this.#specialSkill;
+  }
+
+  renderSpecialSkill() {
+    const specialSkillString =
+      globals.language === Language.ENGLISH
+        ? "Special Skill:"
+        : "Trebetasun Berezia:";
+    globals.ctx.fillText(specialSkillString, globals.canvas.width / 2, 820);
+
+    this.#specialSkill.render();
   }
 }
