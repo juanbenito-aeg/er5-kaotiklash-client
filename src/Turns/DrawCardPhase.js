@@ -69,7 +69,6 @@ export default class DrawCardPhase extends Phase {
     phaseMessage,
     attackMenuData,
     stats
-
   ) {
     // DECKS VARIABLES
     const eventsDeck = deckContainer.getDecks()[DeckType.EVENTS];

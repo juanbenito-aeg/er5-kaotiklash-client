@@ -121,14 +121,13 @@ export default class Game {
     };
 
     game.#minionTooltip = new MinionTooltip();
-    
+
     game.#stats = {
-      date: new Date().toISOString().split('T')[0],
+      date: new Date().toISOString().split("T")[0],
       game_start_time: Date.now(),
       played_turns: 1,
       joseph_appeared: false,
     };
-    
 
     //EVENTS DATA
     game.#eventsData = {
@@ -966,7 +965,7 @@ export default class Game {
         globals.gameOver = true;
         globals.gameStats = this.#stats;
         globals.gamePlayers = this.#players;
-        if(globals.gameWinner === this.#players[PlayerID.PLAYER_1]) {
+        if (globals.gameWinner === this.#players[PlayerID.PLAYER_1]) {
           globals.gameLoser = this.#players[PlayerID.PLAYER_2];
         } else {
           globals.gameLoser = this.#players[PlayerID.PLAYER_1];
@@ -2210,23 +2209,8 @@ export default class Game {
 
     globals.ctx.font = "18px MedievalSharp";
 
-    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 700);
-
-    const chaoticEventString =
-      globals.language === Language.ENGLISH
-        ? "Chaotic Event: "
-        : "Gertaera Kaotikoa: ";
-    globals.ctx.fillText(
-      chaoticEventString + card.getChaoticEventName(),
-      canvasWidthDividedBy2,
-      760
-    );
-
-    globals.ctx.fillText(
-      card.getChaoticEventDescription(),
-      canvasWidthDividedBy2,
-      790
-    );
+    card.renderDescription();
+    card.renderChaoticEventDescription();
   }
 
   #renderExpandedMainCharacter(card) {
@@ -2244,15 +2228,8 @@ export default class Game {
 
     globals.ctx.font = "18px MedievalSharp";
 
-    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 700);
-
-    const specialSkillString =
-      globals.language === Language.ENGLISH
-        ? "Special Skill:"
-        : "Trebetasun Berezia:";
-    globals.ctx.fillText(specialSkillString, canvasWidthDividedBy2, 760);
-
-    globals.ctx.fillText(card.getSpecialSkill(), canvasWidthDividedBy2, 780);
+    card.renderDescription();
+    card.renderSpecialSkill();
   }
 
   #renderExpandedMinion(card) {
@@ -2311,7 +2288,7 @@ export default class Game {
     globals.ctx.fillStyle = "black";
 
     globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 19, 292);
-    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 690);
+    card.renderDescription();
     globals.ctx.fillText(card.getInitialHP(), 1070, 852);
     globals.ctx.fillText(card.getInitialMadness(), 1151, 852);
     globals.ctx.fillText(card.getInitialAttack(), 1231, 852);
@@ -2377,7 +2354,7 @@ export default class Game {
 
     globals.ctx.font = "18px MedievalSharp";
 
-    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 720);
+    card.renderDescription();
     globals.ctx.fillText(card.getInitialDamage(), 1104, 843);
     globals.ctx.fillText(card.getInitialDurability(), 1219, 843);
     globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1335, 843);
@@ -2431,39 +2408,12 @@ export default class Game {
     globals.ctx.font = "16px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    let descriptionYCoordinate = 640;
-
-    if (card.getArmorTypeID() !== ArmorTypeID.MEDIUM) {
-      let specialEffectUsableBy;
-
-      if (card.getArmorTypeID() === ArmorTypeID.HEAVY) {
-        specialEffectUsableBy =
-          globals.language === Language.ENGLISH ? "Warriors" : "Gudariek";
-      } else {
-        specialEffectUsableBy =
-          globals.language === Language.ENGLISH ? "Wizards" : "Magoek";
-      }
-
-      const specialEffectString =
-        globals.language === Language.ENGLISH
-          ? `Special Effect Usable by ${specialEffectUsableBy}:`
-          : `${specialEffectUsableBy} Erabil Dezaketen Efektu Berezia:`;
-      globals.ctx.fillText(specialEffectString, canvasWidthDividedBy2, 715);
-
-      globals.ctx.fillText(card.getSpecialEffect(), canvasWidthDividedBy2, 740);
-    } else {
-      descriptionYCoordinate = 740;
-    }
-
     globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 16, 281);
 
     globals.ctx.font = "18px MedievalSharp";
 
-    globals.ctx.fillText(
-      card.getDescription(),
-      canvasWidthDividedBy2,
-      descriptionYCoordinate
-    );
+    card.renderDescription();
+    card.renderSpecialEffect();
     globals.ctx.fillText(card.getInitialDurability(), 1140, 847);
     globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1281, 847);
   }
@@ -2517,13 +2467,8 @@ export default class Game {
     globals.ctx.fillStyle = "black";
 
     globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 17, 290);
-    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
-
-    const effectString =
-      globals.language === Language.ENGLISH ? "Effect:" : "Efektua:";
-    globals.ctx.fillText(effectString, canvasWidthDividedBy2, 730);
-
-    globals.ctx.fillText(card.getEffect(), canvasWidthDividedBy2, 750);
+    card.renderDescription();
+    card.renderEffect();
     globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1148, 848);
     globals.ctx.fillText(card.getInitialDurationInRounds(), 1280, 848);
   }
@@ -2577,13 +2522,8 @@ export default class Game {
     globals.ctx.fillStyle = "black";
 
     globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 18, 291);
-    globals.ctx.fillText(card.getDescription(), canvasWidthDividedBy2, 670);
-
-    const effectString =
-      globals.language === Language.ENGLISH ? "Effect:" : "Efektua:";
-    globals.ctx.fillText(effectString, canvasWidthDividedBy2, 730);
-
-    globals.ctx.fillText(card.getEffect(), canvasWidthDividedBy2, 750);
+    card.renderDescription();
+    card.renderEffect();
     globals.ctx.fillText(0, 1148, 848);
     globals.ctx.fillText(card.getInitialDurationInRounds(), 1280, 848);
   }
@@ -2755,6 +2695,4 @@ export default class Game {
   getPlayers() {
     return this.#players;
   }
-
-  
 }

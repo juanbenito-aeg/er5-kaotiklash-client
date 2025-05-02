@@ -295,22 +295,22 @@ async function registerPlayer(username, email, password) {
 }
 
 function initPlayerSessionScreen() {
-  showPlayerSessionScreen();
-  showLanguageBtns();
+  if (!globals.isScreenInitialized.playerSessionScreen) {
+    globals.isScreenInitialized.playerSessionScreen = true;
 
-  globals.playersIDs.loggedIn = localStorage.getItem("playerID");
-
-  // GET THE LOGGED IN PLAYER'S DATA & INSERT IT INTO A PARAGRAPH ELEMENT
+    const playerName = localStorage.getItem("playerName");
+    const playerNameParagraph = document.getElementById("player-name");
+    playerNameParagraph.innerHTML += `, ${playerName}!`;
+  }
 
   const playerEmail = localStorage.getItem("email");
   const playerEmailParagraph = document.getElementById("player-email");
   playerEmailParagraph.innerHTML = playerEmail;
 
-  const playerName = localStorage.getItem("playerName");
-  const playerNameParagraph = document.getElementById("player-name");
-  if (!playerNameParagraph.textContent.includes(playerName)) {
-    playerNameParagraph.textContent += `, ${playerName}!`;
-  }
+  showPlayerSessionScreen();
+  showLanguageBtns();
+
+  globals.playersIDs.loggedIn = localStorage.getItem("playerID");
 
   // TERMINATE THE CURRENT SESSION WHEN THE "Log out" BUTTON IS PRESSED
   const logOutBtn = document.getElementById("log-out-btn");
@@ -558,7 +558,7 @@ function hideStatsScreen() {
   const statsScreen = document.getElementById("stats-screen");
   statsScreen.style.display = "none";
 
-  showPlayerSessionScreen();
+  initPlayerSessionScreen();
 }
 
 function setUpGameTips() {

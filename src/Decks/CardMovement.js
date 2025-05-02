@@ -25,12 +25,20 @@ export default class CardMovement {
     return this.#card.getDescription();
   }
 
+  renderDescription() {
+    this.#card.renderDescription();
+  }
+
   resetAttributes() {
     this.#card.resetAttributes();
   }
 
   getSpecialSkill() {
     return this.#card.getSpecialSkill();
+  }
+
+  renderSpecialSkill() {
+    this.#card.renderSpecialSkill();
   }
 
   getMinionTypeID() {
@@ -169,8 +177,16 @@ export default class CardMovement {
     return this.#card.getSpecialEffect();
   }
 
+  renderSpecialEffect() {
+    this.#card.renderSpecialEffect();
+  }
+
   getEffect() {
     return this.#card.getEffect();
+  }
+
+  renderEffect() {
+    this.#card.renderEffect();
   }
 
   getXCoordinate() {
@@ -195,6 +211,10 @@ export default class CardMovement {
 
   getChaoticEventDescription() {
     return this.#card.getChaoticEventDescription();
+  }
+
+  renderChaoticEventDescription() {
+    this.#card.renderChaoticEventDescription();
   }
 
   getImageSet() {
