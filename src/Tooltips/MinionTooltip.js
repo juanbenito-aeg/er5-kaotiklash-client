@@ -1,5 +1,4 @@
 import Tooltip from "./Tooltip.js";
-import globals from "../Game/globals.js";
 
 export default class MinionTooltip extends Tooltip {
   constructor() {

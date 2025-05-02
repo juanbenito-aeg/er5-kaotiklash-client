@@ -998,6 +998,7 @@ export default class Game {
           this.#eventsData.activeVisibilitySkill.renderVisibilityEffect(
             this.#currentPlayer.getID()
           );
+          this.#renderStateMessages();
         }
 
         if (this.#minionTooltip.hasTooltip()) {
