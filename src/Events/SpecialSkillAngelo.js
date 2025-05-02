@@ -35,11 +35,19 @@ export default class SpecialSkillAngelo {
       520
     );
     this.#stateMessages.push(message);
-
     this.#eventsData.activeVisibilitySkill = this;
   }
 
   restore() {
+    let mensaje = new StateMessage(
+      "THE DARKNESS FADES... ANGELO RECEDES INTO THE SHADOWS",
+      "35px MedievalSharp",
+      "red",
+      2,
+      1200,
+      520
+    );
+    this.#stateMessages.push(message);
     this.#eventsData.activeVisibilitySkill = null;
   }
 
