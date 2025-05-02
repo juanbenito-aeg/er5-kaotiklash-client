@@ -1,3 +1,4 @@
+import StateMessage from "../Messages/StateMessage.js";
 import globals from "../Game/globals.js";
 import { BattlefieldArea } from "../Game/constants.js";
 
@@ -5,11 +6,13 @@ export default class SpecialSkillDecrepitThrone {
   #enemyBattlefieldGrid;
   #currentPlayer;
   #eventsData;
+  #stateMessages;
 
-  constructor(enemyBattlefieldGrid, currentPlayer, eventsData) {
+  constructor(enemyBattlefieldGrid, currentPlayer, eventsData, stateMessages) {
     this.#enemyBattlefieldGrid = enemyBattlefieldGrid;
     this.#currentPlayer = currentPlayer;
     this.#eventsData = eventsData;
+    this.#stateMessages = stateMessages;
   }
 
   execute() {
@@ -18,6 +21,16 @@ export default class SpecialSkillDecrepitThrone {
       this.#currentPlayer;
 
     this.applyEffect();
+
+    const firstMinionsAttractionMsg = new StateMessage(
+      "A CURSE ATTRACTED ENEMY MINIONS TO THE FRONT COMBAT AREA!",
+      "30px MedievalSharp",
+      "red",
+      3,
+      globals.canvas.width / 2,
+      globals.canvas.height / 2
+    );
+    this.#stateMessages.push(firstMinionsAttractionMsg);
   }
 
   applyEffect() {

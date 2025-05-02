@@ -3,6 +3,8 @@ import SpecialSkillXG from "./SpecialSkillXG.js";
 import LucretiaSpecialSkill from "./LucretiaSpecialSkill.js";
 import SpecialSkillDecrepitThrone from "./SpecialSkillDecrepitThrone.js";
 import SpecialSkillAngelo from "./SpecialSkillAngelo.js";
+import StateMessage from "../Messages/StateMessage.js";
+import globals from "../Game/globals.js";
 import { MainCharacterID } from "../Game/constants.js";
 
 export default class SummonCharacterEvent extends Event {
@@ -143,7 +145,8 @@ export default class SummonCharacterEvent extends Event {
           const decrepitThroneSkill = new SpecialSkillDecrepitThrone(
             this.#enemyBattlefieldGrid,
             this._executedBy,
-            this.#eventsData
+            this.#eventsData,
+            this.#stateMessages
           );
 
           this.#specialSkill = decrepitThroneSkill;
@@ -156,10 +159,30 @@ export default class SummonCharacterEvent extends Event {
           this.#eventsData.decrepitThroneSkill.turnsSinceActivation++;
 
           this.#specialSkill.applyEffect();
+
+          const secondMinionsAttractionMsg = new StateMessage(
+            "ENEMY MINIONS WERE ATTRACTED TO THE FRONT COMBAT AREA ONE LAST TIME...",
+            "30px MedievalSharp",
+            "red",
+            3,
+            globals.canvas.width / 2,
+            globals.canvas.height / 2
+          );
+          this.#stateMessages.push(secondMinionsAttractionMsg);
         }
 
         if (!this.isActive()) {
           this.#specialSkill.resetRelatedVariables();
+
+          const curseDisappearanceMsg = new StateMessage(
+            "THE CURSE OF THE THRONE VANISHED, AT LEAST FOR NOW...",
+            "30px MedievalSharp",
+            "red",
+            3,
+            globals.canvas.width / 2,
+            globals.canvas.height / 2
+          );
+          this.#stateMessages.push(curseDisappearanceMsg);
 
           this.#isPlayersSummonCharacterActive[
             this._executedBy.getID()

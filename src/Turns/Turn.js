@@ -634,10 +634,10 @@ export default class Turn {
               this.#eventsData.decrepitThroneSkill.turnsSinceActivation !== 3
             ) {
               const cannotDoAnythingDueToActiveEventMsg = new StateMessage(
-                "CANNOT DO (ALMOST) ANYTHING DUE TO ACTIVE EVENT",
+                "CANNOT DO ALMOST ANYTHING DUE TO THE CURSE OF THE THRONE",
                 "20px MedievalSharp",
                 "red",
-                4,
+                3,
                 buttonXCoordinate + buttonWidth / 2,
                 buttonYCoordinate + buttonHeight / 2
               );
