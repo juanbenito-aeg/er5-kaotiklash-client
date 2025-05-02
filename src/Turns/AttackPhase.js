@@ -208,9 +208,8 @@ export default class AttackPhase extends Phase {
         this.#player.getID() === PlayerID.PLAYER_1 &&
         this.#eventsData.curseOfTheBoundTitan.isPlayer1Affected
       ) {
-
         const debuffMessage = new StateMessage(
-          "Minion Debuffed",
+          "MINION DEBUFFED",
           "20px MedievalSharp",
           "red",
           0.01,
@@ -218,6 +217,16 @@ export default class AttackPhase extends Phase {
           attacker.getYCoordinate() + 10
         );
         this.#stateMessages.push(debuffMessage);
+
+        const damageReductionMessage = new StateMessage(
+          "REDUCED DAMAGE: -10",
+          "25px MedievalSharp",
+          "darkred",
+          0.01,
+          attacker.getXCoordinate() + 55,
+          attacker.getYCoordinate() + 40
+        );
+        this.#stateMessages.push(damageReductionMessage);
       }
 
       if (
@@ -225,7 +234,7 @@ export default class AttackPhase extends Phase {
         this.#eventsData.curseOfTheBoundTitan.isPlayer2Affected
       ) {
         const debuffMessage = new StateMessage(
-          "Minion Debuffed",
+          "MINION DEBUFFED",
           "20px MedievalSharp",
           "red",
           0.01,
@@ -233,6 +242,16 @@ export default class AttackPhase extends Phase {
           attacker.getYCoordinate() + 10
         );
         this.#stateMessages.push(debuffMessage);
+
+        const damageReductionMessage = new StateMessage(
+          "REDUCED DAMAGE: -10",
+          "25px MedievalSharp",
+          "darkred",
+          0.01,
+          attacker.getXCoordinate() + 55,
+          attacker.getYCoordinate() + 40
+        );
+        this.#stateMessages.push(damageReductionMessage);
       }
 
       if (!attacker.isLeftClicked()) {
