@@ -93,5 +93,16 @@ export default class SpecialSkillXG {
       minion.setCurrentAttack(attack);
       minion.setCurrentDefense(defense);
     }
+
+    let restoreMessage = new StateMessage(
+      "MINIONS CALM DOWN...",
+      "50px MedievalSharp",
+      "purple",
+      2,
+      1200,
+      570
+    );
+
+    this.#stateMessages.push(restoreMessage);
   }
 }
