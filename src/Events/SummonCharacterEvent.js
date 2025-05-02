@@ -130,7 +130,7 @@ export default class SummonCharacterEvent extends Event {
         if (!this.isActive()) {
           this.#specialSkill.restore();
 
-          thiss.#isPlayersSummonCharacterActive[
+          this.#isPlayersSummonCharacterActive[
             this._executedBy.getID()
           ] = false;
         }

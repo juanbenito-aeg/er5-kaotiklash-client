@@ -39,7 +39,7 @@ export default class SpecialSkillAngelo {
   }
 
   restore() {
-    let mensaje = new StateMessage(
+    let message = new StateMessage(
       "THE DARKNESS FADES... ANGELO RECEDES INTO THE SHADOWS",
       "35px MedievalSharp",
       "red",
