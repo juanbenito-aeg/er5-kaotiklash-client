@@ -1,3 +1,5 @@
+import globals from "./globals.js";
+
 export default class Text {
   #contentAsArray;
   #xCoordinate;
@@ -18,24 +20,31 @@ export default class Text {
     const contentAsArray = [];
 
     let charactersCounter = 0;
+    let lastWhitespaceIndex = -1;
     for (let i = 0; i < contentAsString.length; i++) {
       charactersCounter++;
 
-      if (
-        charactersCounter === maxCharactersPerLine /*  ||
-        i > contentAsString.length - maxCharactersPerLine */
-      ) {
-        let line = contentAsString.substring(i + 1 - charactersCounter, i);
+      const currentCharacter = contentAsString[i];
+      if (currentCharacter === " ") {
+        lastWhitespaceIndex = i;
+      }
 
-        const previousCharacter = contentAsString[i - 1];
-        const currentCharacter = contentAsString[i];
-        if (previousCharacter !== " " && currentCharacter !== " ") {
-          line = line.substring(0, maxCharactersPerLine - 1) + "-";
-          i--;
-        } else if (previousCharacter === " " && currentCharacter !== " ") {
-          line = line.substring(0, maxCharactersPerLine - 1);
-          i--;
+      if (
+        charactersCounter === maxCharactersPerLine ||
+        i === contentAsString.length - 1
+      ) {
+        const lineFirstCharacterIndex = i + 1 - charactersCounter;
+        let lineLastCharacterIndex = i + 1;
+
+        const lastCharacter = contentAsString[i + 1];
+        if (lastCharacter && lastCharacter !== " ") {
+          lineLastCharacterIndex = lastWhitespaceIndex + 1;
+          i = lastWhitespaceIndex;
         }
+
+        const line = contentAsString
+          .substring(lineFirstCharacterIndex, lineLastCharacterIndex)
+          .trim();
 
         contentAsArray.push(line);
 
@@ -46,5 +55,21 @@ export default class Text {
     const text = new Text(contentAsArray, xCoordinate, initialYCoordinate);
 
     return text;
+  }
+
+  render() {
+    let currentLineYCoordinate = this.#initialYCoordinate;
+
+    for (let i = 0; i < this.#contentAsArray.length; i++) {
+      const currentLine = this.#contentAsArray[i];
+
+      globals.ctx.fillText(
+        currentLine,
+        this.#xCoordinate,
+        currentLineYCoordinate
+      );
+
+      currentLineYCoordinate += 20;
+    }
   }
 }
