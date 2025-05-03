@@ -630,10 +630,10 @@ export default class AttackEvent extends Event {
       "THE DAMAGE WAS REFLECTED BACK ONTO THE ATTACKER!";
     dmgReflectedBackOntoAttackerMsg = new StateMessage(
       dmgReflectedBackOntoAttackerMsg,
-      "20px MedievalSharp",
+      "30px MedievalSharp",
       "aqua",
-      4,
-      globals.canvas.width / 2 - dmgReflectedBackOntoAttackerMsg.length / 2,
+      3,
+      globals.canvas.width / 2,
       globals.canvas.height / 2
     );
     this.#stateMessages.push(dmgReflectedBackOntoAttackerMsg);
@@ -679,11 +679,12 @@ export default class AttackEvent extends Event {
   weaponMessage(targetBox) {
     const weaponMessage = new StateMessage(
       "WEAPON BROKE!",
-      "40px MedievalSharp",
+      "30px MedievalSharp",
       "red",
-      4,
-      targetBox.getCard().getXCoordinate() - 100,
-      targetBox.getCard().getYCoordinate() + 10
+      2,
+      targetBox.getCard().getXCoordinate() - 135,
+      targetBox.getCard().getYCoordinate() +
+        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2
     );
     this.#stateMessages.push(weaponMessage);
   }
@@ -691,11 +692,14 @@ export default class AttackEvent extends Event {
   deathMessage(target) {
     const deathMessage = new StateMessage(
       "MINION DIED!",
-      "25px MedievalSharp",
+      "30px MedievalSharp",
       "red",
       2,
-      target.getXCoordinate() + 55,
-      target.getYCoordinate() + 110
+      target.getXCoordinate() +
+        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width / 2,
+      target.getYCoordinate() +
+        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height +
+        15
     );
     this.#stateMessages.push(deathMessage);
   }
@@ -703,11 +707,12 @@ export default class AttackEvent extends Event {
   #createAndStoreArmorBrokeMsg(armorOwnerBox) {
     const armorBrokeMsg = new StateMessage(
       "ARMOR BROKE!",
-      "40px MedievalSharp",
+      "30px MedievalSharp",
       "red",
-      4,
-      armorOwnerBox.getCard().getXCoordinate() + 208,
-      armorOwnerBox.getCard().getYCoordinate() + 10
+      2,
+      armorOwnerBox.getCard().getXCoordinate() + 240,
+      armorOwnerBox.getCard().getYCoordinate() +
+        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2
     );
     this.#stateMessages.push(armorBrokeMsg);
   }
@@ -730,19 +735,31 @@ export default class AttackEvent extends Event {
     );
 
     if (canDodge) {
+      // CREATE AND STORE THE ARMOR'S POWER STATE MESSAGE
       const dodgeMessage = new StateMessage(
-        "WIZARD DODGED THE ATTACK USING CLOAK OF ETERNAL SHADOW!",
-        "45px MedievalSharp",
+        "THE WIZARD DODGED THE ATTACK USING THE CLOAK OF ETERNAL SHADOW!",
+        "30px MedievalSharp",
         "aqua",
         3,
-        this.#target.getXCoordinate(),
-        this.#target.getYCoordinate() - 30
+        globals.canvas.width / 2,
+        globals.canvas.height / 2
       );
       this.#stateMessages.push(dodgeMessage);
+
+      // CREATE AND STORE THE "ARMOR BROKE!" STATE MESSAGE
+      const cloakEternalShadowOwnerBox = this.#target.getBoxIsPositionedIn(
+        this.#enemyMovementGrid,
+        this.#target
+      );
+      this.#createAndStoreArmorBrokeMsg(cloakEternalShadowOwnerBox);
+
       this.#isArmorPowerChosen = false;
+
+      // RESET THE ARMOR'S ATTRIBUTES, INSERT IT INTO THE EVENTS DECK & REMOVE IT FROM ITS OWNER
       this.#target.resetArmorAttributes();
       this.#eventDeck.insertCard(this.#target.getArmor());
       this.#target.removeArmor();
+
       return;
     }
   }
