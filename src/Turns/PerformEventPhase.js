@@ -459,7 +459,8 @@ export default class PerformEventPhase extends Phase {
           selectedEventInstance = new CurseOfTheBoundTitanEvent(
             this.#player,
             selectedCard,
-            this.#eventsData
+            this.#eventsData,
+            this.#stateMessages
           );
           break;
 
@@ -478,7 +479,8 @@ export default class PerformEventPhase extends Phase {
           selectedEventInstance = new TheCupOfTheLastBreathEvent(
             this.#player,
             selectedCard,
-            this.#eventsData
+            this.#eventsData,
+            this.#stateMessages
           );
           break;
 

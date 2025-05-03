@@ -57,10 +57,6 @@ export default class SpecialSkillAngelo {
     const fieldX = (globals.canvas.width - fieldWidth) / 2;
     const fieldY = globals.canvas.height * 0.1;
 
-    // MESSAGE COORDINATES
-    const centerX = fieldX + fieldWidth / 2;
-    const centerY = fieldY + fieldHeight / 2;
-
     globals.ctx.save();
 
     if (visiblePlayer === this.#executeBy.getID()) {
