@@ -42,6 +42,7 @@ export default class Turn {
   #hoverTime;
   #lastHoveredCardId;
   #eventsData;
+  #stats;
 
   constructor(
     deckContainer,
@@ -53,7 +54,8 @@ export default class Turn {
     stateMessages,
     attackMenuData,
     minionTooltip,
-    eventsData
+    eventsData,
+    stats
   ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
@@ -73,6 +75,7 @@ export default class Turn {
     this.#hoverTime = 0;
     this.#lastHoveredCardId = null;
     this.#eventsData = eventsData;
+    this.#stats = stats;
   }
 
   fillPhases(currentPlayer) {
@@ -101,7 +104,8 @@ export default class Turn {
         this.#phaseMessage,
         this.#stateMessages,
         this.#attackMenuData,
-        this.#eventsData
+        this.#eventsData,
+        this.#stats
       );
 
       this.#phases.push(currentPhase);

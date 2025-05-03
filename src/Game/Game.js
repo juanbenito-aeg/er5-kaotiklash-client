@@ -171,7 +171,8 @@ export default class Game {
       game.#stateMessages,
       game.#attackMenuData,
       game.#minionTooltip,
-      game.#eventsData
+      game.#eventsData,
+      game.#stats
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -184,7 +185,8 @@ export default class Game {
       game.#stateMessages,
       game.#attackMenuData,
       game.#minionTooltip,
-      game.#eventsData
+      game.#eventsData,
+      game.#stats
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
