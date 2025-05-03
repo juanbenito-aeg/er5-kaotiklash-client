@@ -204,56 +204,6 @@ export default class AttackPhase extends Phase {
     const attacker = this.#currentPlayerMovementGridDeck.lookForHoveredCard();
 
     if (attacker) {
-      if (
-        this.#player.getID() === PlayerID.PLAYER_1 &&
-        this.#eventsData.curseOfTheBoundTitan.isPlayer1Affected
-      ) {
-        const debuffMessage = new StateMessage(
-          "MINION DEBUFFED",
-          "20px MedievalSharp",
-          "red",
-          0.01,
-          attacker.getXCoordinate() + 55,
-          attacker.getYCoordinate() + 10
-        );
-        this.#stateMessages.push(debuffMessage);
-
-        const damageReductionMessage = new StateMessage(
-          "REDUCED DAMAGE: -10",
-          "25px MedievalSharp",
-          "darkred",
-          0.01,
-          attacker.getXCoordinate() + 55,
-          attacker.getYCoordinate() + 40
-        );
-        this.#stateMessages.push(damageReductionMessage);
-      }
-
-      if (
-        this.#player.getID() === PlayerID.PLAYER_2 &&
-        this.#eventsData.curseOfTheBoundTitan.isPlayer2Affected
-      ) {
-        const debuffMessage = new StateMessage(
-          "MINION DEBUFFED",
-          "20px MedievalSharp",
-          "red",
-          0.01,
-          attacker.getXCoordinate() + 55,
-          attacker.getYCoordinate() + 10
-        );
-        this.#stateMessages.push(debuffMessage);
-
-        const damageReductionMessage = new StateMessage(
-          "REDUCED DAMAGE: -10",
-          "25px MedievalSharp",
-          "darkred",
-          0.01,
-          attacker.getXCoordinate() + 55,
-          attacker.getYCoordinate() + 40
-        );
-        this.#stateMessages.push(damageReductionMessage);
-      }
-
       if (!attacker.isLeftClicked()) {
         attacker.setState(CardState.HOVERED);
       } else {
