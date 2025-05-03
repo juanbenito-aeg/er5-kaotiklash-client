@@ -1,6 +1,6 @@
 import Event from "./Event.js";
-import globals from "../Game/globals.js";
 import StateMessage from "../Messages/StateMessage.js";
+import globals from "../Game/globals.js";
 
 export default class RayOfCelestialRuinEvent extends Event {
   #currentEnemyMinionsInPlay;
@@ -8,6 +8,7 @@ export default class RayOfCelestialRuinEvent extends Event {
 
   constructor(executeBy, eventCard, currentEnemyMinionInPlay, stateMessages) {
     super(executeBy, eventCard);
+
     this.#currentEnemyMinionsInPlay = currentEnemyMinionInPlay;
     this.#stateMessages = stateMessages;
   }
@@ -17,6 +18,7 @@ export default class RayOfCelestialRuinEvent extends Event {
 
     for (let i = 0; i < enemyMinions.length; i++) {
       const minion = enemyMinions[i];
+
       if (minion.getArmor()) {
         const originalDurability = minion.getArmor().getCurrentDurability();
         const newDurability = Math.max(1, Math.floor(originalDurability / 2));
@@ -26,9 +28,9 @@ export default class RayOfCelestialRuinEvent extends Event {
         this.#stateMessages.push(
           new StateMessage(
             `-${newDurability}`,
-            "20px MedievalSharp",
-            "red",
-            1,
+            "30px MedievalSharp",
+            "rgb(85 202 255)",
+            2,
             minion.getXCoordinate() +
               globals.imagesDestinationSizes.minionsAndEventsSmallVersion
                 .width /
@@ -41,14 +43,15 @@ export default class RayOfCelestialRuinEvent extends Event {
         );
       }
     }
+
     this.#stateMessages.push(
       new StateMessage(
-        "ARMOR HALVED",
-        "40px MedievalSharp",
+        "THE DURABILITY OF ENEMY MINIONS' ARMOR WAS HALVED",
+        "30px MedievalSharp",
         "red",
-        1,
-        1200,
-        520
+        3,
+        globals.canvas.width / 2,
+        globals.canvas.height / 2
       )
     );
   }

@@ -3,8 +3,10 @@ import { PlayerID } from "../Game/constants.js";
 
 export default class JudgmentAncientsEvent extends Event {
   #eventsData;
+
   constructor(executedBy, eventCard, eventsData) {
     super(executedBy, eventCard);
+
     this.#eventsData = eventsData;
   }
 

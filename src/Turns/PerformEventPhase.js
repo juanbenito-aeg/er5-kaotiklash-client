@@ -333,6 +333,7 @@ export default class PerformEventPhase extends Phase {
           return;
         }
       }
+
       // MAKE IT IMPOSSIBLE FOR THE PLAYER TO USE THE "Summon Character" EVENT IF ONE IS ALREADY ACTIVE
       if (
         hoveredCard.getCategory() === CardCategory.SPECIAL &&
