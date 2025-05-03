@@ -650,30 +650,6 @@ export default class Game {
         this.#poisonMinions();
       }
 
-      if (this.#eventsData.theCupOfTheLastBreath.isActive === true) {
-        if (this.#eventsData.theCupOfTheLastBreath.isPlayer1Affected) {
-          let message = new StateMessage(
-            "Player 1 Cannot heal minions",
-            `30px MedievalSharp`,
-            "silver",
-            2,
-            globals.canvas.width / 2,
-            globals.canvas.height / 2
-          );
-          this.#stateMessages.push(message);
-        } else if (this.#eventsData.theCupOfTheLastBreath.isPlayer2Affected) {
-          let message = new StateMessage(
-            "Player 2 Cannot heal minions",
-            `30px MedievalSharp`,
-            "silver",
-            2,
-            globals.canvas.width / 2,
-            globals.canvas.height / 2
-          );
-          this.#stateMessages.push(message);
-        }
-      }
-
       if (this.#eventsData.decrepitThroneSkill.isActive) {
         this.#eventsData.decrepitThroneSkill.turnsSinceActivation++;
       }
