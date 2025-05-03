@@ -129,7 +129,7 @@ export default class Game {
       joseph_appeared: false,
     };
 
-    //EVENTS DATA
+    // EVENTS DATA
     game.#eventsData = {
       activeVisibilitySkill: null,
       decrepitThroneSkill: {
@@ -646,6 +646,7 @@ export default class Game {
       globals.isCurrentTurnFinished = false;
 
       this.#healHarmedMinions();
+
       if (this.#eventsData.poisonOfTheAbyss.isActive === true) {
         this.#poisonMinions();
       }
@@ -740,48 +741,52 @@ export default class Game {
       }
     }
 
-    const Player1Deck = minionsInPlayDecks[0];
-    const Player2Deck = minionsInPlayDecks[1];
+    const player1Deck = minionsInPlayDecks[0];
+    const player2Deck = minionsInPlayDecks[1];
 
-    for (let i = 0; i < Player1Deck.getCards().length; i++) {
-      const currentCard = Player1Deck.getCards()[i];
+    for (let i = 0; i < player1Deck.getCards().length; i++) {
+      const currentCard = player1Deck.getCards()[i];
 
       if (
         currentCard.getCurrentHP() < currentCard.getInitialHP() &&
         !isPlayer1Antiheal
       ) {
-        let currentHP = currentCard.getCurrentHP();
         let initialHP = currentCard.getInitialHP();
+        let currentHP = currentCard.getCurrentHP();
+
         let healAmount = initialHP - currentHP;
+
         if (isPlayer1Halfheal) {
           healAmount = Math.floor(healAmount / 2);
           currentCard.setCurrentHP(currentHP + healAmount);
+
           const healMessage = new StateMessage(
-            `+${healAmount}`,
-            "20px MedievalSharp",
+            `+${healAmount} HP`,
+            "30px MedievalSharp",
             "lightgreen",
-            1,
+            2,
             currentCard.getXCoordinate() + 55,
-            currentCard.getYCoordinate() + 110
+            currentCard.getYCoordinate()
           );
           this.#stateMessages.push(healMessage);
         } else {
           currentCard.setCurrentHP(currentCard.getInitialHP());
+
           const healMessage = new StateMessage(
-            `+${healAmount}`,
-            "20px MedievalSharp",
+            `+${healAmount} HP`,
+            "30px MedievalSharp",
             "lightgreen",
-            1,
+            2,
             currentCard.getXCoordinate() + 55,
-            currentCard.getYCoordinate() + 110
+            currentCard.getYCoordinate()
           );
           this.#stateMessages.push(healMessage);
         }
       }
     }
 
-    for (let i = 0; i < Player2Deck.getCards().length; i++) {
-      const currentCard = Player2Deck.getCards()[i];
+    for (let i = 0; i < player2Deck.getCards().length; i++) {
+      const currentCard = player2Deck.getCards()[i];
 
       if (
         currentCard.getCurrentHP() < currentCard.getInitialHP() &&
@@ -789,28 +794,32 @@ export default class Game {
       ) {
         let currentHP = currentCard.getCurrentHP();
         let initialHP = currentCard.getInitialHP();
+
         let healAmount = initialHP - currentHP;
+
         if (isPlayer2Halfheal) {
           healAmount = Math.floor(healAmount / 2);
           currentCard.setCurrentHP(currentHP + healAmount);
+
           const healMessage = new StateMessage(
-            `+${healAmount}`,
-            "20px MedievalSharp",
+            `+${healAmount} HP`,
+            "30px MedievalSharp",
             "lightgreen",
-            1,
+            2,
             currentCard.getXCoordinate() + 55,
-            currentCard.getYCoordinate() + 110
+            currentCard.getYCoordinate()
           );
           this.#stateMessages.push(healMessage);
         } else {
           currentCard.setCurrentHP(currentCard.getInitialHP());
+
           const healMessage = new StateMessage(
-            `+${healAmount}`,
-            "20px MedievalSharp",
+            `+${healAmount} HP`,
+            "30px MedievalSharp",
             "lightgreen",
-            1,
+            2,
             currentCard.getXCoordinate() + 55,
-            currentCard.getYCoordinate() + 110
+            currentCard.getYCoordinate()
           );
           this.#stateMessages.push(healMessage);
         }
@@ -829,45 +838,31 @@ export default class Game {
         const currentCard = minionsInPlayDecks[1].getCards()[i];
 
         currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
+
         let message = new StateMessage(
-          "-5",
-          `50px MedievalSharp`,
-          "green",
-          1,
+          "-5 HP",
+          "30px MedievalSharp",
+          "red",
+          2,
           currentCard.getXCoordinate() + 55,
-          currentCard.getYCoordinate() + 55
+          currentCard.getYCoordinate() + 110
         );
         this.#stateMessages.push(message);
       }
     }
+
     if (this.#eventsData.poisonOfTheAbyss.isPlayer1Affected) {
       for (let i = 0; i < minionsInPlayDecks[0].getCards().length; i++) {
         const currentCard = minionsInPlayDecks[0].getCards()[i];
 
         currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
         let message = new StateMessage(
-          "-5",
-          `50px MedievalSharp`,
-          "green",
-          1,
+          "-5 HP",
+          "30px MedievalSharp",
+          "red",
+          2,
           currentCard.getXCoordinate() + 55,
-          currentCard.getYCoordinate() + 55
-        );
-        this.#stateMessages.push(message);
-      }
-    }
-    if (this.#eventsData.poisonOfTheAbyss.isPlayer1Affected) {
-      for (let i = 0; i < minionsInPlayDecks[1].getCards().length; i++) {
-        const currentCard = minionsInPlayDecks[1].getCards()[i];
-
-        currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
-        let message = new StateMessage(
-          "-5",
-          `50px MedievalSharp`,
-          "green",
-          1,
-          currentCard.getXCoordinate() + 55,
-          currentCard.getYCoordinate() + 55
+          currentCard.getYCoordinate() + 110
         );
         this.#stateMessages.push(message);
       }

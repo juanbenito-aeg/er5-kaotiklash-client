@@ -6,6 +6,7 @@ export default class PoisonOfTheAbyssEvent extends Event {
 
   constructor(executedBy, eventCard, eventsData) {
     super(executedBy, eventCard);
+
     this.#eventsData = eventsData;
   }
 
@@ -13,6 +14,7 @@ export default class PoisonOfTheAbyssEvent extends Event {
     this.reduceDuration(currentPlayer);
 
     this.#eventsData.poisonOfTheAbyss.isActive = true;
+
     if (this._executedBy.getID() === PlayerID.PLAYER_1) {
       this.#eventsData.poisonOfTheAbyss.isPlayer2Affected = true;
     } else {
@@ -23,7 +25,6 @@ export default class PoisonOfTheAbyssEvent extends Event {
       this.#eventsData.poisonOfTheAbyss.isActive = false;
 
       this.#eventsData.poisonOfTheAbyss.isPlayer1Affected = false;
-
       this.#eventsData.poisonOfTheAbyss.isPlayer2Affected = false;
     }
   }
