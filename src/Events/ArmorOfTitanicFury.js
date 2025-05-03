@@ -1,22 +1,33 @@
 import StateMessage from "../Messages/StateMessage.js";
 
 export default class ArmorOfTitanicFuryEffect {
-  static activeBoost(target, stateMessage) {
-
-    const msg = new StateMessage(
-      "💢",
+  static activeBoost(target, stateMessages) {
+    const plus10AttackMsg = new StateMessage(
+      "+10 ATK",
       "30px MedievalSharp",
-      "",
+      "rgb(240 167 163)",
       2,
-      target.getXCoordinate() - 10,
-      target.getYCoordinate() + 55
+      target.getXCoordinate() + 55,
+      target.getYCoordinate()
     );
-    stateMessage.push(msg);
+    stateMessages.push(plus10AttackMsg);
+
     target.setCurrentAttack(target.getCurrentAttack() + 10);
   }
 
-  static resetBoost(target) {
-    target.setCurrentAttack(target.getInitialAttack());
+  static resetBoost(target, stateMessages) {
+    const attackBoostToRemove =
+      target.getCurrentAttack() - target.getInitialAttack();
+    const removedAttackBoostMsg = new StateMessage(
+      `-${attackBoostToRemove} ATK`,
+      "30px MedievalSharp",
+      "rgb(240 167 163)",
+      2,
+      target.getXCoordinate() + 55,
+      target.getYCoordinate()
+    );
+    stateMessages.push(removedAttackBoostMsg);
 
+    target.setCurrentAttack(target.getInitialAttack());
   }
 }

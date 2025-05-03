@@ -528,8 +528,8 @@ export default class AttackEvent extends Event {
     }
 
     if (!attackerWeapon) {
-      //RESET TITANIC FURY BOOST AFTER THE ATTACK IS FINISHED
-      ArmorOfTitanicFuryEffect.resetBoost(this.#attacker);
+      // RESET TITANIC FURY BOOST AFTER THE ATTACK IS FINISHED
+      ArmorOfTitanicFuryEffect.resetBoost(this.#attacker, this.#stateMessages);
     }
 
     if (damageToInflict > 0) {
