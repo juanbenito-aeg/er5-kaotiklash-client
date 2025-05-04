@@ -1,6 +1,5 @@
 import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
-import StateMessage from "../Messages/StateMessage.js";
 import AttackEvent from "../Events/AttackEvent.js";
 import globals from "../Game/globals.js";
 import {
@@ -285,15 +284,9 @@ export default class AttackPhase extends Phase {
             }
           }
         } else {
-          const errorMessage = new StateMessage(
-            "Target not within reach",
-            "20px MedievalSharp",
-            "red",
-            0.01,
-            target.getXCoordinate() + 55,
-            target.getYCoordinate() + 10
+          this._phaseMessage.setCurrentContent(
+            PhaseMessage.content.attack.targetOutOfLimit[globals.language]
           );
-          this.#stateMessages.push(errorMessage);
         }
       }
     }

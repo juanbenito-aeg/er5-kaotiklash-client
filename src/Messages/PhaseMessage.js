@@ -90,6 +90,13 @@ export default class PhaseMessage extends Message {
         // EUS
         "Itua aukeratu.",
       ],
+      targetOutOfLimit: [
+        //ENG:
+        "Target not within reach",
+
+        //EUS
+        "Lortu ezin den helburua",
+      ],
     },
 
     discardCard: {
