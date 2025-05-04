@@ -38,8 +38,9 @@ export default class Turn {
   #stateMessages;
   #attackMenuData;
   #equipWeaponOrArmorState;
-  #minionTooltip;
+  #rareTooltip;
   #armorTooltip;
+  #minionTooltip;
   #specialTooltip;
   #hoverTime;
   #lastHoveredCardId;
@@ -59,7 +60,8 @@ export default class Turn {
     eventsData,
     stats,
     armorTooltip,
-    specialTooltip
+    specialTooltip,
+    rareTooltip
   ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
@@ -82,6 +84,7 @@ export default class Turn {
     this.#stats = stats;
     this.#armorTooltip = armorTooltip;
     this.#specialTooltip = specialTooltip;
+    this.#rareTooltip = rareTooltip;
   }
 
   fillPhases(currentPlayer) {
@@ -220,8 +223,7 @@ export default class Turn {
 
     if (!isAnyCardExpanded) {
       this.#updateMinionTooltip();
-      this.#updateArmorTooltip();
-      this.#updateSpecialTooltip();
+      this.#updateEventsTooltip();
 
       if (this.#currentPhase === PhaseType.INVALID) {
         this.#equipWeaponOrArmor();
@@ -349,17 +351,6 @@ export default class Turn {
     }
   }
 
-  #updateArmorTooltip() {
-    const playerXEventsInPrepDeck =
-      this.#player.getID() === PlayerID.PLAYER_1
-        ? this.#deckContainer.getDecks()[
-            DeckType.PLAYER_1_EVENTS_IN_PREPARATION
-          ]
-        : this.#deckContainer.getDecks()[
-            DeckType.PLAYER_2_EVENTS_IN_PREPARATION
-          ];
-    this.#updateTooltip(playerXEventsInPrepDeck, this.#armorTooltip);
-  }
   #updateMinionTooltip() {
     const playerXMinionsInPlayDeck =
       this.#player.getID() === PlayerID.PLAYER_1
@@ -368,7 +359,8 @@ export default class Turn {
 
     this.#updateTooltip(playerXMinionsInPlayDeck, this.#minionTooltip);
   }
-  #updateSpecialTooltip() {
+
+  #updateEventsTooltip() {
     const playerXEventsInPrepDeck =
       this.#player.getID() === PlayerID.PLAYER_1
         ? this.#deckContainer.getDecks()[
@@ -377,7 +369,25 @@ export default class Turn {
         : this.#deckContainer.getDecks()[
             DeckType.PLAYER_2_EVENTS_IN_PREPARATION
           ];
-    this.#updateTooltip(playerXEventsInPrepDeck, this.#specialTooltip);
+
+    const currentHoveredCard = playerXEventsInPrepDeck.lookForHoveredCard();
+
+    if (!currentHoveredCard) {
+      this.#armorTooltip.clearTooltip();
+      this.#specialTooltip.clearTooltip();
+      this.#rareTooltip.clearTooltip();
+      this.#hoverTime = 0;
+      this.#lastHoveredCardId = null;
+      return;
+    }
+
+    if (currentHoveredCard.getCategory() === CardCategory.ARMOR) {
+      this.#updateTooltip(playerXEventsInPrepDeck, this.#armorTooltip);
+    } else if (currentHoveredCard.getCategory() === CardCategory.SPECIAL) {
+      this.#updateTooltip(playerXEventsInPrepDeck, this.#specialTooltip);
+    } else if (currentHoveredCard.getCategory() === CardCategory.RARE) {
+      this.#updateTooltip(playerXEventsInPrepDeck, this.#rareTooltip);
+    }
   }
 
   #updateTooltip(deck, tooltip) {
