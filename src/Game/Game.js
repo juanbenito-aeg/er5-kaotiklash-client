@@ -44,13 +44,13 @@ export default class Game {
   #stats;
   #eventsData;
 
-  static async create() {
+  static async create(playersNames) {
     // "game" OBJECT CREATION
     const game = new Game();
 
     // PLAYERS CREATION
-    const player1 = new Player(PlayerID.PLAYER_1, "Player 1");
-    const player2 = new Player(PlayerID.PLAYER_2, "Player 2");
+    const player1 = new Player(PlayerID.PLAYER_1, playersNames.loggedIn);
+    const player2 = new Player(PlayerID.PLAYER_2, playersNames.opponent);
     game.#players = [player1, player2];
 
     // RANDOMLY ASSIGN PLAYER THAT STARTS PLAYING
