@@ -39,6 +39,7 @@ export default class Turn {
   #attackMenuData;
   #equipWeaponOrArmorState;
   #minionTooltip;
+  #armorTooltip;
   #hoverTime;
   #lastHoveredCardId;
   #eventsData;
@@ -55,7 +56,8 @@ export default class Turn {
     attackMenuData,
     minionTooltip,
     eventsData,
-    stats
+    stats,
+    armorTooltip
   ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
@@ -76,6 +78,7 @@ export default class Turn {
     this.#lastHoveredCardId = null;
     this.#eventsData = eventsData;
     this.#stats = stats;
+    this.#armorTooltip = armorTooltip;
   }
 
   fillPhases(currentPlayer) {
@@ -214,6 +217,7 @@ export default class Turn {
 
     if (!isAnyCardExpanded) {
       this.#updateMinionTooltip();
+      this.#updateArmorTooltip();
 
       if (this.#currentPhase === PhaseType.INVALID) {
         this.#equipWeaponOrArmor();
@@ -341,38 +345,53 @@ export default class Turn {
     }
   }
 
+  #updateArmorTooltip() {
+    const playerXEventsInPrepDeck =
+      this.#player.getID() === PlayerID.PLAYER_1
+        ? this.#deckContainer.getDecks()[
+            DeckType.PLAYER_1_EVENTS_IN_PREPARATION
+          ]
+        : this.#deckContainer.getDecks()[
+            DeckType.PLAYER_2_EVENTS_IN_PREPARATION
+          ];
+    this.#updateTooltip(playerXEventsInPrepDeck, this.#armorTooltip);
+  }
   #updateMinionTooltip() {
-    const tooltipDelay = 1.0;
-
     const playerXMinionsInPlayDeck =
       this.#player.getID() === PlayerID.PLAYER_1
         ? this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY]
         : this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
 
-    const currentHoveredMinion = playerXMinionsInPlayDeck.lookForHoveredCard();
+    this.#updateTooltip(playerXMinionsInPlayDeck, this.#minionTooltip);
+  }
 
-    if (currentHoveredMinion) {
-      const currentCardId = currentHoveredMinion.getID();
+  #updateTooltip(deck, tooltip) {
+    const tooltipDelay = 0.1;
+
+    const currentHoveredCard = deck.lookForHoveredCard();
+
+    if (currentHoveredCard) {
+      const currentCardId = currentHoveredCard.getID();
       const isSameCard = this.#lastHoveredCardId === currentCardId;
       this.#lastHoveredCardId = currentCardId;
 
       this.#hoverTime = isSameCard
-        ? this.#hoverTime + globals.deltaTime
-        : globals.deltaTime;
+        ? this.#hoverTime + globals.deltaTime * 10
+        : globals.deltaTime * 10;
 
       const cardCenterX =
-        currentHoveredMinion.getXCoordinate() +
+        currentHoveredCard.getXCoordinate() +
         globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width / 2;
       const cardCenterY =
-        currentHoveredMinion.getYCoordinate() +
+        currentHoveredCard.getYCoordinate() +
         globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2;
 
       if (this.#hoverTime >= tooltipDelay) {
-        const content = this.#minionTooltip.getContent(currentHoveredMinion);
-        this.#minionTooltip.showTooltip(content, cardCenterX, cardCenterY);
+        const content = tooltip.getContent(currentHoveredCard);
+        tooltip.showTooltip(content, cardCenterX, cardCenterY);
       }
     } else {
-      this.#minionTooltip.clearTooltip();
+      tooltip.clearTooltip();
       this.#hoverTime = 0;
       this.#lastHoveredCardId = null;
     }

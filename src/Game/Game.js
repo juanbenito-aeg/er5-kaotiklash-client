@@ -10,6 +10,7 @@ import ImageSet from "./ImageSet.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
 import MinionTooltip from "../Tooltips/MinionTooltip.js";
+import ArmorTooltip from "../Tooltips/ArmorTooltip.js";
 import globals from "./globals.js";
 import {
   GameState,
@@ -41,6 +42,7 @@ export default class Game {
   #attackMenuData;
   #activeEventsTableData;
   #minionTooltip;
+  #armorTooltip;
   #stats;
   #eventsData;
 
@@ -120,7 +122,9 @@ export default class Game {
       btnsXCoordinate: canvasWidthDividedBy2 - 175,
     };
 
+    //TOOLTIPS
     game.#minionTooltip = new MinionTooltip();
+    game.#armorTooltip = new ArmorTooltip();
 
     game.#stats = {
       date: new Date().toISOString().split("T")[0],
@@ -172,7 +176,8 @@ export default class Game {
       game.#attackMenuData,
       game.#minionTooltip,
       game.#eventsData,
-      game.#stats
+      game.#stats,
+      game.#armorTooltip
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -186,7 +191,8 @@ export default class Game {
       game.#attackMenuData,
       game.#minionTooltip,
       game.#eventsData,
-      game.#stats
+      game.#stats,
+      game.#armorTooltip
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -986,6 +992,10 @@ export default class Game {
 
         if (this.#minionTooltip.hasTooltip()) {
           this.#minionTooltip.render();
+        }
+
+        if (this.#armorTooltip.hasTooltip()) {
+          this.#armorTooltip.render();
         }
 
         if (this.#attackMenuData.isOpen) {
