@@ -2,7 +2,7 @@ import StateMessage from "../Messages/StateMessage.js";
 
 export default class ShieldOfYheAncestralOakEffect {
   static applyCounterAttack(target, stateMessages) {
-    let isActive;
+    let isActive = false;
 
     if (!isActive) {
       const counterDamage = 20;
@@ -13,8 +13,8 @@ export default class ShieldOfYheAncestralOakEffect {
 
       const message = new StateMessage(
         "COUNTERATTACK: SHIELD OF THE ANCESTRAL OAK!",
-        "40px MedievalSharp",
-        "green",
+        "30px MedievalSharp",
+        "purple",
         2,
         1200,
         520
@@ -22,7 +22,7 @@ export default class ShieldOfYheAncestralOakEffect {
       const damageMessage = new StateMessage(
         `-${counterDamage} HP`,
         "30px MedievalSharp",
-        "darkgreen",
+        "darkred",
         2,
         1200,
         570

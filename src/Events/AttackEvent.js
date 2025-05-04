@@ -378,19 +378,11 @@ export default class AttackEvent extends Event {
 
     if (this.#parry === true && !fumble && this.#target.getWeapon()) {
       // PARRY
-
       if (
-        this.#attacker.getArmor() &&
-        this.#attacker.getArmor().getID() ===
-          ArmorID.SHIELD_OF_THE_ANCESTRAL_OAK
-      ) {
-        ShieldOfTheAncestralOakEffect.applyCounterAttack(
-          this.#target,
-          this.#stateMessages
-        );
-      } else if (
         this.#target.getArmor() &&
-        this.#target.getArmor().getID() === ArmorID.SHIELD_OF_THE_ANCESTRAL_OAK
+        this.#target.getArmor().getID() ===
+          ArmorID.SHIELD_OF_THE_ANCESTRAL_OAK &&
+        this.#target.getMinionTypeID() === MinionTypeID.WARRIOR
       ) {
         ShieldOfTheAncestralOakEffect.applyCounterAttack(
           this.#attacker,
@@ -400,11 +392,12 @@ export default class AttackEvent extends Event {
 
       if (
         this.#attacker.getArmor() &&
-        this.#attacker.getArmor().getID() === ArmorID.BRACERS_OF_THE_WAR_LION
+        this.#attacker.getArmor().getID() === ArmorID.BRACERS_OF_THE_WAR_LION &&
+        this.#attacker.getMinionTypeID() === MinionTypeID.WIZARD
       ) {
         damageToInflict = BracersOfTheWarLionSpecialEffect.activeBoost(
           damageToInflict,
-          this.#attacker,
+          this.#target,
           this.#stateMessages
         );
       }
