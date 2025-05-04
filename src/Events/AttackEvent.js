@@ -209,7 +209,7 @@ export default class AttackEvent extends Event {
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage() -
           this.#target.getCurrentDefense();
-        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict));
+        damageToInflict = Math.floor(this.calculateDistance(damageToInflict));
       }
     } else if (
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE &&
@@ -227,7 +227,7 @@ export default class AttackEvent extends Event {
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage();
 
-        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict));
+        damageToInflict = Math.floor(this.calculateDistance(damageToInflict));
       }
     } else if (
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID &&
@@ -247,7 +247,7 @@ export default class AttackEvent extends Event {
           this.#attacker.getWeaponCurrentDamage() -
           this.#target.getCurrentDefense();
 
-        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict));
+        damageToInflict = Math.floor(this.calculateDistance(damageToInflict));
       }
     } else if (
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID &&
@@ -265,7 +265,7 @@ export default class AttackEvent extends Event {
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage();
 
-        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict));
+        damageToInflict = Math.floor(this.calculateDistance(damageToInflict));
       }
     }
 
@@ -540,7 +540,7 @@ export default class AttackEvent extends Event {
     }
   }
 
-  caltulateDistance(damageToInflict) {
+  calculateDistance(damageToInflict) {
     // Calculate the distance between the attacker and target
     let x1 = this.#attacker.getXCoordinate();
     let y1 = this.#attacker.getYCoordinate();
@@ -549,6 +549,8 @@ export default class AttackEvent extends Event {
     let xDiff = Math.abs(x2 - x1) / 135;
     let yDiff = Math.abs(y2 - y1) / 135;
     let distance = xDiff + yDiff;
+
+    distance = Math.max(1, distance);
 
     let newdamageToInflict = damageToInflict / distance;
 
