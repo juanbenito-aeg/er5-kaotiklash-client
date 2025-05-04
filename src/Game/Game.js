@@ -662,6 +662,16 @@ export default class Game {
       ].changeTurn(this.#currentPlayer);
 
       this.#currentPlayer = this.#players[newCurrentPlayerID];
+
+      const currentPlayerTurnMsg = new StateMessage(
+        `${this.#currentPlayer.getName().toUpperCase()}'S TURN`,
+        "55px MedievalSharp",
+        "yellow",
+        2,
+        globals.canvas.width / 2,
+        globals.canvas.height / 2
+      );
+      this.#stateMessages.push(currentPlayerTurnMsg);
     }
 
     this.#mouseInput.resetIsLeftClickedOnBoxes(this.#board);
