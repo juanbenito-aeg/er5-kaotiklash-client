@@ -11,6 +11,7 @@ import {
   PlayerID,
   WeaponTypeID,
   MinionTypeID,
+  AnimationTypeID
 } from "../Game/constants.js";
 
 export default class AttackEvent extends Event {
@@ -270,7 +271,7 @@ export default class AttackEvent extends Event {
     }
 
     if (targetArmor) {
-      if (this.#target.getArmorID() === ArmorID.ARMOR_OF_TITANIC_FURY) {
+      if (this.#target.getArmorID() === ArmorID.ARMOR_OF_TITANIC_FURY && this.#target.getMinionTypeID() === MinionTypeID.WARRIOR) {
         ArmorOfTitanicFuryEffect.activeBoost(this.#target, this.#stateMessages);
       }
     }
@@ -569,7 +570,8 @@ export default class AttackEvent extends Event {
       "lightblue",
       2,
       targetBox.getCard().getXCoordinate() + 55,
-      targetBox.getCard().getYCoordinate() - 55
+      targetBox.getCard().getYCoordinate() - 55,
+      AnimationTypeID.PARRY
     );
     this.#stateMessages.push(parryMessage);
   }
@@ -581,7 +583,8 @@ export default class AttackEvent extends Event {
       "lightblue",
       2,
       targetBox.getCard().getXCoordinate() + 55,
-      targetBox.getCard().getYCoordinate() - 55
+      targetBox.getCard().getYCoordinate() - 55,
+      AnimationTypeID.FUMBLE
     );
     this.#stateMessages.push(parryMessage);
   }
@@ -593,7 +596,8 @@ export default class AttackEvent extends Event {
       "lightblue",
       2,
       targetBox.getCard().getXCoordinate() + 55,
-      targetBox.getCard().getYCoordinate() - 55
+      targetBox.getCard().getYCoordinate() - 55,
+      AnimationTypeID.FUMBLE
     );
     this.#stateMessages.push(parryMessage);
   }
@@ -605,7 +609,8 @@ export default class AttackEvent extends Event {
       "lightblue",
       2,
       targetBox.getCard().getXCoordinate() + 55,
-      targetBox.getCard().getYCoordinate() - 55
+      targetBox.getCard().getYCoordinate() - 55,
+      AnimationTypeID.CRIT
     );
     this.#stateMessages.push(parryMessage);
   }
@@ -617,7 +622,8 @@ export default class AttackEvent extends Event {
       color,
       2,
       targetBox.getCard().getXCoordinate() + 55,
-      targetBox.getCard().getYCoordinate() + 55
+      targetBox.getCard().getYCoordinate() + 55,
+      AnimationTypeID.DAMAGE
     );
     this.#stateMessages.push(damageMessage);
   }
@@ -659,7 +665,8 @@ export default class AttackEvent extends Event {
       "gold",
       2,
       targetBox.getCard().getXCoordinate() + 55,
-      targetBox.getCard().getYCoordinate() - 55
+      targetBox.getCard().getYCoordinate() - 55,
+      AnimationTypeID.CRIT
     );
     this.#stateMessages.push(critMessage);
   }
@@ -671,7 +678,8 @@ export default class AttackEvent extends Event {
       "red",
       2,
       targetBox.getCard().getXCoordinate() + 55,
-      targetBox.getCard().getYCoordinate() - 55
+      targetBox.getCard().getYCoordinate() - 55,
+      AnimationTypeID.FUMBLE
     );
     this.#stateMessages.push(fumbleMessage);
   }
@@ -683,7 +691,8 @@ export default class AttackEvent extends Event {
       "red",
       4,
       targetBox.getCard().getXCoordinate() - 100,
-      targetBox.getCard().getYCoordinate() + 10
+      targetBox.getCard().getYCoordinate() + 10,
+      AnimationTypeID.BROKEN
     );
     this.#stateMessages.push(weaponMessage);
   }
@@ -695,7 +704,8 @@ export default class AttackEvent extends Event {
       "red",
       2,
       target.getXCoordinate() + 55,
-      target.getYCoordinate() + 110
+      target.getYCoordinate() + 110,
+      AnimationTypeID.DEATH
     );
     this.#stateMessages.push(deathMessage);
   }
@@ -707,7 +717,8 @@ export default class AttackEvent extends Event {
       "red",
       4,
       armorOwnerBox.getCard().getXCoordinate() + 208,
-      armorOwnerBox.getCard().getYCoordinate() + 10
+      armorOwnerBox.getCard().getYCoordinate() + 10,
+      AnimationTypeID.BROKEN
     );
     this.#stateMessages.push(armorBrokeMsg);
   }

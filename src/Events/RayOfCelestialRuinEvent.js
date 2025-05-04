@@ -1,6 +1,7 @@
 import Event from "./Event.js";
 import globals from "../Game/globals.js";
 import StateMessage from "../Messages/StateMessage.js";
+import { AnimationTypeID } from "../Game/constants.js";
 
 export default class RayOfCelestialRuinEvent extends Event {
   #currentEnemyMinionsInPlay;
@@ -36,7 +37,8 @@ export default class RayOfCelestialRuinEvent extends Event {
             minion.getYCoordinate() +
               globals.imagesDestinationSizes.minionsAndEventsSmallVersion
                 .height /
-                2
+                2,
+            AnimationTypeID.DEBUFF
           )
         );
       }

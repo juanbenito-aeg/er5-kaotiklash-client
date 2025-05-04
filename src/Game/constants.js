@@ -304,6 +304,21 @@ const ArmorID = {
   VEST_OF_THE_SPECTRAL_BARTENDER: 6,
 };
 
+const AnimationTypeID = {
+  DAMAGE : 0,
+  EFFECT : 1,
+  HEAL   : 2,
+  ATTACK : 3,
+  PARRY  : 4,
+  MOVEMENT : 5,
+  CRIT: 6,
+  FUMBLE: 7,
+  BROKEN: 8,
+  DEATH: 9,
+  BOOST: 10,
+  DEBUFF: 11,
+}
+
 export {
   GameState,
   FPS,
@@ -340,4 +355,5 @@ export {
   StolenFateState,
   AttackMenuBtn,
   ArmorID,
+  AnimationTypeID,
 };

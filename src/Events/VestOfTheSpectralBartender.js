@@ -1,4 +1,5 @@
 import StateMessage from "../Messages/StateMessage.js";
+import { AnimationTypeID } from "../Game/constants.js";
 
 export default class VestOfTheSpectralBartenderEffect {
   static blockCrit(damage, target, stateMessage) {
@@ -9,7 +10,8 @@ export default class VestOfTheSpectralBartenderEffect {
       "orange",
       2,
       target.getXCoordinate() + 55,
-      target.getYCoordinate() - 20
+      target.getYCoordinate() - 20,
+      AnimationTypeID.PARRY
     );
     stateMessage.push(msg);
 

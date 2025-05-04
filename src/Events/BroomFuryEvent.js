@@ -1,6 +1,7 @@
 import Event from "./Event.js";
 import StateMessage from "../Messages/StateMessage.js";
 import globals from "../Game/globals.js";
+import { AnimationTypeID } from "../Game/constants.js";
 
 export default class BroomFuryEvent extends Event {
   #isAttackBoostApplied;
@@ -58,7 +59,8 @@ export default class BroomFuryEvent extends Event {
             "rgb(240 167 163)",
             4,
             x2AttackMsgXCoordinate,
-            x2AttackMsgYCoordinate
+            x2AttackMsgYCoordinate,
+            AnimationTypeID.BOOST
           );
 
           this.#stateMessages.push(x2AttackMsg);

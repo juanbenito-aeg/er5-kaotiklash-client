@@ -1,4 +1,5 @@
 import StateMessage from "../Messages/StateMessage.js";
+import { AnimationTypeID } from "../Game/constants.js";
 
 export default class BracersOfTheWarLionSpecialEffect {
   static activeBoost(damage, target, stateMessage) {
@@ -12,7 +13,8 @@ export default class BracersOfTheWarLionSpecialEffect {
         "orange",
         2,
         target.getXCoordinate(),
-        target.getYCoordinate() - 40
+        target.getYCoordinate() - 40,
+        AnimationTypeID.BOOST
       );
       stateMessage.push(msg);
       isActive = true;

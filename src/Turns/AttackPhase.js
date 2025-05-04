@@ -215,7 +215,8 @@ export default class AttackPhase extends Phase {
           "red",
           0.01,
           attacker.getXCoordinate() + 55,
-          attacker.getYCoordinate() + 10
+          attacker.getYCoordinate() + 10,
+          AnimationTypeID.DEBUFF
         );
         this.#stateMessages.push(debuffMessage);
       }
@@ -230,7 +231,8 @@ export default class AttackPhase extends Phase {
           "red",
           0.01,
           attacker.getXCoordinate() + 55,
-          attacker.getYCoordinate() + 10
+          attacker.getYCoordinate() + 10,
+          AnimationTypeID.DEBUFF
         );
         this.#stateMessages.push(debuffMessage);
       }

@@ -1,5 +1,6 @@
 import Event from "./Event.js";
 import StateMessage from "../Messages/StateMessage.js";
+import { AnimationTypeID } from "../Game/constants.js";
 export default class BartendersPowerEvent extends Event {
   #currentPlayerMinionsInPlayDeck;
   #stateMessage;
@@ -38,7 +39,8 @@ export default class BartendersPowerEvent extends Event {
           "red",
           5,
           minion.getXCoordinate(),
-          minion.getYCoordinate()
+          minion.getYCoordinate(),
+          AnimationTypeID.BOOST
         );
         this.#stateMessage.push(message);
       }

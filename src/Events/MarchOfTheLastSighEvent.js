@@ -1,6 +1,7 @@
 import Event from "./Event.js";
 import StateMessage from "../Messages/StateMessage.js";
 import globals from "../Game/globals.js";
+import { AnimationTypeID } from "../Game/constants.js";
 
 export default class MarchOfTheLastSighEvent extends Event {
   #currentPlayerMinionsInPlayDeck;
@@ -44,7 +45,8 @@ export default class MarchOfTheLastSighEvent extends Event {
               2,
           minion.getYCoordinate() +
             globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height /
-              2
+              2,
+          AnimationTypeID.BOOST
         );
         this.#stateMessages.push(message);
         this.#isFinished = true;

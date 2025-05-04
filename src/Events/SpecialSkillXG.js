@@ -1,4 +1,5 @@
 import StateMessage from "../Messages/StateMessage.js";
+import { AnimationTypeID } from "../Game/constants.js";
 
 export default class SpecialSkillXG {
   #currentPlayerMinionsInPlayDeck;
@@ -55,7 +56,8 @@ export default class SpecialSkillXG {
         "green",
         2,
         1200,
-        570
+        570,
+        AnimationTypeID.BOOST
       );
 
       this.#stateMessages.push(attackMessage);
@@ -66,7 +68,8 @@ export default class SpecialSkillXG {
         "red",
         2,
         1200,
-        630
+        630,
+        AnimationTypeID.DEBUFF
       );
 
       this.#stateMessages.push(DefenseMessage);

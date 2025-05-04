@@ -9,7 +9,8 @@ export default class ArmorOfTitanicFuryEffect {
       "",
       2,
       target.getXCoordinate() - 10,
-      target.getYCoordinate() + 55
+      target.getYCoordinate() + 55,
+
     );
     stateMessage.push(msg);
     target.setCurrentAttack(target.getCurrentAttack() + 10);

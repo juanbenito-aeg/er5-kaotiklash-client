@@ -3,6 +3,7 @@ import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
 import globals from "../Game/globals.js";
 import { BlessingWaitressState, CardState } from "../Game/constants.js";
+import { AnimationTypeID } from "../Game/constants.js";
 
 export default class BlessingWaitressEvent extends Event {
   #state;
@@ -116,7 +117,8 @@ export default class BlessingWaitressEvent extends Event {
       "rgb(250 233 183)",
       4,
       restoredHPMsgXCoordinate,
-      restoredHPMsgYCoordinate
+      restoredHPMsgYCoordinate,
+      AnimationTypeID.HEAL
     );
 
     this.#stateMessages.push(restoredHPMsg);

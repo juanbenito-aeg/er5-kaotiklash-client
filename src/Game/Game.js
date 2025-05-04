@@ -26,6 +26,7 @@ import {
   GridType,
   PhaseButtonData,
   Language,
+  AnimationTypeID,
 } from "./constants.js";
 
 export default class Game {
@@ -762,7 +763,8 @@ export default class Game {
             "lightgreen",
             1,
             currentCard.getXCoordinate() + 55,
-            currentCard.getYCoordinate() + 110
+            currentCard.getYCoordinate() + 110,
+            AnimationTypeID.HEAL
           );
           this.#stateMessages.push(healMessage);
         } else {
@@ -773,7 +775,8 @@ export default class Game {
             "lightgreen",
             1,
             currentCard.getXCoordinate() + 55,
-            currentCard.getYCoordinate() + 110
+            currentCard.getYCoordinate() + 110,
+            AnimationTypeID.HEAL
           );
           this.#stateMessages.push(healMessage);
         }
@@ -799,7 +802,8 @@ export default class Game {
             "lightgreen",
             1,
             currentCard.getXCoordinate() + 55,
-            currentCard.getYCoordinate() + 110
+            currentCard.getYCoordinate() + 110,
+            AnimationTypeID.HEAL
           );
           this.#stateMessages.push(healMessage);
         } else {
@@ -810,7 +814,8 @@ export default class Game {
             "lightgreen",
             1,
             currentCard.getXCoordinate() + 55,
-            currentCard.getYCoordinate() + 110
+            currentCard.getYCoordinate() + 110,
+            AnimationTypeID.HEAL
           );
           this.#stateMessages.push(healMessage);
         }
@@ -835,7 +840,8 @@ export default class Game {
           "green",
           1,
           currentCard.getXCoordinate() + 55,
-          currentCard.getYCoordinate() + 55
+          currentCard.getYCoordinate() + 55,
+          AnimationTypeID.DAMAGE
         );
         this.#stateMessages.push(message);
       }
@@ -851,27 +857,13 @@ export default class Game {
           "green",
           1,
           currentCard.getXCoordinate() + 55,
-          currentCard.getYCoordinate() + 55
+          currentCard.getYCoordinate() + 55,
+          AnimationTypeID.DAMAGE
         );
         this.#stateMessages.push(message);
       }
     }
-    if (this.#eventsData.poisonOfTheAbyss.isPlayer1Affected) {
-      for (let i = 0; i < minionsInPlayDecks[1].getCards().length; i++) {
-        const currentCard = minionsInPlayDecks[1].getCards()[i];
-
-        currentCard.setCurrentHP(currentCard.getCurrentHP() - 5);
-        let message = new StateMessage(
-          "-5",
-          `50px MedievalSharp`,
-          "green",
-          1,
-          currentCard.getXCoordinate() + 55,
-          currentCard.getYCoordinate() + 55
-        );
-        this.#stateMessages.push(message);
-      }
-    }
+    
   }
 
   #updatePlayersTotalHP() {

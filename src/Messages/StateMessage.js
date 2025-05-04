@@ -9,8 +9,9 @@ export default class StateMessage extends Message {
   #startTime;
   #xPosition;
   #yPosition;
+  #animationType;
 
-  constructor(content, font, color, duration, xPosition, yPosition) {
+  constructor(content, font, color, duration, xPosition, yPosition, animationType) {
     super();
 
     this.#content = content;
@@ -19,6 +20,7 @@ export default class StateMessage extends Message {
     this.#duration = duration;
     this.#xPosition = xPosition;
     this.#yPosition = yPosition;
+    this.#animationType = animationType;
   }
 
   execute() {
@@ -57,5 +59,9 @@ export default class StateMessage extends Message {
 
   getYPosition() {
     return this.#yPosition;
+  }
+
+  getAnimationType() {
+    return this.#animationType;
   }
 }
