@@ -9,6 +9,7 @@ import MouseInput from "./MouseInput.js";
 import ImageSet from "./ImageSet.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
+import ChatMessage from "../Messages/ChatMessage.js";
 import MinionTooltip from "../Tooltips/MinionTooltip.js";
 import globals from "./globals.js";
 import {
@@ -26,6 +27,7 @@ import {
   GridType,
   PhaseButtonData,
   Language,
+  ChatMessageType,
 } from "./constants.js";
 
 export default class Game {
@@ -38,6 +40,7 @@ export default class Game {
   #events;
   #phaseMessage;
   #stateMessages;
+  #chatMessages;
   #attackMenuData;
   #activeEventsTableData;
   #minionTooltip;
@@ -92,6 +95,8 @@ export default class Game {
     );
 
     game.#stateMessages = [];
+
+    game.#chatMessages = [];
 
     // ATTACK MENU DATA OBJECT CREATION
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
@@ -644,8 +649,9 @@ export default class Game {
 
   #update() {
     if (globals.isCurrentTurnFinished) {
-      this.#stats.played_turns++;
       globals.isCurrentTurnFinished = false;
+
+      this.#stats.played_turns++;
 
       this.#healHarmedMinions();
 
@@ -672,6 +678,9 @@ export default class Game {
         globals.canvas.height / 2
       );
       this.#stateMessages.push(currentPlayerTurnMsg);
+
+      // FILL THE CHAT MESSAGES ARRAY
+      this.#fillChatMessages();
     }
 
     this.#mouseInput.resetIsLeftClickedOnBoxes(this.#board);
@@ -854,6 +863,84 @@ export default class Game {
         );
         this.#stateMessages.push(message);
       }
+    }
+  }
+
+  #fillChatMessages() {
+    // DETERMINE THE TYPE OF THE CHAT MESSAGE(S) TO DISPLAY
+
+    let randomChatMessageTypeUpperLimit = 2;
+
+    if (
+      this.#deckContainer.getDecks()[DeckType.JOSEPH].getCards().length === 1
+    ) {
+      randomChatMessageTypeUpperLimit = 3;
+    }
+
+    const randomChatMessageType = Math.floor(
+      Math.random() * randomChatMessageTypeUpperLimit
+    );
+
+    // DETERMINE THE SPEAKER(S)
+
+    const speakers = [];
+
+    if (randomChatMessageType === ChatMessageType.MAIN_CHARACTERS) {
+      const player1MainCharacter = this.#deckContainer
+        .getDecks()
+        [DeckType.PLAYER_1_MAIN_CHARACTER].getCards()[0];
+      const player2MainCharacter = this.#deckContainer
+        .getDecks()
+        [DeckType.PLAYER_2_MAIN_CHARACTER].getCards()[0];
+
+      speakers.push(player1MainCharacter, player2MainCharacter);
+    } else if (randomChatMessageType === ChatMessageType.MINIONS) {
+      const randomMinionsInPlayIndex = Math.floor(Math.random() * 3);
+
+      const player1RandomMinionInPlay = this.#deckContainer
+        .getDecks()
+        [DeckType.PLAYER_1_MINIONS_IN_PLAY].getCards()[
+        randomMinionsInPlayIndex
+      ];
+      const player2RandomMinionInPlay = this.#deckContainer
+        .getDecks()
+        [DeckType.PLAYER_2_MINIONS_IN_PLAY].getCards()[
+        randomMinionsInPlayIndex
+      ];
+
+      speakers.push(player1RandomMinionInPlay, player2RandomMinionInPlay);
+    } else {
+      const joseph = this.#deckContainer
+        .getDecks()
+        [DeckType.JOSEPH].getCards()[0];
+
+      speakers.push(joseph);
+    }
+
+    // CREATE AND STORE THE CHAT MESSAGE(S) TO DISPLAY
+    if (speakers.length === 1) {
+      const chatMessage = ChatMessage.create(
+        randomChatMessageType,
+        speakers[0].getXCoordinate(),
+        speakers[0].getYCoordinate()
+      );
+
+      this.#chatMessages.push(chatMessage);
+    } else {
+      do {
+        for (let i = 0; i < speakers.length; i++) {
+          const chatMessage = ChatMessage.create(
+            randomChatMessageType,
+            speakers[i].getXCoordinate(),
+            speakers[i].getYCoordinate()
+          );
+
+          this.#chatMessages[i] = chatMessage;
+        }
+      } while (
+        this.#chatMessages[0].getContent() ===
+        this.#chatMessages[1].getContent()
+      );
     }
   }
 

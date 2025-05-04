@@ -304,6 +304,12 @@ const ArmorID = {
   VEST_OF_THE_SPECTRAL_BARTENDER: 6,
 };
 
+const ChatMessageType = {
+  MAIN_CHARACTERS: 0,
+  MINIONS: 1,
+  JOSEPH: 2,
+};
+
 export {
   GameState,
   FPS,
@@ -340,4 +346,5 @@ export {
   StolenFateState,
   AttackMenuBtn,
   ArmorID,
+  ChatMessageType,
 };
