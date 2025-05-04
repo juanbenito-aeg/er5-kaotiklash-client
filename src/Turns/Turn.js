@@ -40,6 +40,7 @@ export default class Turn {
   #equipWeaponOrArmorState;
   #minionTooltip;
   #armorTooltip;
+  #specialTooltip;
   #hoverTime;
   #lastHoveredCardId;
   #eventsData;
@@ -57,7 +58,8 @@ export default class Turn {
     minionTooltip,
     eventsData,
     stats,
-    armorTooltip
+    armorTooltip,
+    specialTooltip
   ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
@@ -79,6 +81,7 @@ export default class Turn {
     this.#eventsData = eventsData;
     this.#stats = stats;
     this.#armorTooltip = armorTooltip;
+    this.#specialTooltip = specialTooltip;
   }
 
   fillPhases(currentPlayer) {
@@ -218,6 +221,7 @@ export default class Turn {
     if (!isAnyCardExpanded) {
       this.#updateMinionTooltip();
       this.#updateArmorTooltip();
+      this.#updateSpecialTooltip();
 
       if (this.#currentPhase === PhaseType.INVALID) {
         this.#equipWeaponOrArmor();
@@ -363,6 +367,17 @@ export default class Turn {
         : this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
 
     this.#updateTooltip(playerXMinionsInPlayDeck, this.#minionTooltip);
+  }
+  #updateSpecialTooltip() {
+    const playerXEventsInPrepDeck =
+      this.#player.getID() === PlayerID.PLAYER_1
+        ? this.#deckContainer.getDecks()[
+            DeckType.PLAYER_1_EVENTS_IN_PREPARATION
+          ]
+        : this.#deckContainer.getDecks()[
+            DeckType.PLAYER_2_EVENTS_IN_PREPARATION
+          ];
+    this.#updateTooltip(playerXEventsInPrepDeck, this.#specialTooltip);
   }
 
   #updateTooltip(deck, tooltip) {
