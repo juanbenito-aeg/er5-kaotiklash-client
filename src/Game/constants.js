@@ -310,6 +310,13 @@ const ChatMessageType = {
   JOSEPH: 2,
 };
 
+const ChatMessagePosition = {
+  UP: 0,
+  DOWN: 1,
+  LEFT: 2,
+  RIGHT: 3,
+};
+
 export {
   GameState,
   FPS,
@@ -347,4 +354,5 @@ export {
   AttackMenuBtn,
   ArmorID,
   ChatMessageType,
+  ChatMessagePosition,
 };

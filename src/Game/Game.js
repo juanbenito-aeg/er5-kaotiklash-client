@@ -28,6 +28,7 @@ import {
   PhaseButtonData,
   Language,
   ChatMessageType,
+  ChatMessagePosition,
 } from "./constants.js";
 
 export default class Game {
@@ -877,13 +878,14 @@ export default class Game {
       randomChatMessageTypeUpperLimit = 3;
     }
 
-    const randomChatMessageType = Math.floor(
+    const randomChatMessageType = /* Math.floor(
       Math.random() * randomChatMessageTypeUpperLimit
-    );
+    ) */ 0;
 
     // DETERMINE THE SPEAKER(S)
 
     const speakers = [];
+    const positions = [];
 
     if (randomChatMessageType === ChatMessageType.MAIN_CHARACTERS) {
       const player1MainCharacter = this.#deckContainer
@@ -894,6 +896,12 @@ export default class Game {
         [DeckType.PLAYER_2_MAIN_CHARACTER].getCards()[0];
 
       speakers.push(player1MainCharacter, player2MainCharacter);
+
+      if (globals.firstActivePlayerID === PlayerID.PLAYER_1) {
+        positions.push(ChatMessagePosition.UP, ChatMessagePosition.DOWN);
+      } else {
+        positions.push(ChatMessagePosition.DOWN, ChatMessagePosition.UP);
+      }
     } else if (randomChatMessageType === ChatMessageType.MINIONS) {
       const randomMinionsInPlayIndex = Math.floor(Math.random() * 3);
 
@@ -909,20 +917,25 @@ export default class Game {
       ];
 
       speakers.push(player1RandomMinionInPlay, player2RandomMinionInPlay);
-    } else {
-      const joseph = this.#deckContainer
-        .getDecks()
-        [DeckType.JOSEPH].getCards()[0];
 
-      speakers.push(joseph);
+      if (globals.firstActivePlayerID === PlayerID.PLAYER_1) {
+        positions.push(ChatMessagePosition.RIGHT, ChatMessagePosition.LEFT);
+      } else {
+        positions.push(ChatMessagePosition.LEFT, ChatMessagePosition.RIGHT);
+      }
     }
 
     // CREATE AND STORE THE CHAT MESSAGE(S) TO DISPLAY
     if (speakers.length === 1) {
+      const joseph = this.#deckContainer
+        .getDecks()
+        [DeckType.JOSEPH].getCards()[0];
+
       const chatMessage = ChatMessage.create(
         randomChatMessageType,
-        speakers[0].getXCoordinate(),
-        speakers[0].getYCoordinate()
+        ChatMessagePosition.UP,
+        joseph.getXCoordinate(),
+        joseph.getYCoordinate()
       );
 
       this.#chatMessages.push(chatMessage);
@@ -931,6 +944,7 @@ export default class Game {
         for (let i = 0; i < speakers.length; i++) {
           const chatMessage = ChatMessage.create(
             randomChatMessageType,
+            positions[i],
             speakers[i].getXCoordinate(),
             speakers[i].getYCoordinate()
           );
