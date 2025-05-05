@@ -517,6 +517,8 @@ export default class Turn {
                 2,
                 new Physics(0, 0, 0, 0, 0, 0, 0)
               );
+
+              gearedUpMsg.getPhysics().vy = 20;
               this.#stateMessages.push(gearedUpMsg);
               this.#player.addUsedCards();
 

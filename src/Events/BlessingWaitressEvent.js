@@ -123,8 +123,6 @@ export default class BlessingWaitressEvent extends Event {
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
 
-    restoredHPMsg.#getPhysics().vy = 2;
-
     this.#stateMessages.push(restoredHPMsg);
 
     this.#eventWithoutDurationData.isActive = false;
