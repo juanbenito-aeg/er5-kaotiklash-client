@@ -20,6 +20,7 @@ export default {
   },
   cardsTemplatesImages: [],
   cardsIconsImages: [],
+  balloonsImages: [],
   imagesDestinationSizes: {},
   assetsToLoad: [], // HOLDS THE ELEMENTS TO LOAD
   assetsLoaded: 0, // INDICATES THE NUMBER OF ELEMENTS THAT HAVE BEEN LOADED SO FAR
