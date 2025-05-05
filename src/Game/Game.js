@@ -1126,7 +1126,12 @@ export default class Game {
     this.#renderPhaseMessage();
     this.#renderCardsReverse();
     this.#renderCards();
-    this.#renderStateMessages();
+
+    if (this.#chatMessages.length > 0) {
+      this.#renderChatMessages();
+    } else {
+      this.#renderStateMessages();
+    }
   }
 
   #renderBoard() {
@@ -2627,6 +2632,24 @@ export default class Game {
     card.renderEffect();
     globals.ctx.fillText(0, 1148, 848);
     globals.ctx.fillText(card.getInitialDurationInRounds(), 1280, 848);
+  }
+
+  #renderChatMessages() {
+    for (let i = 0; i < this.#chatMessages.length; i++) {
+      const currentChatMessage = this.#chatMessages[i];
+
+      globals.ctx.drawImage(
+        globals.balloonsImages[currentChatMessage.getType()],
+        0,
+        0,
+        500,
+        300,
+        currentChatMessage.getBalloonXCoordinate(),
+        currentChatMessage.getBalloonYCoordinate(),
+        200,
+        120
+      );
+    }
   }
 
   #renderStateMessages() {
