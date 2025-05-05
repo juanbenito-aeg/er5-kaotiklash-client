@@ -1,19 +1,24 @@
 import Message from "./Message.js";
 import globals from "../Game/globals.js";
+import { ChatMessagePosition, ChatMessageType } from "../Game/constants.js";
 
 export default class ChatMessage extends Message {
   #duration;
+  #type;
+  #position;
   #content;
-  #speakerXCoordinate;
-  #speakerYCoordinate;
+  #balloonXCoordinate;
+  #balloonYCoordinate;
 
-  constructor(content, speakerXCoordinate, speakerYCoordinate) {
+  constructor(type, position, content, balloonXCoordinate, balloonYCoordinate) {
     super();
 
-    this.#duration = 6;
+    this.#duration = 26;
+    this.#type = type;
+    this.#position = position;
     this.#content = content;
-    this.#speakerXCoordinate = speakerXCoordinate;
-    this.#speakerYCoordinate = speakerYCoordinate;
+    this.#balloonXCoordinate = balloonXCoordinate;
+    this.#balloonYCoordinate = balloonYCoordinate;
   }
 
   static content = [
@@ -27,17 +32,53 @@ export default class ChatMessage extends Message {
     ["You're all gonna die, freaks!"],
   ];
 
-  static create(chatMessageType, speakerXCoordinate, speakerYCoordinate) {
+  static create(
+    chatMessageType,
+    position,
+    speakerXCoordinate,
+    speakerYCoordinate
+  ) {
     const numOfPossibleMessages = ChatMessage.content[chatMessageType].length;
     const randomMessageIndex = Math.floor(
       Math.random() * numOfPossibleMessages
     );
     const content = ChatMessage.content[chatMessageType][randomMessageIndex];
 
+    let numToAddToSpeakerXCoordinate;
+    let numToAddToSpeakerYCoordinate;
+
+    if (chatMessageType === ChatMessageType.MAIN_CHARACTERS) {
+      if (position === ChatMessagePosition.UP) {
+        numToAddToSpeakerXCoordinate = 70;
+        numToAddToSpeakerYCoordinate = -125;
+      } else {
+        numToAddToSpeakerXCoordinate = /* TODO */;
+        numToAddToSpeakerYCoordinate = /* TODO */;
+      }
+    } else if (chatMessageType === ChatMessageType.MINIONS) {
+      if (position === ChatMessagePosition.UP) {
+        numToAddToSpeakerXCoordinate = /* TODO */;
+        numToAddToSpeakerYCoordinate = /* TODO */;
+      } else {
+        numToAddToSpeakerXCoordinate = /* TODO */;
+        numToAddToSpeakerYCoordinate = /* TODO */;
+      }
+    } else {
+      numToAddToSpeakerXCoordinate = /* TODO */;
+      numToAddToSpeakerYCoordinate = /* TODO */;
+    }
+
+    const balloonXCoordinate =
+      speakerXCoordinate + numToAddToSpeakerXCoordinate;
+    const balloonYCoordinate =
+      speakerYCoordinate + numToAddToSpeakerYCoordinate;
+
     const chatMessage = new ChatMessage(
+      chatMessageType,
+      position,
       content,
-      speakerXCoordinate,
-      speakerYCoordinate
+      balloonXCoordinate,
+      balloonYCoordinate
     );
 
     return chatMessage;
@@ -55,15 +96,23 @@ export default class ChatMessage extends Message {
     return isChatMessageActive;
   }
 
+  getType() {
+    return this.#type;
+  }
+
+  getPosition() {
+    return this.#position;
+  }
+
   getContent() {
     return this.#content;
   }
 
-  getSpeakerXCoordinate() {
-    return this.#speakerXCoordinate;
+  getBalloonXCoordinate() {
+    return this.#balloonXCoordinate;
   }
 
-  getSpeakerYCoordinate() {
-    return this.#speakerYCoordinate;
+  getBalloonYCoordinate() {
+    return this.#balloonYCoordinate;
   }
 }
