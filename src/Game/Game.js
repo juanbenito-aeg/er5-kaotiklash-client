@@ -684,31 +684,35 @@ export default class Game {
       this.#fillChatMessages();
     }
 
-    this.#mouseInput.resetIsLeftClickedOnBoxes(this.#board);
-    this.#mouseInput.detectMouseOverBox(this.#board);
-    this.#mouseInput.detectBoxThatIsntHoveredAnymore(this.#board);
-    this.#mouseInput.detectLeftClickOnBox(this.#board);
+    if (this.#chatMessages.length > 0) {
+      this.#updateChatMessages();
+    } else {
+      this.#mouseInput.resetIsLeftClickedOnBoxes(this.#board);
+      this.#mouseInput.detectMouseOverBox(this.#board);
+      this.#mouseInput.detectBoxThatIsntHoveredAnymore(this.#board);
+      this.#mouseInput.detectLeftClickOnBox(this.#board);
 
-    this.#mouseInput.resetIsLeftClickedOnCards(this.#deckContainer);
-    this.#mouseInput.resetIsRightClickedOnCards(this.#deckContainer);
-    this.#mouseInput.detectMouseOverCard(this.#deckContainer);
-    this.#mouseInput.detectCardThatIsntHoveredAnymore(this.#deckContainer);
-    this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
-    this.#mouseInput.detectRightClickOnCard(this.#deckContainer);
+      this.#mouseInput.resetIsLeftClickedOnCards(this.#deckContainer);
+      this.#mouseInput.resetIsRightClickedOnCards(this.#deckContainer);
+      this.#mouseInput.detectMouseOverCard(this.#deckContainer);
+      this.#mouseInput.detectCardThatIsntHoveredAnymore(this.#deckContainer);
+      this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
+      this.#mouseInput.detectRightClickOnCard(this.#deckContainer);
 
-    if (!globals.gameWinner) {
-      this.#turns[this.#currentPlayer.getID()].execute();
+      if (!globals.gameWinner) {
+        this.#turns[this.#currentPlayer.getID()].execute();
+      }
+
+      this.#mouseInput.setLeftButtonPressedFalse();
+
+      this.#executeEvents();
+
+      this.#updateStateMessages();
+
+      this.#updatePlayersTotalHP();
+
+      this.#checkIfGameOver();
     }
-
-    this.#mouseInput.setLeftButtonPressedFalse();
-
-    this.#executeEvents();
-
-    this.#updateStateMessages();
-
-    this.#updatePlayersTotalHP();
-
-    this.#checkIfGameOver();
   }
 
   #healHarmedMinions() {
@@ -955,6 +959,18 @@ export default class Game {
         this.#chatMessages[0].getContent() ===
         this.#chatMessages[1].getContent()
       );
+    }
+  }
+
+  #updateChatMessages() {
+    for (let i = 0; i < this.#chatMessages.length; i++) {
+      let currentChatMessage = this.#chatMessages[i];
+
+      const isChatMessageActive = currentChatMessage.execute();
+
+      if (!isChatMessageActive) {
+        this.#chatMessages.splice(i, 1);
+      }
     }
   }
 
