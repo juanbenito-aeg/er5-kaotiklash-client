@@ -1,5 +1,5 @@
 import StateMessage from "../Messages/StateMessage.js";
-import { AnimationTypeID } from "../Game/constants.js";
+import Physics from "../Game/Physics.js";
 
 export default class SpecialSkillXG {
   #currentPlayerMinionsInPlayDeck;
@@ -43,9 +43,12 @@ export default class SpecialSkillXG {
         "MINIONS GOT CRAZY!!",
         "50px MedievalSharp",
         "blue",
+        1,
         2,
         1200,
-        520
+        520,
+        1,
+        new Physics(0, 0, 0, 0, 0, 0, 0)
       );
 
       this.#stateMessages.push(message);
@@ -54,10 +57,12 @@ export default class SpecialSkillXG {
         "ATTACK ↑",
         "40px MedievalSharp",
         "green",
+        1,
         2,
         1200,
         570,
-        AnimationTypeID.BOOST
+        1,
+        new Physics(0, 0, 0, 0, 0, 0, 0)
       );
 
       this.#stateMessages.push(attackMessage);
@@ -66,10 +71,12 @@ export default class SpecialSkillXG {
         "DEFENSE ↓",
         "40px MedievalSharp",
         "red",
+        1,
         2,
         1200,
         630,
-        AnimationTypeID.DEBUFF
+        1,
+        new Physics(0, 0, 0, 0, 0, 0, 0)
       );
 
       this.#stateMessages.push(DefenseMessage);

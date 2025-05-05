@@ -10,9 +10,9 @@ import {
   ArmorID,
   PlayerID,
   WeaponTypeID,
-  MinionTypeID,
-  AnimationTypeID
+  MinionTypeID
 } from "../Game/constants.js";
+import Physics from "../Game/Physics.js";
 
 export default class AttackEvent extends Event {
   #attacker;
@@ -74,11 +74,15 @@ export default class AttackEvent extends Event {
         "ATTACK NULLIFIED BY SHIELD OF BALANCE!",
         "50px MedievalSharp",
         "red",
+        1,
         2,
         targetBox.getCard().getXCoordinate() +
           globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width / 2,
         targetBox.getCard().getYCoordinate() +
-          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2
+          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2,
+        1,
+        new Physics(0,0,0,0,0,0,0),
+        
       );
       this.#stateMessages.push(nullifiedMessage);
 
@@ -563,15 +567,18 @@ export default class AttackEvent extends Event {
     return newdamageToInflict;
   }
 
+  
   parryMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
       `WEAPON DURABILITY!: -${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
+      1,
       2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55,
-      AnimationTypeID.PARRY
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
     this.#stateMessages.push(parryMessage);
   }
@@ -581,10 +588,12 @@ export default class AttackEvent extends Event {
       `PARRY FAILED!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
+      1,
       2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55,
-      AnimationTypeID.FUMBLE
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
     this.#stateMessages.push(parryMessage);
   }
@@ -594,10 +603,12 @@ export default class AttackEvent extends Event {
       `PARRY HALF FUMBLE!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
+      1,
       2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55,
-      AnimationTypeID.FUMBLE
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
     this.#stateMessages.push(parryMessage);
   }
@@ -607,10 +618,12 @@ export default class AttackEvent extends Event {
       `PARRY CRIT!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
+      1,
       2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55,
-      AnimationTypeID.CRIT
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
     this.#stateMessages.push(parryMessage);
   }
@@ -620,10 +633,12 @@ export default class AttackEvent extends Event {
       damageToInflict,
       "20px MedievalSharp",
       color,
+      1,
       2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() + 55,
-      AnimationTypeID.DAMAGE
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
     this.#stateMessages.push(damageMessage);
   }
@@ -638,9 +653,12 @@ export default class AttackEvent extends Event {
       dmgReflectedBackOntoAttackerMsg,
       "20px MedievalSharp",
       "aqua",
+      1,
       4,
       globals.canvas.width / 2 - dmgReflectedBackOntoAttackerMsg.length / 2,
-      globals.canvas.height / 2
+      globals.canvas.height / 2,
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
     this.#stateMessages.push(dmgReflectedBackOntoAttackerMsg);
 
@@ -663,10 +681,12 @@ export default class AttackEvent extends Event {
       "CRITICAL HIT!",
       "60px MedievalSharp",
       "gold",
+      1,
       2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55,
-      AnimationTypeID.CRIT
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
     this.#stateMessages.push(critMessage);
   }
@@ -676,10 +696,12 @@ export default class AttackEvent extends Event {
       "FUMBLE!",
       "60px MedievalSharp",
       "red",
+      1,
       2,
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55,
-      AnimationTypeID.FUMBLE
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
     this.#stateMessages.push(fumbleMessage);
   }
@@ -689,10 +711,12 @@ export default class AttackEvent extends Event {
       "WEAPON BROKE!",
       "40px MedievalSharp",
       "red",
+      1,
       4,
       targetBox.getCard().getXCoordinate() - 100,
       targetBox.getCard().getYCoordinate() + 10,
-      AnimationTypeID.BROKEN
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
     this.#stateMessages.push(weaponMessage);
   }
@@ -702,10 +726,12 @@ export default class AttackEvent extends Event {
       "MINION DIED!",
       "25px MedievalSharp",
       "red",
+      1,
       2,
       target.getXCoordinate() + 55,
       target.getYCoordinate() + 110,
-      AnimationTypeID.DEATH
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
     this.#stateMessages.push(deathMessage);
   }
@@ -715,10 +741,12 @@ export default class AttackEvent extends Event {
       "ARMOR BROKE!",
       "40px MedievalSharp",
       "red",
+      1,
       4,
       armorOwnerBox.getCard().getXCoordinate() + 208,
       armorOwnerBox.getCard().getYCoordinate() + 10,
-      AnimationTypeID.BROKEN
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
     this.#stateMessages.push(armorBrokeMsg);
   }
@@ -745,9 +773,12 @@ export default class AttackEvent extends Event {
         "WIZARD DODGED THE ATTACK USING CLOAK OF ETERNAL SHADOW!",
         "45px MedievalSharp",
         "aqua",
+        1,
         3,
         this.#target.getXCoordinate(),
-        this.#target.getYCoordinate() - 30
+        this.#target.getYCoordinate() - 30,
+        1,
+        new Physics(0, 0, 0, 0, 0, 0, 0)
       );
       this.#stateMessages.push(dodgeMessage);
       this.#isArmorPowerChosen = false;

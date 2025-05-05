@@ -22,6 +22,7 @@ import {
   BoxState,
   MinionTypeID,
 } from "../Game/constants.js";
+import Physics from "../Game/Physics.js";
 
 export default class Turn {
   #isCurrentPhaseCanceled;
@@ -42,6 +43,7 @@ export default class Turn {
   #hoverTime;
   #lastHoveredCardId;
   #eventsData;
+  #stats;
 
   constructor(
     deckContainer,
@@ -53,7 +55,8 @@ export default class Turn {
     stateMessages,
     attackMenuData,
     minionTooltip,
-    eventsData
+    eventsData,
+    stats
   ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
@@ -73,6 +76,7 @@ export default class Turn {
     this.#hoverTime = 0;
     this.#lastHoveredCardId = null;
     this.#eventsData = eventsData;
+    this.#stats = stats;
   }
 
   fillPhases(currentPlayer) {
@@ -101,7 +105,8 @@ export default class Turn {
         this.#phaseMessage,
         this.#stateMessages,
         this.#attackMenuData,
-        this.#eventsData
+        this.#eventsData,
+        this.#stats
       );
 
       this.#phases.push(currentPhase);
@@ -210,7 +215,6 @@ export default class Turn {
 
     if (!isAnyCardExpanded) {
       this.#updateMinionTooltip();
-
       if (this.#currentPhase === PhaseType.INVALID) {
         this.#equipWeaponOrArmor();
 
@@ -506,9 +510,12 @@ export default class Turn {
                 "GEARED UP!",
                 "20px MedievalSharp",
                 "yellow",
+                1,
                 4,
                 nMsgXCoordinate,
-                nMsgYCoordinate
+                nMsgYCoordinate,
+                2,
+                new Physics(0, 0, 0, 0, 0, 0, 0)
               );
               this.#stateMessages.push(gearedUpMsg);
               this.#player.addUsedCards();
@@ -621,9 +628,12 @@ export default class Turn {
                 "CANNOT ATTACK DUE TO ACTIVE EVENT",
                 "20px MedievalSharp",
                 "red",
+                1,
                 4,
                 buttonXCoordinate + buttonWidth / 2,
-                buttonYCoordinate + buttonHeight / 2
+                buttonYCoordinate + buttonHeight / 2,
+                2,
+                new Physics(0, 0, 0, 0, 0, 0, 0)
               );
 
               this.#stateMessages.push(cannotAttackDueToActiveEventMsg);
@@ -634,12 +644,15 @@ export default class Turn {
               this.#eventsData.decrepitThroneSkill.turnsSinceActivation !== 3
             ) {
               const cannotDoAnythingDueToActiveEventMsg = new StateMessage(
-                "CANNOT DO (ALMOST) ANYTHING DUE TO ACTIVE EVENT",
+                "CANNOT DO ALMOST ANYTHING DUE TO THE CURSE OF THE THRONE",
                 "20px MedievalSharp",
                 "red",
-                4,
+                1,
+                3,
                 buttonXCoordinate + buttonWidth / 2,
-                buttonYCoordinate + buttonHeight / 2
+                buttonYCoordinate + buttonHeight / 2,
+                1.5,
+                new Physics(0, 0, 0, 0, 0, 0, 0)
               );
 
               this.#stateMessages.push(cannotDoAnythingDueToActiveEventMsg);

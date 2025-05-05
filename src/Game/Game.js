@@ -26,8 +26,8 @@ import {
   GridType,
   PhaseButtonData,
   Language,
-  AnimationTypeID,
 } from "./constants.js";
+import Physics from "./Physics.js";
 
 export default class Game {
   #players;
@@ -657,9 +657,12 @@ export default class Game {
             "Player 1 Cannot heal minions",
             `30px MedievalSharp`,
             "silver",
+            1,
             2,
             globals.canvas.width / 2,
-            globals.canvas.height / 2
+            globals.canvas.height / 2,
+            1,
+            new Physics(0,0,0,0,0,0,0)
           );
           this.#stateMessages.push(message);
         } else if (this.#eventsData.theCupOfTheLastBreath.isPlayer2Affected) {
@@ -667,9 +670,12 @@ export default class Game {
             "Player 2 Cannot heal minions",
             `30px MedievalSharp`,
             "silver",
+            1,
             2,
             globals.canvas.width / 2,
-            globals.canvas.height / 2
+            globals.canvas.height / 2,
+            1,
+            new Physics(0, 0, 0, 0, 0, 0, 0)
           );
           this.#stateMessages.push(message);
         }
@@ -762,9 +768,11 @@ export default class Game {
             "20px MedievalSharp",
             "lightgreen",
             1,
+            1,
             currentCard.getXCoordinate() + 55,
             currentCard.getYCoordinate() + 110,
-            AnimationTypeID.HEAL
+            0.5,
+            new Physics(0, 0, 0, 0, 0, 0, 0)
           );
           this.#stateMessages.push(healMessage);
         } else {
@@ -774,9 +782,11 @@ export default class Game {
             "20px MedievalSharp",
             "lightgreen",
             1,
+            1,
             currentCard.getXCoordinate() + 55,
             currentCard.getYCoordinate() + 110,
-            AnimationTypeID.HEAL
+            0.5,
+            new Physics(0, 0, 0, 0, 0, 0, 0)
           );
           this.#stateMessages.push(healMessage);
         }
@@ -801,9 +811,11 @@ export default class Game {
             "20px MedievalSharp",
             "lightgreen",
             1,
+            1,
             currentCard.getXCoordinate() + 55,
             currentCard.getYCoordinate() + 110,
-            AnimationTypeID.HEAL
+            0.5,
+            new Physics(0, 0, 0, 0, 0, 0, 0)
           );
           this.#stateMessages.push(healMessage);
         } else {
@@ -813,9 +825,11 @@ export default class Game {
             "20px MedievalSharp",
             "lightgreen",
             1,
+            1,
             currentCard.getXCoordinate() + 55,
             currentCard.getYCoordinate() + 110,
-            AnimationTypeID.HEAL
+            0.5,
+            new Physics(0, 0, 0, 0, 0, 0, 0)
           );
           this.#stateMessages.push(healMessage);
         }
@@ -839,9 +853,11 @@ export default class Game {
           `50px MedievalSharp`,
           "green",
           1,
+          1,
           currentCard.getXCoordinate() + 55,
           currentCard.getYCoordinate() + 55,
-          AnimationTypeID.DAMAGE
+          0.5,
+          new Physics(0, 0, 0, 0, 0, 0, 0)
         );
         this.#stateMessages.push(message);
       }
@@ -856,9 +872,11 @@ export default class Game {
           `50px MedievalSharp`,
           "green",
           1,
+          1,
           currentCard.getXCoordinate() + 55,
           currentCard.getYCoordinate() + 55,
-          AnimationTypeID.DAMAGE
+          0.5,
+          new Physics(0, 0, 0, 0, 0, 0, 0)
         );
         this.#stateMessages.push(message);
       }
@@ -2530,6 +2548,8 @@ export default class Game {
       globals.ctx.shadowColor = "black";
       globals.ctx.font = currentMessage.getFont();
       globals.ctx.fillStyle = currentMessage.getColor();
+      globals.ctx.globalAlpha = currentMessage.getAlpha();
+      
 
       for (let i = 0; i < 15; i++) {
         globals.ctx.fillText(

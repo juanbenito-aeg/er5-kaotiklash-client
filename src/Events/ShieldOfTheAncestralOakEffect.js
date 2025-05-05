@@ -1,5 +1,5 @@
 import StateMessage from "../Messages/StateMessage.js";
-import { AnimationTypeID } from "../Game/constants.js";
+import Physics from "../Game/Physics.js";
 
 export default class ShieldOfYheAncestralOakEffect {
   static applyCounterAttack(target, stateMessages) {
@@ -16,18 +16,23 @@ export default class ShieldOfYheAncestralOakEffect {
         "COUNTERATTACK: SHIELD OF THE ANCESTRAL OAK!",
         "40px MedievalSharp",
         "green",
+        1,
         2,
         1200,
-        520
+        520,
+        1,
+        new Physics(0, 0, 0, 0, 0, 0, 0)
       );
       const damageMessage = new StateMessage(
         `-${counterDamage} HP`,
         "30px MedievalSharp",
         "darkgreen",
+        1,
         2,
         1200,
         570,
-        AnimationTypeID.DAMAGE
+        1,
+        new Physics(0, 0, 0, 0, 0, 0, 0)
       );
 
       stateMessages.push(message, damageMessage);

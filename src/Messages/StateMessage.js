@@ -5,37 +5,49 @@ export default class StateMessage extends Message {
   #content;
   #font;
   #color;
+  #alpha;
   #duration;
   #startTime;
   #xPosition;
   #yPosition;
-  #animationType;
+  #timeToFade;
+  #physics;
 
-  constructor(content, font, color, duration, xPosition, yPosition, animationType) {
+  constructor(content, font, color, alpha, duration, xPosition, yPosition, timeToFade, physics) {
     super();
 
     this.#content = content;
     this.#font = font;
     this.#color = color;
+    this.#alpha = alpha;
     this.#duration = duration;
     this.#xPosition = xPosition;
     this.#yPosition = yPosition;
-    this.#animationType = animationType;
+    this.#timeToFade = timeToFade;
+    this.#physics = physics;
   }
 
   execute() {
     if (this.#startTime === null) {
       this.#startTime = globals.deltaTime;
     }
-
-    if (this.#duration <= 0) {
-      return true; // MESSAGE IS OVER
-    }
-
+  
     this.#duration -= globals.deltaTime;
+  
+    if (this.#duration <= this.#timeToFade) {
 
-    return false; // MESSAGE IS ACTIVE
+      this.#alpha -= globals.deltaTime / this.#timeToFade;
+      this.#yPosition -= this.#physics.vy * globals.deltaTime;
+      this.#alpha = Math.max(this.#alpha, 0); 
+    }
+  
+    if (this.#alpha <= 0) {
+      return true;
+    }
+  
+    return false; 
   }
+  
 
   getContent() {
     return this.#content;
@@ -47,6 +59,10 @@ export default class StateMessage extends Message {
 
   getColor() {
     return this.#color;
+  }
+
+  getAlpha() {
+    return this.#alpha;
   }
 
   getDuration() {
@@ -61,7 +77,11 @@ export default class StateMessage extends Message {
     return this.#yPosition;
   }
 
-  getAnimationType() {
-    return this.#animationType;
+  getTimeToFade() {
+    return this.#timeToFade;
+  }
+
+  getPhysics() {
+    return this.#physics;
   }
 }

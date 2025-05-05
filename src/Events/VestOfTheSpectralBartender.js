@@ -1,5 +1,5 @@
 import StateMessage from "../Messages/StateMessage.js";
-import { AnimationTypeID } from "../Game/constants.js";
+import Physics from "../Game/Physics.js";
 
 export default class VestOfTheSpectralBartenderEffect {
   static blockCrit(damage, target, stateMessage) {
@@ -8,10 +8,12 @@ export default class VestOfTheSpectralBartenderEffect {
       "CRITICAL HIT BLOCKED!",
       "30px MedievalSharp",
       "orange",
+      1,
       2,
       target.getXCoordinate() + 55,
       target.getYCoordinate() - 20,
-      AnimationTypeID.PARRY
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
     stateMessage.push(msg);
 

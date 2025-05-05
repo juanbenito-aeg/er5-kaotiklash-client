@@ -1,7 +1,7 @@
 import Event from "./Event.js";
 import globals from "../Game/globals.js";
 import StateMessage from "../Messages/StateMessage.js";
-import { AnimationTypeID } from "../Game/constants.js";
+import Physics from "../Game/Physics.js";
 
 export default class RayOfCelestialRuinEvent extends Event {
   #currentEnemyMinionsInPlay;
@@ -30,6 +30,7 @@ export default class RayOfCelestialRuinEvent extends Event {
             "20px MedievalSharp",
             "red",
             1,
+            1,
             minion.getXCoordinate() +
               globals.imagesDestinationSizes.minionsAndEventsSmallVersion
                 .width /
@@ -38,7 +39,8 @@ export default class RayOfCelestialRuinEvent extends Event {
               globals.imagesDestinationSizes.minionsAndEventsSmallVersion
                 .height /
                 2,
-            AnimationTypeID.DEBUFF
+            0.5,
+            new Physics(0, 0, 0, 0, 0, 0, 0)
           )
         );
       }
@@ -49,8 +51,11 @@ export default class RayOfCelestialRuinEvent extends Event {
         "40px MedievalSharp",
         "red",
         1,
+        1,
         1200,
-        520
+        520,
+        0.5,
+        new Physics(0, 0, 0, 0, 0, 0, 0),
       )
     );
   }

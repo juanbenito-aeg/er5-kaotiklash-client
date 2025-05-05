@@ -3,6 +3,8 @@ import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
 import globals from "../Game/globals.js";
 import { CardState, HandOfTheSoulThiefState } from "../Game/constants.js";
+import Physics from "../Game/Physics.js";
+
 
 export default class HandOfTheSoulThiefEvent extends Event {
   #currentPlayerCardsInHandDeck;
@@ -73,9 +75,12 @@ export default class HandOfTheSoulThiefEvent extends Event {
           "YOU HAVE STOLEN A CARD FROM YOUR ENEMY'S SOUL!",
           "38px MedievalSharp",
           "crimson",
+          1,
           2,
           1200,
-          530
+          530,
+          1,
+          new Physics(0, 0, 0, 0, 0, 0, 0)
         );
         this.#stateMessage.push(message);
         this.#state = HandOfTheSoulThiefState.SELECT_CARD_TO_EXCHANGE;
@@ -154,9 +159,12 @@ export default class HandOfTheSoulThiefEvent extends Event {
         "THE CARDS HAVE BEEN SUCCESSFULLY EXCHANGED!",
         "40px MedievalSharp",
         "blue",
+        1,
         3,
         1200,
-        570
+        570,
+        1,
+        new Physics(0, 0, 0, 0, 0, 0, 0)
       );
 
       this.#stateMessage.push(message);

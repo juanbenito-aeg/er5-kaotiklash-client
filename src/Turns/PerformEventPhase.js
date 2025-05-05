@@ -25,6 +25,7 @@ import {
 } from "../Game/constants.js";
 import TheCupOfTheLastBreathEvent from "../Events/TheCupOfTheLastBreathEvent.js";
 import RayOfCelestialRuinEvent from "../Events/RayOfCelestialRuinEvent.js";
+import Physics from "../Game/Physics.js";
 
 export default class PerformEventPhase extends Phase {
   #events;
@@ -319,6 +320,7 @@ export default class PerformEventPhase extends Phase {
               "REQUIRES THE ENEMY TO HAVE ARMOR",
               "30px MedievalSharp",
               "red",
+              1,
               0.1,
               hoveredCard.getXCoordinate() +
                 globals.imagesDestinationSizes.minionsAndEventsSmallVersion
@@ -327,7 +329,9 @@ export default class PerformEventPhase extends Phase {
               hoveredCard.getYCoordinate() +
                 globals.imagesDestinationSizes.minionsAndEventsSmallVersion
                   .height /
-                  2
+                  2,
+              0.1,
+              new Physics(0, 0, 0, 0, 0, 0, 0)
             )
           );
           return;

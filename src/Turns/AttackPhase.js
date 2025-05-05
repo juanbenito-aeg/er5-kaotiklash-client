@@ -14,6 +14,7 @@ import {
   MinionTypeID,
   ArmorID,
 } from "../Game/constants.js";
+import Physics from "../Game/Physics.js";
 
 export default class AttackPhase extends Phase {
   #enemyMovementGrid;
@@ -213,10 +214,12 @@ export default class AttackPhase extends Phase {
           "Minion Debuffed",
           "20px MedievalSharp",
           "red",
-          0.01,
+          1,
+          0.1,
           attacker.getXCoordinate() + 55,
           attacker.getYCoordinate() + 10,
-          AnimationTypeID.DEBUFF
+          0.01,
+          new Physics(0, 0, 0, 0, 0, 0, 0)
         );
         this.#stateMessages.push(debuffMessage);
       }
@@ -229,10 +232,12 @@ export default class AttackPhase extends Phase {
           "Minion Debuffed",
           "20px MedievalSharp",
           "red",
+          1,
           0.01,
           attacker.getXCoordinate() + 55,
           attacker.getYCoordinate() + 10,
-          AnimationTypeID.DEBUFF
+          0.01,
+          new Physics(0, 0, 0, 0, 0, 0, 0)
         );
         this.#stateMessages.push(debuffMessage);
       }
@@ -322,9 +327,12 @@ export default class AttackPhase extends Phase {
             "Target not within reach",
             "20px MedievalSharp",
             "red",
+            1,
             0.01,
             target.getXCoordinate() + 55,
-            target.getYCoordinate() + 10
+            target.getYCoordinate() + 10,
+            0.01,
+            new Physics(0, 0, 0, 0, 0, 0, 0)
           );
           this.#stateMessages.push(errorMessage);
         }

@@ -3,7 +3,7 @@ import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
 import globals from "../Game/globals.js";
 import { BlessingWaitressState, CardState } from "../Game/constants.js";
-import { AnimationTypeID } from "../Game/constants.js";
+import Physics from "../Game/Physics.js";
 
 export default class BlessingWaitressEvent extends Event {
   #state;
@@ -115,11 +115,15 @@ export default class BlessingWaitressEvent extends Event {
       `+${hpToRestore} HP`,
       "20px MedievalSharp",
       "rgb(250 233 183)",
+      1,
       4,
       restoredHPMsgXCoordinate,
       restoredHPMsgYCoordinate,
-      AnimationTypeID.HEAL
+      2,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    restoredHPMsg.#getPhysics().vy = 2;
 
     this.#stateMessages.push(restoredHPMsg);
 
