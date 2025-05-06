@@ -857,11 +857,27 @@ async function loadHandler() {
   if (globals.assetsLoaded === globals.assetsToLoad.length) {
     globals.gameState = GameState.PLAYING;
 
-    globals.game = await Game.create();
+    const playersNames = getPlayersNames();
+    globals.game = await Game.create(playersNames);
 
     // FIRST FRAME REQUEST
     window.requestAnimationFrame(executeGameLoop);
   }
+}
+
+function getPlayersNames() {
+  const playersNames = {
+    loggedIn: "",
+    opponent: "",
+  };
+
+  playersNames.loggedIn = localStorage.getItem("playerName");
+
+  const opponentSelect = document.getElementById("opponent-select");
+  playersNames.opponent =
+    opponentSelect.options[opponentSelect.selectedIndex].label;
+
+  return playersNames;
 }
 
 function createAndStoreImageObjs(arrayOfSameTypeObjs, arrayToPutImageObjsInto) {

@@ -1,5 +1,6 @@
 import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
+import StateMessage from "../Messages/StateMessage.js";
 import JosephConstantSwapEvent from "../Events/JosephConstantSwapEvent.js";
 import globals from "../Game/globals.js";
 import {
@@ -15,6 +16,7 @@ import {
 
 export default class DrawCardPhase extends Phase {
   #isFirstTurn;
+  #stateMessages;
   #player;
   #events;
   #eventsDeck;
@@ -31,6 +33,7 @@ export default class DrawCardPhase extends Phase {
     state,
     mouseInput,
     phaseMessage,
+    stateMessages,
     player,
     events,
     eventsDeck,
@@ -46,6 +49,7 @@ export default class DrawCardPhase extends Phase {
     super(state, mouseInput, phaseMessage);
 
     this.#isFirstTurn = true;
+    this.#stateMessages = stateMessages;
     this.#player = player;
     this.#events = events;
     this.#eventsDeck = eventsDeck;
@@ -67,7 +71,9 @@ export default class DrawCardPhase extends Phase {
     events,
     currentPlayer,
     phaseMessage,
+    stateMessages,
     attackMenuData,
+    eventsData,
     stats
   ) {
     // DECKS VARIABLES
@@ -90,6 +96,7 @@ export default class DrawCardPhase extends Phase {
       0,
       mouseInput,
       phaseMessage,
+      stateMessages,
       player,
       events,
       eventsDeck,
@@ -146,6 +153,7 @@ export default class DrawCardPhase extends Phase {
       drawnCard.getID() === MainCharacterID.JOSEPH
     ) {
       this.#stats.joseph_appeared = true;
+
       this.#activeEventsDeck.insertCard(drawnCard);
       this.#josephDeck.insertCard(drawnCard);
 
@@ -195,9 +203,20 @@ export default class DrawCardPhase extends Phase {
       this.#josephDeck,
       this.#deckContainer,
       this.#board,
-      this.#events
+      this.#events,
+      this.#stateMessages
     );
 
     this.#events.push(josephConstantSwapEvent);
+
+    const josephIsHereMsg = new StateMessage(
+      "THE FEARSOME JOSEPH IS HERE!",
+      "60px MedievalSharp",
+      "rgb(225 213 231)",
+      3,
+      globals.canvas.width / 2,
+      globals.canvas.height / 2
+    );
+    this.#stateMessages.push(josephIsHereMsg);
   }
 }

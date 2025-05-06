@@ -214,7 +214,7 @@ export default class AttackEvent extends Event {
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage() -
           this.#target.getCurrentDefense();
-        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict));
+        damageToInflict = Math.floor(this.calculateDistance(damageToInflict));
       }
     } else if (
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE &&
@@ -232,7 +232,7 @@ export default class AttackEvent extends Event {
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage();
 
-        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict));
+        damageToInflict = Math.floor(this.calculateDistance(damageToInflict));
       }
     } else if (
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID &&
@@ -252,7 +252,7 @@ export default class AttackEvent extends Event {
           this.#attacker.getWeaponCurrentDamage() -
           this.#target.getCurrentDefense();
 
-        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict));
+        damageToInflict = Math.floor(this.calculateDistance(damageToInflict));
       }
     } else if (
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID &&
@@ -270,7 +270,7 @@ export default class AttackEvent extends Event {
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage();
 
-        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict));
+        damageToInflict = Math.floor(this.calculateDistance(damageToInflict));
       }
     }
 
@@ -383,19 +383,11 @@ export default class AttackEvent extends Event {
 
     if (this.#parry === true && !fumble && this.#target.getWeapon()) {
       // PARRY
-
       if (
-        this.#attacker.getArmor() &&
-        this.#attacker.getArmor().getID() ===
-          ArmorID.SHIELD_OF_THE_ANCESTRAL_OAK
-      ) {
-        ShieldOfTheAncestralOakEffect.applyCounterAttack(
-          this.#target,
-          this.#stateMessages
-        );
-      } else if (
         this.#target.getArmor() &&
-        this.#target.getArmor().getID() === ArmorID.SHIELD_OF_THE_ANCESTRAL_OAK
+        this.#target.getArmor().getID() ===
+          ArmorID.SHIELD_OF_THE_ANCESTRAL_OAK &&
+        this.#target.getMinionTypeID() === MinionTypeID.WARRIOR
       ) {
         ShieldOfTheAncestralOakEffect.applyCounterAttack(
           this.#attacker,
@@ -405,11 +397,12 @@ export default class AttackEvent extends Event {
 
       if (
         this.#attacker.getArmor() &&
-        this.#attacker.getArmor().getID() === ArmorID.BRACERS_OF_THE_WAR_LION
+        this.#attacker.getArmor().getID() === ArmorID.BRACERS_OF_THE_WAR_LION &&
+        this.#attacker.getMinionTypeID() === MinionTypeID.WIZARD
       ) {
         damageToInflict = BracersOfTheWarLionSpecialEffect.activeBoost(
           damageToInflict,
-          this.#attacker,
+          this.#target,
           this.#stateMessages
         );
       }
@@ -533,8 +526,8 @@ export default class AttackEvent extends Event {
     }
 
     if (!attackerWeapon) {
-      //RESET TITANIC FURY BOOST AFTER THE ATTACK IS FINISHED
-      ArmorOfTitanicFuryEffect.resetBoost(this.#attacker);
+      // RESET TITANIC FURY BOOST AFTER THE ATTACK IS FINISHED
+      ArmorOfTitanicFuryEffect.resetBoost(this.#attacker, this.#stateMessages);
     }
 
     if (damageToInflict > 0) {
@@ -552,7 +545,7 @@ export default class AttackEvent extends Event {
     }
   }
 
-  caltulateDistance(damageToInflict) {
+  calculateDistance(damageToInflict) {
     // Calculate the distance between the attacker and target
     let x1 = this.#attacker.getXCoordinate();
     let y1 = this.#attacker.getYCoordinate();
@@ -561,6 +554,8 @@ export default class AttackEvent extends Event {
     let xDiff = Math.abs(x2 - x1) / 135;
     let yDiff = Math.abs(y2 - y1) / 135;
     let distance = xDiff + yDiff;
+
+    distance = Math.max(1, distance);
 
     let newdamageToInflict = damageToInflict / distance;
 
@@ -651,11 +646,11 @@ export default class AttackEvent extends Event {
       "THE DAMAGE WAS REFLECTED BACK ONTO THE ATTACKER!";
     dmgReflectedBackOntoAttackerMsg = new StateMessage(
       dmgReflectedBackOntoAttackerMsg,
-      "20px MedievalSharp",
+      "30px MedievalSharp",
       "aqua",
       1,
-      4,
-      globals.canvas.width / 2 - dmgReflectedBackOntoAttackerMsg.length / 2,
+      3,
+      globals.canvas.width / 2,
       globals.canvas.height / 2,
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
@@ -709,12 +704,13 @@ export default class AttackEvent extends Event {
   weaponMessage(targetBox) {
     const weaponMessage = new StateMessage(
       "WEAPON BROKE!",
-      "40px MedievalSharp",
+      "30px MedievalSharp",
       "red",
       1,
-      4,
-      targetBox.getCard().getXCoordinate() - 100,
-      targetBox.getCard().getYCoordinate() + 10,
+      2,
+      targetBox.getCard().getXCoordinate() - 135,
+      targetBox.getCard().getYCoordinate() +
+        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2,
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
@@ -724,12 +720,15 @@ export default class AttackEvent extends Event {
   deathMessage(target) {
     const deathMessage = new StateMessage(
       "MINION DIED!",
-      "25px MedievalSharp",
+      "30px MedievalSharp",
       "red",
       1,
       2,
-      target.getXCoordinate() + 55,
-      target.getYCoordinate() + 110,
+      target.getXCoordinate() +
+        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width / 2,
+      target.getYCoordinate() +
+        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height +
+      15,
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
@@ -739,12 +738,13 @@ export default class AttackEvent extends Event {
   #createAndStoreArmorBrokeMsg(armorOwnerBox) {
     const armorBrokeMsg = new StateMessage(
       "ARMOR BROKE!",
-      "40px MedievalSharp",
+      "30px MedievalSharp",
       "red",
       1,
-      4,
-      armorOwnerBox.getCard().getXCoordinate() + 208,
-      armorOwnerBox.getCard().getYCoordinate() + 10,
+      2,
+      armorOwnerBox.getCard().getXCoordinate() + 240,
+      armorOwnerBox.getCard().getYCoordinate() +
+        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2,
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
@@ -769,22 +769,34 @@ export default class AttackEvent extends Event {
     );
 
     if (canDodge) {
+      // CREATE AND STORE THE ARMOR'S POWER STATE MESSAGE
       const dodgeMessage = new StateMessage(
-        "WIZARD DODGED THE ATTACK USING CLOAK OF ETERNAL SHADOW!",
-        "45px MedievalSharp",
+        "THE WIZARD DODGED THE ATTACK USING THE CLOAK OF ETERNAL SHADOW!",
+        "30px MedievalSharp",
         "aqua",
         1,
         3,
-        this.#target.getXCoordinate(),
-        this.#target.getYCoordinate() - 30,
+        globals.canvas.width / 2,
+        globals.canvas.height / 2,
         1,
         new Physics(0, 0, 0, 0, 0, 0, 0)
       );
       this.#stateMessages.push(dodgeMessage);
+
+      // CREATE AND STORE THE "ARMOR BROKE!" STATE MESSAGE
+      const cloakEternalShadowOwnerBox = this.#target.getBoxIsPositionedIn(
+        this.#enemyMovementGrid,
+        this.#target
+      );
+      this.#createAndStoreArmorBrokeMsg(cloakEternalShadowOwnerBox);
+
       this.#isArmorPowerChosen = false;
+
+      // RESET THE ARMOR'S ATTRIBUTES, INSERT IT INTO THE EVENTS DECK & REMOVE IT FROM ITS OWNER
       this.#target.resetArmorAttributes();
       this.#eventDeck.insertCard(this.#target.getArmor());
       this.#target.removeArmor();
+
       return;
     }
   }

@@ -1,6 +1,8 @@
 import Event from "./Event.js";
 import PrepareEvent from "./PrepareEvent.js";
 import Card from "../Decks/Card.js";
+import StateMessage from "../Messages/StateMessage.js";
+import globals from "../Game/globals.js";
 import { DeckType, GridType, PlayerID } from "../Game/constants.js";
 
 export default class JosephConstantSwapEvent extends Event {
@@ -14,6 +16,7 @@ export default class JosephConstantSwapEvent extends Event {
   #player2EventsInPrepDeck;
   #player2BattlefieldGrid;
   #player2EventsInPrepGrid;
+  #stateMessages;
 
   constructor(
     executedBy,
@@ -27,7 +30,8 @@ export default class JosephConstantSwapEvent extends Event {
     player2MinionsInPlayDeck,
     player2EventsInPrepDeck,
     player2BattlefieldGrid,
-    player2EventsInPrepGrid
+    player2EventsInPrepGrid,
+    stateMessages
   ) {
     super(executedBy, eventCard);
 
@@ -41,9 +45,17 @@ export default class JosephConstantSwapEvent extends Event {
     this.#player2EventsInPrepDeck = player2EventsInPrepDeck;
     this.#player2BattlefieldGrid = player2BattlefieldGrid;
     this.#player2EventsInPrepGrid = player2EventsInPrepGrid;
+    this.#stateMessages = stateMessages;
   }
 
-  static create(executedBy, josephDeck, deckContainer, board, events) {
+  static create(
+    executedBy,
+    josephDeck,
+    deckContainer,
+    board,
+    events,
+    stateMessages
+  ) {
     // DECKS VARIABLES
     let player1MinionsInPlayDeck =
       deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
@@ -76,7 +88,8 @@ export default class JosephConstantSwapEvent extends Event {
       player2MinionsInPlayDeck,
       player2EventsInPrepDeck,
       player2BattlefieldGrid,
-      player2EventsInPrepGrid
+      player2EventsInPrepGrid,
+      stateMessages
     );
 
     return josephConstantSwapEvent;
@@ -99,6 +112,26 @@ export default class JosephConstantSwapEvent extends Event {
         this.#createRemovedPrepareEvents(currentPlayer, enemy);
 
         this.#josephDeck.removeCard(this._eventCard);
+
+        const josephIsGoneMsg = new StateMessage(
+          "JOSEPH IS GONE, BUT HE WILL REMAIN IN YOUR NIGHTMARES...",
+          "30px MedievalSharp",
+          "rgb(225 213 231)",
+          3,
+          globals.canvas.width / 2,
+          globals.canvas.height / 2
+        );
+        this.#stateMessages.push(josephIsGoneMsg);
+      } else {
+        const josephExchangedCardsMsg = new StateMessage(
+          "JOSEPH EXCHANGED ALL CARDS IN THE COMBAT ARENA BETWEEN PLAYERS!",
+          "26px MedievalSharp",
+          "rgb(225 213 231)",
+          3,
+          globals.canvas.width / 2,
+          globals.canvas.height / 2
+        );
+        this.#stateMessages.push(josephExchangedCardsMsg);
       }
     }
   }

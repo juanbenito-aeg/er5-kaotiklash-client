@@ -337,6 +337,7 @@ export default class PerformEventPhase extends Phase {
           return;
         }
       }
+
       // MAKE IT IMPOSSIBLE FOR THE PLAYER TO USE THE "Summon Character" EVENT IF ONE IS ALREADY ACTIVE
       if (
         hoveredCard.getCategory() === CardCategory.SPECIAL &&
@@ -462,7 +463,8 @@ export default class PerformEventPhase extends Phase {
           selectedEventInstance = new CurseOfTheBoundTitanEvent(
             this.#player,
             selectedCard,
-            this.#eventsData
+            this.#eventsData,
+            this.#stateMessages
           );
           break;
 
@@ -481,7 +483,8 @@ export default class PerformEventPhase extends Phase {
           selectedEventInstance = new TheCupOfTheLastBreathEvent(
             this.#player,
             selectedCard,
-            this.#eventsData
+            this.#eventsData,
+            this.#stateMessages
           );
           break;
 

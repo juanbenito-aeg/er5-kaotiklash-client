@@ -1,6 +1,5 @@
 import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
-import StateMessage from "../Messages/StateMessage.js";
 import AttackEvent from "../Events/AttackEvent.js";
 import globals from "../Game/globals.js";
 import {
@@ -205,43 +204,6 @@ export default class AttackPhase extends Phase {
     const attacker = this.#currentPlayerMovementGridDeck.lookForHoveredCard();
 
     if (attacker) {
-      if (
-        this.#player.getID() === PlayerID.PLAYER_1 &&
-        this.#eventsData.curseOfTheBoundTitan.isPlayer1Affected
-      ) {
-
-        const debuffMessage = new StateMessage(
-          "Minion Debuffed",
-          "20px MedievalSharp",
-          "red",
-          1,
-          0.1,
-          attacker.getXCoordinate() + 55,
-          attacker.getYCoordinate() + 10,
-          0.01,
-          new Physics(0, 0, 0, 0, 0, 0, 0)
-        );
-        this.#stateMessages.push(debuffMessage);
-      }
-
-      if (
-        this.#player.getID() === PlayerID.PLAYER_2 &&
-        this.#eventsData.curseOfTheBoundTitan.isPlayer2Affected
-      ) {
-        const debuffMessage = new StateMessage(
-          "Minion Debuffed",
-          "20px MedievalSharp",
-          "red",
-          1,
-          0.01,
-          attacker.getXCoordinate() + 55,
-          attacker.getYCoordinate() + 10,
-          0.01,
-          new Physics(0, 0, 0, 0, 0, 0, 0)
-        );
-        this.#stateMessages.push(debuffMessage);
-      }
-
       if (!attacker.isLeftClicked()) {
         attacker.setState(CardState.HOVERED);
       } else {
@@ -323,18 +285,9 @@ export default class AttackPhase extends Phase {
             }
           }
         } else {
-          const errorMessage = new StateMessage(
-            "Target not within reach",
-            "20px MedievalSharp",
-            "red",
-            1,
-            0.01,
-            target.getXCoordinate() + 55,
-            target.getYCoordinate() + 10,
-            0.01,
-            new Physics(0, 0, 0, 0, 0, 0, 0)
+          this._phaseMessage.setCurrentContent(
+            PhaseMessage.content.attack.targetOutOfLimit[globals.language]
           );
-          this.#stateMessages.push(errorMessage);
         }
       }
     }

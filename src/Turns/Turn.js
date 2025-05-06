@@ -40,6 +40,7 @@ export default class Turn {
   #attackMenuData;
   #equipWeaponOrArmorState;
   #minionTooltip;
+  #remainingCardsTooltip;
   #hoverTime;
   #lastHoveredCardId;
   #eventsData;
@@ -56,7 +57,8 @@ export default class Turn {
     attackMenuData,
     minionTooltip,
     eventsData,
-    stats
+    stats,
+    remainingCardsTooltip
   ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
@@ -77,6 +79,7 @@ export default class Turn {
     this.#lastHoveredCardId = null;
     this.#eventsData = eventsData;
     this.#stats = stats;
+    this.#remainingCardsTooltip = remainingCardsTooltip;
   }
 
   fillPhases(currentPlayer) {
@@ -215,6 +218,8 @@ export default class Turn {
 
     if (!isAnyCardExpanded) {
       this.#updateMinionTooltip();
+      this.#updateRemainingCardsTooltip();
+
       if (this.#currentPhase === PhaseType.INVALID) {
         this.#equipWeaponOrArmor();
 
@@ -268,6 +273,7 @@ export default class Turn {
       }
     } else {
       this.#minionTooltip.clearTooltip();
+      this.#remainingCardsTooltip.clearTooltip();
       this.#hoverTime = 0;
       this.#lastHoveredCardId = null;
     }
@@ -357,8 +363,8 @@ export default class Turn {
       this.#lastHoveredCardId = currentCardId;
 
       this.#hoverTime = isSameCard
-        ? this.#hoverTime + globals.deltaTime
-        : globals.deltaTime;
+        ? this.#hoverTime + globals.deltaTime * 10
+        : globals.deltaTime * 10;
 
       const cardCenterX =
         currentHoveredMinion.getXCoordinate() +
@@ -375,6 +381,63 @@ export default class Turn {
       this.#minionTooltip.clearTooltip();
       this.#hoverTime = 0;
       this.#lastHoveredCardId = null;
+    }
+  }
+
+  #updateRemainingCardsTooltip() {
+    const tooltipDelay = 0.2;
+    const minionsGrid = [
+      this.#board.getGrids()[GridType.PLAYER_1_MINIONS_DECK],
+      this.#board.getGrids()[GridType.PLAYER_2_MINIONS_DECK],
+    ];
+
+    const player1MinionsDeck =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS];
+    const player2MinionsDeck =
+      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
+
+    const hoveredBoxPlayer1 = minionsGrid[0].lookForHoveredBox();
+    const hoveredBoxPlayer2 = minionsGrid[1].lookForHoveredBox();
+
+    if (hoveredBoxPlayer1) {
+      this.#hoverTime = hoveredBoxPlayer1
+        ? this.#hoverTime + globals.deltaTime * 10
+        : this.#hoverTime;
+
+      const boxCenterX = hoveredBoxPlayer1.getXCoordinate() + 100;
+      const boxCenterY = hoveredBoxPlayer1.getYCoordinate() + 140;
+
+      if (this.#hoverTime >= tooltipDelay) {
+        const content =
+          this.#remainingCardsTooltip.getContent(player1MinionsDeck);
+        return this.#remainingCardsTooltip.showTooltip(
+          content,
+          boxCenterX,
+          boxCenterY
+        );
+      }
+    } else if (hoveredBoxPlayer2) {
+      this.#hoverTime = hoveredBoxPlayer2
+        ? this.#hoverTime + globals.deltaTime * 10
+        : this.#hoverTime;
+
+      const boxCenterX = hoveredBoxPlayer2.getXCoordinate() + 100;
+      const boxCenterY = hoveredBoxPlayer2.getYCoordinate() + 140;
+
+      if (this.#hoverTime >= tooltipDelay) {
+        const content =
+          this.#remainingCardsTooltip.getContent(player2MinionsDeck);
+        return this.#remainingCardsTooltip.showTooltip(
+          content,
+          boxCenterX,
+          boxCenterY
+        );
+      }
+    }
+
+    if (!hoveredBoxPlayer1 || !hoveredBoxPlayer2) {
+      this.#remainingCardsTooltip.clearTooltip();
+      this.#hoverTime = 0;
     }
   }
 
