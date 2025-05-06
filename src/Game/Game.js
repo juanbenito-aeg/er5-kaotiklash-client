@@ -12,6 +12,7 @@ import StateMessage from "../Messages/StateMessage.js";
 import ChatMessage from "../Messages/ChatMessage.js";
 import MinionTooltip from "../Tooltips/MinionTooltip.js";
 import RemainingCardsTooltip from "../Tooltips/RemainingCardsTooltip.js";
+import GameStats from "./GameStats.js";
 import globals from "./globals.js";
 import {
   GameState,
@@ -132,12 +133,7 @@ export default class Game {
     game.#minionTooltip = new MinionTooltip();
     game.#remainingCardsTooltip = new RemainingCardsTooltip();
 
-    game.#stats = {
-      date: new Date().toISOString().split("T")[0],
-      game_start_time: Date.now(),
-      played_turns: 1,
-      joseph_appeared: false,
-    };
+    game.#stats = GameStats.create();
 
     // EVENTS DATA
     game.#eventsData = {
