@@ -88,4 +88,27 @@ export default class Text {
   getContentAsString() {
     return this.#contentAsString;
   }
+
+  renderAnimated(visibleCharacters) {
+    let currentLineYCoordinate = this.#initialYCoordinate;
+    let charsToRender = visibleCharacters;
+
+    for (let i = 0; i < this.#contentAsArray.length; i++) {
+      const line = this.#contentAsArray[i];
+
+      if (charsToRender <= 0) break;
+
+      const charsInLine = Math.min(charsToRender, line.length);
+      const partialLine = line.slice(0, charsInLine);
+
+      globals.ctx.fillText(
+        partialLine,
+        this.#xCoordinate,
+        currentLineYCoordinate
+      );
+
+      currentLineYCoordinate += 20;
+      charsToRender -= charsInLine;
+    }
+  }
 }
