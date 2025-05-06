@@ -1,7 +1,11 @@
 import Text from "../Game/Text.js";
 import Message from "./Message.js";
 import globals from "../Game/globals.js";
-import { ChatMessagePosition, ChatMessageType } from "../Game/constants.js";
+import {
+  ChatMessagePosition,
+  ChatMessageType,
+  ChatMessagePhase,
+} from "../Game/constants.js";
 
 export default class ChatMessage extends Message {
   #duration;
@@ -12,6 +16,9 @@ export default class ChatMessage extends Message {
   #balloonYCoordinate;
   #balloonWidth;
   #balloonHeight;
+  #alpha;
+  #phase;
+  #revealedCharacters;
 
   constructor(
     type,
@@ -32,6 +39,9 @@ export default class ChatMessage extends Message {
     this.#balloonYCoordinate = balloonYCoordinate;
     this.#balloonWidth = balloonWidth;
     this.#balloonHeight = balloonHeight;
+    this.#alpha = 0;
+    this.#phase = ChatMessagePhase.ENTER;
+    this.#revealedCharacters = 0;
   }
 
   static content = [
@@ -180,7 +190,29 @@ export default class ChatMessage extends Message {
 
     this.#duration -= globals.deltaTime;
 
-    if (this.#duration <= 0) {
+    if (this.#phase === ChatMessagePhase.ENTER) {
+      this.#alpha = Math.min(1, this.#alpha + 0.05);
+
+      if (
+        this.#revealedCharacters < this.#content.getContentAsString().length
+      ) {
+        this.#revealedCharacters += 0.5;
+      }
+
+      if (
+        this.#alpha >= 1 &&
+        this.#revealedCharacters >= this.#content.getContentAsString().length
+      ) {
+        this.#phase = ChatMessagePhase.STATIC;
+      }
+    } else if (this.#phase === ChatMessagePhase.STATIC) {
+      if (this.#duration <= 1) {
+        this.#phase = ChatMessagePhase.EXIT;
+      }
+    } else if (this.#phase === ChatMessagePhase.EXIT) {
+      this.#alpha = Math.max(0, this.#alpha - 0.05);
+    }
+    if (this.#duration <= 0 || this.#alpha === 0) {
       isChatMessageActive = false;
     }
 
@@ -200,7 +232,9 @@ export default class ChatMessage extends Message {
   }
 
   renderContent() {
-    this.#content.render();
+    globals.ctx.globalAlpha = this.#alpha;
+    this.#content.renderAnimated(this.#revealedCharacters);
+    globals.ctx.globalAlpha = 1;
   }
 
   getBalloonXCoordinate() {
