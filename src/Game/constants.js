@@ -317,6 +317,12 @@ const ChatMessagePosition = {
   RIGHT: 3,
 };
 
+const ChatMessagePhase = {
+  ENTER: 0,
+  STATIC: 1,
+  EXIT: 2,
+};
+
 export {
   GameState,
   FPS,
@@ -355,4 +361,5 @@ export {
   ArmorID,
   ChatMessageType,
   ChatMessagePosition,
+  ChatMessagePhase,
 };
