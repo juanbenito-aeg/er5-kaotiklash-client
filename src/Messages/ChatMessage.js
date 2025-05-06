@@ -36,7 +36,28 @@ export default class ChatMessage extends Message {
 
   static content = [
     // MAIN CHARACTERS' CHAT MESSAGES
-    ["You won't defeat me, asshole!", "Calling mommy? Hahaha"],
+    [
+      "You won't defeat me, asshole!",
+      "Calling mommy? Hahaha",
+      "Nice try, loser!",
+      "Did you train with a potato?",
+      "Come back when you grow a brain!",
+      "That was pathetic!",
+      "Is that all you've got?",
+      "My grandma fights better!",
+      "You're slower than a dial-up connection!",
+      "Lag isn’t your only problem!",
+      "Boom! Headshot, baby!",
+      "Oops, did that hurt?",
+      "Try again, noob!",
+      "Practice makes... you slightly less terrible!",
+      "You camping coward!",
+      "Get out and fight like a man!",
+      "This is my world now!",
+      "You just rent space in it!",
+      "GG? More like GTFO!",
+      "Better luck never!",
+    ],
 
     // MINIONS' CHAT MESSAGES
     ["Wanna have a punch salad?", "Want me to take you home, kid?"],
