@@ -92,8 +92,16 @@ export default class ChatMessage extends Message {
 
       contentInitialYCoordinate = balloonYCoordinate + balloonHeight / 2.25;
     } else {
-      // balloonXCoordinate += /* TODO */;
-      // balloonYCoordinate += /* TODO */;
+      contentMaxCharactersPerLine = 20;
+
+      balloonWidth = 320;
+      balloonHeight = 200;
+
+      balloonXCoordinate += 20;
+      balloonYCoordinate -= balloonHeight;
+
+      contentXCoordinate = balloonXCoordinate + balloonWidth / 2;
+      contentInitialYCoordinate = balloonYCoordinate + balloonHeight / 3.5;
     }
 
     const numOfPossibleMessages = ChatMessage.content[chatMessageType].length;

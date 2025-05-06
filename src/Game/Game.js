@@ -882,9 +882,9 @@ export default class Game {
       randomChatMessageTypeUpperLimit = 3;
     }
 
-    const randomChatMessageType = /* Math.floor(
+    const randomChatMessageType = Math.floor(
       Math.random() * randomChatMessageTypeUpperLimit
-    ) */ 2;
+    );
 
     // DETERMINE THE SPEAKER(S)
 
@@ -927,19 +927,21 @@ export default class Game {
       } else {
         positions.push(ChatMessagePosition.LEFT, ChatMessagePosition.RIGHT);
       }
-    }
-
-    // CREATE AND STORE THE CHAT MESSAGE(S) TO DISPLAY
-    if (speakers.length === 1) {
+    } else {
       const joseph = this.#deckContainer
         .getDecks()
         [DeckType.JOSEPH].getCards()[0];
 
+      speakers.push(joseph);
+    }
+
+    // CREATE AND STORE THE CHAT MESSAGE(S) TO DISPLAY
+    if (speakers.length === 1) {
       const chatMessage = ChatMessage.create(
         randomChatMessageType,
         ChatMessagePosition.UP,
-        joseph.getXCoordinate(),
-        joseph.getYCoordinate()
+        speakers[0].getXCoordinate(),
+        speakers[0].getYCoordinate()
       );
 
       this.#chatMessages.push(chatMessage);
