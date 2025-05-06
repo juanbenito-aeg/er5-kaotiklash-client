@@ -884,7 +884,7 @@ export default class Game {
 
     const randomChatMessageType = /* Math.floor(
       Math.random() * randomChatMessageTypeUpperLimit
-    ) */ 0;
+    ) */ 2;
 
     // DETERMINE THE SPEAKER(S)
 
@@ -2635,8 +2635,21 @@ export default class Game {
   }
 
   #renderChatMessages() {
+    globals.ctx.font = "20px MedievalSharp";
+    globals.ctx.fillStyle = "black";
+
     for (let i = 0; i < this.#chatMessages.length; i++) {
       const currentChatMessage = this.#chatMessages[i];
+
+      globals.ctx.save();
+
+      if (currentChatMessage.getPosition() === ChatMessagePosition.DOWN) {
+        globals.ctx.scale(1, -1);
+      } else if (
+        currentChatMessage.getPosition() === ChatMessagePosition.LEFT
+      ) {
+        globals.ctx.scale(-1, 1);
+      }
 
       globals.ctx.drawImage(
         globals.balloonsImages[currentChatMessage.getType()],
@@ -2646,9 +2659,13 @@ export default class Game {
         300,
         currentChatMessage.getBalloonXCoordinate(),
         currentChatMessage.getBalloonYCoordinate(),
-        200,
-        120
+        ChatMessage.BALLOONS_WIDTH,
+        ChatMessage.BALLOONS_HEIGHT
       );
+
+      globals.ctx.restore();
+
+      currentChatMessage.renderContent();
     }
   }
 
