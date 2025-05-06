@@ -1,4 +1,4 @@
-import PlayerStats from "./PlayerStats";
+import PlayerStats from "./PlayerStats.js";
 
 export default class GameStats {
   #winnerID;
@@ -32,5 +32,21 @@ export default class GameStats {
     const gameStats = new GameStats(date, startTime, playersStats);
 
     return gameStats;
+  }
+
+  incrementPlayerXMinionsKilled(playerID) {
+    this.#playersStats[playerID].incrementMinionsKilled();
+  }
+
+  incrementPlayerXFumbles(playerID) {
+    this.#playersStats[playerID].incrementFumbles();
+  }
+
+  incrementPlayerXCriticalHits(playerID) {
+    this.#playersStats[playerID].incrementCriticalHits();
+  }
+
+  incrementPlayerXUsedCards(playerID) {
+    this.#playersStats[playerID].incrementUsedCards();
   }
 }

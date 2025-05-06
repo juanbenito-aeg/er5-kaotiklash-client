@@ -39,33 +39,16 @@ export default class Player {
   getMinionsKilled() {
     return this.#minions_killed;
   }
-  
-  addMinionsKilled() {
-    this.#minions_killed++;
-  }
 
   getFumbles() {
     return this.#fumbles;
-  }
-
-  addFumbles() {
-    this.#fumbles++;
   }
 
   getCriticalHits() {
     return this.#critical_hits;
   }
 
-  addCriticalHits() {
-    this.#critical_hits++;
-  }
-
   getUsedCards() {
     return this.#used_cards;
   }
-
-  addUsedCards() {
-    this.#used_cards++;
-  }
-
 }

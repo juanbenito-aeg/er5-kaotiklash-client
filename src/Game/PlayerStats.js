@@ -10,4 +10,20 @@ export default class PlayerStats {
     this.#criticalHits = 0;
     this.#usedCards = 3;
   }
+
+  incrementMinionsKilled() {
+    this.#minionsKilled++;
+  }
+
+  incrementFumbles() {
+    this.#fumbles++;
+  }
+
+  incrementCriticalHits() {
+    this.#criticalHits++;
+  }
+
+  incrementUsedCards() {
+    this.#usedCards++;
+  }
 }
