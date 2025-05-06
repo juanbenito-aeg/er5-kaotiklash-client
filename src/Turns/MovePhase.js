@@ -9,16 +9,19 @@ import {
   DeckType,
   GridType,
 } from "../Game/constants.js";
+import Physics from "../Game/Physics.js";
 
 export default class MovePhase extends Phase {
   #decksRelevants;
   #gridsRelevants;
+  #physics;
 
   constructor(state, mouseInput, phaseMessage, decksRelevants, gridRelevants) {
     super(state, mouseInput, phaseMessage);
 
     this.#decksRelevants = decksRelevants;
     this.#gridsRelevants = gridRelevants;
+    this.#physics = null;
   }
 
   static create(
@@ -76,6 +79,10 @@ export default class MovePhase extends Phase {
 
       case MovePhaseState.MOVE_CARD:
         this.#moveCardToBox();
+        break;
+
+      case MovePhaseState.ANIMATION_CARD:
+        this.#animateCardMovement();
         break;
 
       case MovePhaseState.END:
@@ -177,15 +184,52 @@ export default class MovePhase extends Phase {
     const selectedCard = this.#decksRelevants.lookForSelectedCard();
     const selectedTargetBox = this.#gridsRelevants.lookForSelectedBox();
 
-    selectedTargetBox.setCard(selectedCard);
+    const startX = selectedCard.getXCoordinate();
+    const startY = selectedCard.getYCoordinate();
+    const endX = selectedTargetBox.getXCoordinate();
+    const endY = selectedTargetBox.getYCoordinate();
 
-    selectedCard.setXCoordinate(selectedTargetBox.getXCoordinate());
-    selectedCard.setYCoordinate(selectedTargetBox.getYCoordinate());
+    this.#physics = new Physics(20, 5, 0, 0, 0, 0, 0);
 
-    selectedCard.setState(CardState.PLACED);
-    selectedTargetBox.setState(BoxState.OCCUPIED);
+    this.#physics.ax = (endX - startX) * 0.01;
+    this.#physics.ay = (endY - startY) * 0.01;
 
-    this._state = MovePhaseState.END;
+    this._state = MovePhaseState.ANIMATION_CARD;
+  }
+
+  #animateCardMovement() {
+    const selectedCard = this.#decksRelevants.lookForSelectedCard();
+    const selectedTargetBox = this.#gridsRelevants.lookForSelectedBox();
+
+    const targetX = selectedTargetBox.getXCoordinate();
+    const targetY = selectedTargetBox.getYCoordinate();
+
+    const currentX = selectedCard.getXCoordinate();
+    const currentY = selectedCard.getYCoordinate();
+
+    const dx = targetX - currentX;
+    const dy = targetY - currentY;
+
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < 0.5) {
+      selectedCard.setXCoordinate(targetX);
+      selectedCard.setYCoordinate(targetY);
+      selectedTargetBox.setCard(selectedCard);
+      selectedCard.setState(CardState.PLACED);
+      selectedTargetBox.setState(BoxState.OCCUPIED);
+
+      this.#physics = null;
+      this._state = MovePhaseState.END;
+      return;
+    }
+    const speed = 10;
+    let ratio = speed / distance;
+
+    ratio = Math.min(ratio, 1);
+
+    selectedCard.setXCoordinate(currentX + dx * ratio);
+    selectedCard.setYCoordinate(currentY + dy * ratio);
   }
 
   #finalizePhase() {

@@ -162,7 +162,8 @@ const MovePhaseState = {
   SELECT_CARD: 1,
   SELECT_TARGET: 2,
   MOVE_CARD: 3,
-  END: 4,
+  ANIMATION_CARD: 4,
+  END: 5,
 };
 
 const PrepareEventState = {
