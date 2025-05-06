@@ -1,3 +1,4 @@
+import Text from "../Game/Text.js";
 import Message from "./Message.js";
 import globals from "../Game/globals.js";
 import { ChatMessagePosition, ChatMessageType } from "../Game/constants.js";
@@ -13,13 +14,16 @@ export default class ChatMessage extends Message {
   constructor(type, position, content, balloonXCoordinate, balloonYCoordinate) {
     super();
 
-    this.#duration = 26;
+    this.#duration = 5;
     this.#type = type;
     this.#position = position;
     this.#content = content;
     this.#balloonXCoordinate = balloonXCoordinate;
     this.#balloonYCoordinate = balloonYCoordinate;
   }
+
+  static BALLOONS_WIDTH = 285;
+  static BALLOONS_HEIGHT = 120;
 
   static content = [
     // MAIN CHARACTERS' CHAT MESSAGES
@@ -38,40 +42,64 @@ export default class ChatMessage extends Message {
     speakerXCoordinate,
     speakerYCoordinate
   ) {
+    let balloonXCoordinate = speakerXCoordinate;
+    let balloonYCoordinate = speakerYCoordinate;
+    let contentMaxCharactersPerLine;
+    let contentXCoordinate;
+    let contentInitialYCoordinate;
+
+    if (chatMessageType === ChatMessageType.MAIN_CHARACTERS) {
+      contentMaxCharactersPerLine = 18;
+
+      if (position === ChatMessagePosition.UP) {
+        balloonXCoordinate += 60;
+        balloonYCoordinate -= 125;
+
+        contentInitialYCoordinate =
+          balloonYCoordinate + ChatMessage.BALLOONS_HEIGHT / 3;
+      } else {
+        balloonXCoordinate += 70;
+        balloonYCoordinate -= 432;
+
+        contentInitialYCoordinate =
+          -balloonYCoordinate - ChatMessage.BALLOONS_HEIGHT / 2.25;
+      }
+
+      contentXCoordinate = balloonXCoordinate + ChatMessage.BALLOONS_WIDTH / 2;
+    } else if (chatMessageType === ChatMessageType.MINIONS) {
+      contentMaxCharactersPerLine = 22;
+
+      if (position === ChatMessagePosition.RIGHT) {
+        balloonXCoordinate += 110;
+        balloonYCoordinate -= 3;
+
+        contentXCoordinate =
+          balloonXCoordinate + ChatMessage.BALLOONS_WIDTH / 1.8;
+      } else {
+        balloonXCoordinate = -balloonXCoordinate;
+        balloonYCoordinate -= 4;
+
+        contentXCoordinate =
+          -balloonXCoordinate - ChatMessage.BALLOONS_WIDTH / 1.75;
+      }
+
+      contentInitialYCoordinate =
+        balloonYCoordinate + ChatMessage.BALLOONS_HEIGHT / 2.25;
+    } else {
+      // balloonXCoordinate += /* TODO */;
+      // balloonYCoordinate += /* TODO */;
+    }
+
     const numOfPossibleMessages = ChatMessage.content[chatMessageType].length;
     const randomMessageIndex = Math.floor(
       Math.random() * numOfPossibleMessages
     );
-    const content = ChatMessage.content[chatMessageType][randomMessageIndex];
-
-    let numToAddToSpeakerXCoordinate;
-    let numToAddToSpeakerYCoordinate;
-
-    if (chatMessageType === ChatMessageType.MAIN_CHARACTERS) {
-      if (position === ChatMessagePosition.UP) {
-        numToAddToSpeakerXCoordinate = 70;
-        numToAddToSpeakerYCoordinate = -125;
-      } else {
-        numToAddToSpeakerXCoordinate = /* TODO */;
-        numToAddToSpeakerYCoordinate = /* TODO */;
-      }
-    } else if (chatMessageType === ChatMessageType.MINIONS) {
-      if (position === ChatMessagePosition.UP) {
-        numToAddToSpeakerXCoordinate = /* TODO */;
-        numToAddToSpeakerYCoordinate = /* TODO */;
-      } else {
-        numToAddToSpeakerXCoordinate = /* TODO */;
-        numToAddToSpeakerYCoordinate = /* TODO */;
-      }
-    } else {
-      numToAddToSpeakerXCoordinate = /* TODO */;
-      numToAddToSpeakerYCoordinate = /* TODO */;
-    }
-
-    const balloonXCoordinate =
-      speakerXCoordinate + numToAddToSpeakerXCoordinate;
-    const balloonYCoordinate =
-      speakerYCoordinate + numToAddToSpeakerYCoordinate;
+    const content = Text.create(
+      ChatMessage.content[chatMessageType][randomMessageIndex],
+      contentMaxCharactersPerLine,
+      contentXCoordinate,
+      contentInitialYCoordinate
+    );
 
     const chatMessage = new ChatMessage(
       chatMessageType,
@@ -104,8 +132,12 @@ export default class ChatMessage extends Message {
     return this.#position;
   }
 
-  getContent() {
-    return this.#content;
+  getContentAsString() {
+    return this.#content.getContentAsString();
+  }
+
+  renderContent() {
+    this.#content.render();
   }
 
   getBalloonXCoordinate() {
