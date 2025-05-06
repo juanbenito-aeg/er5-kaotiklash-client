@@ -956,8 +956,8 @@ export default class Game {
           this.#chatMessages[i] = chatMessage;
         }
       } while (
-        this.#chatMessages[0].getContent() ===
-        this.#chatMessages[1].getContent()
+        this.#chatMessages[0].getContentAsString() ===
+        this.#chatMessages[1].getContentAsString()
       );
     }
   }

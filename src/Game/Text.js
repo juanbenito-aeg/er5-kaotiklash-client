@@ -1,11 +1,18 @@
 import globals from "./globals.js";
 
 export default class Text {
+  #contentAsString;
   #contentAsArray;
   #xCoordinate;
   #initialYCoordinate;
 
-  constructor(contentAsArray, xCoordinate, initialYCoordinate) {
+  constructor(
+    contentAsString,
+    contentAsArray,
+    xCoordinate,
+    initialYCoordinate
+  ) {
+    this.#contentAsString = contentAsString;
     this.#contentAsArray = contentAsArray;
     this.#xCoordinate = xCoordinate;
     this.#initialYCoordinate = initialYCoordinate;
@@ -52,7 +59,12 @@ export default class Text {
       }
     }
 
-    const text = new Text(contentAsArray, xCoordinate, initialYCoordinate);
+    const text = new Text(
+      contentAsString,
+      contentAsArray,
+      xCoordinate,
+      initialYCoordinate
+    );
 
     return text;
   }
@@ -71,5 +83,9 @@ export default class Text {
 
       currentLineYCoordinate += 20;
     }
+  }
+
+  getContentAsString() {
+    return this.#contentAsString;
   }
 }
