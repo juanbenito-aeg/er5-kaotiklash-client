@@ -47,10 +47,8 @@ export default class ChatMessage extends Message {
       "My grandma fights better!",
       "You're slower than a dial-up connection!",
       "Lag isn’t your only problem!",
-      "Boom! Headshot, baby!",
       "Oops, did that hurt?",
       "Try again, noob!",
-      "Practice makes... you slightly less terrible!",
       "You camping coward!",
       "Get out and fight like a man!",
       "This is my world now!",
@@ -81,7 +79,17 @@ export default class ChatMessage extends Message {
     ],
 
     // JOSEPH'S CHAT MESSAGES
-    ["You're all gonna die, freaks!"],
+    [
+      "You're all gonna die, freaks!",
+      "I love the sound of fear in your voice",
+      "Your screams are music to me",
+      "You can run, but your soul stays here",
+      "This isn’t a game. It’s a ritual",
+      "I don't kill for fun... I kill for purpose",
+      "One by one, you'll all beg",
+      "The silence after a scream is beautiful",
+      "Welcome to your nightmare, courtesy of me",
+    ],
   ];
 
   static create(
