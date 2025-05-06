@@ -60,7 +60,25 @@ export default class ChatMessage extends Message {
     ],
 
     // MINIONS' CHAT MESSAGES
-    ["Wanna have a punch salad?", "Want me to take you home, kid?"],
+    [
+      "Wanna have a punch salad?",
+      "Want me to take you home, kid?",
+      "Wait, I gotta pee!",
+      "Don't hit me while I'm in the bathroom!",
+      "Is this a fight or a dance class?",
+      "Your punches feel like tickles!",
+      "Time out! I lost my shoe!",
+      "You fight like my grandma’s cat!",
+      "I thought this was karaoke night!",
+      "Hold on, my snack fell!",
+      "No one fights well on an empty stomach!",
+      "Did I win or just fall over?",
+      "I think I broke my dignity!",
+      "Is this the tutorial?",
+      "Am I even in the right game?",
+      "My weapon is... friendship!",
+      "Just kidding, it’s a frying pan!",
+    ],
 
     // JOSEPH'S CHAT MESSAGES
     ["You're all gonna die, freaks!"],
