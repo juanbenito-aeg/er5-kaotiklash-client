@@ -10,8 +10,18 @@ export default class ChatMessage extends Message {
   #content;
   #balloonXCoordinate;
   #balloonYCoordinate;
+  #balloonWidth;
+  #balloonHeight;
 
-  constructor(type, position, content, balloonXCoordinate, balloonYCoordinate) {
+  constructor(
+    type,
+    position,
+    content,
+    balloonXCoordinate,
+    balloonYCoordinate,
+    balloonWidth,
+    balloonHeight
+  ) {
     super();
 
     this.#duration = 5;
@@ -20,10 +30,9 @@ export default class ChatMessage extends Message {
     this.#content = content;
     this.#balloonXCoordinate = balloonXCoordinate;
     this.#balloonYCoordinate = balloonYCoordinate;
+    this.#balloonWidth = balloonWidth;
+    this.#balloonHeight = balloonHeight;
   }
-
-  static BALLOONS_WIDTH = 285;
-  static BALLOONS_HEIGHT = 120;
 
   static content = [
     // MAIN CHARACTERS' CHAT MESSAGES
@@ -44,6 +53,8 @@ export default class ChatMessage extends Message {
   ) {
     let balloonXCoordinate = speakerXCoordinate;
     let balloonYCoordinate = speakerYCoordinate;
+    let balloonWidth = 285;
+    let balloonHeight = 120;
     let contentMaxCharactersPerLine;
     let contentXCoordinate;
     let contentInitialYCoordinate;
@@ -55,17 +66,15 @@ export default class ChatMessage extends Message {
         balloonXCoordinate += 60;
         balloonYCoordinate -= 125;
 
-        contentInitialYCoordinate =
-          balloonYCoordinate + ChatMessage.BALLOONS_HEIGHT / 3;
+        contentInitialYCoordinate = balloonYCoordinate + balloonHeight / 3;
       } else {
         balloonXCoordinate += 70;
         balloonYCoordinate -= 432;
 
-        contentInitialYCoordinate =
-          -balloonYCoordinate - ChatMessage.BALLOONS_HEIGHT / 2.25;
+        contentInitialYCoordinate = -balloonYCoordinate - balloonHeight / 2.25;
       }
 
-      contentXCoordinate = balloonXCoordinate + ChatMessage.BALLOONS_WIDTH / 2;
+      contentXCoordinate = balloonXCoordinate + balloonWidth / 2;
     } else if (chatMessageType === ChatMessageType.MINIONS) {
       contentMaxCharactersPerLine = 22;
 
@@ -73,18 +82,15 @@ export default class ChatMessage extends Message {
         balloonXCoordinate += 110;
         balloonYCoordinate -= 3;
 
-        contentXCoordinate =
-          balloonXCoordinate + ChatMessage.BALLOONS_WIDTH / 1.8;
+        contentXCoordinate = balloonXCoordinate + balloonWidth / 1.8;
       } else {
         balloonXCoordinate = -balloonXCoordinate;
         balloonYCoordinate -= 4;
 
-        contentXCoordinate =
-          -balloonXCoordinate - ChatMessage.BALLOONS_WIDTH / 1.75;
+        contentXCoordinate = -balloonXCoordinate - balloonWidth / 1.75;
       }
 
-      contentInitialYCoordinate =
-        balloonYCoordinate + ChatMessage.BALLOONS_HEIGHT / 2.25;
+      contentInitialYCoordinate = balloonYCoordinate + balloonHeight / 2.25;
     } else {
       // balloonXCoordinate += /* TODO */;
       // balloonYCoordinate += /* TODO */;
@@ -106,7 +112,9 @@ export default class ChatMessage extends Message {
       position,
       content,
       balloonXCoordinate,
-      balloonYCoordinate
+      balloonYCoordinate,
+      balloonWidth,
+      balloonHeight
     );
 
     return chatMessage;
@@ -146,5 +154,13 @@ export default class ChatMessage extends Message {
 
   getBalloonYCoordinate() {
     return this.#balloonYCoordinate;
+  }
+
+  getBalloonWidth() {
+    return this.#balloonWidth;
+  }
+
+  getBalloonHeight() {
+    return this.#balloonHeight;
   }
 }

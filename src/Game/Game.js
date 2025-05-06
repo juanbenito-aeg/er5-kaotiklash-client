@@ -2659,8 +2659,8 @@ export default class Game {
         300,
         currentChatMessage.getBalloonXCoordinate(),
         currentChatMessage.getBalloonYCoordinate(),
-        ChatMessage.BALLOONS_WIDTH,
-        ChatMessage.BALLOONS_HEIGHT
+        currentChatMessage.getBalloonWidth(),
+        currentChatMessage.getBalloonHeight()
       );
 
       globals.ctx.restore();
