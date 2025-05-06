@@ -348,7 +348,7 @@ export default class Turn {
   }
 
   #updateMinionTooltip() {
-    const tooltipDelay = 1.0;
+    const tooltipDelay = 0.4;
 
     const playerXMinionsInPlayDeck =
       this.#player.getID() === PlayerID.PLAYER_1
@@ -364,7 +364,7 @@ export default class Turn {
 
       this.#hoverTime = isSameCard
         ? this.#hoverTime + globals.deltaTime * 10
-        : globals.deltaTime * 10;
+        : globals.deltaTime;
 
       const cardCenterX =
         currentHoveredMinion.getXCoordinate() +
