@@ -10,9 +10,7 @@ import ImageSet from "./ImageSet.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
 import MinionTooltip from "../Tooltips/MinionTooltip.js";
-import RareTooltip from "../Tooltips/RareTooltip.js";
-import ArmorTooltip from "../Tooltips/ArmorTooltip.js";
-import SpecialTooltip from "../Tooltips/SpecialTooltip.js";
+import RemainingCardsTooltip from "../Tooltips/RemainingCardsTooltip.js";
 import globals from "./globals.js";
 import {
   GameState,
@@ -44,9 +42,7 @@ export default class Game {
   #attackMenuData;
   #activeEventsTableData;
   #minionTooltip;
-  #armorTooltip;
-  #rareTooltip;
-  #specialTooltip;
+  #remainingCardsTooltip;
   #stats;
   #eventsData;
 
@@ -128,9 +124,7 @@ export default class Game {
 
     //TOOLTIPS
     game.#minionTooltip = new MinionTooltip();
-    game.#armorTooltip = new ArmorTooltip();
-    game.#specialTooltip = new SpecialTooltip();
-    game.#rareTooltip = new RareTooltip();
+    game.#remainingCardsTooltip = new RemainingCardsTooltip();
 
     game.#stats = {
       date: new Date().toISOString().split("T")[0],
@@ -183,9 +177,7 @@ export default class Game {
       game.#minionTooltip,
       game.#eventsData,
       game.#stats,
-      game.#armorTooltip,
-      game.#specialTooltip,
-      game.#rareTooltip
+      game.#remainingCardsTooltip
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -200,9 +192,7 @@ export default class Game {
       game.#minionTooltip,
       game.#eventsData,
       game.#stats,
-      game.#armorTooltip,
-      game.#specialTooltip,
-      game.#rareTooltip
+      game.#remainingCardsTooltip
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -1004,16 +994,8 @@ export default class Game {
           this.#minionTooltip.render();
         }
 
-        if (this.#armorTooltip.hasTooltip()) {
-          this.#armorTooltip.render();
-        }
-
-        if (this.#specialTooltip.hasTooltip()) {
-          this.#specialTooltip.render();
-        }
-
-        if (this.#rareTooltip.hasTooltip()) {
-          this.#rareTooltip.render();
+        if (this.#remainingCardsTooltip.hasTooltip()) {
+          this.#remainingCardsTooltip.render();
         }
 
         if (this.#attackMenuData.isOpen) {
