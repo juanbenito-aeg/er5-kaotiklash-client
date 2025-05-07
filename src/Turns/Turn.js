@@ -265,7 +265,7 @@ export default class Turn {
         this.#currentPhase = PhaseType.DISCARD_CARD;
       }
 
-      if (this.#numOfExecutedPhases === 5) {
+      if (this.#numOfExecutedPhases >= 5) {
         this.#currentPhase = PhaseType.INVALID;
         this.#numOfExecutedPhases = 0;
         globals.isCurrentTurnFinished = true;

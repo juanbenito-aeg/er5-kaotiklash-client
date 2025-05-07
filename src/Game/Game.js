@@ -910,20 +910,27 @@ export default class Game {
         positions.push(ChatMessagePosition.DOWN, ChatMessagePosition.UP);
       }
     } else if (randomChatMessageType === ChatMessageType.MINIONS) {
-      const randomMinionsInPlayIndex = Math.floor(Math.random() * 3);
-
-      const player1RandomMinionInPlay = this.#deckContainer
-        .getDecks()
-        [DeckType.PLAYER_1_MINIONS_IN_PLAY].getCards()[
-        randomMinionsInPlayIndex
-      ];
-      const player2RandomMinionInPlay = this.#deckContainer
-        .getDecks()
-        [DeckType.PLAYER_2_MINIONS_IN_PLAY].getCards()[
-        randomMinionsInPlayIndex
+      const playersMinionsInPlayCards = [
+        this.#deckContainer
+          .getDecks()
+          [DeckType.PLAYER_1_MINIONS_IN_PLAY].getCards(),
+        this.#deckContainer
+          .getDecks()
+          [DeckType.PLAYER_2_MINIONS_IN_PLAY].getCards(),
       ];
 
-      speakers.push(player1RandomMinionInPlay, player2RandomMinionInPlay);
+      for (let i = 0; i < playersMinionsInPlayCards.length; i++) {
+        const currentPlayerMinionsInPlayCards = playersMinionsInPlayCards[i];
+
+        const randomMinionsInPlayIndex = Math.floor(
+          Math.random() * currentPlayerMinionsInPlayCards.length
+        );
+
+        const currentPlayerRandomMinionInPlay =
+          currentPlayerMinionsInPlayCards[randomMinionsInPlayIndex];
+
+        speakers.push(currentPlayerRandomMinionInPlay);
+      }
 
       if (globals.firstActivePlayerID === PlayerID.PLAYER_1) {
         positions.push(ChatMessagePosition.RIGHT, ChatMessagePosition.LEFT);
