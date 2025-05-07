@@ -34,6 +34,14 @@ export default class GameStats {
     return gameStats;
   }
 
+  incrementPlayedTurns() {
+    this.#playedTurns++;
+  }
+
+  setJosephAppearedToTrue() {
+    this.#josephAppeared = true;
+  }
+
   incrementPlayerXMinionsKilled(playerID) {
     this.#playersStats[playerID].incrementMinionsKilled();
   }

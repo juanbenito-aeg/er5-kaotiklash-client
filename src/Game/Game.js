@@ -654,7 +654,7 @@ export default class Game {
     if (globals.isCurrentTurnFinished) {
       globals.isCurrentTurnFinished = false;
 
-      this.#stats.played_turns++;
+      this.#stats.incrementPlayedTurns();
 
       this.#healHarmedMinions();
 
