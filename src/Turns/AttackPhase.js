@@ -557,6 +557,8 @@ export default class AttackPhase extends Phase {
           if (newMinion) {
             movementGridDeckToInsertCardInto.insertCard(newMinion);
 
+            this.#stats.incrementPlayerXUsedCards(1 - this.#player.getID());
+
             minionsDeckToDrawCardFrom.removeCard(newMinion);
 
             this.#positionNewMinion(newMinion, gridWhereToLookForBox);
