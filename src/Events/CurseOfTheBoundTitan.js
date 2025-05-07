@@ -1,6 +1,7 @@
 import Event from "./Event.js";
 import { PlayerID } from "../Game/constants.js";
 import StateMessage from "../Messages/StateMessage.js";
+import Physics from "../Game/Physics.js";
 
 export default class CurseOfTheBoundTitanEvent extends Event {
   #eventsData;

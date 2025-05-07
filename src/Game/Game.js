@@ -684,13 +684,13 @@ export default class Game {
         1,
         2,
         globals.canvas.width / 2,
-        globals.canvas.height / 2,
+        globals.canvas.height / 2 - 100,
         1,
         new Physics(0, 0, 0, 0, 0, 0, 0)
       );
 
       currentPlayerTurnMsg.getPhysics().vy = 20;
-      
+
       this.#stateMessages.push(currentPlayerTurnMsg);
 
       // FILL THE CHAT MESSAGES ARRAY

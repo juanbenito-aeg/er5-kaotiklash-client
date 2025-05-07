@@ -140,8 +140,8 @@ export default class DrawCardPhase extends Phase {
 
     // (!) REMOVE WHEN CARDS TESTING FINISHES
     const drawnCard = this.#getSpecifiedCard(
-      CardCategory.RARE,
-      RareEventID.SHIELD_OF_BALANCE
+      CardCategory.SPECIAL,
+      SpecialEventID.BROOM_FURY
     );
     if (!drawnCard) {
       return;
@@ -221,6 +221,9 @@ export default class DrawCardPhase extends Phase {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    josephIsHereMsg.getPhysics().vy = 20;
+    
     this.#stateMessages.push(josephIsHereMsg);
   }
 }

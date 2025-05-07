@@ -102,10 +102,16 @@ export default class LucretiaSpecialSkill {
       "ENEMY MINIONS RETURNED TO THEIR ORIGINAL FORM!",
       "30px MedievalSharp",
       "rgb(250 233 183)",
-      3,
+      1,
+      2,
       globals.canvas.width / 2,
-      globals.canvas.height / 2
+      globals.canvas.height / 2,
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    backToOriginalFormMsg.getPhysics().vy = 20;
+    
     this.#stateMessages.push(backToOriginalFormMsg);
 
     this.#resetDeerAttributes();

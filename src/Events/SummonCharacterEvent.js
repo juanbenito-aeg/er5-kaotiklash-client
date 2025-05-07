@@ -172,6 +172,9 @@ export default class SummonCharacterEvent extends Event {
             1,
             new Physics(0, 0, 0, 0, 0, 0, 0)
           );
+
+          secondMinionsAttractionMsg.getPhysics().vy = 20;
+          
           this.#stateMessages.push(secondMinionsAttractionMsg);
         }
 
