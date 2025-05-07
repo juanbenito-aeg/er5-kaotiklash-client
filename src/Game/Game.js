@@ -36,6 +36,7 @@ import {
 export default class Game {
   #players;
   #currentPlayer;
+  #winner;
   #deckContainer;
   #board;
   #turns;
@@ -701,7 +702,7 @@ export default class Game {
       this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
       this.#mouseInput.detectRightClickOnCard(this.#deckContainer);
 
-      if (!globals.gameWinner) {
+      if (!this.#winner) {
         this.#turns[this.#currentPlayer.getID()].execute();
       }
 
@@ -1061,18 +1062,15 @@ export default class Game {
   }
 
   #checkIfGameOver() {
-    for (let i = 0; i < this.#players.length; i++) {
-      const currentPlayer = this.#players[i];
+    if (!this.#stats.areStatsAlreadySent()) {
+      for (let i = 0; i < this.#players.length; i++) {
+        const currentPlayer = this.#players[i];
 
-      if (currentPlayer.getTotalHP() === 0) {
-        globals.gameWinner = this.#players[1 - i];
-        globals.gameOver = true;
-        globals.gameStats = this.#stats;
-        globals.gamePlayers = this.#players;
-        if (globals.gameWinner === this.#players[PlayerID.PLAYER_1]) {
-          globals.gameLoser = this.#players[PlayerID.PLAYER_2];
-        } else {
-          globals.gameLoser = this.#players[PlayerID.PLAYER_1];
+        if (currentPlayer.getTotalHP() === 0) {
+          this.#winner = this.#players[1 - i];
+
+          this.#stats.postToDB(this.#winner);
+          this.#stats.setStatsAlreadySentToTrue();
         }
       }
     }
@@ -1117,7 +1115,7 @@ export default class Game {
           this.#renderAttackMenu();
         }
 
-        if (globals.gameWinner) {
+        if (this.#winner) {
           this.#renderGameWinner();
         }
 
@@ -2817,7 +2815,7 @@ export default class Game {
     globals.ctx.shadowColor = "black";
     globals.ctx.fillStyle = "white";
 
-    const gameWinnerName = globals.gameWinner.getName().toUpperCase();
+    const gameWinnerName = this.#winner.getName().toUpperCase();
     globals.ctx.font = "140px MedievalSharp";
     for (let i = 0; i < 6; i++) {
       globals.ctx.fillText(
