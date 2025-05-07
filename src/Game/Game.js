@@ -37,6 +37,7 @@ export default class Game {
   #players;
   #currentPlayer;
   #winner;
+  #isGameFinished;
   #deckContainer;
   #board;
   #turns;
@@ -702,9 +703,7 @@ export default class Game {
       this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
       this.#mouseInput.detectRightClickOnCard(this.#deckContainer);
 
-      if (!this.#winner) {
-        this.#turns[this.#currentPlayer.getID()].execute();
-      }
+      this.#turns[this.#currentPlayer.getID()].execute(this.#isGameFinished);
 
       this.#mouseInput.setLeftButtonPressedFalse();
 
@@ -1075,6 +1074,8 @@ export default class Game {
 
         if (currentPlayer.getTotalHP() === 0) {
           this.#winner = this.#players[1 - i];
+
+          this.#isGameFinished = true;
 
           this.#stats.postToDB(this.#winner);
           this.#stats.setStatsAlreadySentToTrue();

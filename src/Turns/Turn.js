@@ -26,6 +26,7 @@ import {
 export default class Turn {
   #isCurrentPhaseCanceled;
   #isCurrentPhaseFinished;
+  #isLastPhaseFinished;
   #currentPhase;
   #numOfExecutedPhases;
   #phases;
@@ -207,74 +208,80 @@ export default class Turn {
   }
  */
 
-  execute() {
+  execute(isGameFinished) {
     if (this.#numOfExecutedPhases === 0) {
       this.#isCurrentPhaseFinished =
         this.#phases[PhaseType.DRAW_CARD].execute();
     }
 
-    const isAnyCardExpanded = this.#expandCard();
+    if (!this.#isLastPhaseFinished) {
+      const isAnyCardExpanded = this.#expandCard();
 
-    if (!isAnyCardExpanded) {
-      this.#updateMinionTooltip();
-      this.#updateRemainingCardsTooltip();
+      if (!isAnyCardExpanded) {
+        this.#updateMinionTooltip();
+        this.#updateRemainingCardsTooltip();
 
-      if (this.#currentPhase === PhaseType.INVALID) {
-        this.#equipWeaponOrArmor();
+        if (this.#currentPhase === PhaseType.INVALID) {
+          this.#equipWeaponOrArmor();
+
+          if (
+            this.#equipWeaponOrArmorState ===
+              EquipWeaponOrArmorState.SELECT_WEAPON_OR_ARMOR ||
+            this.#equipWeaponOrArmorState === EquipWeaponOrArmorState.END
+          ) {
+            this.#phaseMessage.setCurrentContent(
+              PhaseMessage.content.invalid[globals.language]
+            );
+          }
+        } else {
+          this.#isCurrentPhaseFinished =
+            this.#phases[this.#currentPhase].execute();
+        }
 
         if (
+          this.#equipWeaponOrArmorState === EquipWeaponOrArmorState.INIT ||
           this.#equipWeaponOrArmorState ===
-            EquipWeaponOrArmorState.SELECT_WEAPON_OR_ARMOR ||
-          this.#equipWeaponOrArmorState === EquipWeaponOrArmorState.END
+            EquipWeaponOrArmorState.SELECT_WEAPON_OR_ARMOR
         ) {
-          this.#phaseMessage.setCurrentContent(
-            PhaseMessage.content.invalid[globals.language]
-          );
+          this.#checkButtonClick();
+        }
+
+        if (this.#isCurrentPhaseCanceled || this.#isCurrentPhaseFinished) {
+          this.#equipWeaponOrArmorState = EquipWeaponOrArmorState.INIT;
+
+          this.#currentPhase = PhaseType.INVALID;
+
+          if (this.#isCurrentPhaseCanceled) {
+            this.#isCurrentPhaseCanceled = false;
+          } else {
+            this.#isCurrentPhaseFinished = false;
+            this.#numOfExecutedPhases++;
+          }
+
+          globals.buttonDataGlobal[PhaseButton.SKIP_OR_CANCEL][
+            PhaseButtonData.NAME
+          ] = "Skip";
+
+          if (isGameFinished) {
+            this.#isLastPhaseFinished = true;
+          }
+        }
+
+        if (this.#numOfExecutedPhases === 4) {
+          this.#currentPhase = PhaseType.DISCARD_CARD;
+        }
+
+        if (this.#numOfExecutedPhases >= 5) {
+          this.#currentPhase = PhaseType.INVALID;
+          this.#numOfExecutedPhases = 0;
+          globals.isCurrentTurnFinished = true;
         }
       } else {
-        this.#isCurrentPhaseFinished =
-          this.#phases[this.#currentPhase].execute();
+        this.#minionTooltip.clearTooltip();
+        this.#remainingCardsTooltip.clearTooltip();
+        this.#hoverTime = 0;
+        this.#lastHoveredCardId = null;
       }
-
-      if (
-        this.#equipWeaponOrArmorState === EquipWeaponOrArmorState.INIT ||
-        this.#equipWeaponOrArmorState ===
-          EquipWeaponOrArmorState.SELECT_WEAPON_OR_ARMOR
-      ) {
-        this.#checkButtonClick();
-      }
-
-      if (this.#isCurrentPhaseCanceled || this.#isCurrentPhaseFinished) {
-        this.#equipWeaponOrArmorState = EquipWeaponOrArmorState.INIT;
-
-        this.#currentPhase = PhaseType.INVALID;
-
-        if (this.#isCurrentPhaseCanceled) {
-          this.#isCurrentPhaseCanceled = false;
-        } else {
-          this.#isCurrentPhaseFinished = false;
-          this.#numOfExecutedPhases++;
-        }
-
-        globals.buttonDataGlobal[PhaseButton.SKIP_OR_CANCEL][
-          PhaseButtonData.NAME
-        ] = "Skip";
-      }
-
-      if (this.#numOfExecutedPhases === 4) {
-        this.#currentPhase = PhaseType.DISCARD_CARD;
-      }
-
-      if (this.#numOfExecutedPhases >= 5) {
-        this.#currentPhase = PhaseType.INVALID;
-        this.#numOfExecutedPhases = 0;
-        globals.isCurrentTurnFinished = true;
-      }
-    } else {
-      this.#minionTooltip.clearTooltip();
-      this.#remainingCardsTooltip.clearTooltip();
-      this.#hoverTime = 0;
-      this.#lastHoveredCardId = null;
     }
   }
 
