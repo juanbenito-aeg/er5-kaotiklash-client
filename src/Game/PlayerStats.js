@@ -11,6 +11,22 @@ export default class PlayerStats {
     this.#usedCards = 3;
   }
 
+  getMinionsKilled() {
+    return this.#minionsKilled;
+  }
+
+  getFumbles() {
+    return this.#fumbles;
+  }
+
+  getCriticalHits() {
+    return this.#criticalHits;
+  }
+
+  getUsedCards() {
+    return this.#usedCards;
+  }
+
   incrementMinionsKilled() {
     this.#minionsKilled++;
   }
