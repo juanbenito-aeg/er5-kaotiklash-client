@@ -315,25 +315,28 @@ export default class PerformEventPhase extends Phase {
         hoveredCard.getCategory() === CardCategory.SPECIAL
       ) {
         if (!this.#enemyHasArmor()) {
-          this.#stateMessages.push(
-            new StateMessage(
-              "REQUIRES THE ENEMY TO HAVE ARMOR",
-              "30px MedievalSharp",
-              "red",
-              1,
-              0.1,
-              hoveredCard.getXCoordinate() +
-                globals.imagesDestinationSizes.minionsAndEventsSmallVersion
-                  .width /
-                  2,
-              hoveredCard.getYCoordinate() +
-                globals.imagesDestinationSizes.minionsAndEventsSmallVersion
-                  .height /
-                  2,
-              0.1,
-              new Physics(0, 0, 0, 0, 0, 0, 0)
-            )
-          );
+          let message = new StateMessage(
+            "REQUIRES THE ENEMY TO HAVE ARMOR",
+            "30px MedievalSharp",
+            "red",
+            1,
+            0.1,
+            hoveredCard.getXCoordinate() +
+              globals.imagesDestinationSizes.minionsAndEventsSmallVersion
+                .width /
+                2,
+            hoveredCard.getYCoordinate() +
+              globals.imagesDestinationSizes.minionsAndEventsSmallVersion
+                .height /
+                2,
+            0.1,
+            new Physics(0, 0, 0, 0, 0, 0, 0)
+          )
+          //UNCOMMENT THIS WHEN THE LIMITATION IS FIXED
+          //message.getPhysics().vy = 20;
+          
+          this.#stateMessages.push(message);
+
           return;
         }
       }

@@ -6,6 +6,7 @@ import SpecialSkillAngelo from "./SpecialSkillAngelo.js";
 import StateMessage from "../Messages/StateMessage.js";
 import globals from "../Game/globals.js";
 import { MainCharacterID } from "../Game/constants.js";
+import Physics from "../Game/Physics.js";
 
 export default class SummonCharacterEvent extends Event {
   #mainCharacterID;
@@ -164,9 +165,12 @@ export default class SummonCharacterEvent extends Event {
             "ENEMY MINIONS WERE ATTRACTED TO THE FRONT COMBAT AREA ONE LAST TIME...",
             "30px MedievalSharp",
             "red",
-            3,
+            1,
+            2,
             globals.canvas.width / 2,
-            globals.canvas.height / 2
+            globals.canvas.height / 2,
+            1,
+            new Physics(0, 0, 0, 0, 0, 0, 0)
           );
           this.#stateMessages.push(secondMinionsAttractionMsg);
         }
@@ -178,10 +182,16 @@ export default class SummonCharacterEvent extends Event {
             "THE CURSE OF THE THRONE VANISHED, AT LEAST FOR NOW...",
             "30px MedievalSharp",
             "red",
-            3,
+            1,
+            2,
             globals.canvas.width / 2,
-            globals.canvas.height / 2
+            globals.canvas.height / 2,
+            1,
+            new Physics(0, 0, 0, 0, 0, 0, 0)
           );
+
+          curseDisappearanceMsg.getPhysics().vy = 20;
+          
           this.#stateMessages.push(curseDisappearanceMsg);
 
           this.#isPlayersSummonCharacterActive[

@@ -557,10 +557,16 @@ export default class Turn {
                 "DEER CANNOT EQUIP WEAPONS OR ARMOR",
                 "20px MedievalSharp",
                 "red",
-                4,
+                1,
+                2,
                 nMsgXCoordinate,
-                nMsgYCoordinate
+                nMsgYCoordinate,
+                1,
+                new Physics(0, 0, 0, 0, 0, 0, 0)
               );
+
+              deerWeaponsMsg.getPhysics().vy = 20;
+              
               this.#stateMessages.push(deerWeaponsMsg);
             } else if (
               (weaponOrArmor.getCategory() === CardCategory.WEAPON &&
@@ -574,14 +580,15 @@ export default class Turn {
                 "20px MedievalSharp",
                 "yellow",
                 1,
-                4,
+                2,
                 nMsgXCoordinate,
                 nMsgYCoordinate,
-                2,
+                1,
                 new Physics(0, 0, 0, 0, 0, 0, 0)
               );
 
               gearedUpMsg.getPhysics().vy = 20;
+
               this.#stateMessages.push(gearedUpMsg);
               this.#player.addUsedCards();
 
@@ -694,12 +701,14 @@ export default class Turn {
                 "20px MedievalSharp",
                 "red",
                 1,
-                4,
+                2,
                 buttonXCoordinate + buttonWidth / 2,
                 buttonYCoordinate + buttonHeight / 2,
-                2,
+                1,
                 new Physics(0, 0, 0, 0, 0, 0, 0)
               );
+
+              cannotAttackDueToActiveEventMsg.getPhysics().vy = 20;
 
               this.#stateMessages.push(cannotAttackDueToActiveEventMsg);
             } else if (
@@ -713,12 +722,14 @@ export default class Turn {
                 "20px MedievalSharp",
                 "red",
                 1,
-                3,
+                2,
                 buttonXCoordinate + buttonWidth / 2,
                 buttonYCoordinate + buttonHeight / 2,
-                1.5,
+                1,
                 new Physics(0, 0, 0, 0, 0, 0, 0)
               );
+
+              cannotDoAnythingDueToActiveEventMsg.getPhysics().vy = 20;
 
               this.#stateMessages.push(cannotDoAnythingDueToActiveEventMsg);
             } else if (

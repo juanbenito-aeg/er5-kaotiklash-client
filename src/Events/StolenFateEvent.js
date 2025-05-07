@@ -105,7 +105,7 @@ export default class StolenFateEvent extends Event {
           "17px MedievalSharp",
           "yellow",
           1,
-          4,
+          2,
           eventCard.getXCoordinate() +
             globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width /
               2,
@@ -115,6 +115,9 @@ export default class StolenFateEvent extends Event {
           1,
           new Physics(0, 0, 0, 0, 0, 0, 0)
         );
+
+        cardDrawnMsg.getPhysics().vy = 20;
+
         this.#stateMessages.push(cardDrawnMsg);
 
         cardsDrawn++;

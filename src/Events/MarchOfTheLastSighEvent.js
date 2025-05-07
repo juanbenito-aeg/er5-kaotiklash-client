@@ -50,6 +50,9 @@ export default class MarchOfTheLastSighEvent extends Event {
           1,
           new Physics(0, 0, 0, 0, 0, 0, 0)
         );
+
+        message.getPhysics().vy = 20;
+        
         this.#stateMessages.push(message);
         this.#isFinished = true;
       }

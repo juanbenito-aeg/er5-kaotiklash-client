@@ -18,6 +18,9 @@ export default class BracersOfTheWarLionSpecialEffect {
         1,
         new Physics(0, 0, 0, 0, 0, 0, 0)
       );
+
+      msg.getPhysics().vy = 20;
+
       stateMessage.push(msg);
       isActive = true;
       return newDamage;

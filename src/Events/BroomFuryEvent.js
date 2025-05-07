@@ -58,12 +58,14 @@ export default class BroomFuryEvent extends Event {
             "20px MedievalSharp",
             "rgb(240 167 163)",
             1,
-            4,
+            2,
             x2AttackMsgXCoordinate,
             x2AttackMsgYCoordinate,
             1,
             new Physics(0, 0, 0, 0, 0, 0, 0)
           );
+
+          x2AttackMsg.getPhysics().vy = 20;
 
           this.#stateMessages.push(x2AttackMsg);
 

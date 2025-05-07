@@ -82,6 +82,9 @@ export default class HandOfTheSoulThiefEvent extends Event {
           1,
           new Physics(0, 0, 0, 0, 0, 0, 0)
         );
+
+        message.getPhysics().vy = 20;
+
         this.#stateMessage.push(message);
         this.#state = HandOfTheSoulThiefState.SELECT_CARD_TO_EXCHANGE;
       }
@@ -160,12 +163,14 @@ export default class HandOfTheSoulThiefEvent extends Event {
         "40px MedievalSharp",
         "blue",
         1,
-        3,
+        2,
         1200,
         570,
         1,
         new Physics(0, 0, 0, 0, 0, 0, 0)
       );
+
+      message.getPhysics().vy = 20;
 
       this.#stateMessage.push(message);
 

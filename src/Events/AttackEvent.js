@@ -84,6 +84,9 @@ export default class AttackEvent extends Event {
         new Physics(0,0,0,0,0,0,0),
         
       );
+
+      nullifiedMessage.getPhysics().vy = 20;
+
       this.#stateMessages.push(nullifiedMessage);
 
       return;
@@ -527,7 +530,8 @@ export default class AttackEvent extends Event {
 
     if (!attackerWeapon) {
       // RESET TITANIC FURY BOOST AFTER THE ATTACK IS FINISHED
-      ArmorOfTitanicFuryEffect.resetBoost(this.#attacker, this.#stateMessages);
+      // TO FIX: IT ALLWAYS TRIGGERS
+      //ArmorOfTitanicFuryEffect.resetBoost(this.#attacker, this.#stateMessages);
     }
 
     if (damageToInflict > 0) {
@@ -575,6 +579,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    parryMessage.getPhysics().vy = 20;
+    
     this.#stateMessages.push(parryMessage);
   }
 
@@ -590,6 +597,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    parryMessage.getPhysics().vy = 20;
+
     this.#stateMessages.push(parryMessage);
   }
 
@@ -605,6 +615,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    parryMessage.getPhysics().vy = 20;
+
     this.#stateMessages.push(parryMessage);
   }
 
@@ -620,6 +633,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    parryMessage.getPhysics().vy = 20;
+
     this.#stateMessages.push(parryMessage);
   }
 
@@ -635,6 +651,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    damageMessage.getPhysics().vy = 20;
+
     this.#stateMessages.push(damageMessage);
   }
 
@@ -649,12 +668,15 @@ export default class AttackEvent extends Event {
       "30px MedievalSharp",
       "aqua",
       1,
-      3,
+      2,
       globals.canvas.width / 2,
       globals.canvas.height / 2,
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    dmgReflectedBackOntoAttackerMsg.getPhysics().vy = 20;
+
     this.#stateMessages.push(dmgReflectedBackOntoAttackerMsg);
 
     // CREATE AND STORE THE "ARMOR BROKE!" STATE MESSAGE
@@ -683,6 +705,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    critMessage.getPhysics().vy = 20;
+
     this.#stateMessages.push(critMessage);
   }
 
@@ -698,6 +723,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    fumbleMessage.getPhysics().vy = 20;
+
     this.#stateMessages.push(fumbleMessage);
   }
 
@@ -714,6 +742,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    weaponMessage.getPhysics().vy = 20;
+
     this.#stateMessages.push(weaponMessage);
   }
 
@@ -732,6 +763,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    deathMessage.getPhysics().vy = 20;
+
     this.#stateMessages.push(deathMessage);
   }
 
@@ -748,6 +782,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    armorBrokeMsg.getPhysics().vy = 20;
+
     this.#stateMessages.push(armorBrokeMsg);
   }
 
@@ -775,12 +812,15 @@ export default class AttackEvent extends Event {
         "30px MedievalSharp",
         "aqua",
         1,
-        3,
+        2,
         globals.canvas.width / 2,
         globals.canvas.height / 2,
         1,
         new Physics(0, 0, 0, 0, 0, 0, 0)
       );
+
+      dodgeMessage.getPhysics().vy = 20;
+
       this.#stateMessages.push(dodgeMessage);
 
       // CREATE AND STORE THE "ARMOR BROKE!" STATE MESSAGE

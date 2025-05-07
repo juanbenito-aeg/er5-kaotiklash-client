@@ -681,10 +681,16 @@ export default class Game {
         `${this.#currentPlayer.getName().toUpperCase()}'S TURN`,
         "55px MedievalSharp",
         "yellow",
+        1,
         2,
         globals.canvas.width / 2,
-        globals.canvas.height / 2
+        globals.canvas.height / 2,
+        1,
+        new Physics(0, 0, 0, 0, 0, 0, 0)
       );
+
+      currentPlayerTurnMsg.getPhysics().vy = 20;
+      
       this.#stateMessages.push(currentPlayerTurnMsg);
 
       // FILL THE CHAT MESSAGES ARRAY
@@ -780,6 +786,9 @@ export default class Game {
             1,
             new Physics(0, 0, 0, 0, 0, 0, 0)
           );
+
+          healMessage.getPhysics().vy = 20;
+
           this.#stateMessages.push(healMessage);
         } else {
           currentCard.setCurrentHP(currentCard.getInitialHP());
@@ -795,6 +804,9 @@ export default class Game {
             1,
             new Physics(0, 0, 0, 0, 0, 0, 0)
           );
+
+          healMessage.getPhysics().vy = 20;
+
           this.#stateMessages.push(healMessage);
         }
       }
@@ -827,6 +839,9 @@ export default class Game {
             1,
             new Physics(0, 0, 0, 0, 0, 0, 0)
           );
+
+          healMessage.getPhysics().vy = 20;
+
           this.#stateMessages.push(healMessage);
         } else {
           currentCard.setCurrentHP(currentCard.getInitialHP());
@@ -842,6 +857,9 @@ export default class Game {
             1,
             new Physics(0, 0, 0, 0, 0, 0, 0)
           );
+
+          healMessage.getPhysics().vy = 20;
+
           this.#stateMessages.push(healMessage);
         }
       }
@@ -871,6 +889,9 @@ export default class Game {
           1,
           new Physics(0, 0, 0, 0, 0, 0, 0)
         );
+
+        message.getPhysics().vy = 20;
+
         this.#stateMessages.push(message);
       }
     }
@@ -891,6 +912,9 @@ export default class Game {
           1,
           new Physics(0, 0, 0, 0, 0, 0, 0)
         );
+
+        message.getPhysics().vy = 20;
+
         this.#stateMessages.push(message);
       }
     }

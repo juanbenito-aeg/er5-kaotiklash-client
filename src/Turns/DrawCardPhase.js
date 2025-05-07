@@ -13,6 +13,7 @@ import {
   MainCharacterID,
   ArmorID,
 } from "../Game/constants.js";
+import Physics from "../Game/Physics.js";
 
 export default class DrawCardPhase extends Phase {
   #isFirstTurn;
@@ -139,8 +140,8 @@ export default class DrawCardPhase extends Phase {
 
     // (!) REMOVE WHEN CARDS TESTING FINISHES
     const drawnCard = this.#getSpecifiedCard(
-      CardCategory.ARMOR,
-      ArmorID.CLOAK_ETERNAL_SHADOW
+      CardCategory.RARE,
+      RareEventID.SHIELD_OF_BALANCE
     );
     if (!drawnCard) {
       return;
@@ -213,9 +214,12 @@ export default class DrawCardPhase extends Phase {
       "THE FEARSOME JOSEPH IS HERE!",
       "60px MedievalSharp",
       "rgb(225 213 231)",
-      3,
+      1,
+      2,
       globals.canvas.width / 2,
-      globals.canvas.height / 2
+      globals.canvas.height / 2,
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
     this.#stateMessages.push(josephIsHereMsg);
   }
