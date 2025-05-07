@@ -9,6 +9,7 @@ import MouseInput from "./MouseInput.js";
 import ImageSet from "./ImageSet.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
+import ChatMessage from "../Messages/ChatMessage.js";
 import MinionTooltip from "../Tooltips/MinionTooltip.js";
 import RemainingCardsTooltip from "../Tooltips/RemainingCardsTooltip.js";
 import globals from "./globals.js";
@@ -27,6 +28,8 @@ import {
   GridType,
   PhaseButtonData,
   Language,
+  ChatMessageType,
+  ChatMessagePosition,
 } from "./constants.js";
 import Physics from "./Physics.js";
 
@@ -40,6 +43,7 @@ export default class Game {
   #events;
   #phaseMessage;
   #stateMessages;
+  #chatMessages;
   #attackMenuData;
   #activeEventsTableData;
   #minionTooltip;
@@ -95,6 +99,8 @@ export default class Game {
     );
 
     game.#stateMessages = [];
+
+    game.#chatMessages = [];
 
     // ATTACK MENU DATA OBJECT CREATION
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
@@ -651,8 +657,9 @@ export default class Game {
 
   #update() {
     if (globals.isCurrentTurnFinished) {
-      this.#stats.played_turns++;
       globals.isCurrentTurnFinished = false;
+
+      this.#stats.played_turns++;
 
       this.#healHarmedMinions();
 
@@ -679,33 +686,40 @@ export default class Game {
         globals.canvas.height / 2
       );
       this.#stateMessages.push(currentPlayerTurnMsg);
+
+      // FILL THE CHAT MESSAGES ARRAY
+      this.#fillChatMessages();
     }
 
-    this.#mouseInput.resetIsLeftClickedOnBoxes(this.#board);
-    this.#mouseInput.detectMouseOverBox(this.#board);
-    this.#mouseInput.detectBoxThatIsntHoveredAnymore(this.#board);
-    this.#mouseInput.detectLeftClickOnBox(this.#board);
+    if (this.#chatMessages.length > 0) {
+      this.#updateChatMessages();
+    } else {
+      this.#mouseInput.resetIsLeftClickedOnBoxes(this.#board);
+      this.#mouseInput.detectMouseOverBox(this.#board);
+      this.#mouseInput.detectBoxThatIsntHoveredAnymore(this.#board);
+      this.#mouseInput.detectLeftClickOnBox(this.#board);
 
-    this.#mouseInput.resetIsLeftClickedOnCards(this.#deckContainer);
-    this.#mouseInput.resetIsRightClickedOnCards(this.#deckContainer);
-    this.#mouseInput.detectMouseOverCard(this.#deckContainer);
-    this.#mouseInput.detectCardThatIsntHoveredAnymore(this.#deckContainer);
-    this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
-    this.#mouseInput.detectRightClickOnCard(this.#deckContainer);
+      this.#mouseInput.resetIsLeftClickedOnCards(this.#deckContainer);
+      this.#mouseInput.resetIsRightClickedOnCards(this.#deckContainer);
+      this.#mouseInput.detectMouseOverCard(this.#deckContainer);
+      this.#mouseInput.detectCardThatIsntHoveredAnymore(this.#deckContainer);
+      this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
+      this.#mouseInput.detectRightClickOnCard(this.#deckContainer);
 
-    if (!globals.gameWinner) {
-      this.#turns[this.#currentPlayer.getID()].execute();
+      if (!globals.gameWinner) {
+        this.#turns[this.#currentPlayer.getID()].execute();
+      }
+
+      this.#mouseInput.setLeftButtonPressedFalse();
+
+      this.#executeEvents();
+
+      this.#updateStateMessages();
+
+      this.#updatePlayersTotalHP();
+
+      this.#checkIfGameOver();
     }
-
-    this.#mouseInput.setLeftButtonPressedFalse();
-
-    this.#executeEvents();
-
-    this.#updateStateMessages();
-
-    this.#updatePlayersTotalHP();
-
-    this.#checkIfGameOver();
   }
 
   #healHarmedMinions() {
@@ -883,6 +897,111 @@ export default class Game {
     
   }
 
+  #fillChatMessages() {
+    // DETERMINE THE TYPE OF THE CHAT MESSAGE(S) TO DISPLAY
+
+    let randomChatMessageTypeUpperLimit = 2;
+
+    if (
+      this.#deckContainer.getDecks()[DeckType.JOSEPH].getCards().length === 1
+    ) {
+      randomChatMessageTypeUpperLimit = 3;
+    }
+
+    const randomChatMessageType = Math.floor(
+      Math.random() * randomChatMessageTypeUpperLimit
+    );
+
+    // DETERMINE THE SPEAKER(S)
+
+    const speakers = [];
+    const positions = [];
+
+    if (randomChatMessageType === ChatMessageType.MAIN_CHARACTERS) {
+      const player1MainCharacter = this.#deckContainer
+        .getDecks()
+        [DeckType.PLAYER_1_MAIN_CHARACTER].getCards()[0];
+      const player2MainCharacter = this.#deckContainer
+        .getDecks()
+        [DeckType.PLAYER_2_MAIN_CHARACTER].getCards()[0];
+
+      speakers.push(player1MainCharacter, player2MainCharacter);
+
+      if (globals.firstActivePlayerID === PlayerID.PLAYER_1) {
+        positions.push(ChatMessagePosition.UP, ChatMessagePosition.DOWN);
+      } else {
+        positions.push(ChatMessagePosition.DOWN, ChatMessagePosition.UP);
+      }
+    } else if (randomChatMessageType === ChatMessageType.MINIONS) {
+      const randomMinionsInPlayIndex = Math.floor(Math.random() * 3);
+
+      const player1RandomMinionInPlay = this.#deckContainer
+        .getDecks()
+        [DeckType.PLAYER_1_MINIONS_IN_PLAY].getCards()[
+        randomMinionsInPlayIndex
+      ];
+      const player2RandomMinionInPlay = this.#deckContainer
+        .getDecks()
+        [DeckType.PLAYER_2_MINIONS_IN_PLAY].getCards()[
+        randomMinionsInPlayIndex
+      ];
+
+      speakers.push(player1RandomMinionInPlay, player2RandomMinionInPlay);
+
+      if (globals.firstActivePlayerID === PlayerID.PLAYER_1) {
+        positions.push(ChatMessagePosition.RIGHT, ChatMessagePosition.LEFT);
+      } else {
+        positions.push(ChatMessagePosition.LEFT, ChatMessagePosition.RIGHT);
+      }
+    } else {
+      const joseph = this.#deckContainer
+        .getDecks()
+        [DeckType.JOSEPH].getCards()[0];
+
+      speakers.push(joseph);
+    }
+
+    // CREATE AND STORE THE CHAT MESSAGE(S) TO DISPLAY
+    if (speakers.length === 1) {
+      const chatMessage = ChatMessage.create(
+        randomChatMessageType,
+        ChatMessagePosition.UP,
+        speakers[0].getXCoordinate(),
+        speakers[0].getYCoordinate()
+      );
+
+      this.#chatMessages.push(chatMessage);
+    } else {
+      do {
+        for (let i = 0; i < speakers.length; i++) {
+          const chatMessage = ChatMessage.create(
+            randomChatMessageType,
+            positions[i],
+            speakers[i].getXCoordinate(),
+            speakers[i].getYCoordinate()
+          );
+
+          this.#chatMessages[i] = chatMessage;
+        }
+      } while (
+        this.#chatMessages[0].getContentAsString() ===
+        this.#chatMessages[1].getContentAsString()
+      );
+    }
+  }
+
+  #updateChatMessages() {
+    for (let i = 0; i < this.#chatMessages.length; i++) {
+      let currentChatMessage = this.#chatMessages[i];
+
+      const isChatMessageActive = currentChatMessage.execute();
+
+      if (!isChatMessageActive) {
+        this.#chatMessages.splice(i, 1);
+      }
+    }
+  }
+
   #updatePlayersTotalHP() {
     // PLAYER 1
 
@@ -1039,7 +1158,12 @@ export default class Game {
     this.#renderPhaseMessage();
     this.#renderCardsReverse();
     this.#renderCards();
-    this.#renderStateMessages();
+
+    if (this.#chatMessages.length > 0) {
+      this.#renderChatMessages();
+    } else {
+      this.#renderStateMessages();
+    }
   }
 
   #renderBoard() {
@@ -2540,6 +2664,41 @@ export default class Game {
     card.renderEffect();
     globals.ctx.fillText(0, 1148, 848);
     globals.ctx.fillText(card.getInitialDurationInRounds(), 1280, 848);
+  }
+
+  #renderChatMessages() {
+    globals.ctx.font = "20px MedievalSharp";
+    globals.ctx.fillStyle = "black";
+
+    for (let i = 0; i < this.#chatMessages.length; i++) {
+      const currentChatMessage = this.#chatMessages[i];
+
+      globals.ctx.save();
+
+      if (currentChatMessage.getPosition() === ChatMessagePosition.DOWN) {
+        globals.ctx.scale(1, -1);
+      } else if (
+        currentChatMessage.getPosition() === ChatMessagePosition.LEFT
+      ) {
+        globals.ctx.scale(-1, 1);
+      }
+
+      globals.ctx.drawImage(
+        globals.balloonsImages[currentChatMessage.getType()],
+        0,
+        0,
+        500,
+        300,
+        currentChatMessage.getBalloonXCoordinate(),
+        currentChatMessage.getBalloonYCoordinate(),
+        currentChatMessage.getBalloonWidth(),
+        currentChatMessage.getBalloonHeight()
+      );
+
+      globals.ctx.restore();
+
+      currentChatMessage.renderContent();
+    }
   }
 
   #renderStateMessages() {

@@ -849,6 +849,25 @@ function loadAssets() {
   ];
 
   createAndStoreImageObjs(icons, globals.cardsIconsImages);
+
+  // LOAD CARDS BALLOONS
+
+  const balloons = [
+    {
+      name: "mainCharactersBalloon",
+      image_src: "../images/main-characters-balloon.png",
+    },
+    {
+      name: "minionsBalloon",
+      image_src: "../images/minions-balloon.png",
+    },
+    {
+      name: "josephBalloon",
+      image_src: "../images/joseph-balloon.png",
+    },
+  ];
+
+  createAndStoreImageObjs(balloons, globals.balloonsImages);
 }
 
 // CODE BLOCK TO CALL EACH TIME AN ASSET IS LOADED

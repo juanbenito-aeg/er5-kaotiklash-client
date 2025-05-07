@@ -91,11 +91,11 @@ export default class PhaseMessage extends Message {
         "Itua aukeratu.",
       ],
       targetOutOfLimit: [
-        //ENG:
+        // ENG:
         "Target not within reach",
 
-        //EUS
-        "Lortu ezin den helburua",
+        // EUS
+        "Jomuga ez dago eskura",
       ],
     },
 
@@ -144,7 +144,7 @@ export default class PhaseMessage extends Message {
     },
     echoOfTheStratagen: {
       selectEnemyCard: [
-        //ENG
+        // ENG
         "Select an enemy event to steal.",
 
         // EUS
