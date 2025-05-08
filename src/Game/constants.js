@@ -324,6 +324,16 @@ const ChatMessagePhase = {
   EXIT: 2,
 };
 
+const ParticleID = {
+  MINION_DEATH: 0,
+};
+
+const ParticleState = {
+  ON: 0,
+  FADE: 1,
+  OFF: -1,
+};
+
 export {
   GameState,
   FPS,
@@ -363,4 +373,6 @@ export {
   ChatMessageType,
   ChatMessagePosition,
   ChatMessagePhase,
+  ParticleID,
+  ParticleState,
 };
