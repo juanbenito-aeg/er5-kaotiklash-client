@@ -20,6 +20,7 @@ export default {
   },
   cardsTemplatesImages: [],
   cardsIconsImages: [],
+  balloonsImages: [],
   imagesDestinationSizes: {},
   assetsToLoad: [], // HOLDS THE ELEMENTS TO LOAD
   assetsLoaded: 0, // INDICATES THE NUMBER OF ELEMENTS THAT HAVE BEEN LOADED SO FAR
@@ -30,8 +31,6 @@ export default {
   buttonDataGlobal: [],
   firstActivePlayerID: -1, // (!) DELETE AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
   phaseMessage: {},
-  gameWinner: null,
-  gameLoser: null,
   isScreenInitialized: {
     register: false,
     playerSessionScreen: false,
@@ -40,8 +39,4 @@ export default {
     loggedIn: -1,
     lastOpponent: -1,
   },
-  gameStats: null,
-  gamePlayers: null,
-  gameOver: false,
-  statsAlreadySent: false,
 };

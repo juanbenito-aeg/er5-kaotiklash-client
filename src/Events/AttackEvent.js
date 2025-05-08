@@ -25,6 +25,7 @@ export default class AttackEvent extends Event {
   #stateMessages;
   #player;
   #eventsData;
+  #stats;
 
   constructor(
     attacker,
@@ -36,7 +37,8 @@ export default class AttackEvent extends Event {
     eventDeck,
     stateMessages,
     player,
-    eventsData
+    eventsData,
+    stats
   ) {
     super();
 
@@ -50,6 +52,7 @@ export default class AttackEvent extends Event {
     this.#stateMessages = stateMessages;
     this.#player = player;
     this.#eventsData = eventsData;
+    this.#stats = stats;
   }
 
   execute() {
@@ -84,6 +87,9 @@ export default class AttackEvent extends Event {
         new Physics(0,0,0,0,0,0,0),
         
       );
+
+      nullifiedMessage.getPhysics().vy = 20;
+
       this.#stateMessages.push(nullifiedMessage);
 
       return;
@@ -112,7 +118,7 @@ export default class AttackEvent extends Event {
       roll <= chances
     ) {
       // FUMBLE
-      this.#player.addFumbles();
+      this.#stats.incrementPlayerXFumbles(this.#player.getID());
       console.log("Fumble");
       fumble = false;
     }
@@ -360,7 +366,7 @@ export default class AttackEvent extends Event {
     let crit = false;
     if (roll <= critProb) {
       // CRITICAL HIT
-      this.#player.addCriticalHits();
+      this.#stats.incrementPlayerXCriticalHits(this.#player.getID());
       crit = true;
       console.log("Critical Hit");
       let baseDamage = damageToInflict;
@@ -504,7 +510,7 @@ export default class AttackEvent extends Event {
       if (targetNewCurrentHP < 0) {
         targetNewCurrentHP = 0;
         this.deathMessage(this.#target);
-        this.#player.addMinionsKilled();
+        this.#stats.incrementPlayerXMinionsKilled(this.#player.getID());
       }
 
       this.#target.setCurrentHP(targetNewCurrentHP);
@@ -514,7 +520,7 @@ export default class AttackEvent extends Event {
     if (targetNewCurrentHPStored < 0) {
       targetNewCurrentHPStored = 0;
       this.deathMessage(this.#target);
-      this.#player.addMinionsKilled();
+      this.#stats.incrementPlayerXMinionsKilled(this.#player.getID());
     }
     this.#target.setCurrentHP(targetNewCurrentHPStored);
 
@@ -527,7 +533,8 @@ export default class AttackEvent extends Event {
 
     if (!attackerWeapon) {
       // RESET TITANIC FURY BOOST AFTER THE ATTACK IS FINISHED
-      ArmorOfTitanicFuryEffect.resetBoost(this.#attacker, this.#stateMessages);
+      // TO FIX: IT ALLWAYS TRIGGERS
+      //ArmorOfTitanicFuryEffect.resetBoost(this.#attacker, this.#stateMessages);
     }
 
     if (damageToInflict > 0) {
@@ -575,6 +582,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    parryMessage.getPhysics().vy = 20;
+    
     this.#stateMessages.push(parryMessage);
   }
 
@@ -590,6 +600,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    parryMessage.getPhysics().vy = 20;
+
     this.#stateMessages.push(parryMessage);
   }
 
@@ -605,6 +618,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    parryMessage.getPhysics().vy = 20;
+
     this.#stateMessages.push(parryMessage);
   }
 
@@ -620,6 +636,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    parryMessage.getPhysics().vy = 20;
+
     this.#stateMessages.push(parryMessage);
   }
 
@@ -635,6 +654,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    damageMessage.getPhysics().vy = 20;
+
     this.#stateMessages.push(damageMessage);
   }
 
@@ -649,12 +671,15 @@ export default class AttackEvent extends Event {
       "30px MedievalSharp",
       "aqua",
       1,
-      3,
+      2,
       globals.canvas.width / 2,
       globals.canvas.height / 2,
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    dmgReflectedBackOntoAttackerMsg.getPhysics().vy = 20;
+
     this.#stateMessages.push(dmgReflectedBackOntoAttackerMsg);
 
     // CREATE AND STORE THE "ARMOR BROKE!" STATE MESSAGE
@@ -683,6 +708,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    critMessage.getPhysics().vy = 20;
+
     this.#stateMessages.push(critMessage);
   }
 
@@ -698,6 +726,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    fumbleMessage.getPhysics().vy = 20;
+
     this.#stateMessages.push(fumbleMessage);
   }
 
@@ -714,6 +745,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    weaponMessage.getPhysics().vy = 20;
+
     this.#stateMessages.push(weaponMessage);
   }
 
@@ -732,6 +766,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    deathMessage.getPhysics().vy = 20;
+
     this.#stateMessages.push(deathMessage);
   }
 
@@ -748,6 +785,9 @@ export default class AttackEvent extends Event {
       1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    armorBrokeMsg.getPhysics().vy = 20;
+
     this.#stateMessages.push(armorBrokeMsg);
   }
 
@@ -775,12 +815,15 @@ export default class AttackEvent extends Event {
         "30px MedievalSharp",
         "aqua",
         1,
-        3,
+        2,
         globals.canvas.width / 2,
         globals.canvas.height / 2,
         1,
         new Physics(0, 0, 0, 0, 0, 0, 0)
       );
+
+      dodgeMessage.getPhysics().vy = 20;
+
       this.#stateMessages.push(dodgeMessage);
 
       // CREATE AND STORE THE "ARMOR BROKE!" STATE MESSAGE

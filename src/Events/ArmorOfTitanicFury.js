@@ -14,6 +14,9 @@ export default class ArmorOfTitanicFuryEffect {
       1,
       new Physics(0,0,0,0,0,0,0)
     );
+
+    plus10AttackMsg.getPhysics().vy = 20;
+
     stateMessages.push(plus10AttackMsg);
 
     target.setCurrentAttack(target.getCurrentAttack() + 10);
@@ -26,10 +29,16 @@ export default class ArmorOfTitanicFuryEffect {
       `-${attackBoostToRemove} ATK`,
       "30px MedievalSharp",
       "rgb(240 167 163)",
+      1,
       2,
       target.getXCoordinate() + 55,
-      target.getYCoordinate()
+      target.getYCoordinate(),
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+    
+    removedAttackBoostMsg.getPhysics().vy = 20;
+
     stateMessages.push(removedAttackBoostMsg);
 
     target.setCurrentAttack(target.getInitialAttack());

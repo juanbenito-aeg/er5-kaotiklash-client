@@ -1,5 +1,6 @@
 import globals from "../Game/globals.js";
 import StateMessage from "../Messages/StateMessage.js";
+import Physics from "../Game/Physics.js";
 
 export default class LucretiaSpecialSkill {
   #lucretiaDeers;
@@ -55,10 +56,16 @@ export default class LucretiaSpecialSkill {
       "ENEMY MINIONS TURNED INTO DEER!",
       "30px MedievalSharp",
       "rgb(250 233 183)",
-      3,
+      1,
+      2,
       globals.canvas.width / 2,
-      globals.canvas.height / 2
+      globals.canvas.height / 2,
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    transformationMsg.getPhysics().vy = 20;
+    
     this.#stateMessages.push(transformationMsg);
   }
 
@@ -95,10 +102,16 @@ export default class LucretiaSpecialSkill {
       "ENEMY MINIONS RETURNED TO THEIR ORIGINAL FORM!",
       "30px MedievalSharp",
       "rgb(250 233 183)",
-      3,
+      1,
+      2,
       globals.canvas.width / 2,
-      globals.canvas.height / 2
+      globals.canvas.height / 2,
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    backToOriginalFormMsg.getPhysics().vy = 20;
+    
     this.#stateMessages.push(backToOriginalFormMsg);
 
     this.#resetDeerAttributes();

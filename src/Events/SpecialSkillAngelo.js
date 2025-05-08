@@ -1,5 +1,6 @@
 import globals from "../Game/globals.js";
 import StateMessage from "../Messages/StateMessage.js";
+import Physics from "../Game/Physics.js";
 
 export default class SpecialSkillAngelo {
   #enemyBattlefieldGrid;
@@ -30,10 +31,16 @@ export default class SpecialSkillAngelo {
       "DARKNESS FALLS... ANGELO TAKES CONTROL",
       "40px MedievalSharp",
       "blue",
+      1,
       2,
       1200,
-      520
+      520,
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    message.getPhysics().vy = 20;
+
     this.#stateMessages.push(message);
     this.#eventsData.activeVisibilitySkill = this;
   }
@@ -43,10 +50,16 @@ export default class SpecialSkillAngelo {
       "THE DARKNESS FADES... ANGELO RECEDES INTO THE SHADOWS",
       "35px MedievalSharp",
       "red",
+      1,
       2,
       1200,
-      520
+      520,
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+    
+    message.getPhysics().vy = 20;
+
     this.#stateMessages.push(message);
     this.#eventsData.activeVisibilitySkill = null;
   }

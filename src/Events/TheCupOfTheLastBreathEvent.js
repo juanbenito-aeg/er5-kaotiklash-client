@@ -1,6 +1,7 @@
 import Event from "./Event.js";
 import { PlayerID } from "../Game/constants.js";
 import StateMessage from "../Messages/StateMessage.js";
+import Physics from "../Game/Physics.js";
 
 export default class TheCupOfTheLastBreathEvent extends Event {
   #eventsData;
@@ -34,9 +35,15 @@ export default class TheCupOfTheLastBreathEvent extends Event {
         "40px MedievalSharp",
         "purple",
         1,
+        2,
         1200,
-        570
+        570,
+        1,
+        new Physics(0, 0, 0, 0, 0, 0, 0)
       );
+
+      denyHealingMessage.getPhysics().vy = 20;
+
       this.#stateMessages.push(denyHealingMessage);
       this.#hasShowMessage = true;
     }
@@ -52,10 +59,16 @@ export default class TheCupOfTheLastBreathEvent extends Event {
         `${this.#affectedPlayerName.toUpperCase()} CAN HEAL AGAIN`,
         "40px MedievalSharp",
         "green",
+        1,
         2,
         1200,
-        570
+        570,
+        1,
+        new Physics(0, 0, 0, 0, 0, 0, 0)
       );
+
+      healRestoredMessage.getPhysics().vy = 20;
+
       this.#stateMessages.push(healRestoredMessage);
     }
   }

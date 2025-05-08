@@ -19,7 +19,6 @@ import {
   CardCategory,
   PhaseButtonData,
   GridType,
-  BoxState,
   MinionTypeID,
 } from "../Game/constants.js";
 import Physics from "../Game/Physics.js";
@@ -27,6 +26,7 @@ import Physics from "../Game/Physics.js";
 export default class Turn {
   #isCurrentPhaseCanceled;
   #isCurrentPhaseFinished;
+  #isLastPhaseFinished;
   #currentPhase;
   #numOfExecutedPhases;
   #phases;
@@ -45,6 +45,7 @@ export default class Turn {
   #lastHoveredCardId;
   #eventsData;
   #stats;
+  #edgeAnimation;
 
   constructor(
     deckContainer,
@@ -58,7 +59,8 @@ export default class Turn {
     minionTooltip,
     eventsData,
     stats,
-    remainingCardsTooltip
+    remainingCardsTooltip,
+    edgeAnimation
   ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
@@ -80,6 +82,7 @@ export default class Turn {
     this.#eventsData = eventsData;
     this.#stats = stats;
     this.#remainingCardsTooltip = remainingCardsTooltip;
+    this.#edgeAnimation = edgeAnimation;
   }
 
   fillPhases(currentPlayer) {
@@ -109,7 +112,8 @@ export default class Turn {
         this.#stateMessages,
         this.#attackMenuData,
         this.#eventsData,
-        this.#stats
+        this.#stats,
+        this.#edgeAnimation
       );
 
       this.#phases.push(currentPhase);
@@ -208,74 +212,80 @@ export default class Turn {
   }
  */
 
-  execute() {
+  execute(isGameFinished) {
     if (this.#numOfExecutedPhases === 0) {
       this.#isCurrentPhaseFinished =
         this.#phases[PhaseType.DRAW_CARD].execute();
     }
 
-    const isAnyCardExpanded = this.#expandCard();
+    if (!this.#isLastPhaseFinished) {
+      const isAnyCardExpanded = this.#expandCard();
 
-    if (!isAnyCardExpanded) {
-      this.#updateMinionTooltip();
-      this.#updateRemainingCardsTooltip();
+      if (!isAnyCardExpanded) {
+        this.#updateMinionTooltip();
+        this.#updateRemainingCardsTooltip();
 
-      if (this.#currentPhase === PhaseType.INVALID) {
-        this.#equipWeaponOrArmor();
+        if (this.#currentPhase === PhaseType.INVALID) {
+          this.#equipWeaponOrArmor();
+
+          if (
+            this.#equipWeaponOrArmorState ===
+              EquipWeaponOrArmorState.SELECT_WEAPON_OR_ARMOR ||
+            this.#equipWeaponOrArmorState === EquipWeaponOrArmorState.END
+          ) {
+            this.#phaseMessage.setCurrentContent(
+              PhaseMessage.content.invalid[globals.language]
+            );
+          }
+        } else {
+          this.#isCurrentPhaseFinished =
+            this.#phases[this.#currentPhase].execute();
+        }
 
         if (
+          this.#equipWeaponOrArmorState === EquipWeaponOrArmorState.INIT ||
           this.#equipWeaponOrArmorState ===
-            EquipWeaponOrArmorState.SELECT_WEAPON_OR_ARMOR ||
-          this.#equipWeaponOrArmorState === EquipWeaponOrArmorState.END
+            EquipWeaponOrArmorState.SELECT_WEAPON_OR_ARMOR
         ) {
-          this.#phaseMessage.setCurrentContent(
-            PhaseMessage.content.invalid[globals.language]
-          );
+          this.#checkButtonClick();
+        }
+
+        if (this.#isCurrentPhaseCanceled || this.#isCurrentPhaseFinished) {
+          this.#equipWeaponOrArmorState = EquipWeaponOrArmorState.INIT;
+
+          this.#currentPhase = PhaseType.INVALID;
+
+          if (this.#isCurrentPhaseCanceled) {
+            this.#isCurrentPhaseCanceled = false;
+          } else {
+            this.#isCurrentPhaseFinished = false;
+            this.#numOfExecutedPhases++;
+          }
+
+          globals.buttonDataGlobal[PhaseButton.SKIP_OR_CANCEL][
+            PhaseButtonData.NAME
+          ] = "Skip";
+
+          if (isGameFinished) {
+            this.#isLastPhaseFinished = true;
+          }
+        }
+
+        if (this.#numOfExecutedPhases === 4) {
+          this.#currentPhase = PhaseType.DISCARD_CARD;
+        }
+
+        if (this.#numOfExecutedPhases >= 5) {
+          this.#currentPhase = PhaseType.INVALID;
+          this.#numOfExecutedPhases = 0;
+          globals.isCurrentTurnFinished = true;
         }
       } else {
-        this.#isCurrentPhaseFinished =
-          this.#phases[this.#currentPhase].execute();
+        this.#minionTooltip.clearTooltip();
+        this.#remainingCardsTooltip.clearTooltip();
+        this.#hoverTime = 0;
+        this.#lastHoveredCardId = null;
       }
-
-      if (
-        this.#equipWeaponOrArmorState === EquipWeaponOrArmorState.INIT ||
-        this.#equipWeaponOrArmorState ===
-          EquipWeaponOrArmorState.SELECT_WEAPON_OR_ARMOR
-      ) {
-        this.#checkButtonClick();
-      }
-
-      if (this.#isCurrentPhaseCanceled || this.#isCurrentPhaseFinished) {
-        this.#equipWeaponOrArmorState = EquipWeaponOrArmorState.INIT;
-
-        this.#currentPhase = PhaseType.INVALID;
-
-        if (this.#isCurrentPhaseCanceled) {
-          this.#isCurrentPhaseCanceled = false;
-        } else {
-          this.#isCurrentPhaseFinished = false;
-          this.#numOfExecutedPhases++;
-        }
-
-        globals.buttonDataGlobal[PhaseButton.SKIP_OR_CANCEL][
-          PhaseButtonData.NAME
-        ] = "Skip";
-      }
-
-      if (this.#numOfExecutedPhases === 4) {
-        this.#currentPhase = PhaseType.DISCARD_CARD;
-      }
-
-      if (this.#numOfExecutedPhases === 5) {
-        this.#currentPhase = PhaseType.INVALID;
-        this.#numOfExecutedPhases = 0;
-        globals.isCurrentTurnFinished = true;
-      }
-    } else {
-      this.#minionTooltip.clearTooltip();
-      this.#remainingCardsTooltip.clearTooltip();
-      this.#hoverTime = 0;
-      this.#lastHoveredCardId = null;
     }
   }
 
@@ -557,10 +567,16 @@ export default class Turn {
                 "DEER CANNOT EQUIP WEAPONS OR ARMOR",
                 "20px MedievalSharp",
                 "red",
-                4,
+                1,
+                2,
                 nMsgXCoordinate,
-                nMsgYCoordinate
+                nMsgYCoordinate,
+                1,
+                new Physics(0, 0, 0, 0, 0, 0, 0)
               );
+
+              deerWeaponsMsg.getPhysics().vy = 20;
+              
               this.#stateMessages.push(deerWeaponsMsg);
             } else if (
               (weaponOrArmor.getCategory() === CardCategory.WEAPON &&
@@ -574,16 +590,17 @@ export default class Turn {
                 "20px MedievalSharp",
                 "yellow",
                 1,
-                4,
+                2,
                 nMsgXCoordinate,
                 nMsgYCoordinate,
-                2,
+                1,
                 new Physics(0, 0, 0, 0, 0, 0, 0)
               );
 
               gearedUpMsg.getPhysics().vy = 20;
+
               this.#stateMessages.push(gearedUpMsg);
-              this.#player.addUsedCards();
+              this.#stats.incrementPlayerXUsedCards(this.#player.getID());
 
               minion.setState(CardState.SELECTED);
 
@@ -694,12 +711,14 @@ export default class Turn {
                 "20px MedievalSharp",
                 "red",
                 1,
-                4,
+                2,
                 buttonXCoordinate + buttonWidth / 2,
                 buttonYCoordinate + buttonHeight / 2,
-                2,
+                1,
                 new Physics(0, 0, 0, 0, 0, 0, 0)
               );
+
+              cannotAttackDueToActiveEventMsg.getPhysics().vy = 20;
 
               this.#stateMessages.push(cannotAttackDueToActiveEventMsg);
             } else if (
@@ -713,12 +732,14 @@ export default class Turn {
                 "20px MedievalSharp",
                 "red",
                 1,
-                3,
+                2,
                 buttonXCoordinate + buttonWidth / 2,
                 buttonYCoordinate + buttonHeight / 2,
-                1.5,
+                1,
                 new Physics(0, 0, 0, 0, 0, 0, 0)
               );
+
+              cannotDoAnythingDueToActiveEventMsg.getPhysics().vy = 20;
 
               this.#stateMessages.push(cannotDoAnythingDueToActiveEventMsg);
             } else if (

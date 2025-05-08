@@ -1,6 +1,7 @@
 import Event from "./Event.js";
 import { PlayerID } from "../Game/constants.js";
 import StateMessage from "../Messages/StateMessage.js";
+import Physics from "../Game/Physics.js";
 
 export default class CurseOfTheBoundTitanEvent extends Event {
   #eventsData;
@@ -36,9 +37,15 @@ export default class CurseOfTheBoundTitanEvent extends Event {
         "35px MedievalSharp",
         "darkred",
         1,
+        2,
         1200,
-        570
+        570,
+        1,
+        new Physics(0, 0, 0, 0, 0, 0, 0)
       );
+
+      debuffMessage.getPhysics().vy = 20;
+
       this.#stateMessages.push(debuffMessage);
       this.#hasShownDebuffMessage = true;
     }
@@ -55,9 +62,15 @@ export default class CurseOfTheBoundTitanEvent extends Event {
         "35px MedievalSharp",
         "blue",
         1,
+        2,
         1200,
-        570
+        570,
+        1,
+        new Physics(0, 0, 0, 0, 0, 0, 0)
       );
+
+      restoreMessage.getPhysics().vy = 20;
+      
       this.#stateMessages.push(restoreMessage);
     }
   }

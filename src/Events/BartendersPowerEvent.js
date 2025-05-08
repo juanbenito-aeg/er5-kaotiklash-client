@@ -39,12 +39,15 @@ export default class BartendersPowerEvent extends Event {
           `50px MedievalSharp`,
           "red",
           1,
-          5,
+          2,
           minion.getXCoordinate(),
           minion.getYCoordinate(),
           1,
           new Physics(0, 0, 0, 0, 0, 0, 0)
         );
+
+        message.getPhysics().vy = 20;
+
         this.#stateMessage.push(message);
       }
     }

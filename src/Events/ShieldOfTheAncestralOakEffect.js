@@ -34,7 +34,11 @@ export default class ShieldOfYheAncestralOakEffect {
         1,
         new Physics(0, 0, 0, 0, 0, 0, 0)
       );
+      
+      message.getPhysics().vy = 20;
 
+      damageMessage.getPhysics().vy = 20;
+      
       stateMessages.push(message, damageMessage);
 
       isActive = true;

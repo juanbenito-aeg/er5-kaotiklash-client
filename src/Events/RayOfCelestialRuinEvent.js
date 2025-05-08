@@ -26,8 +26,7 @@ export default class RayOfCelestialRuinEvent extends Event {
 
         minion.getArmor().setCurrentDurability(newDurability);
 
-        this.#stateMessages.push(
-          new StateMessage(
+        let msg = new StateMessage(
             `-${newDurability}`,
             "30px MedievalSharp",
             "rgb(85 202 255)",
@@ -44,22 +43,27 @@ export default class RayOfCelestialRuinEvent extends Event {
             1,
             new Physics(0, 0, 0, 0, 0, 0, 0)
           )
-        );
+
+        msg.getPhysics().vy = 20;
+
+        this.#stateMessages.push(msg);
       }
     }
 
-    this.#stateMessages.push(
-      new StateMessage(
-        "THE DURABILITY OF ENEMY MINIONS' ARMOR WAS HALVED",
-        "30px MedievalSharp",
-        "red",
-        1,
-        3,
-        globals.canvas.width / 2,
-        globals.canvas.height / 2,
-        1.5,
-        new Physics(0, 0, 0, 0, 0, 0, 0),
-      )
+    let msg = new StateMessage(
+      "THE DURABILITY OF ENEMY MINIONS' ARMOR WAS HALVED",
+      "30px MedievalSharp",
+      "red",
+      1,
+      2,
+      globals.canvas.width / 2,
+      globals.canvas.height / 2,
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0),
     );
+    
+    msg.getPhysics().vy = 20;
+
+    this.#stateMessages.push(msg);
   }
 }

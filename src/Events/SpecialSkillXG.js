@@ -51,6 +51,8 @@ export default class SpecialSkillXG {
         new Physics(0, 0, 0, 0, 0, 0, 0)
       );
 
+      message.getPhysics().vy = 20;
+
       this.#stateMessages.push(message);
 
       let attackMessage = new StateMessage(
@@ -65,6 +67,8 @@ export default class SpecialSkillXG {
         new Physics(0, 0, 0, 0, 0, 0, 0)
       );
 
+      attackMessage.getPhysics().vy = 20;
+
       this.#stateMessages.push(attackMessage);
 
       let DefenseMessage = new StateMessage(
@@ -78,6 +82,8 @@ export default class SpecialSkillXG {
         1,
         new Physics(0, 0, 0, 0, 0, 0, 0)
       );
+
+      DefenseMessage.getPhysics().vy = 20;
 
       this.#stateMessages.push(DefenseMessage);
 
@@ -108,10 +114,15 @@ export default class SpecialSkillXG {
       "MINIONS CALM DOWN...",
       "50px MedievalSharp",
       "purple",
+      1,
       2,
       1200,
-      570
+      570,
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    restoreMessage.getPhysics().vy = 20;
 
     this.#stateMessages.push(restoreMessage);
   }

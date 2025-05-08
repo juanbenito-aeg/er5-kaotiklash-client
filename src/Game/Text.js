@@ -1,11 +1,18 @@
 import globals from "./globals.js";
 
 export default class Text {
+  #contentAsString;
   #contentAsArray;
   #xCoordinate;
   #initialYCoordinate;
 
-  constructor(contentAsArray, xCoordinate, initialYCoordinate) {
+  constructor(
+    contentAsString,
+    contentAsArray,
+    xCoordinate,
+    initialYCoordinate
+  ) {
+    this.#contentAsString = contentAsString;
     this.#contentAsArray = contentAsArray;
     this.#xCoordinate = xCoordinate;
     this.#initialYCoordinate = initialYCoordinate;
@@ -52,7 +59,12 @@ export default class Text {
       }
     }
 
-    const text = new Text(contentAsArray, xCoordinate, initialYCoordinate);
+    const text = new Text(
+      contentAsString,
+      contentAsArray,
+      xCoordinate,
+      initialYCoordinate
+    );
 
     return text;
   }
@@ -70,6 +82,33 @@ export default class Text {
       );
 
       currentLineYCoordinate += 20;
+    }
+  }
+
+  getContentAsString() {
+    return this.#contentAsString;
+  }
+
+  renderAnimated(visibleCharacters) {
+    let currentLineYCoordinate = this.#initialYCoordinate;
+    let charsToRender = visibleCharacters;
+
+    for (let i = 0; i < this.#contentAsArray.length; i++) {
+      const line = this.#contentAsArray[i];
+
+      if (charsToRender <= 0) break;
+
+      const charsInLine = Math.min(charsToRender, line.length);
+      const partialLine = line.slice(0, charsInLine);
+
+      globals.ctx.fillText(
+        partialLine,
+        this.#xCoordinate,
+        currentLineYCoordinate
+      );
+
+      currentLineYCoordinate += 20;
+      charsToRender -= charsInLine;
     }
   }
 }

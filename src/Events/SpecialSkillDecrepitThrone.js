@@ -1,6 +1,7 @@
 import StateMessage from "../Messages/StateMessage.js";
 import globals from "../Game/globals.js";
 import { BattlefieldArea } from "../Game/constants.js";
+import Physics from "../Game/Physics.js";
 
 export default class SpecialSkillDecrepitThrone {
   #enemyBattlefieldGrid;
@@ -26,10 +27,16 @@ export default class SpecialSkillDecrepitThrone {
       "A CURSE ATTRACTED ENEMY MINIONS TO THE FRONT COMBAT AREA!",
       "30px MedievalSharp",
       "red",
-      3,
+      1,
+      2,
       globals.canvas.width / 2,
-      globals.canvas.height / 2
+      globals.canvas.height / 2,
+      1,
+      new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    firstMinionsAttractionMsg.getPhysics().vy = 20;
+    
     this.#stateMessages.push(firstMinionsAttractionMsg);
   }
 

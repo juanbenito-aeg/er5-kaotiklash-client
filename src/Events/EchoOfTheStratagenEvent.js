@@ -116,12 +116,15 @@ export default class EchoOfTheStratagenEvent extends Event {
             "30px MedievalSharp",
             "red",
             1,
-            3,
+            2,
             selectedCard.getXCoordinate(),
             selectedCard.getYCoordinate(),
-            1.5,
+            1,
             new Physics(0, 0, 0, 0, 0, 0, 0)
           );
+
+          message.getPhysics().vy = 20;
+
           this.#stateMessages.push(message);
 
           break;

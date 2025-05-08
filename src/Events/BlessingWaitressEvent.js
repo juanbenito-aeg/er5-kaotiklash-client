@@ -116,12 +116,14 @@ export default class BlessingWaitressEvent extends Event {
       "20px MedievalSharp",
       "rgb(250 233 183)",
       1,
-      4,
+      2,
       restoredHPMsgXCoordinate,
       restoredHPMsgYCoordinate,
-      2,
+      1,
       new Physics(0, 0, 0, 0, 0, 0, 0)
     );
+
+    restoredHPMsg.getPhysics().vy = 20;
 
     this.#stateMessages.push(restoredHPMsg);
 

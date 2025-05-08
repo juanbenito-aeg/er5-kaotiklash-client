@@ -51,6 +51,7 @@ export default class PerformEventPhase extends Phase {
   #player;
   #isPlayersSummonCharacterActive;
   #eventsData;
+  #stats;
 
   constructor(
     state,
@@ -76,7 +77,8 @@ export default class PerformEventPhase extends Phase {
     lucretiaDeers,
     player,
     stateMessages,
-    eventsData
+    eventsData,
+    stats
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -101,6 +103,7 @@ export default class PerformEventPhase extends Phase {
     this.#lucretiaDeers = lucretiaDeers;
     this.#player = player;
     this.#eventsData = eventsData;
+    this.#stats = stats;
     this.#eventWithoutDurationData = {
       isActive: false,
       instance: {},
@@ -124,7 +127,8 @@ export default class PerformEventPhase extends Phase {
     phaseMessage,
     stateMessages,
     attackMenuData,
-    eventsData
+    eventsData,
+    stats
   ) {
     const eventsDeck = deckContainer.getDecks()[DeckType.EVENTS];
     const activeEventsDeck = deckContainer.getDecks()[DeckType.ACTIVE_EVENTS];
@@ -255,7 +259,8 @@ export default class PerformEventPhase extends Phase {
       lucretiaDeers,
       player,
       stateMessages,
-      eventsData
+      eventsData,
+      stats
     );
 
     return performEventPhase;
@@ -283,7 +288,7 @@ export default class PerformEventPhase extends Phase {
       case PerformEventState.END:
         console.log("END");
         this.#updateDecksAndGrids();
-        this.#player.addUsedCards();
+        this.#stats.incrementPlayerXUsedCards(this.#player.getID());
         isPhaseFinished = true;
         break;
     }
@@ -315,25 +320,28 @@ export default class PerformEventPhase extends Phase {
         hoveredCard.getCategory() === CardCategory.SPECIAL
       ) {
         if (!this.#enemyHasArmor()) {
-          this.#stateMessages.push(
-            new StateMessage(
-              "REQUIRES THE ENEMY TO HAVE ARMOR",
-              "30px MedievalSharp",
-              "red",
-              1,
-              0.1,
-              hoveredCard.getXCoordinate() +
-                globals.imagesDestinationSizes.minionsAndEventsSmallVersion
-                  .width /
-                  2,
-              hoveredCard.getYCoordinate() +
-                globals.imagesDestinationSizes.minionsAndEventsSmallVersion
-                  .height /
-                  2,
-              0.1,
-              new Physics(0, 0, 0, 0, 0, 0, 0)
-            )
-          );
+          let message = new StateMessage(
+            "REQUIRES THE ENEMY TO HAVE ARMOR",
+            "30px MedievalSharp",
+            "red",
+            1,
+            0.1,
+            hoveredCard.getXCoordinate() +
+              globals.imagesDestinationSizes.minionsAndEventsSmallVersion
+                .width /
+                2,
+            hoveredCard.getYCoordinate() +
+              globals.imagesDestinationSizes.minionsAndEventsSmallVersion
+                .height /
+                2,
+            0.1,
+            new Physics(0, 0, 0, 0, 0, 0, 0)
+          )
+          //UNCOMMENT THIS WHEN THE LIMITATION IS FIXED
+          //message.getPhysics().vy = 20;
+          
+          this.#stateMessages.push(message);
+
           return;
         }
       }
