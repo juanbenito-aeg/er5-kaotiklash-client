@@ -49,6 +49,8 @@ export default class Game {
   #remainingCardsTooltip;
   #stats;
   #eventsData;
+  #edgeAnimation;
+  #alphaState;
 
   static async create(playersNames) {
     // "game" OBJECT CREATION
@@ -170,6 +172,18 @@ export default class Game {
       shieldOfBalanceOwner: null,
     };
 
+    //EDGE ANIMATION
+    game.#edgeAnimation = {
+      color: null,
+      targetBox: null,
+      active: false,
+    };
+
+    game.#alphaState = {
+      alpha: 0.2,
+      direction: 1,
+    };
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
@@ -183,7 +197,8 @@ export default class Game {
       game.#minionTooltip,
       game.#eventsData,
       game.#stats,
-      game.#remainingCardsTooltip
+      game.#remainingCardsTooltip,
+      game.#edgeAnimation
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -198,7 +213,8 @@ export default class Game {
       game.#minionTooltip,
       game.#eventsData,
       game.#stats,
-      game.#remainingCardsTooltip
+      game.#remainingCardsTooltip,
+      game.#edgeAnimation
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -1109,6 +1125,13 @@ export default class Game {
           this.#renderStateMessages();
         }
 
+        if (this.#edgeAnimation.active) {
+          this.#renderEdge(
+            this.#edgeAnimation.targetBox,
+            this.#edgeAnimation.color
+          );
+        }
+
         if (this.#minionTooltip.hasTooltip()) {
           this.#minionTooltip.render();
         }
@@ -1251,6 +1274,41 @@ export default class Game {
       player2X,
       player2Y + 25
     );
+  }
+
+  #renderEdge(targetBox, highlightColor) {
+    if (!targetBox || !this.#edgeAnimation.active || !targetBox.isMouseOver())
+      return;
+
+    this.#alphaState.alpha += 0.03 * this.#alphaState.direction;
+    if (this.#alphaState.alpha >= 0.8) {
+      this.#alphaState.alpha = 0.8;
+      this.#alphaState.direction = -1;
+    } else if (this.#alphaState.alpha <= 0.2) {
+      this.#alphaState.alpha = 0.2;
+      this.#alphaState.direction = 1;
+    }
+
+    globals.ctx.save();
+    globals.ctx.globalAlpha = this.#alphaState.alpha;
+    globals.ctx.fillStyle = highlightColor;
+    globals.ctx.fillRect(
+      targetBox.getXCoordinate() - 5,
+      targetBox.getYCoordinate() - 5,
+      120,
+      120
+    );
+
+    globals.ctx.strokeStyle = highlightColor;
+    globals.ctx.lineWidth = 3 + this.#alphaState.alpha * 2;
+    globals.ctx.strokeRect(
+      targetBox.getXCoordinate(),
+      targetBox.getYCoordinate(),
+      110,
+      110
+    );
+
+    globals.ctx.restore();
   }
 
   #renderPhaseButtons() {
