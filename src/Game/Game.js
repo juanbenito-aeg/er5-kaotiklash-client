@@ -31,6 +31,7 @@ import {
   Language,
   ChatMessageType,
   ChatMessagePosition,
+  ParticleState,
 } from "./constants.js";
 import Physics from "./Physics.js";
 
@@ -55,6 +56,7 @@ export default class Game {
   #eventsData;
   #edgeAnimation;
   #alphaState;
+  #particles;
 
   static async create(playersNames) {
     // "game" OBJECT CREATION
@@ -745,6 +747,8 @@ export default class Game {
 
       this.#updatePlayersTotalHP();
 
+      this.#updateParticles();
+
       this.#checkIfGameOver();
     }
 
@@ -1063,6 +1067,19 @@ export default class Game {
     }
 
     return totalHP;
+  }
+
+  #updateParticles() {
+    for (let i = 0; i < this.#particles.length; i++) {
+      const currentParticle = this.#particles[i];
+
+      currentParticle.update();
+
+      if (currentParticle.getState() === ParticleState.OFF) {
+        this.#particles.splice(i, 1);
+        i--;
+      }
+    }
   }
 
   #executeEvents() {
