@@ -1,18 +1,41 @@
-export default class Physics
-{
-    constructor(vLimit,aLimit,omega,angle,xRotCenter,yRotCenter,jumpForce = 0)
-    {
-        this.vx = 0;                        // Current velocity on the X-axis (px/s)
-        this.vy = 0;                        // Current velocity on the Y-axis (px/s)
-        this.vLimit = vLimit;               // Maximum velocity the sprite can reach
-        this.ax = 0;                        // Acceleration on the X-axis
-        this.ay = 0;                        // Acceleration on the Y-axis
-        this.aLimit = aLimit;               // Acceleration limit (Default is 0, meaning no acceleration)
-        this.omega = omega;                 // Angular velocity in rad/s
-        this.angle = angle;                 // Current angle in radians
-        this.xRotCenter = xRotCenter;       // X-coordinate of the sprite's rotation center (for circular motion)
-        this.yRotCenter = yRotCenter;       // Y-coordinate of the sprite's rotation center (for circular motion)
-        this.jumpForce = jumpForce;
+export default class Physics {
+  #vx;
+  #vy;
+  #vLimit;
+  #ax;
+  #ay;
+  #aLimit;
 
-    }
+  constructor(vLimit, aLimit) {
+    this.#vx = 0; // CURRENT VELOCITY IN THE X-AXIS (PX/SECOND)
+    this.#vy = 0; // CURRENT VELOCITY IN THE Y-AXIS (PX/SECOND)
+    this.#vLimit = vLimit; // MAXIMUM VELOCITY AT WHICH THE USER OF THIS CLASS CAN MOVE (PX/SECOND)
+    this.#ax = 0; // ACCELERATION ALONG THE X-AXIS
+    this.#ay = 0; // ACCELERATION ALONG THE Y-AXIS
+    this.#aLimit = aLimit; // ACCELERATION LIMIT (DEFAULT IS 0, MEANING NO ACCELERATION)
+  }
+
+  setVX(vx) {
+    this.#vx = vx;
+  }
+
+  setVY(vy) {
+    this.#vy = vy;
+  }
+
+  getVLimit() {
+    return this.#vLimit;
+  }
+
+  setAX(ax) {
+    this.#ax = ax;
+  }
+
+  setAY(ay) {
+    this.#ay = ay;
+  }
+
+  getALimit() {
+    return this.#aLimit;
+  }
 }
