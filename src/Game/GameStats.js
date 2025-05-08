@@ -101,8 +101,8 @@ export default class GameStats {
   #assignLastValuesBeforePOST(winner) {
     this.#winnerID =
       winner.getID() === PlayerID.PLAYER_1
-        ? this.#playersStats[PlayerID.PLAYER_1].getDBID()
-        : this.#playersStats[PlayerID.PLAYER_2].getDBID();
+        ? globals.playersIDs.loggedIn
+        : globals.playersIDs.lastOpponent;
 
     this.#endTimestampInMS = Date.now();
   }
