@@ -880,7 +880,6 @@ export default class Game {
         this.#stateMessages.push(message);
       }
     }
-    
   }
 
   #updatePlayersTotalHP() {
@@ -1500,6 +1499,7 @@ export default class Game {
 
   #renderCards() {
     let expandedCard;
+    let movingCard = null;
 
     for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
       const currentDeck = this.#deckContainer.getDecks()[i];
@@ -1522,6 +1522,11 @@ export default class Game {
         for (let j = 0; j < currentDeck.getCards().length; j++) {
           const currentCard = currentDeck.getCards()[j];
 
+          if (currentCard.getState() === CardState.MOVING) {
+            movingCard = currentCard;
+            continue;
+          }
+
           if (isDeckCardsInHandOfInactivePlayer) {
             this.#renderCardReverse(
               currentCard.getXCoordinate(),
@@ -1542,6 +1547,10 @@ export default class Game {
 
     if (expandedCard) {
       this.#renderExpandedCard(expandedCard);
+    }
+
+    if (movingCard) {
+      this.#renderCard(movingCard);
     }
   }
 
@@ -2553,7 +2562,6 @@ export default class Game {
       globals.ctx.font = currentMessage.getFont();
       globals.ctx.fillStyle = currentMessage.getColor();
       globals.ctx.globalAlpha = currentMessage.getAlpha();
-      
 
       for (let i = 0; i < 15; i++) {
         globals.ctx.fillText(

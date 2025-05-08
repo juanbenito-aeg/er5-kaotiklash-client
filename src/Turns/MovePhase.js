@@ -201,6 +201,8 @@ export default class MovePhase extends Phase {
     const selectedCard = this.#decksRelevants.lookForSelectedCard();
     const selectedTargetBox = this.#gridsRelevants.lookForSelectedBox();
 
+    selectedCard.setState(CardState.MOVING);
+
     const targetX = selectedTargetBox.getXCoordinate();
     const targetY = selectedTargetBox.getYCoordinate();
 
