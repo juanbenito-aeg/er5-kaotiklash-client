@@ -670,6 +670,18 @@ export default class Game {
   }
 
   #update() {
+    switch (globals.gameState) {
+      case GameState.PLAYING:
+        this.#updatePlaying();
+        break;
+
+      case GameState.CHAT_PAUSE:
+        this.#updateChatPause();
+        break;
+    }
+  }
+
+  #updatePlaying() {
     if (globals.isCurrentTurnFinished) {
       globals.isCurrentTurnFinished = false;
 
@@ -691,6 +703,8 @@ export default class Game {
 
       this.#currentPlayer = this.#players[newCurrentPlayerID];
 
+      this.#phaseMessage.setCurrentContent("");
+
       const currentPlayerTurnMsg = new StateMessage(
         `${this.#currentPlayer.getName().toUpperCase()}'S TURN`,
         "55px MedievalSharp",
@@ -698,22 +712,19 @@ export default class Game {
         1,
         2,
         globals.canvas.width / 2,
-        globals.canvas.height / 2 - 100,
+        globals.canvas.height / 2,
         1,
         new Physics(0, 0, 0, 0, 0, 0, 0)
       );
-
-      currentPlayerTurnMsg.getPhysics().vy = 20;
-
       this.#stateMessages.push(currentPlayerTurnMsg);
 
       // FILL THE CHAT MESSAGES ARRAY
       this.#fillChatMessages();
     }
 
-    if (this.#chatMessages.length > 0) {
-      this.#updateChatMessages();
-    } else {
+    if (this.#stateMessages.length === 0 && this.#chatMessages.length > 0) {
+      globals.gameState = GameState.CHAT_PAUSE;
+    } else if (this.#chatMessages.length === 0) {
       this.#mouseInput.resetIsLeftClickedOnBoxes(this.#board);
       this.#mouseInput.detectMouseOverBox(this.#board);
       this.#mouseInput.detectBoxThatIsntHoveredAnymore(this.#board);
@@ -732,12 +743,12 @@ export default class Game {
 
       this.#executeEvents();
 
-      this.#updateStateMessages();
-
       this.#updatePlayersTotalHP();
 
       this.#checkIfGameOver();
     }
+
+    this.#updateStateMessages();
   }
 
   #healHarmedMinions() {
@@ -798,9 +809,6 @@ export default class Game {
             1,
             new Physics(0, 0, 0, 0, 0, 0, 0)
           );
-
-          healMessage.getPhysics().vy = 20;
-
           this.#stateMessages.push(healMessage);
         } else {
           currentCard.setCurrentHP(currentCard.getInitialHP());
@@ -816,9 +824,6 @@ export default class Game {
             1,
             new Physics(0, 0, 0, 0, 0, 0, 0)
           );
-
-          healMessage.getPhysics().vy = 20;
-
           this.#stateMessages.push(healMessage);
         }
       }
@@ -851,9 +856,6 @@ export default class Game {
             1,
             new Physics(0, 0, 0, 0, 0, 0, 0)
           );
-
-          healMessage.getPhysics().vy = 20;
-
           this.#stateMessages.push(healMessage);
         } else {
           currentCard.setCurrentHP(currentCard.getInitialHP());
@@ -869,9 +871,6 @@ export default class Game {
             1,
             new Physics(0, 0, 0, 0, 0, 0, 0)
           );
-
-          healMessage.getPhysics().vy = 20;
-
           this.#stateMessages.push(healMessage);
         }
       }
@@ -901,9 +900,6 @@ export default class Game {
           1,
           new Physics(0, 0, 0, 0, 0, 0, 0)
         );
-
-        message.getPhysics().vy = 20;
-
         this.#stateMessages.push(message);
       }
     }
@@ -924,13 +920,9 @@ export default class Game {
           1,
           new Physics(0, 0, 0, 0, 0, 0, 0)
         );
-
-        message.getPhysics().vy = 20;
-
         this.#stateMessages.push(message);
       }
     }
-    
   }
 
   #fillChatMessages() {
@@ -1030,18 +1022,6 @@ export default class Game {
         this.#chatMessages[0].getContentAsString() ===
         this.#chatMessages[1].getContentAsString()
       );
-    }
-  }
-
-  #updateChatMessages() {
-    for (let i = 0; i < this.#chatMessages.length; i++) {
-      let currentChatMessage = this.#chatMessages[i];
-
-      const isChatMessageActive = currentChatMessage.execute();
-
-      if (!isChatMessageActive) {
-        this.#chatMessages.splice(i, 1);
-      }
     }
   }
 
@@ -1156,44 +1136,35 @@ export default class Game {
     }
   }
 
+  #updateChatPause() {
+    this.#updateChatMessages();
+
+    if (this.#chatMessages.length === 0) {
+      globals.gameState = GameState.PLAYING;
+    }
+  }
+
+  #updateChatMessages() {
+    for (let i = 0; i < this.#chatMessages.length; i++) {
+      let currentChatMessage = this.#chatMessages[i];
+
+      const isChatMessageActive = currentChatMessage.execute();
+
+      if (!isChatMessageActive) {
+        this.#chatMessages.splice(i, 1);
+      }
+    }
+  }
+
   #render() {
     // CLEAR SCREEN
     globals.ctx.clearRect(0, 0, globals.canvas.width, globals.canvas.height);
 
+    this.#renderGame();
+
     switch (globals.gameState) {
-      case GameState.PLAYING:
-        this.#renderGame();
-
-        if (this.#eventsData.activeVisibilitySkill) {
-          this.#eventsData.activeVisibilitySkill.renderVisibilityEffect(
-            this.#currentPlayer.getID()
-          );
-          this.#renderStateMessages();
-        }
-
-        if (this.#edgeAnimation.active) {
-          this.#renderEdge(
-            this.#edgeAnimation.targetBox,
-            this.#edgeAnimation.color
-          );
-        }
-
-        if (this.#minionTooltip.hasTooltip()) {
-          this.#minionTooltip.render();
-        }
-
-        if (this.#remainingCardsTooltip.hasTooltip()) {
-          this.#remainingCardsTooltip.render();
-        }
-
-        if (this.#attackMenuData.isOpen) {
-          this.#renderAttackMenu();
-        }
-
-        if (this.#winner) {
-          this.#renderGameWinner();
-        }
-
+      case GameState.CHAT_PAUSE:
+        this.#renderChatMessages();
         break;
     }
   }
@@ -1208,10 +1179,35 @@ export default class Game {
     this.#renderCardsReverse();
     this.#renderCards();
 
-    if (this.#chatMessages.length > 0) {
-      this.#renderChatMessages();
-    } else {
-      this.#renderStateMessages();
+    if (this.#eventsData.activeVisibilitySkill) {
+      this.#eventsData.activeVisibilitySkill.renderVisibilityEffect(
+        this.#currentPlayer.getID()
+      );
+    }
+
+    this.#renderStateMessages();
+
+    if (this.#edgeAnimation.active) {
+      this.#renderEdge(
+        this.#edgeAnimation.targetBox,
+        this.#edgeAnimation.color
+      );
+    }
+
+    if (this.#minionTooltip.hasTooltip()) {
+      this.#minionTooltip.render();
+    }
+
+    if (this.#remainingCardsTooltip.hasTooltip()) {
+      this.#remainingCardsTooltip.render();
+    }
+
+    if (this.#attackMenuData.isOpen) {
+      this.#renderAttackMenu();
+    }
+
+    if (this.#winner) {
+      this.#renderGameWinner();
     }
   }
 
@@ -2750,41 +2746,6 @@ export default class Game {
     globals.ctx.fillText(card.getInitialDurationInRounds(), 1280, 848);
   }
 
-  #renderChatMessages() {
-    globals.ctx.font = "20px MedievalSharp";
-    globals.ctx.fillStyle = "black";
-
-    for (let i = 0; i < this.#chatMessages.length; i++) {
-      const currentChatMessage = this.#chatMessages[i];
-
-      globals.ctx.save();
-
-      if (currentChatMessage.getPosition() === ChatMessagePosition.DOWN) {
-        globals.ctx.scale(1, -1);
-      } else if (
-        currentChatMessage.getPosition() === ChatMessagePosition.LEFT
-      ) {
-        globals.ctx.scale(-1, 1);
-      }
-
-      globals.ctx.drawImage(
-        globals.balloonsImages[currentChatMessage.getType()],
-        0,
-        0,
-        500,
-        300,
-        currentChatMessage.getBalloonXCoordinate(),
-        currentChatMessage.getBalloonYCoordinate(),
-        currentChatMessage.getBalloonWidth(),
-        currentChatMessage.getBalloonHeight()
-      );
-
-      globals.ctx.restore();
-
-      currentChatMessage.renderContent();
-    }
-  }
-
   #renderStateMessages() {
     globals.ctx.save();
 
@@ -2796,7 +2757,6 @@ export default class Game {
       globals.ctx.font = currentMessage.getFont();
       globals.ctx.fillStyle = currentMessage.getColor();
       globals.ctx.globalAlpha = currentMessage.getAlpha();
-      
 
       for (let i = 0; i < 15; i++) {
         globals.ctx.fillText(
@@ -2947,11 +2907,38 @@ export default class Game {
     }
   }
 
-  getStats() {
-    return this.#stats;
-  }
+  #renderChatMessages() {
+    globals.ctx.font = "20px MedievalSharp";
+    globals.ctx.fillStyle = "black";
 
-  getPlayers() {
-    return this.#players;
+    for (let i = 0; i < this.#chatMessages.length; i++) {
+      const currentChatMessage = this.#chatMessages[i];
+
+      globals.ctx.save();
+
+      if (currentChatMessage.getPosition() === ChatMessagePosition.DOWN) {
+        globals.ctx.scale(1, -1);
+      } else if (
+        currentChatMessage.getPosition() === ChatMessagePosition.LEFT
+      ) {
+        globals.ctx.scale(-1, 1);
+      }
+
+      globals.ctx.drawImage(
+        globals.balloonsImages[currentChatMessage.getType()],
+        0,
+        0,
+        500,
+        300,
+        currentChatMessage.getBalloonXCoordinate(),
+        currentChatMessage.getBalloonYCoordinate(),
+        currentChatMessage.getBalloonWidth(),
+        currentChatMessage.getBalloonHeight()
+      );
+
+      globals.ctx.restore();
+
+      currentChatMessage.renderContent();
+    }
   }
 }

@@ -1,6 +1,7 @@
 const GameState = {
   INVALID: -1,
   PLAYING: 0,
+  CHAT_PAUSE: 1,
 };
 
 // FPS (FRAMES PER SECOND)
