@@ -3,16 +3,18 @@ import globals from "./globals.js";
 import { PlayerID } from "./constants.js";
 
 export default class GameStats {
-  #date;
-  #startTime;
+  #winnerID;
+  #startTimestampInMS;
+  #endTimestampInMS;
   #playedTurns;
   #josephAppeared;
   #playersStats;
   #statsAlreadySent;
 
-  constructor(date, startTime, playersStats) {
-    this.#date = date;
-    this.#startTime = startTime;
+  constructor(startTimestampInMS, playersStats) {
+    this.#winnerID = -1;
+    this.#startTimestampInMS = startTimestampInMS;
+    this.#endTimestampInMS = -1;
     this.#playedTurns = 1;
     this.#josephAppeared = false;
     this.#playersStats = playersStats;
@@ -21,15 +23,14 @@ export default class GameStats {
 
   static create() {
     // CREATION OF GENERAL GAME STATISTICS
-    const date = new Date().toISOString().split("T")[0];
-    const startTime = Date.now();
+    const startTimestampInMS = Date.now();
 
     // CREATION OF ARRAY OF OBJECTS FILLED WITH STATISTICS SPECIFIC TO EACH PLAYER
     const player1Stats = new PlayerStats();
     const player2Stats = new PlayerStats();
     const playersStats = [player1Stats, player2Stats];
 
-    const gameStats = new GameStats(date, startTime, playersStats);
+    const gameStats = new GameStats(startTimestampInMS, playersStats);
 
     return gameStats;
   }
@@ -59,15 +60,7 @@ export default class GameStats {
   }
 
   async postToDB(winner) {
-    let winnerID;
-    if (winner.getID() === PlayerID.PLAYER_1) {
-      winnerID = globals.playersIDs.loggedIn;
-    } else if (winner.getID() === PlayerID.PLAYER_2) {
-      winnerID = globals.playersIDs.lastOpponent;
-    }
-
-    const durationInMilliseconds = Date.now() - this.#startTime;
-    const durationInMinutes = Math.floor(durationInMilliseconds / 60000);
+    this.#assignLastValuesBeforePOST(winner);
 
     const url = "https://er5-kaotiklash-server.onrender.com/api/player_stats";
 
@@ -77,10 +70,10 @@ export default class GameStats {
     const body = JSON.stringify({
       player_1: globals.playersIDs.loggedIn,
       player_2: globals.playersIDs.lastOpponent,
-      winner: winnerID,
-      date: this.#date,
-      duration_in_minutes: durationInMinutes,
-      played_rounds: this.#playedTurns,
+      winner: this.#winnerID,
+      start_timestamp_in_ms: this.#startTimestampInMS,
+      end_timestamp_in_ms: this.#endTimestampInMS,
+      played_turns: this.#playedTurns,
       joseph_appeared: this.#josephAppeared,
       player_1_minions_killed: player1Stats.getMinionsKilled(),
       player_2_minions_killed: player2Stats.getMinionsKilled(),
@@ -103,6 +96,15 @@ export default class GameStats {
     } else {
       console.error("Error saving game stats:", response.statusText);
     }
+  }
+
+  #assignLastValuesBeforePOST(winner) {
+    this.#winnerID =
+      winner.getID() === PlayerID.PLAYER_1
+        ? this.#playersStats[PlayerID.PLAYER_1].getDBID()
+        : this.#playersStats[PlayerID.PLAYER_2].getDBID();
+
+    this.#endTimestampInMS = Date.now();
   }
 
   areStatsAlreadySent() {
