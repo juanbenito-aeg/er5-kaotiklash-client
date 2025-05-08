@@ -31,7 +31,7 @@ export default class ChatMessage extends Message {
   ) {
     super();
 
-    this.#duration = 5;
+    this.#duration = 7;
     this.#type = type;
     this.#position = position;
     this.#content = content;
