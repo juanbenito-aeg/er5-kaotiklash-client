@@ -25,6 +25,7 @@ export default class AttackEvent extends Event {
   #stateMessages;
   #player;
   #eventsData;
+  #stats;
 
   constructor(
     attacker,
@@ -36,7 +37,8 @@ export default class AttackEvent extends Event {
     eventDeck,
     stateMessages,
     player,
-    eventsData
+    eventsData,
+    stats
   ) {
     super();
 
@@ -50,6 +52,7 @@ export default class AttackEvent extends Event {
     this.#stateMessages = stateMessages;
     this.#player = player;
     this.#eventsData = eventsData;
+    this.#stats = stats;
   }
 
   execute() {
@@ -115,7 +118,7 @@ export default class AttackEvent extends Event {
       roll <= chances
     ) {
       // FUMBLE
-      this.#player.addFumbles();
+      this.#stats.incrementPlayerXFumbles(this.#player.getID());
       console.log("Fumble");
       fumble = false;
     }
@@ -363,7 +366,7 @@ export default class AttackEvent extends Event {
     let crit = false;
     if (roll <= critProb) {
       // CRITICAL HIT
-      this.#player.addCriticalHits();
+      this.#stats.incrementPlayerXCriticalHits(this.#player.getID());
       crit = true;
       console.log("Critical Hit");
       let baseDamage = damageToInflict;
@@ -507,7 +510,7 @@ export default class AttackEvent extends Event {
       if (targetNewCurrentHP < 0) {
         targetNewCurrentHP = 0;
         this.deathMessage(this.#target);
-        this.#player.addMinionsKilled();
+        this.#stats.incrementPlayerXMinionsKilled(this.#player.getID());
       }
 
       this.#target.setCurrentHP(targetNewCurrentHP);
@@ -517,7 +520,7 @@ export default class AttackEvent extends Event {
     if (targetNewCurrentHPStored < 0) {
       targetNewCurrentHPStored = 0;
       this.deathMessage(this.#target);
-      this.#player.addMinionsKilled();
+      this.#stats.incrementPlayerXMinionsKilled(this.#player.getID());
     }
     this.#target.setCurrentHP(targetNewCurrentHPStored);
 

@@ -153,7 +153,7 @@ export default class DrawCardPhase extends Phase {
       drawnCard.getCategory() === CardCategory.MAIN_CHARACTER &&
       drawnCard.getID() === MainCharacterID.JOSEPH
     ) {
-      this.#stats.joseph_appeared = true;
+      this.#stats.setJosephAppearedToTrue();
 
       this.#activeEventsDeck.insertCard(drawnCard);
       this.#josephDeck.insertCard(drawnCard);

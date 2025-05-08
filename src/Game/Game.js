@@ -12,6 +12,7 @@ import StateMessage from "../Messages/StateMessage.js";
 import ChatMessage from "../Messages/ChatMessage.js";
 import MinionTooltip from "../Tooltips/MinionTooltip.js";
 import RemainingCardsTooltip from "../Tooltips/RemainingCardsTooltip.js";
+import GameStats from "./GameStats.js";
 import globals from "./globals.js";
 import {
   GameState,
@@ -36,6 +37,8 @@ import Physics from "./Physics.js";
 export default class Game {
   #players;
   #currentPlayer;
+  #winner;
+  #isGameFinished;
   #deckContainer;
   #board;
   #turns;
@@ -133,12 +136,7 @@ export default class Game {
     game.#minionTooltip = new MinionTooltip();
     game.#remainingCardsTooltip = new RemainingCardsTooltip();
 
-    game.#stats = {
-      date: new Date().toISOString().split("T")[0],
-      game_start_time: Date.now(),
-      played_turns: 1,
-      joseph_appeared: false,
-    };
+    game.#stats = GameStats.create();
 
     // EVENTS DATA
     game.#eventsData = {
@@ -659,7 +657,7 @@ export default class Game {
     if (globals.isCurrentTurnFinished) {
       globals.isCurrentTurnFinished = false;
 
-      this.#stats.played_turns++;
+      this.#stats.incrementPlayedTurns();
 
       this.#healHarmedMinions();
 
@@ -712,9 +710,7 @@ export default class Game {
       this.#mouseInput.detectLeftClickOnCard(this.#deckContainer);
       this.#mouseInput.detectRightClickOnCard(this.#deckContainer);
 
-      if (!globals.gameWinner) {
-        this.#turns[this.#currentPlayer.getID()].execute();
-      }
+      this.#turns[this.#currentPlayer.getID()].execute(this.#isGameFinished);
 
       this.#mouseInput.setLeftButtonPressedFalse();
 
@@ -957,20 +953,27 @@ export default class Game {
         positions.push(ChatMessagePosition.DOWN, ChatMessagePosition.UP);
       }
     } else if (randomChatMessageType === ChatMessageType.MINIONS) {
-      const randomMinionsInPlayIndex = Math.floor(Math.random() * 3);
-
-      const player1RandomMinionInPlay = this.#deckContainer
-        .getDecks()
-        [DeckType.PLAYER_1_MINIONS_IN_PLAY].getCards()[
-        randomMinionsInPlayIndex
-      ];
-      const player2RandomMinionInPlay = this.#deckContainer
-        .getDecks()
-        [DeckType.PLAYER_2_MINIONS_IN_PLAY].getCards()[
-        randomMinionsInPlayIndex
+      const playersMinionsInPlayCards = [
+        this.#deckContainer
+          .getDecks()
+          [DeckType.PLAYER_1_MINIONS_IN_PLAY].getCards(),
+        this.#deckContainer
+          .getDecks()
+          [DeckType.PLAYER_2_MINIONS_IN_PLAY].getCards(),
       ];
 
-      speakers.push(player1RandomMinionInPlay, player2RandomMinionInPlay);
+      for (let i = 0; i < playersMinionsInPlayCards.length; i++) {
+        const currentPlayerMinionsInPlayCards = playersMinionsInPlayCards[i];
+
+        const randomMinionsInPlayIndex = Math.floor(
+          Math.random() * currentPlayerMinionsInPlayCards.length
+        );
+
+        const currentPlayerRandomMinionInPlay =
+          currentPlayerMinionsInPlayCards[randomMinionsInPlayIndex];
+
+        speakers.push(currentPlayerRandomMinionInPlay);
+      }
 
       if (globals.firstActivePlayerID === PlayerID.PLAYER_1) {
         positions.push(ChatMessagePosition.RIGHT, ChatMessagePosition.LEFT);
@@ -1109,18 +1112,17 @@ export default class Game {
   }
 
   #checkIfGameOver() {
-    for (let i = 0; i < this.#players.length; i++) {
-      const currentPlayer = this.#players[i];
+    if (!this.#stats.areStatsAlreadySent()) {
+      for (let i = 0; i < this.#players.length; i++) {
+        const currentPlayer = this.#players[i];
 
-      if (currentPlayer.getTotalHP() === 0) {
-        globals.gameWinner = this.#players[1 - i];
-        globals.gameOver = true;
-        globals.gameStats = this.#stats;
-        globals.gamePlayers = this.#players;
-        if (globals.gameWinner === this.#players[PlayerID.PLAYER_1]) {
-          globals.gameLoser = this.#players[PlayerID.PLAYER_2];
-        } else {
-          globals.gameLoser = this.#players[PlayerID.PLAYER_1];
+        if (currentPlayer.getTotalHP() === 0) {
+          this.#winner = this.#players[1 - i];
+
+          this.#isGameFinished = true;
+
+          this.#stats.postToDB(this.#winner);
+          this.#stats.setStatsAlreadySentToTrue();
         }
       }
     }
@@ -1165,7 +1167,7 @@ export default class Game {
           this.#renderAttackMenu();
         }
 
-        if (globals.gameWinner) {
+        if (this.#winner) {
           this.#renderGameWinner();
         }
 
@@ -2867,7 +2869,7 @@ export default class Game {
     globals.ctx.shadowColor = "black";
     globals.ctx.fillStyle = "white";
 
-    const gameWinnerName = globals.gameWinner.getName().toUpperCase();
+    const gameWinnerName = this.#winner.getName().toUpperCase();
     globals.ctx.font = "140px MedievalSharp";
     for (let i = 0; i < 6; i++) {
       globals.ctx.fillText(
