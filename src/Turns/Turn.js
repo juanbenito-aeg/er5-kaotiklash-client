@@ -19,7 +19,6 @@ import {
   CardCategory,
   PhaseButtonData,
   GridType,
-  BoxState,
   MinionTypeID,
 } from "../Game/constants.js";
 import Physics from "../Game/Physics.js";
@@ -46,6 +45,7 @@ export default class Turn {
   #lastHoveredCardId;
   #eventsData;
   #stats;
+  #edgeAnimation;
 
   constructor(
     deckContainer,
@@ -59,7 +59,8 @@ export default class Turn {
     minionTooltip,
     eventsData,
     stats,
-    remainingCardsTooltip
+    remainingCardsTooltip,
+    edgeAnimation
   ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
@@ -81,6 +82,7 @@ export default class Turn {
     this.#eventsData = eventsData;
     this.#stats = stats;
     this.#remainingCardsTooltip = remainingCardsTooltip;
+    this.#edgeAnimation = edgeAnimation;
   }
 
   fillPhases(currentPlayer) {
@@ -110,7 +112,8 @@ export default class Turn {
         this.#stateMessages,
         this.#attackMenuData,
         this.#eventsData,
-        this.#stats
+        this.#stats,
+        this.#edgeAnimation
       );
 
       this.#phases.push(currentPhase);
