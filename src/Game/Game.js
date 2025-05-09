@@ -136,7 +136,7 @@ export default class Game {
       btnsXCoordinate: canvasWidthDividedBy2 - 175,
     };
 
-    //TOOLTIPS
+    // TOOLTIPS
     game.#minionTooltip = new MinionTooltip();
     game.#remainingCardsTooltip = new RemainingCardsTooltip();
 
@@ -173,7 +173,7 @@ export default class Game {
       shieldOfBalanceOwner: null,
     };
 
-    //EDGE ANIMATION
+    // EDGE ANIMATION
     game.#edgeAnimation = {
       color: null,
       targetBox: null,
@@ -184,6 +184,8 @@ export default class Game {
       alpha: 0.2,
       direction: 1,
     };
+
+    game.#particles = [];
 
     // TURNS CREATION
     const turnPlayer1 = new Turn(
@@ -199,7 +201,8 @@ export default class Game {
       game.#eventsData,
       game.#stats,
       game.#remainingCardsTooltip,
-      game.#edgeAnimation
+      game.#edgeAnimation,
+      game.#particles
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -215,7 +218,8 @@ export default class Game {
       game.#eventsData,
       game.#stats,
       game.#remainingCardsTooltip,
-      game.#edgeAnimation
+      game.#edgeAnimation,
+      game.#particles
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];

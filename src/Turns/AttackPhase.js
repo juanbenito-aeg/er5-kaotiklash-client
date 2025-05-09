@@ -14,6 +14,7 @@ import {
   ArmorID,
 } from "../Game/constants.js";
 import Physics from "../Game/Physics.js";
+import MinionDeathParticle from "../Particles/MinionDeathParticle.js";
 
 export default class AttackPhase extends Phase {
   #enemyMovementGrid;
@@ -31,6 +32,7 @@ export default class AttackPhase extends Phase {
   #eventsData;
   #stats;
   #edgeAnimation;
+  #particles;
 
   constructor(
     state,
@@ -48,7 +50,8 @@ export default class AttackPhase extends Phase {
     attackMenuData,
     eventsData,
     stats,
-    edgeAnimation
+    edgeAnimation,
+    particles
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -67,6 +70,7 @@ export default class AttackPhase extends Phase {
     this.#eventsData = eventsData;
     this.#stats = stats;
     this.#edgeAnimation = edgeAnimation;
+    this.#particles = particles;
   }
 
   static create(
@@ -81,7 +85,8 @@ export default class AttackPhase extends Phase {
     attackMenuData,
     eventsData,
     stats,
-    edgeAnimation
+    edgeAnimation,
+    particles
   ) {
     let enemyMovementGrid;
     let currentPlayerMovementGrid;
@@ -141,7 +146,8 @@ export default class AttackPhase extends Phase {
       attackMenuData,
       eventsData,
       stats,
-      edgeAnimation
+      edgeAnimation,
+      particles
     );
 
     return attackPhase;
@@ -559,6 +565,8 @@ export default class AttackPhase extends Phase {
         const currentCard = currentDeck.getCards()[j];
 
         if (currentCard.getCurrentHP() === 0) {
+          MinionDeathParticle.create(this.#particles, 150, currentCard);
+
           currentDeck.removeCard(currentCard);
 
           // MAKE THE BOX THE NOW DEAD MINION WAS POSITIONED IN AVAILABLE

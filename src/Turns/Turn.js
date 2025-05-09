@@ -46,6 +46,7 @@ export default class Turn {
   #eventsData;
   #stats;
   #edgeAnimation;
+  #particles;
 
   constructor(
     deckContainer,
@@ -60,7 +61,8 @@ export default class Turn {
     eventsData,
     stats,
     remainingCardsTooltip,
-    edgeAnimation
+    edgeAnimation,
+    particles
   ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
@@ -83,6 +85,7 @@ export default class Turn {
     this.#stats = stats;
     this.#remainingCardsTooltip = remainingCardsTooltip;
     this.#edgeAnimation = edgeAnimation;
+    this.#particles = particles;
   }
 
   fillPhases(currentPlayer) {
@@ -113,7 +116,8 @@ export default class Turn {
         this.#attackMenuData,
         this.#eventsData,
         this.#stats,
-        this.#edgeAnimation
+        this.#edgeAnimation,
+        this.#particles
       );
 
       this.#phases.push(currentPhase);
@@ -576,7 +580,7 @@ export default class Turn {
               );
 
               deerWeaponsMsg.getPhysics().vy = 20;
-              
+
               this.#stateMessages.push(deerWeaponsMsg);
             } else if (
               (weaponOrArmor.getCategory() === CardCategory.WEAPON &&
