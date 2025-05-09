@@ -37,10 +37,10 @@ export default class MinionDeathParticle extends Particle {
       globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2;
 
     const alpha = 1.0;
-    const timeToFade = 0.75;
+    const timeToFade = 1.25;
 
     for (let i = 0; i < numOfParticlesToCreate; i++) {
-      const velocity = Math.random() * 30 + 10;
+      const velocity = Math.random() * 25 + 10;
       const physics = new Physics(velocity, 60);
 
       const particle = new MinionDeathParticle(
@@ -50,8 +50,8 @@ export default class MinionDeathParticle extends Particle {
         initialYCoordinate,
         physics,
         alpha,
-        2.5,
-        2.5,
+        7.5,
+        7.5,
         timeToFade
       );
 
@@ -99,5 +99,21 @@ export default class MinionDeathParticle extends Particle {
 
     this._xCoordinate += this._physics.getVX() * globals.deltaTime;
     this._yCoordinate += this._physics.getVY() * globals.deltaTime;
+  }
+
+  render() {
+    globals.ctx.save();
+
+    globals.ctx.globalAlpha = this._alpha;
+
+    globals.ctx.fillStyle = "rgb(120 6 6)";
+    globals.ctx.fillRect(
+      this._xCoordinate,
+      this._yCoordinate,
+      this.#width,
+      this.#height
+    );
+
+    globals.ctx.restore();
   }
 }
