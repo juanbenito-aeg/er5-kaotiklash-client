@@ -335,11 +335,11 @@ export default class PerformEventPhase extends Phase {
                 .height /
                 2,
             0.1,
-            new Physics(0, 0, 0, 0, 0, 0, 0)
-          )
+            new Physics(0, 0)
+          );
           //UNCOMMENT THIS WHEN THE LIMITATION IS FIXED
-          //message.getPhysics().vy = 20;
-          
+          //message.setVY(20);
+
           this.#stateMessages.push(message);
 
           return;

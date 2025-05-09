@@ -61,11 +61,11 @@ export default class LucretiaSpecialSkill {
       globals.canvas.width / 2,
       globals.canvas.height / 2,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    transformationMsg.getPhysics().vy = 20;
-    
+    transformationMsg.setVY(20);
+
     this.#stateMessages.push(transformationMsg);
   }
 
@@ -107,11 +107,11 @@ export default class LucretiaSpecialSkill {
       globals.canvas.width / 2,
       globals.canvas.height / 2,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    backToOriginalFormMsg.getPhysics().vy = 20;
-    
+    backToOriginalFormMsg.setVY(20);
+
     this.#stateMessages.push(backToOriginalFormMsg);
 
     this.#resetDeerAttributes();

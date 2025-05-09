@@ -62,10 +62,10 @@ export default class BroomFuryEvent extends Event {
             x2AttackMsgXCoordinate,
             x2AttackMsgYCoordinate,
             1,
-            new Physics(0, 0, 0, 0, 0, 0, 0)
+            new Physics(0, 0)
           );
 
-          x2AttackMsg.getPhysics().vy = 20;
+          x2AttackMsg.setVY(20);
 
           this.#stateMessages.push(x2AttackMsg);
 

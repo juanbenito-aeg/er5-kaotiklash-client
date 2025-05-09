@@ -219,11 +219,11 @@ export default class DrawCardPhase extends Phase {
       globals.canvas.width / 2,
       globals.canvas.height / 2,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    josephIsHereMsg.getPhysics().vy = 20;
-    
+    josephIsHereMsg.setVY(20);
+
     this.#stateMessages.push(josephIsHereMsg);
   }
 }

@@ -5,7 +5,6 @@ import globals from "../Game/globals.js";
 import { CardState, HandOfTheSoulThiefState } from "../Game/constants.js";
 import Physics from "../Game/Physics.js";
 
-
 export default class HandOfTheSoulThiefEvent extends Event {
   #currentPlayerCardsInHandDeck;
   #currentPlayerCardsInHandGrid;
@@ -80,10 +79,10 @@ export default class HandOfTheSoulThiefEvent extends Event {
           1200,
           530,
           1,
-          new Physics(0, 0, 0, 0, 0, 0, 0)
+          new Physics(0, 0)
         );
 
-        message.getPhysics().vy = 20;
+        message.setVY(20);
 
         this.#stateMessage.push(message);
         this.#state = HandOfTheSoulThiefState.SELECT_CARD_TO_EXCHANGE;
@@ -167,10 +166,10 @@ export default class HandOfTheSoulThiefEvent extends Event {
         1200,
         570,
         1,
-        new Physics(0, 0, 0, 0, 0, 0, 0)
+        new Physics(0, 0)
       );
 
-      message.getPhysics().vy = 20;
+      message.setVY(20);
 
       this.#stateMessage.push(message);
 

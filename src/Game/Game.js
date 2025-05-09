@@ -720,7 +720,7 @@ export default class Game {
         globals.canvas.width / 2,
         globals.canvas.height / 2,
         1,
-        new Physics(0, 0, 0, 0, 0, 0, 0)
+        new Physics(0, 0)
       );
       this.#stateMessages.push(currentPlayerTurnMsg);
 
@@ -815,7 +815,7 @@ export default class Game {
             currentCard.getXCoordinate() + 55,
             currentCard.getYCoordinate(),
             1,
-            new Physics(0, 0, 0, 0, 0, 0, 0)
+            new Physics(0, 0)
           );
           this.#stateMessages.push(healMessage);
         } else {
@@ -830,7 +830,7 @@ export default class Game {
             currentCard.getXCoordinate() + 55,
             currentCard.getYCoordinate(),
             1,
-            new Physics(0, 0, 0, 0, 0, 0, 0)
+            new Physics(0, 0)
           );
           this.#stateMessages.push(healMessage);
         }
@@ -862,7 +862,7 @@ export default class Game {
             currentCard.getXCoordinate() + 55,
             currentCard.getYCoordinate(),
             1,
-            new Physics(0, 0, 0, 0, 0, 0, 0)
+            new Physics(0, 0)
           );
           this.#stateMessages.push(healMessage);
         } else {
@@ -877,7 +877,7 @@ export default class Game {
             currentCard.getXCoordinate() + 55,
             currentCard.getYCoordinate() + 110,
             1,
-            new Physics(0, 0, 0, 0, 0, 0, 0)
+            new Physics(0, 0)
           );
           this.#stateMessages.push(healMessage);
         }
@@ -906,7 +906,7 @@ export default class Game {
           currentCard.getXCoordinate() + 55,
           currentCard.getYCoordinate() + 110,
           1,
-          new Physics(0, 0, 0, 0, 0, 0, 0)
+          new Physics(0, 0)
         );
         this.#stateMessages.push(message);
       }
@@ -926,7 +926,7 @@ export default class Game {
           currentCard.getXCoordinate() + 55,
           currentCard.getYCoordinate() + 110,
           1,
-          new Physics(0, 0, 0, 0, 0, 0, 0)
+          new Physics(0, 0)
         );
         this.#stateMessages.push(message);
       }

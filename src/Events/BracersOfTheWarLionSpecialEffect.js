@@ -16,10 +16,10 @@ export default class BracersOfTheWarLionSpecialEffect {
         target.getXCoordinate(),
         target.getYCoordinate() - 40,
         1,
-        new Physics(0, 0, 0, 0, 0, 0, 0)
+        new Physics(0, 0)
       );
 
-      msg.getPhysics().vy = 20;
+      msg.setVY(20);
 
       stateMessage.push(msg);
       isActive = true;

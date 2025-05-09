@@ -48,10 +48,10 @@ export default class SpecialSkillXG {
         1200,
         520,
         1,
-        new Physics(0, 0, 0, 0, 0, 0, 0)
+        new Physics(0, 0)
       );
 
-      message.getPhysics().vy = 20;
+      message.setVY(20);
 
       this.#stateMessages.push(message);
 
@@ -64,10 +64,10 @@ export default class SpecialSkillXG {
         1200,
         570,
         1,
-        new Physics(0, 0, 0, 0, 0, 0, 0)
+        new Physics(0, 0)
       );
 
-      attackMessage.getPhysics().vy = 20;
+      attackMessage.setVY(20);
 
       this.#stateMessages.push(attackMessage);
 
@@ -80,10 +80,10 @@ export default class SpecialSkillXG {
         1200,
         630,
         1,
-        new Physics(0, 0, 0, 0, 0, 0, 0)
+        new Physics(0, 0)
       );
 
-      DefenseMessage.getPhysics().vy = 20;
+      DefenseMessage.setVY(20);
 
       this.#stateMessages.push(DefenseMessage);
 
@@ -119,10 +119,10 @@ export default class SpecialSkillXG {
       1200,
       570,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    restoreMessage.getPhysics().vy = 20;
+    restoreMessage.setVY(20);
 
     this.#stateMessages.push(restoreMessage);
   }

@@ -576,10 +576,10 @@ export default class Turn {
                 nMsgXCoordinate,
                 nMsgYCoordinate,
                 1,
-                new Physics(0, 0, 0, 0, 0, 0, 0)
+                new Physics(0, 0)
               );
 
-              deerWeaponsMsg.getPhysics().vy = 20;
+              deerWeaponsMsg.setVY(20);
 
               this.#stateMessages.push(deerWeaponsMsg);
             } else if (
@@ -598,10 +598,10 @@ export default class Turn {
                 nMsgXCoordinate,
                 nMsgYCoordinate,
                 1,
-                new Physics(0, 0, 0, 0, 0, 0, 0)
+                new Physics(0, 0)
               );
 
-              gearedUpMsg.getPhysics().vy = 20;
+              gearedUpMsg.setVY(20);
 
               this.#stateMessages.push(gearedUpMsg);
               this.#stats.incrementPlayerXUsedCards(this.#player.getID());
@@ -719,10 +719,10 @@ export default class Turn {
                 buttonXCoordinate + buttonWidth / 2,
                 buttonYCoordinate + buttonHeight / 2,
                 1,
-                new Physics(0, 0, 0, 0, 0, 0, 0)
+                new Physics(0, 0)
               );
 
-              cannotAttackDueToActiveEventMsg.getPhysics().vy = 20;
+              cannotAttackDueToActiveEventMsg.setVY(20);
 
               this.#stateMessages.push(cannotAttackDueToActiveEventMsg);
             } else if (
@@ -740,10 +740,10 @@ export default class Turn {
                 buttonXCoordinate + buttonWidth / 2,
                 buttonYCoordinate + buttonHeight / 2,
                 1,
-                new Physics(0, 0, 0, 0, 0, 0, 0)
+                new Physics(0, 0)
               );
 
-              cannotDoAnythingDueToActiveEventMsg.getPhysics().vy = 20;
+              cannotDoAnythingDueToActiveEventMsg.setVY(20);
 
               this.#stateMessages.push(cannotDoAnythingDueToActiveEventMsg);
             } else if (

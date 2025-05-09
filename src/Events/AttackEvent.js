@@ -10,7 +10,7 @@ import {
   ArmorID,
   PlayerID,
   WeaponTypeID,
-  MinionTypeID
+  MinionTypeID,
 } from "../Game/constants.js";
 import Physics from "../Game/Physics.js";
 
@@ -82,13 +82,13 @@ export default class AttackEvent extends Event {
         targetBox.getCard().getXCoordinate() +
           globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width / 2,
         targetBox.getCard().getYCoordinate() +
-          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2,
+          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height /
+            2,
         1,
-        new Physics(0,0,0,0,0,0,0),
-        
+        new Physics(0, 0)
       );
 
-      nullifiedMessage.getPhysics().vy = 20;
+      nullifiedMessage.setVY(20);
 
       this.#stateMessages.push(nullifiedMessage);
 
@@ -281,7 +281,10 @@ export default class AttackEvent extends Event {
     }
 
     if (targetArmor) {
-      if (this.#target.getArmorID() === ArmorID.ARMOR_OF_TITANIC_FURY && this.#target.getMinionTypeID() === MinionTypeID.WARRIOR) {
+      if (
+        this.#target.getArmorID() === ArmorID.ARMOR_OF_TITANIC_FURY &&
+        this.#target.getMinionTypeID() === MinionTypeID.WARRIOR
+      ) {
         ArmorOfTitanicFuryEffect.activeBoost(this.#target, this.#stateMessages);
       }
     }
@@ -569,7 +572,6 @@ export default class AttackEvent extends Event {
     return newdamageToInflict;
   }
 
-  
   parryMessage(damageToInflict, targetBox) {
     const parryMessage = new StateMessage(
       `WEAPON DURABILITY!: -${damageToInflict}`,
@@ -580,11 +582,11 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    parryMessage.getPhysics().vy = 20;
-    
+    parryMessage.setVY(20);
+
     this.#stateMessages.push(parryMessage);
   }
 
@@ -598,10 +600,10 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    parryMessage.getPhysics().vy = 20;
+    parryMessage.setVY(20);
 
     this.#stateMessages.push(parryMessage);
   }
@@ -616,10 +618,10 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    parryMessage.getPhysics().vy = 20;
+    parryMessage.setVY(20);
 
     this.#stateMessages.push(parryMessage);
   }
@@ -634,10 +636,10 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    parryMessage.getPhysics().vy = 20;
+    parryMessage.setVY(20);
 
     this.#stateMessages.push(parryMessage);
   }
@@ -652,10 +654,10 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() + 55,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    damageMessage.getPhysics().vy = 20;
+    damageMessage.setVY(20);
 
     this.#stateMessages.push(damageMessage);
   }
@@ -675,10 +677,10 @@ export default class AttackEvent extends Event {
       globals.canvas.width / 2,
       globals.canvas.height / 2,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    dmgReflectedBackOntoAttackerMsg.getPhysics().vy = 20;
+    dmgReflectedBackOntoAttackerMsg.setVY(20);
 
     this.#stateMessages.push(dmgReflectedBackOntoAttackerMsg);
 
@@ -706,10 +708,10 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    critMessage.getPhysics().vy = 20;
+    critMessage.setVY(20);
 
     this.#stateMessages.push(critMessage);
   }
@@ -724,10 +726,10 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getXCoordinate() + 55,
       targetBox.getCard().getYCoordinate() - 55,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    fumbleMessage.getPhysics().vy = 20;
+    fumbleMessage.setVY(20);
 
     this.#stateMessages.push(fumbleMessage);
   }
@@ -743,10 +745,10 @@ export default class AttackEvent extends Event {
       targetBox.getCard().getYCoordinate() +
         globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    weaponMessage.getPhysics().vy = 20;
+    weaponMessage.setVY(20);
 
     this.#stateMessages.push(weaponMessage);
   }
@@ -762,12 +764,12 @@ export default class AttackEvent extends Event {
         globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width / 2,
       target.getYCoordinate() +
         globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height +
-      15,
+        15,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    deathMessage.getPhysics().vy = 20;
+    deathMessage.setVY(20);
 
     this.#stateMessages.push(deathMessage);
   }
@@ -783,10 +785,10 @@ export default class AttackEvent extends Event {
       armorOwnerBox.getCard().getYCoordinate() +
         globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    armorBrokeMsg.getPhysics().vy = 20;
+    armorBrokeMsg.setVY(20);
 
     this.#stateMessages.push(armorBrokeMsg);
   }
@@ -819,10 +821,10 @@ export default class AttackEvent extends Event {
         globals.canvas.width / 2,
         globals.canvas.height / 2,
         1,
-        new Physics(0, 0, 0, 0, 0, 0, 0)
+        new Physics(0, 0)
       );
 
-      dodgeMessage.getPhysics().vy = 20;
+      dodgeMessage.setVY(20);
 
       this.#stateMessages.push(dodgeMessage);
 

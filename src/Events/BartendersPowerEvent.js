@@ -43,10 +43,10 @@ export default class BartendersPowerEvent extends Event {
           minion.getXCoordinate(),
           minion.getYCoordinate(),
           1,
-          new Physics(0, 0, 0, 0, 0, 0, 0)
+          new Physics(0, 0)
         );
 
-        message.getPhysics().vy = 20;
+        message.setVY(20);
 
         this.#stateMessage.push(message);
       }

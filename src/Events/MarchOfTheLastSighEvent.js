@@ -48,11 +48,11 @@ export default class MarchOfTheLastSighEvent extends Event {
             globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height /
               2,
           1,
-          new Physics(0, 0, 0, 0, 0, 0, 0)
+          new Physics(0, 0)
         );
 
-        message.getPhysics().vy = 20;
-        
+        message.setVY(20);
+
         this.#stateMessages.push(message);
         this.#isFinished = true;
       }

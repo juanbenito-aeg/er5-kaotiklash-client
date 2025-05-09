@@ -36,10 +36,10 @@ export default class SpecialSkillAngelo {
       1200,
       520,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    message.getPhysics().vy = 20;
+    message.setVY(20);
 
     this.#stateMessages.push(message);
     this.#eventsData.activeVisibilitySkill = this;
@@ -55,10 +55,10 @@ export default class SpecialSkillAngelo {
       1200,
       520,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
-    
-    message.getPhysics().vy = 20;
+
+    message.setVY(20);
 
     this.#stateMessages.push(message);
     this.#eventsData.activeVisibilitySkill = null;
