@@ -1195,6 +1195,7 @@ export default class Game {
     this.#renderPhaseMessage();
     this.#renderCardsReverse();
     this.#renderCards();
+    this.#renderParticles();
 
     if (this.#eventsData.activeVisibilitySkill) {
       this.#eventsData.activeVisibilitySkill.renderVisibilityEffect(
@@ -2761,6 +2762,14 @@ export default class Game {
     card.renderEffect();
     globals.ctx.fillText(0, 1148, 848);
     globals.ctx.fillText(card.getInitialDurationInRounds(), 1280, 848);
+  }
+
+  #renderParticles() {
+    for (let i = 0; i < this.#particles.length; i++) {
+      const currentParticle = this.#particles[i];
+
+      currentParticle.render();
+    }
   }
 
   #renderStateMessages() {
