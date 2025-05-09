@@ -18,4 +18,10 @@ export default class Particle {
   static create() {}
 
   update() {}
+
+  render() {}
+
+  getState() {
+    return this._state;
+  }
 }
