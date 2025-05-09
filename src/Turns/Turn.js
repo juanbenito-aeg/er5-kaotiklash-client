@@ -125,7 +125,7 @@ export default class Turn {
   }
 
   changeTurn(currentPlayer) {
-    /*  this.#swapTurnPosition(); */
+    this.#swapTurnPosition();
 
     if (currentPlayer.getID() === PlayerID.PLAYER_1) {
       return PlayerID.PLAYER_2;
@@ -134,8 +134,8 @@ export default class Turn {
     }
   }
 
-  /*  #swapTurnPosition() {
-    /*  this.#displayDecksAndGrids(this.#deckContainer, this.#board); 
+  #swapTurnPosition() {
+    this.#displayDecksAndGrids(this.#deckContainer, this.#board);
     this.#swapGridPosition();
   }
 
@@ -160,7 +160,6 @@ export default class Turn {
       this.#swapGridPositions(player1Grids[i], player2Grids[i]);
     }
   }
-
   #swapGridPositions(player1Grid, player2Grid) {
     for (let i = 0; i < player1Grid.getBoxes().length; i++) {
       for (let j = 0; j < player2Grid.getBoxes().length; j++) {
@@ -179,7 +178,8 @@ export default class Turn {
       }
     }
   }
-  /*  #swapDeckPosition() {
+
+  #swapDeckPosition() {
     const player1Decks = [
       this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS],
       this.#deckContainer.getDecks()[DeckType.PLAYER_1_ACTIVE_EVENTS],
@@ -197,12 +197,11 @@ export default class Turn {
       this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY],
     ];
 
-    //SWAP DECK POSITIONS FROM PLAYER 1 TO PLAYER 2 AND VICE VERSA
+    // SWAP DECK POSITIONS FROM PLAYER 1 TO PLAYER 2 AND VICE VERSA
     for (let i = 0; i < player1Decks.length; i++) {
       this.#setCardsPositionsInBoxes(player1Decks[i]);
     }
   }
-
   #setCardsPositionsInBoxes(deck, grid) {
     for (let i = 0; i < deck.getCards().length; i++) {
       for (let j = 0; j < grid.getBoxes().length; j++) {
@@ -214,7 +213,6 @@ export default class Turn {
       }
     }
   }
- */
 
   execute(isGameFinished) {
     if (this.#numOfExecutedPhases === 0) {
