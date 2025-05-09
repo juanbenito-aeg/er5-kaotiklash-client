@@ -53,6 +53,7 @@ export default class Game {
   #remainingCardsTooltip;
   #stats;
   #eventsData;
+  #isQuickHelpActive;
 
   static async create(playersNames) {
     // "game" OBJECT CREATION
@@ -168,6 +169,8 @@ export default class Game {
       shieldOfBalanceActive: false,
       shieldOfBalanceOwner: null,
     };
+
+    game.#isQuickHelpActive = false;
 
     // TURNS CREATION
     const turnPlayer1 = new Turn(
@@ -721,6 +724,8 @@ export default class Game {
       this.#updatePlayersTotalHP();
 
       this.#checkIfGameOver();
+
+      this.#updateQuickHelpBtn();
     }
   }
 
@@ -914,7 +919,29 @@ export default class Game {
         this.#stateMessages.push(message);
       }
     }
-    
+
+  }
+
+  #updateQuickHelpBtn() {
+    let isMouseOverQuickHelpBtn = false;
+    const mouseX = this.#mouseInput.getMouseXCoordinate();
+    const mouseY = this.#mouseInput.getMouseYCoordinate();
+    const btnX = 50;
+    const btnY = globals.canvas.height - 50;
+    const btnRadius = 50;
+
+    const distance = Math.sqrt((mouseX - btnX) ** 2 + (mouseY - btnY) ** 2);
+
+    if ((distance < btnRadius) && this.#mouseInput.isLeftButtonPressed()) {
+      // isMouseOverQuickHelpBtn = true;
+      console.log("Quick Help Button Clicked");
+    }
+
+    if(isMouseOverQuickHelpBtn) {
+      this.#isQuickHelpActive = true;
+
+
+    }
   }
 
   #fillChatMessages() {
@@ -1184,6 +1211,7 @@ export default class Game {
     this.#renderPhaseMessage();
     this.#renderCardsReverse();
     this.#renderCards();
+    this.#renderQuickHelpBtn();
 
     if (this.#chatMessages.length > 0) {
       this.#renderChatMessages();
@@ -2738,7 +2766,7 @@ export default class Game {
       globals.ctx.font = currentMessage.getFont();
       globals.ctx.fillStyle = currentMessage.getColor();
       globals.ctx.globalAlpha = currentMessage.getAlpha();
-      
+
 
       for (let i = 0; i < 15; i++) {
         globals.ctx.fillText(
@@ -2888,6 +2916,29 @@ export default class Game {
       );
     }
   }
+
+  #renderQuickHelpBtn() {
+    const mouseX = this.#mouseInput.getMouseXCoordinate();
+    const mouseY = this.#mouseInput.getMouseYCoordinate();
+    const btnX = 50;
+    const btnY = globals.canvas.height - 50;
+    const btnRadius = 50;
+
+    const distance = Math.sqrt((mouseX - btnX) ** 2 + (mouseY - btnY) ** 2);
+
+    if (distance < btnRadius) {
+      globals.ctx.shadowBlur = 20;
+      globals.ctx.shadowColor = "yellow";
+    } else {
+      globals.ctx.shadowBlur = 0;
+    }
+
+    globals.ctx.fillStyle = "white";
+    globals.ctx.font = "100px MedievalSharp";
+    globals.ctx.fillText("?", btnX, btnY);
+    globals.ctx.shadowBlur = 0;
+  }
+
 
   getStats() {
     return this.#stats;
