@@ -15,8 +15,16 @@ export default class Physics {
     this.#aLimit = aLimit; // ACCELERATION LIMIT (DEFAULT IS 0, MEANING NO ACCELERATION)
   }
 
+  getVX() {
+    return this.#vx;
+  }
+
   setVX(vx) {
     this.#vx = vx;
+  }
+
+  getVY() {
+    return this.#vy;
   }
 
   setVY(vy) {
@@ -27,8 +35,16 @@ export default class Physics {
     return this.#vLimit;
   }
 
+  getAX() {
+    return this.#ax;
+  }
+
   setAX(ax) {
     this.#ax = ax;
+  }
+
+  getAY() {
+    return this.#ay;
   }
 
   setAY(ay) {
