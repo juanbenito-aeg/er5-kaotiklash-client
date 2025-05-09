@@ -264,7 +264,7 @@ export default class AttackPhase extends Phase {
         const attackType = attacker.getWeapon()
           ? attacker.getMinionWeaponTypeID()
           : null;
-        this.#renderTargetBorder(isTargetWithinReach, attackType);
+        this.#selectTargetBorderColor(isTargetWithinReach, attackType);
 
         if (isTargetWithinReach) {
           if (!target.isLeftClicked()) {
@@ -416,7 +416,7 @@ export default class AttackPhase extends Phase {
     return isTargetWithinReach;
   }
 
-  #renderTargetBorder(isTargetWithinReach, attackType) {
+  #selectTargetBorderColor(isTargetWithinReach, attackType) {
     const targetCard = this.#enemyMovementGridDeck.lookForHoveredCard();
 
     let highlightColor;
