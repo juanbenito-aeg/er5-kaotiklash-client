@@ -15,6 +15,7 @@ export default class MovePhase extends Phase {
   #decksRelevants;
   #gridsRelevants;
   #physics;
+  #movingCard;
 
   constructor(state, mouseInput, phaseMessage, decksRelevants, gridRelevants) {
     super(state, mouseInput, phaseMessage);
@@ -22,6 +23,7 @@ export default class MovePhase extends Phase {
     this.#decksRelevants = decksRelevants;
     this.#gridsRelevants = gridRelevants;
     this.#physics = null;
+    this.#movingCard = null;
   }
 
   static create(
@@ -184,6 +186,9 @@ export default class MovePhase extends Phase {
     const selectedCard = this.#decksRelevants.lookForSelectedCard();
     const selectedTargetBox = this.#gridsRelevants.lookForSelectedBox();
 
+    this.#movingCard = selectedCard;
+    selectedCard.setState(CardState.MOVING);
+
     const startX = selectedCard.getXCoordinate();
     const startY = selectedCard.getYCoordinate();
     const endX = selectedTargetBox.getXCoordinate();
@@ -198,10 +203,9 @@ export default class MovePhase extends Phase {
   }
 
   #animateCardMovement() {
-    const selectedCard = this.#decksRelevants.lookForSelectedCard();
+    const selectedCard = this.#movingCard;
     const selectedTargetBox = this.#gridsRelevants.lookForSelectedBox();
-
-    selectedCard.setState(CardState.MOVING);
+    if (!selectedCard || !selectedTargetBox) return;
 
     const targetX = selectedTargetBox.getXCoordinate();
     const targetY = selectedTargetBox.getYCoordinate();
@@ -220,7 +224,7 @@ export default class MovePhase extends Phase {
       selectedTargetBox.setCard(selectedCard);
       selectedCard.setState(CardState.PLACED);
       selectedTargetBox.setState(BoxState.OCCUPIED);
-
+      this.#movingCard = null;
       this.#physics = null;
       this._state = MovePhaseState.END;
       return;

@@ -1707,8 +1707,7 @@ export default class Game {
 
   #renderCards() {
     let expandedCard;
-    let movingCard = null;
-
+    let movingCard;
     for (let i = 0; i < this.#deckContainer.getDecks().length; i++) {
       const currentDeck = this.#deckContainer.getDecks()[i];
 
@@ -1753,12 +1752,12 @@ export default class Game {
       }
     }
 
-    if (expandedCard) {
-      this.#renderExpandedCard(expandedCard);
-    }
-
     if (movingCard) {
       this.#renderCard(movingCard);
+    }
+
+    if (expandedCard) {
+      this.#renderExpandedCard(expandedCard);
     }
   }
 
