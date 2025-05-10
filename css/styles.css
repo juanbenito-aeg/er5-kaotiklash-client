@@ -368,11 +368,33 @@ button {
 }
 
 .chart-selector-chart-btn {
-  width: 12.5vw;
-  height: 12.5vw;
+  width: 14vw;
+  height: 14vw;
   font-size: max(1.15vw, 0.75rem);
-  padding: 1em;
-  border-radius: 1rem;
+  padding: 1.5em;
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  border-left: 6px solid #fbfbfb;
+  box-shadow: 0 0 10px rgba(246, 246, 246, 0.934);
+  font-weight: normal;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  border: none;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.chart-selector-chart-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+.chart-selector-chart-btn:active {
+  transform: scale(0.95);
 }
 
 #chart-display {
