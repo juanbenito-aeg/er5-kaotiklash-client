@@ -467,7 +467,7 @@ function showChartDisplay(e) {
   }
 }
 
-function createOrDisplayChart(chartID) {
+async function createOrDisplayChart(chartID) {
   let chartDisplayHeadingString;
 
   switch (chartID) {
@@ -475,6 +475,17 @@ function createOrDisplayChart(chartID) {
       chartDisplayHeadingString = "WIN RATE";
       if (!globals.isChartCreated.winRate) {
         createWinRateChart();
+      }
+      break;
+    case ChartID.TURNS_PER_MATCH:
+      chartDisplayHeadingString = "TURNS PER MATCH";
+      if (!globals.isChartCreated.turnsPerMatch) {
+        const playedTurnsData = await getTotalPlayedTurns(
+          globals.playersIDs.loggedIn
+        );
+        if (playedTurnsData) {
+          createTurnPerMatchChart(playedTurnsData);
+        }
       }
       break;
   }
@@ -516,6 +527,38 @@ function createWinRateChart() {
   globals.isChartCreated.winRate = true;
 }
 
+function createTurnPerMatchChart(playedTurnsData) {
+  const labels = [];
+  for (let i = 0; i < playedTurnsData.played_turns.length; i++) {
+    labels.push(`Match ${i + 1}`);
+  }
+
+  const data = {
+    labels: labels,
+    datasets: [
+      {
+        label: "Turns per Match",
+        data: playedTurnsData.played_turns,
+        fill: false,
+        borderColor: "rgb(75, 192, 192)",
+        tension: 0.1,
+      },
+    ],
+  };
+
+  const config = {
+    type: "line",
+    data: data,
+    options: {
+      maintainAspectRatio: false,
+      responsive: true,
+    },
+  };
+
+  new Chart(document.getElementById("turns-per-match"), config);
+  globals.isChartCreated.turnsPerMatch = true;
+}
+
 function displayChart(chartID) {
   const charts = document.querySelectorAll("#chart-container > *");
 
@@ -530,13 +573,20 @@ function displayChart(chartID) {
   }
 }
 
-async function showStats(loggedInPlayerID) {
-  await getWinRate(loggedInPlayerID);
-  await getMinionsKilled(loggedInPlayerID);
-  await getFumbles(loggedInPlayerID);
-  await getCriticalHits(loggedInPlayerID);
-  await getUsedCards(loggedInPlayerID);
-  await getJosephAppearances(loggedInPlayerID);
+async function getTotalPlayedTurns(loggedInPlayerID) {
+  const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-played-turns`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (response.ok) {
+    const playedTurnsData = await response.json();
+    return playedTurnsData;
+  } else {
+    alert(`Communication error (total played turns): 0`);
+    return null;
+  }
 }
 
 async function getWinRate(loggedInPlayerID) {
