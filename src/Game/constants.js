@@ -335,6 +335,10 @@ const ParticleState = {
   OFF: -1,
 };
 
+const ChartID = {
+  WIN_RATE: 0,
+};
+
 export {
   GameState,
   FPS,
@@ -376,4 +380,5 @@ export {
   ChatMessagePhase,
   ParticleID,
   ParticleState,
+  ChartID,
 };

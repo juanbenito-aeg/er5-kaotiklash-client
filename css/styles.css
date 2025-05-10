@@ -210,8 +210,6 @@ button {
   color: rgb(103 129 180 / 0.7);
 }
 
-/* PLAYER SESSION SCREEN  AND STATS SCREEN*/
-
 #player-session-screen,
 #stats-screen {
   background-image: url("../images/player_session_background.png");
@@ -219,6 +217,8 @@ button {
   background-position: center;
   background-repeat: no-repeat;
 }
+
+/* PLAYER SESSION SCREEN */
 
 #player-session-container {
   width: 900px;
@@ -279,6 +279,13 @@ button {
   border-radius: 12px;
 }
 
+#start-game-btn {
+  grid-area: start;
+  font-size: 1.45rem;
+  padding: 0.75em 1.5em;
+  border-radius: 12px;
+}
+
 #tips-section {
   grid-area: tips;
   font-size: 2rem;
@@ -305,37 +312,84 @@ button {
   }
 }
 
-#stats-screen {
-  display: none;
-}
+/* STATS SCREEN */
 
-#stats-screen-container {
-  position: relative;
-  width: 80%;
-  height: 1500px;
-  padding: 12px;
+#chart-selector,
+#chart-display {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: center;
+  gap: 2.5em;
+  width: 90vw;
+  height: 90vh;
+  padding: 2.5em;
+  border-radius: 1rem;
   color: black;
-  background-color: rgb(0 0 0 / 0.8);
-  padding: 1.5em;
-  border-radius: 16px;
+  background-color: rgba(9, 9, 9, 0.8);
   animation: fadeInUp 0.6s ease-out;
   transition: all 0.3s ease-in-out;
 }
 
-#stats-btn-exit {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  font-size: 1.9rem;
-  padding: 0.5em 1.3em;
-  border-radius: 12px;
+#chart-selector-heading,
+#chart-display-heading {
+  grid-area: heading;
+  justify-self: start;
+  margin-bottom: 0;
+  font-size: max(2.5vw, 2.25rem);
+  color: white;
 }
 
-#start-game-btn {
-  grid-area: start;
-  font-size: 1.45rem;
-  padding: 0.75em 1.5em;
-  border-radius: 12px;
+#chart-selector-exit-btn,
+#chart-display-return-btn {
+  justify-self: end;
+  font-size: max(1vw, 1rem);
+  padding: 0.75em 1.75em;
+  border-radius: 1rem;
+}
+
+#chart-selector {
+  grid-template-areas:
+    "heading        exit-btn"
+    "chart-selector chart-selector";
+}
+
+#chart-selector-exit-btn {
+  grid-area: exit-btn;
+}
+
+#chart-selector-chart-btns {
+  place-self: stretch;
+  grid-area: chart-selector;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  gap: 4em;
+}
+
+.chart-selector-chart-btn {
+  width: 12.5vw;
+  height: 12.5vw;
+  font-size: max(1.15vw, 0.75rem);
+  padding: 1em;
+  border-radius: 1rem;
+}
+
+#chart-display {
+  display: none;
+  grid-template-areas:
+    "heading  return-btn"
+    "chart    chart";
+}
+
+#chart-display-return-btn {
+  grid-area: return-btn;
+}
+
+#chart-container {
+  grid-area: chart;
+  place-self: stretch;
+  max-height: 99%;
 }
 
 /* GAME SCREEN */

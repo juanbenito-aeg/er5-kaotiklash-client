@@ -146,14 +146,57 @@
 
     <!-- STATS SCREEN -->
     <div id="stats-screen">
-      <div id="stats-screen-container">
-        <button type="button" id="stats-btn-exit" data-i18n="exit">EXIT</button>
+      <div id="chart-selector">
+        <h2 id="chart-selector-heading">CHART SELECTOR</h2>
+
+        <button type="button" id="chart-selector-exit-btn">EXIT</button>
+
+        <div id="chart-selector-chart-btns">
+          <button type="button" class="chart-selector-chart-btn">
+            Win Rate
+          </button>
+
+          <button type="button" class="chart-selector-chart-btn">
+            Turn per Match
+          </button>
+
+          <button type="button" class="chart-selector-chart-btn">
+            Joseph Appearances
+          </button>
+
+          <button type="button" class="chart-selector-chart-btn">
+            Minions Killed per Match
+          </button>
+
+          <button type="button" class="chart-selector-chart-btn">
+            Fumbles per Match
+          </button>
+
+          <button type="button" class="chart-selector-chart-btn">
+            Critical Hits per Match
+          </button>
+
+          <button type="button" class="chart-selector-chart-btn">
+            Used Cards per Match
+          </button>
+        </div>
+      </div>
+
+      <div id="chart-display">
+        <h2 id="chart-display-heading"></h2>
+
+        <button type="button" id="chart-display-return-btn">RETURN</button>
+
+        <div id="chart-container">
+          <canvas id="win-rate"></canvas>
+        </div>
       </div>
     </div>
 
     <!-- GAME SCREEN -->
     <canvas id="game-screen" width="2380" height="1120"></canvas>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
     <script type="module" src="./src/index.js"></script>
   </body>
 </html>
