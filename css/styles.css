@@ -314,12 +314,10 @@ button {
 
 /* STATS SCREEN */
 
-#stats-screen-container {
+#chart-selector,
+#chart-display {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-template-areas:
-    "heading        exit-btn"
-    "chart-selector chart-selector";
   align-items: center;
   gap: 2.5em;
   width: 90vw;
@@ -332,7 +330,8 @@ button {
   transition: all 0.3s ease-in-out;
 }
 
-#stats-screen-heading {
+#chart-selector-heading,
+#chart-display-heading {
   grid-area: heading;
   justify-self: start;
   margin-bottom: 0;
@@ -340,8 +339,8 @@ button {
   color: white;
 }
 
-#stats-screen-exit-btn {
-  grid-area: exit-btn;
+#chart-selector-exit-btn,
+#chart-display-return-btn {
   justify-self: end;
   font-size: max(1vw, 1rem);
   padding: 0.75em 1.75em;
@@ -349,7 +348,17 @@ button {
 }
 
 #chart-selector {
-  align-self: start;
+  grid-template-areas:
+    "heading        exit-btn"
+    "chart-selector chart-selector";
+}
+
+#chart-selector-exit-btn {
+  grid-area: exit-btn;
+}
+
+#chart-selector-chart-btns {
+  place-self: stretch;
   grid-area: chart-selector;
   display: flex;
   flex-wrap: wrap;
@@ -358,12 +367,29 @@ button {
   gap: 4em;
 }
 
-.chart-selector-btn {
+.chart-selector-chart-btn {
   width: 12.5vw;
   height: 12.5vw;
   font-size: max(1.15vw, 0.75rem);
   padding: 1em;
   border-radius: 1rem;
+}
+
+#chart-display {
+  display: none;
+  grid-template-areas:
+    "heading  return-btn"
+    "chart    chart";
+}
+
+#chart-display-return-btn {
+  grid-area: return-btn;
+}
+
+#chart-container {
+  grid-area: chart;
+  place-self: stretch;
+  max-height: 99%;
 }
 
 /* GAME SCREEN */
