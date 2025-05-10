@@ -389,7 +389,7 @@ function showStatsScreen() {
   const statsScreen = document.getElementById("stats-screen");
   statsScreen.style.display = "flex";
   showStats(globals.playersIDs.loggedIn);
-  const exit = document.getElementById("stats-btn-exit");
+  const exit = document.getElementById("stats-screen-exit-btn");
   exit.addEventListener("click", hideStatsScreen);
 }
 
