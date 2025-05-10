@@ -34,9 +34,13 @@ export default {
   isScreenInitialized: {
     register: false,
     playerSessionScreen: false,
+    stats: false,
   },
   playersIDs: {
     loggedIn: -1,
     lastOpponent: -1,
+  },
+  isChartCreated: {
+    winRate: false,
   },
 };

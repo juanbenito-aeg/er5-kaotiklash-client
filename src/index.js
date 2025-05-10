@@ -1,7 +1,6 @@
 import Game from "./Game/Game.js";
 import globals from "./Game/globals.js";
-import { GameState, FPS, Language } from "./Game/constants.js";
-import { PlayerID } from "./Game/constants.js";
+import { GameState, FPS, Language, ChartID } from "./Game/constants.js";
 
 window.onload = initEssentials;
 
@@ -51,6 +50,7 @@ async function changeLanguage(e) {
   globals.language = language === "eng" ? Language.ENGLISH : Language.BASQUE;
 
   clearErrorMessages();
+
   setUpGameTips();
 }
 
@@ -90,6 +90,13 @@ function hideRegisterAndShowLoginScreen() {
   showLoginScreen();
 }
 
+function hideStatsAndShowPlayerSessionScreen() {
+  const statsScreen = document.getElementById("stats-screen");
+  statsScreen.style.display = "none";
+
+  showPlayerSessionScreen();
+}
+
 // MAIN SCREEN
 function hideMainScreen() {
   const mainScreen = document.getElementById("main-screen");
@@ -125,11 +132,11 @@ function hideLoginScreen() {
 function showOrInitRegisterScreen() {
   hideLoginScreen();
 
-  if (globals.isScreenInitialized.register) {
-    showRegisterScreen();
-  } else {
+  if (!globals.isScreenInitialized.register) {
     initRegisterScreen();
   }
+
+  showRegisterScreen();
 }
 function showRegisterScreen() {
   const registerForm = document.getElementById("register-form");
@@ -149,10 +156,44 @@ function hideRegisterScreen() {
 function showPlayerSessionScreen() {
   const playerSessionScreen = document.getElementById("player-session-screen");
   playerSessionScreen.style.display = "flex";
+
+  showLanguageBtns();
+
+  // RANDOM TIPS FOR THE PLAYER
+  setUpGameTips();
 }
 function hidePlayerSessionScreen() {
   const playerSessionScreen = document.getElementById("player-session-screen");
   playerSessionScreen.style.display = "none";
+}
+
+// STATS SCREEN
+function showOrInitStatsScreen() {
+  hideLanguageBtns();
+  hidePlayerSessionScreen();
+
+  if (!globals.isScreenInitialized.stats) {
+    initStatsScreen();
+  }
+
+  showStatsScreen();
+}
+function showStatsScreen() {
+  const statsScreen = document.getElementById("stats-screen");
+  statsScreen.style.display = "flex";
+}
+
+function hideChartSelector() {
+  const chartSelector = document.getElementById("chart-selector");
+  chartSelector.style.display = "none";
+}
+
+function hideChartDisplayAndShowChartSelector() {
+  const chartDisplay = document.getElementById("chart-display");
+  chartDisplay.style.display = "none";
+
+  const chartSelector = document.getElementById("chart-selector");
+  chartSelector.style.display = "grid";
 }
 
 // INITIALIZE SCREEN FUNCTIONS
@@ -223,8 +264,6 @@ async function logInPlayer(email, password) {
 
 function initRegisterScreen() {
   globals.isScreenInitialized.register = true;
-
-  showRegisterScreen();
 
   const registerForm = document.getElementById("register-form");
   registerForm.addEventListener("submit", checkFormDataAndRegister);
@@ -308,7 +347,6 @@ function initPlayerSessionScreen() {
   playerEmailParagraph.innerHTML = playerEmail;
 
   showPlayerSessionScreen();
-  showLanguageBtns();
 
   globals.playersIDs.loggedIn = localStorage.getItem("playerID");
 
@@ -316,16 +354,13 @@ function initPlayerSessionScreen() {
   const logOutBtn = document.getElementById("log-out-btn");
   logOutBtn.addEventListener("click", clearLocalStorageAndReload);
 
-  //STATS BUTTON
+  // STATS BUTTON
   const statsBtn = document.getElementById("stats-btn");
-  statsBtn.addEventListener("click", showStatsScreen);
+  statsBtn.addEventListener("click", showOrInitStatsScreen);
 
   // GET OPPONENTS' DATA & USE THEM TO CREATE HTML ELEMENTS
   const opponentSelect = document.getElementById("opponent-select");
   createOpponentsSelOptions(opponentSelect);
-
-  //RANDOM TIPS FOR THE PLAYER
-  setUpGameTips();
 
   // ACTIVATE THE "Start Game" BUTTON WHEN AN OPPONENT IS SELECTED & DISABLE IT WHEN THE DEFAULT OPTION IS SELECTED AGAIN
   opponentSelect.addEventListener("change", activateOrDisableStartGameBtn);
@@ -382,15 +417,117 @@ function activateOrDisableStartGameBtn(e) {
   }
 }
 
-function showStatsScreen() {
-  //INSERT THE FUNCTION FOR THE ALL GET STATS
-  hideLanguageBtns();
-  hidePlayerSessionScreen();
-  const statsScreen = document.getElementById("stats-screen");
-  statsScreen.style.display = "flex";
-  showStats(globals.playersIDs.loggedIn);
-  const exit = document.getElementById("stats-screen-exit-btn");
-  exit.addEventListener("click", hideStatsScreen);
+function initStatsScreen() {
+  globals.isScreenInitialized.stats = true;
+
+  // SECTION: CHART SELECTOR
+
+  const chartSelectorExitBtn = document.getElementById(
+    "chart-selector-exit-btn"
+  );
+  chartSelectorExitBtn.addEventListener(
+    "click",
+    hideStatsAndShowPlayerSessionScreen
+  );
+
+  const chartSelectorChartBtns = document.querySelectorAll(
+    ".chart-selector-chart-btn"
+  );
+  for (let i = 0; i < chartSelectorChartBtns.length; i++) {
+    const currentChartSelectorChartBtn = chartSelectorChartBtns[i];
+
+    currentChartSelectorChartBtn.addEventListener("click", showChartDisplay);
+  }
+
+  // SECTION: CHART DISPLAY
+  const chartDisplayReturnBtn = document.getElementById(
+    "chart-display-return-btn"
+  );
+  chartDisplayReturnBtn.addEventListener(
+    "click",
+    hideChartDisplayAndShowChartSelector
+  );
+}
+
+function showChartDisplay(e) {
+  hideChartSelector();
+
+  const chartDisplay = document.getElementById("chart-display");
+  chartDisplay.style.display = "grid";
+
+  const chartSelectorChartBtns = document.querySelectorAll(
+    ".chart-selector-chart-btn"
+  );
+  for (let i = 0; i < chartSelectorChartBtns.length; i++) {
+    const currentChartSelectorChartBtn = chartSelectorChartBtns[i];
+
+    if (e.target === currentChartSelectorChartBtn) {
+      createOrDisplayChart(i);
+    }
+  }
+}
+
+function createOrDisplayChart(chartID) {
+  let chartDisplayHeadingString;
+
+  switch (chartID) {
+    case ChartID.WIN_RATE:
+      chartDisplayHeadingString = "WIN RATE";
+      if (!globals.isChartCreated.winRate) {
+        createWinRateChart();
+      }
+      break;
+  }
+
+  const chartDisplayHeading = document.getElementById("chart-display-heading");
+  chartDisplayHeading.innerHTML = chartDisplayHeadingString;
+
+  displayChart(chartID);
+}
+
+function createWinRateChart() {
+  // (!!!!!) FAKE DATA FOR TESTING
+  const data = [
+    { year: 2010, count: 10 },
+    { year: 2011, count: 20 },
+    { year: 2012, count: 15 },
+    { year: 2013, count: 25 },
+    { year: 2014, count: 22 },
+    { year: 2015, count: 30 },
+    { year: 2016, count: 28 },
+  ];
+
+  new Chart(document.getElementById("win-rate"), {
+    type: "pie",
+    options: {
+      maintainAspectRatio: false,
+    },
+    data: {
+      labels: data.map((row) => row.year),
+      datasets: [
+        {
+          label: "Acquisitions by year",
+          data: data.map((row) => row.count),
+        },
+      ],
+    },
+  });
+
+  globals.isChartCreated.winRate = true;
+}
+
+function displayChart(chartID) {
+  const charts = document.querySelectorAll("#chart-container > *");
+
+  for (let i = 0; i < charts.length; i++) {
+    const currentChart = charts[i];
+
+    if (chartID === i) {
+      currentChart.style.display = "block";
+    } else {
+      currentChart.style.display = "none";
+    }
+  }
 }
 
 async function showStats(loggedInPlayerID) {
@@ -552,13 +689,6 @@ async function getJosephAppearances(loggedInPlayerID) {
   } else {
     console.log(`Joseph appearances: ${josephAppearances}`);
   }
-}
-
-function hideStatsScreen() {
-  const statsScreen = document.getElementById("stats-screen");
-  statsScreen.style.display = "none";
-
-  initPlayerSessionScreen();
 }
 
 function setUpGameTips() {
