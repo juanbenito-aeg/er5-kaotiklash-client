@@ -488,6 +488,14 @@ async function createOrDisplayChart(chartID) {
         }
       }
       break;
+    case ChartID.JOSEPH_APPEARANCES:
+      chartDisplayHeadingString = "JOSEPH APPEARANCES";
+      if (!globals.isChartCreated.josephAppearances) {
+        const appearances = await getJosephAppearances(
+          globals.playersIDs.loggedIn
+        );
+        if (appearances) createJosephAppearancesChart(appearances);
+      }
   }
 
   const chartDisplayHeading = document.getElementById("chart-display-heading");
@@ -557,6 +565,38 @@ function createTurnPerMatchChart(playedTurnsData) {
 
   new Chart(document.getElementById("turns-per-match"), config);
   globals.isChartCreated.turnsPerMatch = true;
+}
+
+function createJosephAppearancesChart(data) {
+  const ctx = document.getElementById("joseph-appearances");
+
+  const chartData = {
+    labels: ["Yes", "No"],
+    datasets: [
+      {
+        label: "Did Joseph appear?",
+        data: [data.appeared, data.notAppeared],
+        backgroundColor: ["rgba(54, 235, 162, 0.6)", "rgba(235, 54, 54, 0.6)"],
+        borderColor: ["rgb(54, 235, 162)", "rgb(235, 54, 54)"],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const config = {
+    type: "bar",
+    data: chartData,
+    options: {
+      scales: {
+        y: { beginAtZero: true },
+      },
+      maintainAspectRatio: false,
+      responsive: true,
+    },
+  };
+
+  new Chart(ctx, config);
+  globals.isChartCreated.josephAppearances = true;
 }
 
 function displayChart(chartID) {
@@ -720,24 +760,18 @@ async function getUsedCards(loggedInPlayerID) {
 }
 
 async function getJosephAppearances(loggedInPlayerID) {
-  let josephAppearances;
   const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/joseph-appeared`;
   const response = await fetch(url, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
 
-  if (response.ok) {
-    josephAppearances = await response.json();
-  } else {
-    alert(`Communication error (joseph appearances): 0`);
-    return;
-  }
+  const josephAppeared = await response.json();
 
-  if (josephAppearances.message) {
-    console.log(josephAppearances.message);
+  if (josephAppeared === true) {
+    return { appeared: 1, notAppeared: 0 };
   } else {
-    console.log(`Joseph appearances: ${josephAppearances}`);
+    return { appeared: 0, notAppeared: 1 };
   }
 }
 
