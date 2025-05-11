@@ -440,6 +440,7 @@ function initStatsScreen() {
   }
 
   // SECTION: CHART DISPLAY
+
   const chartDisplayReturnBtn = document.getElementById(
     "chart-display-return-btn"
   );
@@ -447,6 +448,16 @@ function initStatsScreen() {
     "click",
     hideChartDisplayAndShowChartSelector
   );
+
+  setChartsDefaultProperties();
+}
+
+function setChartsDefaultProperties() {
+  Chart.defaults.color = "rgb(255, 255, 255)";
+  Chart.defaults.font.family = "MedievalSharp";
+  Chart.defaults.font.size = 16;
+  Chart.defaults.plugins.tooltip.boxPadding = 3;
+  Chart.defaults.maintainAspectRatio = false;
 }
 
 function showChartDisplay(e) {
@@ -557,10 +568,6 @@ function createTurnPerMatchChart(playedTurnsData) {
   const config = {
     type: "line",
     data: data,
-    options: {
-      maintainAspectRatio: false,
-      responsive: true,
-    },
   };
 
   new Chart(document.getElementById("turns-per-match"), config);
@@ -590,8 +597,6 @@ function createJosephAppearancesChart(data) {
       scales: {
         y: { beginAtZero: true },
       },
-      maintainAspectRatio: false,
-      responsive: true,
     },
   };
 
