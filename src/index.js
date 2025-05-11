@@ -518,6 +518,20 @@ async function createOrDisplayChart(chartID) {
         }
       }
       break;
+<<<<<<< HEAD
+=======
+    case ChartID.MINIONS_KILLED:
+      chartDisplayHeadingString = "MINIONS KILLED";
+      if (!globals.isChartCreated.minionsKilled) {
+        const response = await getMinionsKilled(globals.playersIDs.loggedIn);
+        const total = {
+          total_killed: response.total_minions_killed,
+          average_killed: response.average_minions_killed,
+        };
+        createMinionsKilledChart(total);
+      }
+      break;
+>>>>>>> kk-224
   }
 
   const chartDisplayHeading = document.getElementById("chart-display-heading");
@@ -586,6 +600,7 @@ function createJosephAppearancesChart(data) {
         backgroundColor: ["rgba(54, 235, 162, 0.6)", "rgba(235, 54, 54, 0.6)"],
         borderColor: ["rgb(54, 235, 162)", "rgb(235, 54, 54)"],
         borderWidth: 1,
+        barThickness: 110,
       },
     ],
   };
@@ -602,6 +617,67 @@ function createJosephAppearancesChart(data) {
 
   new Chart(ctx, config);
   globals.isChartCreated.josephAppearances = true;
+}
+
+function createMinionsKilledChart(minionsKilledPerMatch) {
+  const ctx = document.getElementById("minions-killed");
+
+  const labels = [];
+  for (let i = 0; i < minionsKilledPerMatch.length; i++) {
+    labels.push(`Match ${i + 1}`);
+  }
+
+  const chartData = {
+    labels: labels,
+    datasets: [
+      {
+        label: "Minions Killed",
+        data: minionsKilledPerMatch,
+        backgroundColor: "rgba(54, 162, 235, 0.6)",
+        borderColor: "rgb(54, 162, 235)",
+        borderWidth: 1,
+        barThickness: 110,
+      },
+    ],
+  };
+
+  const config = {
+    type: "bar",
+    data: chartData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "top",
+          labels: { color: "#fff" },
+        },
+        title: {
+          display: true,
+          text: "Minions Killed Per Match",
+          color: "#fff",
+          font: {
+            size: 16,
+            weight: "bold",
+          },
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { color: "#fff" },
+          grid: { color: "rgba(255,255,255,0.1)" },
+        },
+        x: {
+          ticks: { color: "#fff" },
+          grid: { color: "rgba(255,255,255,0.1)" },
+        },
+      },
+    },
+  };
+
+  new Chart(ctx, config);
+  globals.isChartCreated.minionsKilled = true;
 }
 
 function displayChart(chartID) {
@@ -648,8 +724,6 @@ async function getTotalPlayedTurns(loggedInPlayerID) {
 }
 
 async function getMinionsKilled(loggedInPlayerID) {
-  let killedMinions = 0;
-
   const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-minions-killed`;
   const response = await fetch(url, {
     method: "GET",
@@ -657,15 +731,10 @@ async function getMinionsKilled(loggedInPlayerID) {
   });
 
   if (response.ok) {
-    killedMinions = await response.json();
+    const killedMinions = await response.json();
+    return killedMinions;
   } else {
-    alert(`Communication error (minions killed): ${response.statusText}`);
-    return;
-  }
-  if (killedMinions.message) {
-    console.log(killedMinions.message);
-  } else {
-    console.log(`Total minions killed: ${killedMinions}`);
+    return 0;
   }
 }
 
