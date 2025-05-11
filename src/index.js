@@ -485,28 +485,39 @@ async function createOrDisplayChart(chartID) {
     case ChartID.WIN_RATE:
       chartDisplayHeadingString = "WIN RATE";
       if (!globals.isChartCreated.winRate) {
-        createWinRateChart();
+        const winRate = await getWinRate();
+
+        if (winRate) {
+          createWinRateChart(winRate);
+        }
       }
       break;
+
     case ChartID.TURNS_PER_MATCH:
       chartDisplayHeadingString = "TURNS PER MATCH";
       if (!globals.isChartCreated.turnsPerMatch) {
         const playedTurnsData = await getTotalPlayedTurns(
           globals.playersIDs.loggedIn
         );
+
         if (playedTurnsData) {
-          createTurnPerMatchChart(playedTurnsData);
+          createTurnsPerMatchChart(playedTurnsData);
         }
       }
       break;
+
     case ChartID.JOSEPH_APPEARANCES:
       chartDisplayHeadingString = "JOSEPH APPEARANCES";
       if (!globals.isChartCreated.josephAppearances) {
         const appearances = await getJosephAppearances(
           globals.playersIDs.loggedIn
         );
-        if (appearances) createJosephAppearancesChart(appearances);
+
+        if (appearances) {
+          createJosephAppearancesChart(appearances);
+        }
       }
+      break;
   }
 
   const chartDisplayHeading = document.getElementById("chart-display-heading");
@@ -515,38 +526,27 @@ async function createOrDisplayChart(chartID) {
   displayChart(chartID);
 }
 
-function createWinRateChart() {
-  // (!!!!!) FAKE DATA FOR TESTING
-  const data = [
-    { year: 2010, count: 10 },
-    { year: 2011, count: 20 },
-    { year: 2012, count: 15 },
-    { year: 2013, count: 25 },
-    { year: 2014, count: 22 },
-    { year: 2015, count: 30 },
-    { year: 2016, count: 28 },
-  ];
+function createWinRateChart(winRate) {
+  const data = {
+    labels: ["Won Matches", "Lost Matches"],
+    datasets: [
+      {
+        data: [winRate.won_matches, winRate.lost_matches],
+      },
+    ],
+  };
 
-  new Chart(document.getElementById("win-rate"), {
+  const config = {
     type: "pie",
-    options: {
-      maintainAspectRatio: false,
-    },
-    data: {
-      labels: data.map((row) => row.year),
-      datasets: [
-        {
-          label: "Acquisitions by year",
-          data: data.map((row) => row.count),
-        },
-      ],
-    },
-  });
+    data,
+  };
+
+  new Chart(document.getElementById("win-rate"), config);
 
   globals.isChartCreated.winRate = true;
 }
 
-function createTurnPerMatchChart(playedTurnsData) {
+function createTurnsPerMatchChart(playedTurnsData) {
   const labels = [];
   for (let i = 0; i < playedTurnsData.played_turns.length; i++) {
     labels.push(`Match ${i + 1}`);
@@ -618,6 +618,19 @@ function displayChart(chartID) {
   }
 }
 
+async function getWinRate() {
+  const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${globals.playersIDs.loggedIn}/won-lost-matches/`;
+
+  const response = await fetch(url);
+
+  if (response.ok) {
+    const data = await response.json();
+    return data;
+  } else {
+    alert(`Communication error: ${response.statusText}`);
+  }
+}
+
 async function getTotalPlayedTurns(loggedInPlayerID) {
   const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-played-turns`;
   const response = await fetch(url, {
@@ -631,48 +644,6 @@ async function getTotalPlayedTurns(loggedInPlayerID) {
   } else {
     alert(`Communication error (total played turns): 0`);
     return null;
-  }
-}
-
-async function getWinRate(loggedInPlayerID) {
-  let wins = 0;
-  let totalMatches = 0;
-
-  const urlWins = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/winned-matches`;
-  const responseWins = await fetch(urlWins, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (responseWins.ok) {
-    wins = await responseWins.json();
-  } else {
-    alert(`Communication error (wins): ${responseWins.statusText}`);
-    return;
-  }
-
-  if (wins.message) {
-    wins = 0;
-  }
-
-  const urlMatches = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-matches`;
-  const responseMatches = await fetch(urlMatches, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (responseMatches.ok) {
-    totalMatches = await responseMatches.json();
-  } else {
-    alert(`Communication error (matches): ${responseMatches.statusText}`);
-    return;
-  }
-
-  if (totalMatches.message) {
-    console.log(totalMatches.message);
-  } else {
-    const winRate = (wins / totalMatches) * 100;
-    console.log(`Win rate: ${winRate.toFixed(2)}%`);
   }
 }
 
