@@ -43,5 +43,6 @@ export default {
   isChartCreated: {
     winRate: false,
     turnsPerMatch: false,
+    josephAppearances: false,
   },
 };
