@@ -605,7 +605,7 @@ function createJosephAppearancesChart(data) {
 }
 
 function displayChart(chartID) {
-  const charts = document.querySelectorAll("#chart-container > *");
+  const charts = document.querySelectorAll("#chart-container > canvas");
 
   for (let i = 0; i < charts.length; i++) {
     const currentChart = charts[i];
@@ -616,6 +616,11 @@ function displayChart(chartID) {
       currentChart.style.display = "none";
     }
   }
+}
+
+function setNoDataFoundParaContent(content) {
+  const noDataFoundPara = document.getElementById("no-data-found");
+  noDataFoundPara.textContent = content;
 }
 
 async function getWinRate() {

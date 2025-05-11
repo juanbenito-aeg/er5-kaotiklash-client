@@ -400,8 +400,8 @@ button {
 #chart-display {
   display: none;
   grid-template-areas:
-    "heading  return-btn"
-    "chart    chart";
+    "heading          return-btn"
+    "chart-container  chart-container";
 }
 
 #chart-display-return-btn {
@@ -409,9 +409,15 @@ button {
 }
 
 #chart-container {
-  grid-area: chart;
+  grid-area: chart-container;
   place-self: stretch;
   max-height: 99%;
+}
+
+#no-data-found {
+  color: white;
+  text-align: center;
+  font-size: max(2vw, 1.75rem);
 }
 
 /* GAME SCREEN */
