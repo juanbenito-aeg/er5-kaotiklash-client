@@ -47,5 +47,6 @@ export default {
     minionsKilled: false,
     fumblesPerMatch: false,
     criticalHitsPerMatch: false,
+    usedCardsPerMatch: false,
   },
 };

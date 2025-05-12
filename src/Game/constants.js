@@ -342,6 +342,7 @@ const ChartID = {
   MINIONS_KILLED: 3,
   FUMBLES_PER_MATCH: 4,
   CRITICAL_HITS_PER_MATCH: 5,
+  USED_CARDS_PER_MATCH: 6,
 };
 
 export {
