@@ -44,5 +44,6 @@ export default {
     winRate: false,
     turnsPerMatch: false,
     josephAppearances: false,
+    fumblesPerMatch: false,
   },
 };

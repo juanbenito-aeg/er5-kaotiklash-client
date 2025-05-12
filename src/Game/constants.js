@@ -339,6 +339,7 @@ const ChartID = {
   WIN_RATE: 0,
   TURNS_PER_MATCH: 1,
   JOSEPH_APPEARANCES: 2,
+  FUMBLES_PER_MATCH: 4,
 };
 
 export {

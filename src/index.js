@@ -518,6 +518,17 @@ async function createOrDisplayChart(chartID) {
         }
       }
       break;
+
+    case ChartID.FUMBLES_PER_MATCH:
+      chartDisplayHeadingString = "FUMBLES PER MATCH";
+      if (!globals.isChartCreated.fumblesPerMatch) {
+        const fumblesPerMatch = await getFumblesPerMatch();
+
+        if (fumblesPerMatch) {
+          createFumblesPerMatchChart(fumblesPerMatch);
+        }
+      }
+      break;
   }
 
   const chartDisplayHeading = document.getElementById("chart-display-heading");
@@ -581,7 +592,7 @@ function createJosephAppearancesChart(data) {
     labels: ["Yes", "No"],
     datasets: [
       {
-        label: "Did Joseph appear?",
+        label: "Did Joseph Appear?",
         data: [data.appeared, data.notAppeared],
         backgroundColor: ["rgba(54, 235, 162, 0.6)", "rgba(235, 54, 54, 0.6)"],
         borderColor: ["rgb(54, 235, 162)", "rgb(235, 54, 54)"],
@@ -602,6 +613,38 @@ function createJosephAppearancesChart(data) {
 
   new Chart(ctx, config);
   globals.isChartCreated.josephAppearances = true;
+}
+
+function createFumblesPerMatchChart(fumblesPerMatch) {
+  const ctx = document.getElementById("fumbles-per-match");
+
+  const data = {
+    labels: fumblesPerMatch.map((numOfFumbles, index) => `Match ${index + 1}`),
+    datasets: [
+      {
+        label: "Number of Fumbles",
+        data: fumblesPerMatch.map((numOfFumbles) => numOfFumbles),
+      },
+    ],
+  };
+
+  const config = {
+    type: "line",
+    data,
+    options: {
+      scales: {
+        y: {
+          ticks: {
+            precision: 0,
+          },
+        },
+      },
+    },
+  };
+
+  new Chart(ctx, config);
+
+  globals.isChartCreated.fumblesPerMatch = true;
 }
 
 function displayChart(chartID) {
@@ -652,6 +695,22 @@ async function getTotalPlayedTurns(loggedInPlayerID) {
   }
 }
 
+async function getJosephAppearances(loggedInPlayerID) {
+  const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/joseph-appeared`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const josephAppeared = await response.json();
+
+  if (josephAppeared === true) {
+    return { appeared: 1, notAppeared: 0 };
+  } else {
+    return { appeared: 0, notAppeared: 1 };
+  }
+}
+
 async function getMinionsKilled(loggedInPlayerID) {
   let killedMinions = 0;
 
@@ -674,25 +733,21 @@ async function getMinionsKilled(loggedInPlayerID) {
   }
 }
 
-async function getFumbles(loggedInPlayerID) {
-  let fumbles = 0;
-  const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-fumbles`;
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
+async function getFumblesPerMatch() {
+  const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${globals.playersIDs.loggedIn}/total-fumbles`;
+
+  const response = await fetch(url);
 
   if (response.ok) {
-    fumbles = await response.json();
-  } else {
-    alert(`Communication error (fumbles): ${response.statusText}`);
-    return;
-  }
+    const fumblesData = await response.json();
 
-  if (fumbles.message) {
-    console.log(fumbles.message);
+    setNoDataFoundParaContent(fumblesData.message || "");
+
+    if (!fumblesData.message) {
+      return fumblesData.fumbles;
+    }
   } else {
-    console.log(`Total fumbles: ${fumbles}`);
+    alert(`Communication error: ${response.statusText}`);
   }
 }
 
@@ -737,22 +792,6 @@ async function getUsedCards(loggedInPlayerID) {
     console.log(usedCards.message);
   } else {
     console.log(`Total used cards: ${usedCards}`);
-  }
-}
-
-async function getJosephAppearances(loggedInPlayerID) {
-  const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/joseph-appeared`;
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  const josephAppeared = await response.json();
-
-  if (josephAppeared === true) {
-    return { appeared: 1, notAppeared: 0 };
-  } else {
-    return { appeared: 0, notAppeared: 1 };
   }
 }
 
