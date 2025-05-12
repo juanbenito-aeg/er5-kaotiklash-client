@@ -46,5 +46,6 @@ export default {
     josephAppearances: false,
     minionsKilled: false,
     fumblesPerMatch: false,
+    criticalHitsPerMatch: false,
   },
 };

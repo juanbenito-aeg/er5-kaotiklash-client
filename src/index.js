@@ -541,6 +541,17 @@ async function createOrDisplayChart(chartID) {
         }
       }
       break;
+
+    case ChartID.CRITICAL_HITS_PER_MATCH:
+      chartDisplayHeadingString = "CRITICAL HITS PER MATCH";
+      if (!globals.isChartCreated.criticalHitsPerMatch) {
+        const criticalHitsPerMatch = await getCriticalHitsPerMatch();
+
+        if (criticalHitsPerMatch) {
+          createCriticalHitsPerMatchChart(criticalHitsPerMatch);
+        }
+      }
+      break;
   }
 
   const chartDisplayHeading = document.getElementById("chart-display-heading");
@@ -721,6 +732,48 @@ function createFumblesPerMatchChart(fumblesPerMatch) {
   globals.isChartCreated.fumblesPerMatch = true;
 }
 
+function createCriticalHitsPerMatchChart(criticalHitsPerMatch) {
+  const ctx = document.getElementById("critical-hits-per-match");
+
+  const data = {
+    labels: criticalHitsPerMatch.map(
+      (numOfCriticalHits, index) => `Match ${index + 1}`
+    ),
+    datasets: [
+      {
+        label: "Number of Critical Hits",
+        data: criticalHitsPerMatch.map(
+          (numOfCriticalHits) => numOfCriticalHits
+        ),
+      },
+    ],
+  };
+
+  const config = {
+    type: "line",
+    data,
+    options: {
+      scales: {
+        y: {
+          ticks: {
+            precision: 0,
+          },
+        },
+      },
+      borderColor: "rgb(255, 255, 0, 0.75)",
+      backgroundColor: "rgb(0, 0, 0)",
+      pointBorderColor: "rgb(255, 255, 0, 0.75)",
+      pointBackgroundColor: "rgb(0, 0, 0)",
+      pointRadius: 7,
+      pointHoverRadius: 8,
+    },
+  };
+
+  new Chart(ctx, config);
+
+  globals.isChartCreated.criticalHitsPerMatch = true;
+}
+
 function displayChart(chartID) {
   const charts = document.querySelectorAll("#chart-container > canvas");
 
@@ -818,25 +871,21 @@ async function getFumblesPerMatch() {
   }
 }
 
-async function getCriticalHits(loggedInPlayerID) {
-  let criticalHits = 0;
-  const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-critical-hits`;
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
+async function getCriticalHitsPerMatch() {
+  const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${globals.playersIDs.loggedIn}/total-critical-hits`;
+
+  const response = await fetch(url);
 
   if (response.ok) {
-    criticalHits = await response.json();
-  } else {
-    alert(`Communication error (critical hits): ${response.statusText}`);
-    return;
-  }
+    const criticalHitsData = await response.json();
 
-  if (criticalHits.message) {
-    console.log(criticalHits.message);
+    setNoDataFoundParaContent(criticalHitsData.message || "");
+
+    if (!criticalHitsData.message) {
+      return criticalHitsData.crits;
+    }
   } else {
-    console.log(`Total critical hits: ${criticalHits}`);
+    alert(`Communication error: ${response.statusText}`);
   }
 }
 
