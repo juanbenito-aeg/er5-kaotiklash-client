@@ -340,6 +340,7 @@ const ChartID = {
   TURNS_PER_MATCH: 1,
   JOSEPH_APPEARANCES: 2,
   MINIONS_KILLED: 3,
+  FUMBLES_PER_MATCH: 4,
 };
 
 export {
