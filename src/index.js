@@ -523,11 +523,13 @@ async function createOrDisplayChart(chartID) {
       chartDisplayHeadingString = "MINIONS KILLED";
       if (!globals.isChartCreated.minionsKilled) {
         const response = await getMinionsKilled(globals.playersIDs.loggedIn);
-        const total = {
-          total_killed: response.total_minions_killed,
-          average_killed: response.average_minions_killed,
-        };
-        createMinionsKilledChart(total);
+        if (response) {
+          const total = {
+            total_killed: response.total_minions_killed,
+            average_killed: response.average_minions_killed,
+          };
+          createMinionsKilledChart(total);
+        }
       }
       break;
 
@@ -549,6 +551,17 @@ async function createOrDisplayChart(chartID) {
 
         if (criticalHitsPerMatch) {
           createCriticalHitsPerMatchChart(criticalHitsPerMatch);
+        }
+      }
+      break;
+
+    case ChartID.USED_CARDS_PER_MATCH:
+      chartDisplayHeadingString = "USED CARDS PER MATCH";
+      if (!globals.isChartCreated.usedCardsPerMatch) {
+        const usedCardsData = await getUsedCards(globals.playersIDs.loggedIn);
+
+        if (usedCardsData) {
+          createUsedCardsChart(usedCardsData);
         }
       }
       break;
@@ -642,7 +655,11 @@ function createJosephAppearancesChart(data) {
 function createMinionsKilledChart(minionsKilledPerMatch) {
   const ctx = document.getElementById("minions-killed");
 
-  const labels = [];
+  const labels = ["Total Killed", "Average Minions Killed"];
+  const data = [
+    minionsKilledPerMatch.total_killed,
+    minionsKilledPerMatch.average_killed,
+  ];
   for (let i = 0; i < minionsKilledPerMatch.length; i++) {
     labels.push(`Match ${i + 1}`);
   }
@@ -652,7 +669,7 @@ function createMinionsKilledChart(minionsKilledPerMatch) {
     datasets: [
       {
         label: "Minions Killed",
-        data: minionsKilledPerMatch,
+        data: data,
         backgroundColor: "rgba(54, 162, 235, 0.6)",
         borderColor: "rgb(54, 162, 235)",
         borderWidth: 1,
@@ -674,7 +691,7 @@ function createMinionsKilledChart(minionsKilledPerMatch) {
         },
         title: {
           display: true,
-          text: "Minions Killed Per Match",
+          text: "Minions Killed",
           color: "#fff",
           font: {
             size: 16,
@@ -685,7 +702,7 @@ function createMinionsKilledChart(minionsKilledPerMatch) {
       scales: {
         y: {
           beginAtZero: true,
-          ticks: { color: "#fff" },
+          ticks: { color: "#fff", precision: 0 },
           grid: { color: "rgba(255,255,255,0.1)" },
         },
         x: {
@@ -774,6 +791,67 @@ function createCriticalHitsPerMatchChart(criticalHitsPerMatch) {
   globals.isChartCreated.criticalHitsPerMatch = true;
 }
 
+function createUsedCardsChart(dataFromServer) {
+  const ctx = document.getElementById("used-cards-per-match");
+
+  const labels = ["Total Used Cards", "Used Cards", "Average Used Cards"];
+
+  const total = dataFromServer.total_used_cards;
+  const avg = dataFromServer.average_used_cards;
+
+  const used =
+    dataFromServer.used_cards && dataFromServer.used_cards.length > 0
+      ? dataFromServer.used_cards[dataFromServer.used_cards.length - 1]
+      : 0;
+  const data = [total, used, avg];
+
+  const chartData = {
+    labels: labels,
+    datasets: [
+      {
+        data: data,
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.6)",
+          "rgba(75, 192, 192, 0.6)",
+          "rgba(54, 162, 235, 0.6)",
+        ],
+      },
+    ],
+  };
+
+  const config = {
+    type: "polarArea",
+    data: chartData,
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          labels: { color: "#fff" },
+        },
+        title: {
+          display: true,
+          text: "Used Cards Per Match",
+          color: "#fff",
+        },
+      },
+      scales: {
+        r: {
+          ticks: {
+            color: "#fff",
+            precision: 0,
+          },
+          grid: {
+            color: "rgba(255,255,255,0.2)",
+          },
+        },
+      },
+    },
+  };
+
+  new Chart(ctx, config);
+  globals.isChartCreated.usedCardsPerMatch = true;
+}
+
 function displayChart(chartID) {
   const charts = document.querySelectorAll("#chart-container > canvas");
 
@@ -808,26 +886,24 @@ async function getWinRate() {
 
 async function getTotalPlayedTurns(loggedInPlayerID) {
   const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-played-turns`;
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
+  const response = await fetch(url);
 
   if (response.ok) {
     const playedTurnsData = await response.json();
-    return playedTurnsData;
+
+    setNoDataFoundParaContent(playedTurnsData.message || "");
+
+    if (!playedTurnsData.message) {
+      return playedTurnsData;
+    }
   } else {
-    alert(`Communication error (total played turns): 0`);
-    return null;
+    alert(`Communication error: ${response.statusText}`);
   }
 }
 
 async function getJosephAppearances(loggedInPlayerID) {
   const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/joseph-appeared`;
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
+  const response = await fetch(url);
 
   const josephAppeared = await response.json();
 
@@ -840,16 +916,18 @@ async function getJosephAppearances(loggedInPlayerID) {
 
 async function getMinionsKilled(loggedInPlayerID) {
   const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-minions-killed`;
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
+  const response = await fetch(url);
 
   if (response.ok) {
     const killedMinions = await response.json();
-    return killedMinions;
+
+    setNoDataFoundParaContent(killedMinions.message || "");
+
+    if (!killedMinions.message) {
+      return killedMinions;
+    }
   } else {
-    return 0;
+    alert(`Communication error: ${response.statusText}`);
   }
 }
 
@@ -890,24 +968,19 @@ async function getCriticalHitsPerMatch() {
 }
 
 async function getUsedCards(loggedInPlayerID) {
-  let usedCards = 0;
   const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/total-used-cards`;
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
+  const response = await fetch(url);
 
   if (response.ok) {
-    usedCards = await response.json();
-  } else {
-    alert(`Communication error (used cards): ${response.statusText}`);
-    return;
-  }
+    const data = await response.json();
 
-  if (usedCards.message) {
-    console.log(usedCards.message);
+    setNoDataFoundParaContent(data.message || "");
+
+    if (!data.message) {
+      return data;
+    }
   } else {
-    console.log(`Total used cards: ${usedCards}`);
+    alert(`Communication error: ${response.statusText}`);
   }
 }
 
