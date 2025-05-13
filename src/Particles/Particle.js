@@ -1,5 +1,5 @@
 export default class Particle {
-  #id;
+  _id;
   _state;
   _xCoordinate;
   _yCoordinate;
@@ -7,7 +7,7 @@ export default class Particle {
   _alpha;
 
   constructor(id, state, xCoordinate, yCoordinate, physics, alpha) {
-    this.#id = id;
+    this._id = id;
     this._state = state;
     this._xCoordinate = xCoordinate;
     this._yCoordinate = yCoordinate;

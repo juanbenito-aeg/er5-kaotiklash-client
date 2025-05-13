@@ -327,12 +327,14 @@ const ChatMessagePhase = {
 
 const ParticleID = {
   MINION_DEATH: 0,
+  MAIN_CHARACTER: 1,
 };
 
 const ParticleState = {
   ON: 0,
   FADE: 1,
   OFF: -1,
+  SPAWN: 2,
 };
 
 const ChartID = {
