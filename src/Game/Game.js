@@ -12,6 +12,7 @@ import StateMessage from "../Messages/StateMessage.js";
 import ChatMessage from "../Messages/ChatMessage.js";
 import MinionTooltip from "../Tooltips/MinionTooltip.js";
 import RemainingCardsTooltip from "../Tooltips/RemainingCardsTooltip.js";
+import MainCharacterParticle from "../Particles/MainCharacterParticle.js";
 import GameStats from "./GameStats.js";
 import globals from "./globals.js";
 import {
@@ -32,6 +33,7 @@ import {
   ChatMessageType,
   ChatMessagePosition,
   ParticleState,
+  ParticleID,
 } from "./constants.js";
 import Physics from "./Physics.js";
 
@@ -57,6 +59,7 @@ export default class Game {
   #edgeAnimation;
   #alphaState;
   #particles;
+  #mainCharacterPlayer;
 
   static async create(playersNames) {
     // "game" OBJECT CREATION
@@ -709,6 +712,8 @@ export default class Game {
 
       this.#currentPlayer = this.#players[newCurrentPlayerID];
 
+      this.#particlesForCurrentplayer();
+
       this.#phaseMessage.setCurrentContent("");
 
       const currentPlayerTurnMsg = new StateMessage(
@@ -757,6 +762,33 @@ export default class Game {
     }
 
     this.#updateStateMessages();
+  }
+
+  #particlesForCurrentplayer() {
+    for (let i = this.#particles.length - 1; i >= 0; i--) {
+      if (this.#particles[i]._id === ParticleID.MAIN_CHARACTER) {
+        this.#particles.splice(i, 1);
+      }
+    }
+
+    let mainCharacterGrid;
+    let mainCharacterBox;
+    if (this.#currentPlayer.getID() === PlayerID.PLAYER_1) {
+      mainCharacterGrid =
+        this.#board.getGrids()[GridType.PLAYER_1_MAIN_CHARACTER];
+      mainCharacterBox = mainCharacterGrid.getBoxes();
+    } else if (this.#currentPlayer.getID() === PlayerID.PLAYER_2) {
+      mainCharacterGrid =
+        this.#board.getGrids()[GridType.PLAYER_2_MAIN_CHARACTER];
+      mainCharacterBox = mainCharacterGrid.getBoxes();
+    }
+
+    MainCharacterParticle.create(
+      this.#particles,
+      40,
+      mainCharacterBox[0],
+      this.#currentPlayer.getID()
+    );
   }
 
   #healHarmedMinions() {
@@ -1077,7 +1109,7 @@ export default class Game {
     for (let i = 0; i < this.#particles.length; i++) {
       const currentParticle = this.#particles[i];
 
-      currentParticle.update();
+      currentParticle.update(this.#currentPlayer.getID());
 
       if (currentParticle.getState() === ParticleState.OFF) {
         this.#particles.splice(i, 1);
