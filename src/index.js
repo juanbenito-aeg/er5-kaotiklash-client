@@ -523,6 +523,7 @@ async function createOrDisplayChart(chartID) {
       chartDisplayHeadingString = "MINIONS KILLED";
       if (!globals.isChartCreated.minionsKilled) {
         const response = await getMinionsKilled(globals.playersIDs.loggedIn);
+
         if (response) {
           const total = {
             total_killed: response.total_minions_killed,
@@ -536,10 +537,10 @@ async function createOrDisplayChart(chartID) {
     case ChartID.FUMBLES_PER_MATCH:
       chartDisplayHeadingString = "FUMBLES PER MATCH";
       if (!globals.isChartCreated.fumblesPerMatch) {
-        const fumblesPerMatch = await getFumblesPerMatch();
+        const fumblesData = await getFumblesData();
 
-        if (fumblesPerMatch) {
-          createFumblesPerMatchChart(fumblesPerMatch);
+        if (fumblesData) {
+          createFumblesPerMatchChart(fumblesData);
         }
       }
       break;
@@ -547,17 +548,17 @@ async function createOrDisplayChart(chartID) {
     case ChartID.CRITICAL_HITS_PER_MATCH:
       chartDisplayHeadingString = "CRITICAL HITS PER MATCH";
       if (!globals.isChartCreated.criticalHitsPerMatch) {
-        const criticalHitsPerMatch = await getCriticalHitsPerMatch();
+        const criticalHitsData = await getCriticalHitsData();
 
-        if (criticalHitsPerMatch) {
-          createCriticalHitsPerMatchChart(criticalHitsPerMatch);
+        if (criticalHitsData) {
+          createCriticalHitsPerMatchChart(criticalHitsData);
         }
       }
       break;
 
-    case ChartID.USED_CARDS_PER_MATCH:
-      chartDisplayHeadingString = "USED CARDS PER MATCH";
-      if (!globals.isChartCreated.usedCardsPerMatch) {
+    case ChartID.USED_CARDS:
+      chartDisplayHeadingString = "USED CARDS";
+      if (!globals.isChartCreated.usedCards) {
         const usedCardsData = await getUsedCards(globals.playersIDs.loggedIn);
 
         if (usedCardsData) {
@@ -589,22 +590,39 @@ function createWinRateChart(winRate) {
   };
 
   new Chart(document.getElementById("win-rate"), config);
-
   globals.isChartCreated.winRate = true;
 }
 
-function createTurnsPerMatchChart(playedTurnsData) {
-  const labels = [];
-  for (let i = 0; i < playedTurnsData.played_turns.length; i++) {
-    labels.push(`Match ${i + 1}`);
+function getGameStartAndEndDates(gameData) {
+  const gameStartAndEndDates = [
+    gameData.start_timestamp_in_ms,
+    gameData.end_timestamp_in_ms,
+  ];
+
+  for (let i = 0; i < gameStartAndEndDates.length; i++) {
+    const startOrEndString = i === 0 ? "Start: " : "End: ";
+
+    const currentDateString = new Date(
+      gameStartAndEndDates[i]
+    ).toLocaleString();
+
+    gameStartAndEndDates[i] = startOrEndString + currentDateString;
   }
 
+  return gameStartAndEndDates;
+}
+
+function createTurnsPerMatchChart(playedTurnsData) {
   const data = {
-    labels: labels,
+    labels: playedTurnsData.played_turns.map(
+      (currentDataItem, index) => `Match ${index + 1}`
+    ),
     datasets: [
       {
-        label: "Turns per Match",
-        data: playedTurnsData.played_turns,
+        label: "Number of Turns",
+        data: playedTurnsData.played_turns.map(
+          (currentDataItem) => currentDataItem.num_of_turns
+        ),
         fill: false,
         borderColor: "rgb(75, 192, 192)",
         tension: 0.1,
@@ -615,6 +633,31 @@ function createTurnsPerMatchChart(playedTurnsData) {
   const config = {
     type: "line",
     data: data,
+    options: {
+      scales: {
+        y: {
+          ticks: {
+            precision: 0,
+          },
+        },
+      },
+      pointRadius: 7,
+      pointHoverRadius: 8,
+      plugins: {
+        tooltip: {
+          callbacks: {
+            beforeBody: function (context) {
+              const gameData =
+                playedTurnsData.played_turns[context[0].dataIndex];
+
+              const gameStartAndEndDates = getGameStartAndEndDates(gameData);
+
+              return gameStartAndEndDates;
+            },
+          },
+        },
+      },
+    },
   };
 
   new Chart(document.getElementById("turns-per-match"), config);
@@ -643,7 +686,12 @@ function createJosephAppearancesChart(data) {
     data: chartData,
     options: {
       scales: {
-        y: { beginAtZero: true },
+        y: {
+          ticks: {
+            precision: 0,
+          },
+          beginAtZero: true,
+        },
       },
     },
   };
@@ -717,15 +765,17 @@ function createMinionsKilledChart(minionsKilledPerMatch) {
   globals.isChartCreated.minionsKilled = true;
 }
 
-function createFumblesPerMatchChart(fumblesPerMatch) {
+function createFumblesPerMatchChart(fumblesData) {
   const ctx = document.getElementById("fumbles-per-match");
 
   const data = {
-    labels: fumblesPerMatch.map((numOfFumbles, index) => `Match ${index + 1}`),
+    labels: fumblesData.map((currentDataItem, index) => `Match ${index + 1}`),
     datasets: [
       {
         label: "Number of Fumbles",
-        data: fumblesPerMatch.map((numOfFumbles) => numOfFumbles),
+        data: fumblesData.map(
+          (currentDataItem) => currentDataItem.num_of_fumbles
+        ),
       },
     ],
   };
@@ -741,26 +791,40 @@ function createFumblesPerMatchChart(fumblesPerMatch) {
           },
         },
       },
+      pointRadius: 7,
+      pointHoverRadius: 8,
+      plugins: {
+        tooltip: {
+          callbacks: {
+            beforeBody: function (context) {
+              const gameData = fumblesData[context[0].dataIndex];
+
+              const gameStartAndEndDates = getGameStartAndEndDates(gameData);
+
+              return gameStartAndEndDates;
+            },
+          },
+        },
+      },
     },
   };
 
   new Chart(ctx, config);
-
   globals.isChartCreated.fumblesPerMatch = true;
 }
 
-function createCriticalHitsPerMatchChart(criticalHitsPerMatch) {
+function createCriticalHitsPerMatchChart(criticalHitsData) {
   const ctx = document.getElementById("critical-hits-per-match");
 
   const data = {
-    labels: criticalHitsPerMatch.map(
-      (numOfCriticalHits, index) => `Match ${index + 1}`
+    labels: criticalHitsData.map(
+      (currentDataItem, index) => `Match ${index + 1}`
     ),
     datasets: [
       {
         label: "Number of Critical Hits",
-        data: criticalHitsPerMatch.map(
-          (numOfCriticalHits) => numOfCriticalHits
+        data: criticalHitsData.map(
+          (currentDataItem) => currentDataItem.num_of_critical_hits
         ),
       },
     ],
@@ -783,18 +847,34 @@ function createCriticalHitsPerMatchChart(criticalHitsPerMatch) {
       pointBackgroundColor: "rgb(0, 0, 0)",
       pointRadius: 7,
       pointHoverRadius: 8,
+      plugins: {
+        tooltip: {
+          callbacks: {
+            beforeBody: function (context) {
+              const gameData = criticalHitsData[context[0].dataIndex];
+
+              const gameStartAndEndDates = getGameStartAndEndDates(gameData);
+
+              return gameStartAndEndDates;
+            },
+          },
+        },
+      },
     },
   };
 
   new Chart(ctx, config);
-
   globals.isChartCreated.criticalHitsPerMatch = true;
 }
 
 function createUsedCardsChart(dataFromServer) {
-  const ctx = document.getElementById("used-cards-per-match");
+  const ctx = document.getElementById("used-cards");
 
-  const labels = ["Total Used Cards", "Used Cards", "Average Used Cards"];
+  const labels = [
+    "Total Used Cards",
+    "Used Cards (Last Match)",
+    "Average Used Cards",
+  ];
 
   const total = dataFromServer.total_used_cards;
   const avg = dataFromServer.average_used_cards;
@@ -802,6 +882,7 @@ function createUsedCardsChart(dataFromServer) {
   const used =
     dataFromServer.used_cards && dataFromServer.used_cards.length > 0
       ? dataFromServer.used_cards[dataFromServer.used_cards.length - 1]
+          .num_of_used_cards
       : 0;
   const data = [total, used, avg];
 
@@ -823,14 +904,13 @@ function createUsedCardsChart(dataFromServer) {
     type: "polarArea",
     data: chartData,
     options: {
-      responsive: true,
       plugins: {
         legend: {
           labels: { color: "#fff" },
         },
         title: {
           display: true,
-          text: "Used Cards Per Match",
+          text: "Used Cards",
           color: "#fff",
         },
       },
@@ -845,11 +925,27 @@ function createUsedCardsChart(dataFromServer) {
           },
         },
       },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            beforeBody: function (context) {
+              if (context[0].dataIndex === 1) {
+                const gameData =
+                  dataFromServer.used_cards[context[0].dataIndex];
+
+                const gameStartAndEndDates = getGameStartAndEndDates(gameData);
+
+                return gameStartAndEndDates;
+              }
+            },
+          },
+        },
+      },
     },
   };
 
   new Chart(ctx, config);
-  globals.isChartCreated.usedCardsPerMatch = true;
+  globals.isChartCreated.usedCards = true;
 }
 
 function displayChart(chartID) {
@@ -931,7 +1027,7 @@ async function getMinionsKilled(loggedInPlayerID) {
   }
 }
 
-async function getFumblesPerMatch() {
+async function getFumblesData() {
   const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${globals.playersIDs.loggedIn}/total-fumbles`;
 
   const response = await fetch(url);
@@ -949,7 +1045,7 @@ async function getFumblesPerMatch() {
   }
 }
 
-async function getCriticalHitsPerMatch() {
+async function getCriticalHitsData() {
   const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${globals.playersIDs.loggedIn}/total-critical-hits`;
 
   const response = await fetch(url);
