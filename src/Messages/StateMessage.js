@@ -12,6 +12,7 @@ export default class StateMessage extends Message {
   #yPosition;
   #timeToFade;
   #physics;
+  #type;
 
   constructor(
     content,
@@ -22,7 +23,8 @@ export default class StateMessage extends Message {
     xPosition,
     yPosition,
     timeToFade,
-    physics
+    physics,
+    type
   ) {
     super();
 
@@ -35,6 +37,23 @@ export default class StateMessage extends Message {
     this.#yPosition = yPosition;
     this.#timeToFade = timeToFade;
     this.#physics = physics;
+    this.#type = type;
+  }
+
+  static isMsgOfTypeXAlreadyCreated(stateMessages, type) {
+    let isMsgOfTypeXAlreadyCreated = false;
+
+    for (let i = 0; i < stateMessages.length; i++) {
+      const currentStateMsg = stateMessages[i];
+
+      if (currentStateMsg.#type === type) {
+        isMsgOfTypeXAlreadyCreated = true;
+
+        break;
+      }
+    }
+
+    return isMsgOfTypeXAlreadyCreated;
   }
 
   execute() {
