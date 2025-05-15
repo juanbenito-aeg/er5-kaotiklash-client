@@ -22,6 +22,7 @@ import {
   GridType,
   SpecialEventID,
   RareEventID,
+  StateMessageType,
 } from "../Game/constants.js";
 import TheCupOfTheLastBreathEvent from "../Events/TheCupOfTheLastBreathEvent.js";
 import RayOfCelestialRuinEvent from "../Events/RayOfCelestialRuinEvent.js";
@@ -320,27 +321,35 @@ export default class PerformEventPhase extends Phase {
         hoveredCard.getCategory() === CardCategory.SPECIAL
       ) {
         if (!this.#enemyHasArmor()) {
-          let message = new StateMessage(
-            "REQUIRES THE ENEMY TO HAVE ARMOR",
-            "30px MedievalSharp",
-            "red",
-            1,
-            0.1,
-            hoveredCard.getXCoordinate() +
-              globals.imagesDestinationSizes.minionsAndEventsSmallVersion
-                .width /
-                2,
-            hoveredCard.getYCoordinate() +
-              globals.imagesDestinationSizes.minionsAndEventsSmallVersion
-                .height /
-                2,
-            0.1,
-            new Physics(0, 0)
-          );
-          //UNCOMMENT THIS WHEN THE LIMITATION IS FIXED
-          //message.setVY(20);
+          if (
+            !StateMessage.isMsgOfTypeXAlreadyCreated(
+              this.#stateMessages,
+              StateMessageType.RAY_OF_CELESTIAL_RUIN_FAIL
+            )
+          ) {
+            let message = new StateMessage(
+              "REQUIRES THE ENEMY TO HAVE ARMOR",
+              "30px MedievalSharp",
+              "red",
+              1,
+              2,
+              hoveredCard.getXCoordinate() +
+                globals.imagesDestinationSizes.minionsAndEventsSmallVersion
+                  .width /
+                  2,
+              hoveredCard.getYCoordinate() +
+                globals.imagesDestinationSizes.minionsAndEventsSmallVersion
+                  .height /
+                  2,
+              1,
+              new Physics(0, 0),
+              StateMessageType.RAY_OF_CELESTIAL_RUIN_FAIL
+            );
 
-          this.#stateMessages.push(message);
+            message.setVY(20);
+
+            this.#stateMessages.push(message);
+          }
 
           return;
         }

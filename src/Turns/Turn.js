@@ -20,6 +20,7 @@ import {
   PhaseButtonData,
   GridType,
   MinionTypeID,
+  StateMessageType,
 } from "../Game/constants.js";
 import Physics from "../Game/Physics.js";
 
@@ -459,8 +460,6 @@ export default class Turn {
         weaponOrArmor = playerXEventsInPreparationDeck.lookForSelectedCard();
 
         if (weaponOrArmor.isLeftClicked()) {
-          console.log("WEAPON OR ARMOR DESELECTED");
-
           // THE PREVIOUSLY SELECTED WEAPON OR ARMOR WAS DESELECTED
           this.#equipWeaponOrArmorState = EquipWeaponOrArmorState.INIT;
         } else {
@@ -482,22 +481,30 @@ export default class Turn {
             if (!minion.isLeftClicked()) {
               minion.setState(CardState.HOVERED);
             } else if (minion.getMinionTypeID() === MinionTypeID.SPECIAL) {
-              // DEER STATE MESSAGE CREATION
-              const deerWeaponsMsg = new StateMessage(
-                "DEER CANNOT EQUIP WEAPONS OR ARMOR",
-                "20px MedievalSharp",
-                "red",
-                1,
-                2,
-                nMsgXCoordinate,
-                nMsgYCoordinate,
-                1,
-                new Physics(0, 0)
-              );
+              if (
+                !StateMessage.isMsgOfTypeXAlreadyCreated(
+                  this.#stateMessages,
+                  StateMessageType.DEER_WEAPONS_ARMOR
+                )
+              ) {
+                // DEER STATE MESSAGE CREATION
+                const deerWeaponsArmorMsg = new StateMessage(
+                  "DEER CANNOT EQUIP WEAPONS OR ARMOR",
+                  "20px MedievalSharp",
+                  "red",
+                  1,
+                  2,
+                  nMsgXCoordinate,
+                  nMsgYCoordinate,
+                  1,
+                  new Physics(0, 0),
+                  StateMessageType.DEER_WEAPONS_ARMOR
+                );
 
-              deerWeaponsMsg.setVY(20);
+                deerWeaponsArmorMsg.setVY(20);
 
-              this.#stateMessages.push(deerWeaponsMsg);
+                this.#stateMessages.push(deerWeaponsArmorMsg);
+              }
             } else if (
               (weaponOrArmor.getCategory() === CardCategory.WEAPON &&
                 !minion.getWeapon()) ||
@@ -520,6 +527,7 @@ export default class Turn {
               gearedUpMsg.setVY(20);
 
               this.#stateMessages.push(gearedUpMsg);
+
               this.#stats.incrementPlayerXUsedCards(this.#player.getID());
 
               minion.setState(CardState.SELECTED);
@@ -626,42 +634,58 @@ export default class Turn {
               this.#player.getID() ===
                 this.#eventsData.judgmentAncients.affectedPlayerID
             ) {
-              const cannotAttackDueToActiveEventMsg = new StateMessage(
-                "CANNOT ATTACK DUE TO ACTIVE EVENT",
-                "20px MedievalSharp",
-                "red",
-                1,
-                2,
-                buttonXCoordinate + buttonWidth / 2,
-                buttonYCoordinate + buttonHeight / 2,
-                1,
-                new Physics(0, 0)
-              );
+              if (
+                !StateMessage.isMsgOfTypeXAlreadyCreated(
+                  this.#stateMessages,
+                  StateMessageType.CANNOT_ATTACK
+                )
+              ) {
+                const cannotAttackDueToActiveEventMsg = new StateMessage(
+                  "CANNOT ATTACK DUE TO ACTIVE EVENT",
+                  "20px MedievalSharp",
+                  "red",
+                  1,
+                  2,
+                  buttonXCoordinate + buttonWidth / 2,
+                  buttonYCoordinate + buttonHeight / 2,
+                  1,
+                  new Physics(0, 0),
+                  StateMessageType.CANNOT_ATTACK
+                );
 
-              cannotAttackDueToActiveEventMsg.setVY(20);
+                cannotAttackDueToActiveEventMsg.setVY(20);
 
-              this.#stateMessages.push(cannotAttackDueToActiveEventMsg);
+                this.#stateMessages.push(cannotAttackDueToActiveEventMsg);
+              }
             } else if (
               this.#eventsData.decrepitThroneSkill.isActive &&
               this.#player !==
                 this.#eventsData.decrepitThroneSkill.playerWithDecrepitThrone &&
               this.#eventsData.decrepitThroneSkill.turnsSinceActivation !== 3
             ) {
-              const cannotDoAnythingDueToActiveEventMsg = new StateMessage(
-                "CANNOT DO ALMOST ANYTHING DUE TO THE CURSE OF THE THRONE",
-                "20px MedievalSharp",
-                "red",
-                1,
-                2,
-                buttonXCoordinate + buttonWidth / 2,
-                buttonYCoordinate + buttonHeight / 2,
-                1,
-                new Physics(0, 0)
-              );
+              if (
+                !StateMessage.isMsgOfTypeXAlreadyCreated(
+                  this.#stateMessages,
+                  StateMessageType.CANNOT_DO_ALMOST_ANYTHING
+                )
+              ) {
+                const cannotDoAnythingDueToActiveEventMsg = new StateMessage(
+                  "CANNOT DO ALMOST ANYTHING DUE TO THE CURSE OF THE THRONE",
+                  "20px MedievalSharp",
+                  "red",
+                  1,
+                  2,
+                  buttonXCoordinate + buttonWidth / 2,
+                  buttonYCoordinate + buttonHeight / 2,
+                  1,
+                  new Physics(0, 0),
+                  StateMessageType.CANNOT_DO_ALMOST_ANYTHING
+                );
 
-              cannotDoAnythingDueToActiveEventMsg.setVY(20);
+                cannotDoAnythingDueToActiveEventMsg.setVY(20);
 
-              this.#stateMessages.push(cannotDoAnythingDueToActiveEventMsg);
+                this.#stateMessages.push(cannotDoAnythingDueToActiveEventMsg);
+              }
             } else if (
               this.#currentPhase === PhaseType.INVALID &&
               (!this.#eventsData.decrepitThroneSkill.isActive ||

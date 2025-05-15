@@ -347,6 +347,13 @@ const ChartID = {
   USED_CARDS: 6,
 };
 
+const StateMessageType = {
+  DEER_WEAPONS_ARMOR: 0,
+  CANNOT_ATTACK: 1,
+  CANNOT_DO_ALMOST_ANYTHING: 2,
+  RAY_OF_CELESTIAL_RUIN_FAIL: 3,
+};
+
 export {
   GameState,
   FPS,
@@ -389,4 +396,5 @@ export {
   ParticleID,
   ParticleState,
   ChartID,
+  StateMessageType,
 };
