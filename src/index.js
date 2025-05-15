@@ -974,7 +974,12 @@ async function getWinRate() {
 
   if (response.ok) {
     const data = await response.json();
-    return data;
+
+    setNoDataFoundParaContent(data.message || "");
+
+    if (!data.message) {
+      return data;
+    }
   } else {
     alert(`Communication error: ${response.statusText}`);
   }
