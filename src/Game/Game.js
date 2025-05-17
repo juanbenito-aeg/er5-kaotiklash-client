@@ -712,7 +712,7 @@ export default class Game {
 
       this.#currentPlayer = this.#players[newCurrentPlayerID];
 
-      this.#particlesForCurrentplayer();
+      this.#particlesForCurrentPlayer();
 
       this.#phaseMessage.setCurrentContent("");
 
@@ -764,7 +764,7 @@ export default class Game {
     this.#updateStateMessages();
   }
 
-  #particlesForCurrentplayer() {
+  #particlesForCurrentPlayer() {
     for (let i = this.#particles.length - 1; i >= 0; i--) {
       if (this.#particles[i]._id === ParticleID.MAIN_CHARACTER) {
         this.#particles.splice(i, 1);
@@ -773,20 +773,20 @@ export default class Game {
 
     let mainCharacterGrid;
     let mainCharacterBox;
-    if (this.#currentPlayer.getID() === PlayerID.PLAYER_1) {
+    if (this.#currentPlayer.getID() === globals.firstActivePlayerID) {
       mainCharacterGrid =
         this.#board.getGrids()[GridType.PLAYER_1_MAIN_CHARACTER];
-      mainCharacterBox = mainCharacterGrid.getBoxes();
-    } else if (this.#currentPlayer.getID() === PlayerID.PLAYER_2) {
+      mainCharacterBox = mainCharacterGrid.getBoxes()[0];
+    } else {
       mainCharacterGrid =
         this.#board.getGrids()[GridType.PLAYER_2_MAIN_CHARACTER];
-      mainCharacterBox = mainCharacterGrid.getBoxes();
+      mainCharacterBox = mainCharacterGrid.getBoxes()[0];
     }
 
     MainCharacterParticle.create(
       this.#particles,
       40,
-      mainCharacterBox[0],
+      mainCharacterBox,
       this.#currentPlayer.getID()
     );
   }

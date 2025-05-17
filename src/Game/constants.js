@@ -331,10 +331,10 @@ const ParticleID = {
 };
 
 const ParticleState = {
-  ON: 0,
-  FADE: 1,
   OFF: -1,
-  SPAWN: 2,
+  SPAWN: 0,
+  ON: 1,
+  FADE: 2,
 };
 
 const ChartID = {

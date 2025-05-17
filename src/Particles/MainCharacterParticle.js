@@ -6,8 +6,9 @@ import { ParticleID, ParticleState, PlayerID } from "../Game/constants.js";
 export default class MainCharacterParticle extends Particle {
   #angle;
   #fadeCounter;
-  #currentPlayer;
+  #currentPlayerID;
   #radius;
+
   constructor(
     id,
     state,
@@ -17,16 +18,17 @@ export default class MainCharacterParticle extends Particle {
     alpha,
     radius,
     angle,
-    currentPlayer
+    currentPlayerID
   ) {
     super(id, state, xCoordinate, yCoordinate, physics, alpha);
+
     this.#angle = angle;
     this.#fadeCounter = 0;
     this.#radius = radius;
-    this.#currentPlayer = currentPlayer;
+    this.#currentPlayerID = currentPlayerID;
   }
 
-  static create(particles, num, box, currentPlayer) {
+  static create(particles, num, box, currentPlayerID) {
     const centerX = box.getXCoordinate() + box.getWidth() / 2;
     const centerY = box.getYCoordinate() + box.getHeight() / 2;
     const radius = Math.max(box.getWidth(), box.getHeight()) / 2 + 10;
@@ -50,14 +52,14 @@ export default class MainCharacterParticle extends Particle {
         1.0,
         radius,
         angle,
-        currentPlayer
+        currentPlayerID
       );
 
       particles.push(particle);
     }
   }
 
-  update(currentPlayer) {
+  update(currentPlayerID) {
     this.#fadeCounter += globals.deltaTime;
 
     if (this._state === ParticleState.SPAWN && this.#fadeCounter >= 0.5) {
@@ -65,7 +67,7 @@ export default class MainCharacterParticle extends Particle {
     }
 
     if (
-      this.#currentPlayer !== currentPlayer &&
+      this.#currentPlayerID !== currentPlayerID &&
       this._state === ParticleState.ON
     ) {
       this._state = ParticleState.FADE;
