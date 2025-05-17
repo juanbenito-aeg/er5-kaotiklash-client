@@ -1138,7 +1138,14 @@ async function initGameScreen() {
   globals.ctx = globals.canvas.getContext("2d");
 
   // LOAD DB CARDS DATA AND ASSETS
-  loadDBCardsDataAndAssets();
+  await loadDBCardsDataAndAssets();
+
+  // CREATE THE "Game" CLASS INSTANCE USED THROUGHOUT
+  const playersNames = getPlayersNames();
+  globals.game = await Game.create(playersNames);
+
+  // FIRST FRAME REQUEST
+  window.requestAnimationFrame(executeGameLoop);
 }
 
 function initVars() {
@@ -1149,6 +1156,9 @@ function initVars() {
   globals.previousCycleMilliseconds = 0;
   globals.deltaTime = 0;
   globals.frameTimeObj = 1 / FPS;
+
+  // INITIALIZE GAME STATE
+  globals.gameState = GameState.LOADING;
 
   globals.imagesDestinationSizes = {
     allCardsBigVersion: {
@@ -1176,11 +1186,14 @@ async function loadDBCardsDataAndAssets() {
     const cardsData = await response.json();
 
     globals.cardsData = cardsData;
+
+    loadAssets();
+
+    globals.assetsLoadProgressAsPercentage =
+      100 / (globals.assetsToLoad.length + 2);
   } else {
     alert(`Communication error: ${response.statusText}`);
   }
-
-  loadAssets();
 }
 
 function loadAssets() {
@@ -1395,16 +1408,27 @@ function loadAssets() {
 }
 
 // CODE BLOCK TO CALL EACH TIME AN ASSET IS LOADED
-async function loadHandler() {
+function loadHandler() {
   globals.assetsLoaded++;
+
+  globals.assetsLoadProgressAsPercentage +=
+    100 / (globals.assetsToLoad.length + 2);
+
   if (globals.assetsLoaded === globals.assetsToLoad.length) {
     globals.gameState = GameState.PLAYING;
+  }
+}
 
-    const playersNames = getPlayersNames();
-    globals.game = await Game.create(playersNames);
+function createAndStoreImageObjs(arrayOfSameTypeObjs, arrayToPutImageObjsInto) {
+  for (let i = 0; i < arrayOfSameTypeObjs.length; i++) {
+    const currentObj = arrayOfSameTypeObjs[i];
 
-    // FIRST FRAME REQUEST
-    window.requestAnimationFrame(executeGameLoop);
+    const currentObjImage = new Image();
+    currentObjImage.addEventListener("load", loadHandler, false);
+    currentObjImage.src = currentObj.image_src;
+    globals.assetsToLoad.push(currentObjImage);
+
+    arrayToPutImageObjsInto.push(currentObjImage);
   }
 }
 
@@ -1421,19 +1445,6 @@ function getPlayersNames() {
     opponentSelect.options[opponentSelect.selectedIndex].label;
 
   return playersNames;
-}
-
-function createAndStoreImageObjs(arrayOfSameTypeObjs, arrayToPutImageObjsInto) {
-  for (let i = 0; i < arrayOfSameTypeObjs.length; i++) {
-    const currentObj = arrayOfSameTypeObjs[i];
-
-    const currentObjImage = new Image();
-    currentObjImage.addEventListener("load", loadHandler, false);
-    currentObjImage.src = currentObj.image_src;
-    globals.assetsToLoad.push(currentObjImage);
-
-    arrayToPutImageObjsInto.push(currentObjImage);
-  }
 }
 
 function executeGameLoop(timeStamp) {

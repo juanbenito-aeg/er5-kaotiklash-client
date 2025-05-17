@@ -80,6 +80,8 @@ export default class Game {
     const url = "./src/mainDeck.json";
     const response = await fetch(url);
     const mainDeckConfig = await response.json();
+    globals.assetsLoadProgressAsPercentage +=
+      100 / (globals.assetsToLoad.length + 2);
 
     // DECKS CREATION
     const deckCreator = new DeckCreator(mainDeckConfig);
@@ -1213,13 +1215,63 @@ export default class Game {
     // CLEAR SCREEN
     globals.ctx.clearRect(0, 0, globals.canvas.width, globals.canvas.height);
 
-    this.#renderGame();
+    if (globals.gameState === GameState.LOADING) {
+      this.#renderLoadingScreen();
+    } else {
+      this.#renderGame();
 
-    switch (globals.gameState) {
-      case GameState.CHAT_PAUSE:
+      if (globals.gameState === GameState.CHAT_PAUSE) {
         this.#renderChatMessages();
-        break;
+      }
     }
+  }
+
+  #renderLoadingScreen() {
+    globals.ctx.fillStyle = "black";
+    globals.ctx.fillRect(0, 0, globals.canvas.width, globals.canvas.height);
+
+    this.#renderLoadingScreenTxt();
+    this.#renderLoadingScreenBar();
+  }
+
+  #renderLoadingScreenTxt() {
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+    globals.ctx.textAlign = "center";
+
+    globals.ctx.font = "60px MedievalSharp";
+    globals.ctx.fillStyle = "rgb(240 240 240)";
+
+    globals.ctx.fillText("LOADING...", canvasWidthDividedBy2, 510);
+  }
+
+  #renderLoadingScreenBar() {
+    const assetsLoadProgressBarMaxWidth = 500;
+    const assetsLoadProgressBarCurrentWidth =
+      (globals.assetsLoadProgressAsPercentage / 100) *
+      assetsLoadProgressBarMaxWidth;
+    const assetsLoadProgressBarHeight = 80;
+
+    const assetsLoadProgressBarXCoordinate =
+      globals.canvas.width / 2 - assetsLoadProgressBarMaxWidth / 2;
+    const assetsLoadProgressBarYCoordinate = globals.canvas.height / 2;
+
+    globals.ctx.fillStyle = "rgb(240 240 240)";
+    globals.ctx.fillRect(
+      assetsLoadProgressBarXCoordinate,
+      assetsLoadProgressBarYCoordinate,
+      assetsLoadProgressBarCurrentWidth,
+      assetsLoadProgressBarHeight
+    );
+
+    globals.ctx.lineJoin = "bevel";
+    globals.ctx.lineWidth = 10;
+    globals.ctx.strokeStyle = "rgb(120 120 120)";
+    globals.ctx.strokeRect(
+      assetsLoadProgressBarXCoordinate,
+      assetsLoadProgressBarYCoordinate,
+      assetsLoadProgressBarMaxWidth,
+      assetsLoadProgressBarHeight
+    );
   }
 
   #renderGame() {

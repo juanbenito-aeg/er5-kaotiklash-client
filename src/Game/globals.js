@@ -49,4 +49,5 @@ export default {
     criticalHitsPerMatch: false,
     usedCards: false,
   },
+  assetsLoadProgressAsPercentage: 0,
 };
