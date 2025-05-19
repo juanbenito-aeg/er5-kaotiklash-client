@@ -22,7 +22,6 @@ import {
   MinionTypeID,
   StateMessageType,
 } from "../Game/constants.js";
-import Physics from "../Game/Physics.js";
 
 export default class Turn {
   #isCurrentPhaseCanceled;
@@ -145,6 +144,7 @@ export default class Turn {
       if (!isAnyCardExpanded) {
         this.#updateMinionTooltip();
         this.#updateRemainingCardsTooltip();
+        this.#applyHoverLiftEffect();
 
         if (this.#currentPhase === PhaseType.INVALID) {
           this.#equipWeaponOrArmor();
@@ -206,6 +206,81 @@ export default class Turn {
         this.#remainingCardsTooltip.clearTooltip();
         this.#hoverTime = 0;
         this.#lastHoveredCardId = null;
+      }
+    }
+  }
+
+  #applyHoverLiftEffect() {
+    const decksToCheck = [];
+
+    if (this.#player.getID() === PlayerID.PLAYER_1) {
+      if (this.#currentPhase === PhaseType.PREPARE_EVENT) {
+        decksToCheck.push(
+          DeckType.PLAYER_1_CARDS_IN_HAND,
+          DeckType.PLAYER_1_EVENTS_IN_PREPARATION
+        );
+      } else if (this.#currentPhase === PhaseType.MOVE) {
+        decksToCheck.push(DeckType.PLAYER_1_MINIONS_IN_PLAY);
+      } else if (this.#currentPhase === PhaseType.ATTACK) {
+        decksToCheck.push(DeckType.PLAYER_1_MINIONS_IN_PLAY);
+      }
+    } else {
+      if (this.#currentPhase === PhaseType.PREPARE_EVENT) {
+        decksToCheck.push(
+          DeckType.PLAYER_2_CARDS_IN_HAND,
+          DeckType.PLAYER_2_EVENTS_IN_PREPARATION
+        );
+      } else if (this.#currentPhase === PhaseType.MOVE) {
+        decksToCheck.push(DeckType.PLAYER_2_MINIONS_IN_PLAY);
+      } else if (this.#currentPhase === PhaseType.ATTACK) {
+        decksToCheck.push(DeckType.PLAYER_2_MINIONS_IN_PLAY);
+      }
+    }
+
+    const decks = this.#deckContainer.getDecks();
+    const liftAmount = 9.5;
+
+    for (let i = 0; i < decksToCheck.length; i++) {
+      const deck = decks[decksToCheck[i]];
+      if (!deck) continue;
+
+      const cards = deck.getCards();
+      if (!cards) continue;
+
+      const selectedCard = deck.lookForSelectedCard();
+      if (selectedCard) {
+        for (let j = 0; j < cards.length; j++) {
+          const card = cards[j];
+          const y = card.getYCoordinate();
+
+          if (Math.abs(y % 1) > 0.01) {
+            card.setYCoordinate(y + liftAmount);
+          }
+        }
+        continue;
+      }
+
+      for (let j = 0; j < cards.length; j++) {
+        const card = cards[j];
+        const y = card.getYCoordinate();
+        const state = card.getState();
+        const hoveredCard = deck.lookForHoveredCard();
+
+        if (state === CardState.MOVING) {
+          continue;
+        }
+
+        const isLifted = Math.abs(y % 1) > 0.01;
+
+        if (card === hoveredCard && state !== CardState.PLACED) {
+          if (!isLifted) {
+            card.setYCoordinate(y - liftAmount);
+          }
+        } else {
+          if (isLifted) {
+            card.setYCoordinate(y + liftAmount);
+          }
+        }
       }
     }
   }

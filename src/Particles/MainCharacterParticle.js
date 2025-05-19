@@ -6,8 +6,9 @@ import { ParticleID, ParticleState, PlayerID } from "../Game/constants.js";
 export default class MainCharacterParticle extends Particle {
   #angle;
   #fadeCounter;
-  #currentPlayerID;
+  #currentPlayer;
   #radius;
+  #baseSize;
 
   constructor(
     id,
@@ -18,14 +19,15 @@ export default class MainCharacterParticle extends Particle {
     alpha,
     radius,
     angle,
-    currentPlayerID
+    currentPlayer
   ) {
     super(id, state, xCoordinate, yCoordinate, physics, alpha);
 
     this.#angle = angle;
     this.#fadeCounter = 0;
     this.#radius = radius;
-    this.#currentPlayerID = currentPlayerID;
+    this.#currentPlayer = currentPlayer;
+    this.#baseSize = 3 + Math.random();
   }
 
   static create(particles, num, box, currentPlayerID) {
@@ -40,8 +42,7 @@ export default class MainCharacterParticle extends Particle {
       const x = centerX + distanceFromCenter * Math.cos(angle);
       const y = centerY + distanceFromCenter * Math.sin(angle);
 
-      const velocity = Math.random() * 15 + 5;
-      const physics = new Physics(velocity, 0);
+      const physics = new Physics(0, 0);
 
       const particle = new MainCharacterParticle(
         ParticleID.MAIN_CHARACTER,
@@ -59,7 +60,7 @@ export default class MainCharacterParticle extends Particle {
     }
   }
 
-  update(currentPlayerID) {
+  update(currentPlayer) {
     this.#fadeCounter += globals.deltaTime;
 
     if (this._state === ParticleState.SPAWN && this.#fadeCounter >= 0.5) {
@@ -67,7 +68,7 @@ export default class MainCharacterParticle extends Particle {
     }
 
     if (
-      this.#currentPlayerID !== currentPlayerID &&
+      this.#currentPlayer !== currentPlayer &&
       this._state === ParticleState.ON
     ) {
       this._state = ParticleState.FADE;
@@ -79,24 +80,30 @@ export default class MainCharacterParticle extends Particle {
         this._state = ParticleState.OFF;
       }
     }
-
-    const speed = 2;
-    this.#angle += 0.05 * globals.deltaTime;
-    this._xCoordinate += Math.cos(this.#angle) * speed * globals.deltaTime;
-    this._yCoordinate += Math.sin(this.#angle) * speed * globals.deltaTime;
   }
 
   render() {
     globals.ctx.save();
     globals.ctx.globalAlpha = this._alpha;
 
-    if (this._state === ParticleState.SPAWN) {
-      globals.ctx.fillStyle = `rgba(255, 255, 255, 0.9)`;
-    } else {
-      globals.ctx.fillStyle = `rgba(255, 165, 0, 0.8)`;
-    }
+    const scale = 1 + 0.3 * Math.sin(this.#fadeCounter * 3);
+    const radius = this.#baseSize * scale;
+
+    const hue = (this.#fadeCounter * 60) % 360;
+    const color =
+      this._state === ParticleState.SPAWN
+        ? `hsl(${hue}, 100%, 85%)`
+        : `hsl(${hue}, 100%, 60%)`;
+
+    globals.ctx.fillStyle = color;
     globals.ctx.beginPath();
-    globals.ctx.arc(this._xCoordinate, this._yCoordinate, 3, 0, 2 * Math.PI);
+    globals.ctx.arc(
+      this._xCoordinate,
+      this._yCoordinate,
+      radius,
+      0,
+      2 * Math.PI
+    );
     globals.ctx.fill();
 
     globals.ctx.restore();

@@ -59,7 +59,7 @@ export default class Game {
   #edgeAnimation;
   #alphaState;
   #particles;
-  #mainCharacterPlayer;
+  #borderTimer;
 
   static async create(playersNames) {
     // "game" OBJECT CREATION
@@ -189,6 +189,8 @@ export default class Game {
       alpha: 0.2,
       direction: 1,
     };
+
+    game.#borderTimer = 0;
 
     game.#particles = [];
 
@@ -714,8 +716,6 @@ export default class Game {
 
       this.#currentPlayer = this.#players[newCurrentPlayerID];
 
-      this.#particlesForCurrentPlayer();
-
       this.#phaseMessage.setCurrentContent("");
 
       const currentPlayerTurnMsg = new StateMessage(
@@ -733,6 +733,7 @@ export default class Game {
 
       // FILL THE CHAT MESSAGES ARRAY
       this.#fillChatMessages();
+      this.#particlesForCurrentPlayer();
     }
 
     if (this.#stateMessages.length === 0 && this.#chatMessages.length > 0) {
@@ -768,23 +769,21 @@ export default class Game {
 
   #particlesForCurrentPlayer() {
     for (let i = this.#particles.length - 1; i >= 0; i--) {
-      if (this.#particles[i]._id === ParticleID.MAIN_CHARACTER) {
+      if (this.#particles[i].getID() === ParticleID.MAIN_CHARACTER) {
         this.#particles.splice(i, 1);
       }
     }
 
     let mainCharacterGrid;
-    let mainCharacterBox;
+
     if (this.#currentPlayer.getID() === globals.firstActivePlayerID) {
       mainCharacterGrid =
         this.#board.getGrids()[GridType.PLAYER_1_MAIN_CHARACTER];
-      mainCharacterBox = mainCharacterGrid.getBoxes()[0];
     } else {
       mainCharacterGrid =
         this.#board.getGrids()[GridType.PLAYER_2_MAIN_CHARACTER];
-      mainCharacterBox = mainCharacterGrid.getBoxes()[0];
     }
-
+    const mainCharacterBox = mainCharacterGrid.getBoxes()[0];
     MainCharacterParticle.create(
       this.#particles,
       40,
@@ -1837,6 +1836,12 @@ export default class Game {
             continue;
           }
 
+          if (currentCard.getState() === CardState.SELECTED) {
+            if (currentCard !== movingCard) {
+              this.#renderSelectedCardEffect(currentCard);
+            }
+          }
+
           if (isDeckCardsInHandOfInactivePlayer) {
             this.#renderCardReverse(
               currentCard.getXCoordinate(),
@@ -1862,6 +1867,63 @@ export default class Game {
     if (expandedCard) {
       this.#renderExpandedCard(expandedCard);
     }
+  }
+
+  #renderSelectedCardEffect(card) {
+    this.#borderTimer += globals.deltaTime;
+
+    const x = card.getXCoordinate();
+    const y = card.getYCoordinate();
+    const w = globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width;
+    const h =
+      globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height;
+
+    const P = 2 * (w + h);
+    const num = 24;
+    const margin = 6;
+
+    const categoryColors = {
+      [CardCategory.ARMOR]: { h: 120, s: 90, l: 65 },
+      [CardCategory.MINION]: { h: 200, s: 80, l: 60 },
+      [CardCategory.RARE]: { h: 280, s: 90, l: 70 },
+      [CardCategory.SPECIAL]: { h: 50, s: 100, l: 65 },
+      [CardCategory.WEAPON]: { h: 0, s: 85, l: 60 },
+    };
+    const col = categoryColors[card.getCategory()] || { h: 0, s: 0, l: 50 };
+    const fill = `hsl(${col.h}, ${col.s}%, ${Math.min(100, col.l + 10)}%)`;
+    const shadow = fill;
+
+    globals.ctx.save();
+    globals.ctx.globalAlpha = 1.0;
+    globals.ctx.fillStyle = fill;
+    globals.ctx.shadowColor = shadow;
+    globals.ctx.shadowBlur = 4;
+
+    for (let i = 0; i < num; i++) {
+      const t = (i / num) * P;
+      let px, py;
+      if (t < w) {
+        px = x + t;
+        py = y - margin;
+      } else if (t < w + h) {
+        px = x + w + margin;
+        py = y + (t - w);
+      } else if (t < 2 * w + h) {
+        px = x + (2 * w + h - t);
+        py = y + h + margin;
+      } else {
+        px = x - margin;
+        py = y + (P - t);
+      }
+
+      const size = 3 + 1.2 * Math.sin(this.#borderTimer * 3 + i);
+
+      globals.ctx.beginPath();
+      globals.ctx.arc(px, py, size, 0, Math.PI * 2);
+      globals.ctx.fill();
+    }
+
+    globals.ctx.restore();
   }
 
   #renderCard(card) {

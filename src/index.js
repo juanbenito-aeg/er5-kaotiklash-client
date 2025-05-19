@@ -664,6 +664,14 @@ function createTurnsPerMatchChart(playedTurnsData) {
   globals.isChartCreated.turnsPerMatch = true;
 }
 
+function tooltipLabelCallback(ctx) {
+  const value = ctx.raw;
+  const data = ctx.chart.data.datasets[0].data;
+  const total = data.reduce((a, b) => a + b, 0);
+  const percentage = Math.round((value / total) * 100);
+  return `Total percentage (${percentage}%)`;
+}
+
 function createJosephAppearancesChart(data) {
   const ctx = document.getElementById("joseph-appearances");
 
@@ -676,7 +684,7 @@ function createJosephAppearancesChart(data) {
         backgroundColor: ["rgba(54, 235, 162, 0.6)", "rgba(235, 54, 54, 0.6)"],
         borderColor: ["rgb(54, 235, 162)", "rgb(235, 54, 54)"],
         borderWidth: 1,
-        barThickness: 110,
+        barThickness: 100,
       },
     ],
   };
@@ -685,12 +693,22 @@ function createJosephAppearancesChart(data) {
     type: "bar",
     data: chartData,
     options: {
+      plugins: {
+        tooltip: {
+          enabled: true,
+          callbacks: {
+            label: tooltipLabelCallback,
+          },
+        },
+      },
       scales: {
         y: {
-          ticks: {
-            precision: 0,
-          },
           beginAtZero: true,
+          ticks: { precision: 0 },
+          title: {
+            display: true,
+            text: "Games",
+          },
         },
       },
     },
@@ -1008,11 +1026,12 @@ async function getJosephAppearances(loggedInPlayerID) {
 
   const josephAppeared = await response.json();
 
-  if (josephAppeared === true) {
-    return { appeared: 1, notAppeared: 0 };
-  } else {
-    return { appeared: 0, notAppeared: 1 };
-  }
+  return {
+    appeared: josephAppeared.total_joseph_appeared,
+    notAppeared: josephAppeared.total_joseph_not_appeared,
+    percentageAppeared: josephAppeared.percentage_joseph_appeared,
+    percentageNotAppeared: josephAppeared.percentage_joseph_not_appeared,
+  };
 }
 
 async function getMinionsKilled(loggedInPlayerID) {
