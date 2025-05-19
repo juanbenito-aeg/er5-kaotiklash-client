@@ -24,4 +24,8 @@ export default class Particle {
   getState() {
     return this._state;
   }
+
+  getID() {
+    return this._id;
+  }
 }
