@@ -230,6 +230,8 @@ export default class PrepareEventPhase extends Phase {
     this.#highlightedBoxes.isActive = false;
   }
   reset() {
+    this.#resetHighlightedBoxes();
+    this.#initializePhase();
     this._state = PrepareEventState.INIT;
   }
 }

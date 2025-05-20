@@ -319,6 +319,7 @@ export default class MovePhase extends Phase {
   }
 
   reset() {
+    this.#resetHighlightedBoxes();
     this._state = MovePhaseState.INIT;
   }
 
