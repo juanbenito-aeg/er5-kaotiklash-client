@@ -738,6 +738,7 @@ export default class Game {
         1,
         new Physics(0, 0)
       );
+      currentPlayerTurnMsg.setVY(20);
       this.#stateMessages.push(currentPlayerTurnMsg);
 
       // FILL THE CHAT MESSAGES ARRAY
@@ -859,6 +860,7 @@ export default class Game {
             1,
             new Physics(0, 0)
           );
+          healMessage.setVY(20);
           this.#stateMessages.push(healMessage);
         } else {
           currentCard.setCurrentHP(currentCard.getInitialHP());
@@ -874,6 +876,7 @@ export default class Game {
             1,
             new Physics(0, 0)
           );
+          healMessage.setVY(20);
           this.#stateMessages.push(healMessage);
         }
       }
@@ -906,6 +909,7 @@ export default class Game {
             1,
             new Physics(0, 0)
           );
+          healMessage.setVY(20);
           this.#stateMessages.push(healMessage);
         } else {
           currentCard.setCurrentHP(currentCard.getInitialHP());
@@ -921,6 +925,7 @@ export default class Game {
             1,
             new Physics(0, 0)
           );
+          healMessage.setVY(20);
           this.#stateMessages.push(healMessage);
         }
       }
@@ -950,6 +955,7 @@ export default class Game {
           1,
           new Physics(0, 0)
         );
+        message.setVY(20);
         this.#stateMessages.push(message);
       }
     }
@@ -970,6 +976,7 @@ export default class Game {
           1,
           new Physics(0, 0)
         );
+        message.setVY(20);
         this.#stateMessages.push(message);
       }
     }
