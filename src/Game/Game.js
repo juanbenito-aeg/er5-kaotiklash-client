@@ -60,6 +60,7 @@ export default class Game {
   #alphaState;
   #particles;
   #borderTimer;
+  #highlightedBoxes;
 
   static async create(playersNames) {
     // "game" OBJECT CREATION
@@ -194,6 +195,12 @@ export default class Game {
 
     game.#particles = [];
 
+    game.#highlightedBoxes = {
+      boxes: null,
+      color: null,
+      isActive: false,
+    };
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
@@ -209,7 +216,8 @@ export default class Game {
       game.#stats,
       game.#remainingCardsTooltip,
       game.#edgeAnimation,
-      game.#particles
+      game.#particles,
+      game.#highlightedBoxes
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -226,7 +234,8 @@ export default class Game {
       game.#stats,
       game.#remainingCardsTooltip,
       game.#edgeAnimation,
-      game.#particles
+      game.#particles,
+      game.#highlightedBoxes
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -1275,7 +1284,7 @@ export default class Game {
 
   #renderGame() {
     this.#renderBoard();
-    this.#renderGrids();
+    /* this.#renderGrids(); */
     this.#renderPlayersInfo();
     this.#renderPhaseButtons();
     this.#renderActiveEventsTable();
@@ -1296,6 +1305,13 @@ export default class Game {
       this.#renderEdge(
         this.#edgeAnimation.targetBox,
         this.#edgeAnimation.color
+      );
+    }
+
+    if (this.#highlightedBoxes.isActive) {
+      this.#renderHighlightedBoxes(
+        this.#highlightedBoxes.boxes,
+        this.#highlightedBoxes.color
       );
     }
 
@@ -1328,6 +1344,40 @@ export default class Game {
       globals.canvas.width,
       globals.canvas.height
     );
+  }
+
+  #renderHighlightedBoxes(boxes, color) {
+    this.#borderTimer += globals.deltaTime;
+
+    const pulseSpeed = 3;
+    const baseWidth = 3;
+    const ampWidth = 4;
+    const baseAlpha = 0.4;
+    const ampAlpha = 0.6;
+
+    const t = this.#borderTimer * pulseSpeed;
+    const sine = (Math.sin(t) + 1) / 2;
+    const lineWidth = baseWidth + ampWidth * sine;
+    const alpha = baseAlpha + ampAlpha * sine;
+
+    globals.ctx.save();
+    globals.ctx.globalAlpha = alpha;
+    globals.ctx.strokeStyle = color;
+    globals.ctx.lineWidth = lineWidth;
+    globals.ctx.shadowColor = color;
+    globals.ctx.shadowBlur = 10 + 10 * sine;
+
+    for (let i = 0; i < boxes.length; i++) {
+      const box = boxes[i];
+      const x = box.getXCoordinate();
+      const y = box.getYCoordinate();
+      const width = box.getWidth();
+      const height = box.getHeight();
+
+      globals.ctx.strokeRect(x, y, width, height);
+    }
+
+    globals.ctx.restore();
   }
 
   #renderGrids() {

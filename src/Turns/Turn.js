@@ -47,6 +47,7 @@ export default class Turn {
   #stats;
   #edgeAnimation;
   #particles;
+  #highlightedBoxes;
 
   constructor(
     deckContainer,
@@ -62,7 +63,8 @@ export default class Turn {
     stats,
     remainingCardsTooltip,
     edgeAnimation,
-    particles
+    particles,
+    highlightedBoxes
   ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
@@ -86,6 +88,7 @@ export default class Turn {
     this.#remainingCardsTooltip = remainingCardsTooltip;
     this.#edgeAnimation = edgeAnimation;
     this.#particles = particles;
+    this.#highlightedBoxes = highlightedBoxes;
   }
 
   fillPhases(currentPlayer) {
@@ -117,7 +120,8 @@ export default class Turn {
         this.#eventsData,
         this.#stats,
         this.#edgeAnimation,
-        this.#particles
+        this.#particles,
+        this.#highlightedBoxes
       );
 
       this.#phases.push(currentPhase);
