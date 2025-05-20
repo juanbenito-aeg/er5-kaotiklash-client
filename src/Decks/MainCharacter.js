@@ -20,7 +20,7 @@ export default class MainCharacter extends Card {
       globals.language === Language.ENGLISH
         ? "Special Skill:"
         : "Trebetasun Berezia:";
-    globals.ctx.fillText(specialSkillString, globals.canvas.width / 2, 820);
+    globals.ctx.fillText(specialSkillString, globals.canvas.width / 2, 785);
 
     this.#specialSkill.render();
   }
