@@ -1024,14 +1024,23 @@ async function getJosephAppearances(loggedInPlayerID) {
   const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/joseph-appeared`;
   const response = await fetch(url);
 
-  const josephAppeared = await response.json();
+  if (response.ok) {
+    const josephAppearedData = await response.json();
 
-  return {
-    appeared: josephAppeared.total_joseph_appeared,
-    notAppeared: josephAppeared.total_joseph_not_appeared,
-    percentageAppeared: josephAppeared.percentage_joseph_appeared,
-    percentageNotAppeared: josephAppeared.percentage_joseph_not_appeared,
-  };
+    setNoDataFoundParaContent(josephAppearedData.message || "");
+
+    if (!josephAppearedData.message) {
+      return {
+        appeared: josephAppearedData.total_joseph_appeared,
+        notAppeared: josephAppearedData.total_joseph_not_appeared,
+        percentageAppeared: josephAppearedData.percentage_joseph_appeared,
+        percentageNotAppeared:
+          josephAppearedData.percentage_joseph_not_appeared,
+      };
+    }
+  } else {
+    alert(`Communication error: ${response.statusText}`);
+  }
 }
 
 async function getMinionsKilled(loggedInPlayerID) {
