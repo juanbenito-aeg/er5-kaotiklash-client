@@ -60,7 +60,7 @@ export default class Armor extends Card {
         globals.language === Language.ENGLISH
           ? `Special Effect Usable by ${specialEffectUsableBy}:`
           : `${specialEffectUsableBy} Erabil Dezaketen Efektu Berezia:`;
-      globals.ctx.fillText(specialEffectString, globals.canvas.width / 2, 715);
+      globals.ctx.fillText(specialEffectString, globals.canvas.width / 2, 745);
 
       this.#specialEffect.render();
     }

@@ -34,7 +34,7 @@ export default class Special extends Card {
   renderEffect() {
     const effectString =
       globals.language === Language.ENGLISH ? "Effect:" : "Efektua:";
-    globals.ctx.fillText(effectString, globals.canvas.width / 2, 730);
+    globals.ctx.fillText(effectString, globals.canvas.width / 2, 765);
 
     this.#effect.render();
   }
