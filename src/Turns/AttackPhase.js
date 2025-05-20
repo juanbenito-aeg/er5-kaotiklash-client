@@ -542,6 +542,8 @@ export default class AttackPhase extends Phase {
     );
     attackEvent.execute();
 
+    attacker.setState(CardState.PLACED);
+    target.setState(CardState.PLACED);
     this._state = AttackPhaseState.END;
   }
 
