@@ -246,6 +246,8 @@ export default class Game {
 
     game.#fillActiveEventsTableData();
 
+    game.#particlesForCurrentPlayer();
+
     return game;
   }
 
@@ -1886,7 +1888,10 @@ export default class Game {
             continue;
           }
 
-          if (currentCard.getState() === CardState.SELECTED) {
+          if (
+            currentCard.getState() === CardState.SELECTED &&
+            !isDeckCardsInHandOfInactivePlayer
+          ) {
             if (currentCard !== movingCard) {
               this.#renderSelectedCardEffect(currentCard);
             }

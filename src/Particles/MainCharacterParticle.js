@@ -1,7 +1,7 @@
 import Particle from "./Particle.js";
 import Physics from "../Game/Physics.js";
 import globals from "../Game/globals.js";
-import { ParticleID, ParticleState, PlayerID } from "../Game/constants.js";
+import { ParticleID, ParticleState } from "../Game/constants.js";
 
 export default class MainCharacterParticle extends Particle {
   #angle;
