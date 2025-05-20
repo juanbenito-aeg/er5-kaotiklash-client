@@ -2417,16 +2417,16 @@ export default class Game {
     globals.ctx.font = "14px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText("SE", xCoordinate, yCoordinate + 62);
+    globals.ctx.fillText("SE", xCoordinate, yCoordinate + 59);
     globals.ctx.fillText(
       card.getCurrentPrepTimeInRounds(),
       xCoordinate + 55,
-      yCoordinate + 114
+      yCoordinate + 111
     );
     globals.ctx.fillText(
       card.getCurrentDurability(),
       xCoordinate + 110,
-      yCoordinate + 62
+      yCoordinate + 59
     );
   }
 
@@ -2486,16 +2486,16 @@ export default class Game {
     globals.ctx.font = "14px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText("EF", xCoordinate, yCoordinate + 62);
+    globals.ctx.fillText("EF", xCoordinate, yCoordinate + 60);
     globals.ctx.fillText(
       card.getCurrentPrepTimeInRounds(),
       xCoordinate + 55,
-      yCoordinate + 114
+      yCoordinate + 111
     );
     globals.ctx.fillText(
       card.getCurrentDurationInRounds(),
       xCoordinate + 110,
-      yCoordinate + 62
+      yCoordinate + 59
     );
   }
 
@@ -2555,12 +2555,12 @@ export default class Game {
     globals.ctx.font = "14px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText("EF", xCoordinate, yCoordinate + 62);
-    globals.ctx.fillText(0, xCoordinate + 55, yCoordinate + 114);
+    globals.ctx.fillText("EF", xCoordinate, yCoordinate + 60);
+    globals.ctx.fillText(0, xCoordinate + 55, yCoordinate + 111);
     globals.ctx.fillText(
       card.getCurrentDurationInRounds(),
       xCoordinate + 110,
-      yCoordinate + 62
+      yCoordinate + 59
     );
   }
 
@@ -2652,7 +2652,7 @@ export default class Game {
 
     globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 311);
 
-    globals.ctx.font = "18px MedievalSharp";
+    globals.ctx.font = "16px MedievalSharp";
 
     card.renderDescription();
     card.renderChaoticEventDescription();
@@ -2671,7 +2671,7 @@ export default class Game {
 
     globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 308);
 
-    globals.ctx.font = "18px MedievalSharp";
+    globals.ctx.font = "16px MedievalSharp";
 
     card.renderDescription();
     card.renderSpecialSkill();
@@ -2729,11 +2729,14 @@ export default class Game {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
 
     globals.ctx.textAlign = "center";
-    globals.ctx.font = "18px MedievalSharp";
+    globals.ctx.font = "16px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 19, 292);
     card.renderDescription();
+
+    globals.ctx.font = "18px MedievalSharp";
+
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 19, 292);
     globals.ctx.fillText(card.getInitialHP(), 1070, 852);
     globals.ctx.fillText(card.getInitialMadness(), 1151, 852);
     globals.ctx.fillText(card.getInitialAttack(), 1231, 852);
@@ -2796,10 +2799,10 @@ export default class Game {
     globals.ctx.fillStyle = "black";
 
     globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 16, 281);
+    card.renderDescription();
 
     globals.ctx.font = "18px MedievalSharp";
 
-    card.renderDescription();
     globals.ctx.fillText(card.getInitialDamage(), 1104, 843);
     globals.ctx.fillText(card.getInitialDurability(), 1219, 843);
     globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1335, 843);
@@ -2908,12 +2911,15 @@ export default class Game {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
 
     globals.ctx.textAlign = "center";
-    globals.ctx.font = "18px MedievalSharp";
+    globals.ctx.font = "16px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 17, 290);
     card.renderDescription();
     card.renderEffect();
+
+    globals.ctx.font = "18px MedievalSharp";
+
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 17, 290);
     globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1148, 848);
     globals.ctx.fillText(card.getInitialDurationInRounds(), 1280, 848);
   }
@@ -2963,12 +2969,15 @@ export default class Game {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
 
     globals.ctx.textAlign = "center";
-    globals.ctx.font = "18px MedievalSharp";
+    globals.ctx.font = "16px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 18, 291);
     card.renderDescription();
     card.renderEffect();
+
+    globals.ctx.font = "18px MedievalSharp";
+
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 18, 291);
     globals.ctx.fillText(0, 1148, 848);
     globals.ctx.fillText(card.getInitialDurationInRounds(), 1280, 848);
   }
