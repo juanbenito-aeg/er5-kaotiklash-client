@@ -16,14 +16,23 @@ export default class MovePhase extends Phase {
   #gridsRelevants;
   #physics;
   #movingCard;
+  #highlightedBoxes;
 
-  constructor(state, mouseInput, phaseMessage, decksRelevants, gridRelevants) {
+  constructor(
+    state,
+    mouseInput,
+    phaseMessage,
+    decksRelevants,
+    gridRelevants,
+    highlightedBoxes
+  ) {
     super(state, mouseInput, phaseMessage);
 
     this.#decksRelevants = decksRelevants;
     this.#gridsRelevants = gridRelevants;
     this.#physics = null;
     this.#movingCard = null;
+    this.#highlightedBoxes = highlightedBoxes;
   }
 
   static create(
@@ -33,7 +42,14 @@ export default class MovePhase extends Phase {
     mouseInput,
     events,
     currentPlayer,
-    phaseMessage
+    phaseMessage,
+    stateMessages,
+    attackMenuData,
+    eventsData,
+    stats,
+    edgeAnimation,
+    particles,
+    highlightedBoxes
   ) {
     let decksRelevants;
     let gridRelevants;
@@ -57,7 +73,8 @@ export default class MovePhase extends Phase {
       mouseInput,
       phaseMessage,
       decksRelevants,
-      gridRelevants
+      gridRelevants,
+      highlightedBoxes
     );
 
     return movePhase;
@@ -122,6 +139,51 @@ export default class MovePhase extends Phase {
     }
   }
 
+  #computeNeighborHighlights() {
+    const allBoxes = this.#gridsRelevants.getBoxes();
+    const selectedCard = this.#decksRelevants.lookForSelectedCard();
+
+    if (!selectedCard) return [];
+
+    let selectedBox = null;
+    for (let i = 0; i < allBoxes.length; i++) {
+      const b = allBoxes[i];
+      if (b.getCard() === selectedCard) {
+        selectedBox = b;
+        break;
+      }
+    }
+
+    if (!selectedBox) return [];
+
+    const sx = selectedBox.getXCoordinate();
+    const sy = selectedBox.getYCoordinate();
+
+    const result = [];
+
+    for (let i = 0; i < allBoxes.length; i++) {
+      const box = allBoxes[i];
+
+      if (box.getCard()) continue;
+
+      const x = box.getXCoordinate();
+      const y = box.getYCoordinate();
+
+      const dx = Math.abs(x - sx);
+      const dy = Math.abs(y - sy);
+
+      if (
+        (dx === 0 || dx <= 140) &&
+        (dy === 0 || dy <= 140) &&
+        (dx !== 0 || dy !== 0)
+      ) {
+        result.push(box);
+      }
+    }
+
+    return result;
+  }
+
   #selectTargetGrid() {
     console.log("select target phase");
 
@@ -133,6 +195,7 @@ export default class MovePhase extends Phase {
     if (selectedCard.isLeftClicked()) {
       // THE PREVIOUSLY SELECTED CARD WAS DESELECTED
       selectedCard.setState(CardState.PLACED);
+      this.#resetHighlightedBoxes();
       this._state = MovePhaseState.SELECT_CARD;
     } else {
       let selectedBox;
@@ -160,6 +223,11 @@ export default class MovePhase extends Phase {
         this._mouseInput.getMouseXCoordinate() <= targetSizeX &&
         this._mouseInput.getMouseYCoordinate() >= targetBoxY &&
         this._mouseInput.getMouseYCoordinate() <= targetSizeY;
+
+      const availableNeighbors = this.#computeNeighborHighlights();
+      this.#highlightedBoxes.boxes = availableNeighbors;
+      this.#highlightedBoxes.color = "rgb(3, 11, 255)";
+      this.#highlightedBoxes.isActive = true;
 
       if (isMouseOnAvailableArea) {
         const hoveredTargetBox = this.#gridsRelevants.lookForHoveredBox();
@@ -240,8 +308,14 @@ export default class MovePhase extends Phase {
 
   #finalizePhase() {
     console.log("finish phase");
-
+    this.#resetHighlightedBoxes();
     this._state = MovePhaseState.INIT;
+  }
+
+  #resetHighlightedBoxes() {
+    this.#highlightedBoxes.boxes = null;
+    this.#highlightedBoxes.color = null;
+    this.#highlightedBoxes.isActive = false;
   }
 
   reset() {
