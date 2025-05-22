@@ -99,12 +99,10 @@ export default class PrepareEventPhase extends Phase {
 
     switch (this._state) {
       case PrepareEventState.INIT:
-        console.log("init");
         this.#initializePhase();
         break;
 
       case PrepareEventState.SELECT_HAND_CARD:
-        console.log("select hand card");
         this.#selectCardFromHand();
         break;
 
@@ -113,7 +111,6 @@ export default class PrepareEventPhase extends Phase {
         break;
 
       case PrepareEventState.END:
-        console.log("end");
         this.#finalizePhase();
         isPhaseFinished = true;
         break;

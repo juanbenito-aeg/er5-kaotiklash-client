@@ -36,7 +36,6 @@ export default class BlessingWaitressEvent extends Event {
         break;
 
       case BlessingWaitressState.SELECT_MINION:
-        console.log("SELECT MINION TO HEAL");
         this.#selectMinionToHeal();
         break;
 

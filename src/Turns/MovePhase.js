@@ -120,8 +120,6 @@ export default class MovePhase extends Phase {
   }
 
   #selectCard() {
-    console.log("select card phase");
-
     this._phaseMessage.setCurrentContent(
       PhaseMessage.content.move.selectCard[globals.language]
     );
@@ -185,8 +183,6 @@ export default class MovePhase extends Phase {
   }
 
   #selectTargetGrid() {
-    console.log("select target phase");
-
     this._phaseMessage.setCurrentContent(
       PhaseMessage.content.move.selectTarget[globals.language]
     );
@@ -307,7 +303,6 @@ export default class MovePhase extends Phase {
   }
 
   #finalizePhase() {
-    console.log("finish phase");
     this.#resetHighlightedBoxes();
     this._state = MovePhaseState.INIT;
   }

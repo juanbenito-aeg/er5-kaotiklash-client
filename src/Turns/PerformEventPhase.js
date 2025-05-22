@@ -36,7 +36,6 @@ export default class PerformEventPhase extends Phase {
   #currentPlayerMainCharacterDeck;
   #currentPlayerCardsInHandDeck;
   #currentPlayerEventsInPrepDeck;
-  #currentPlayerMinionsDeck;
   #currentPlayerMinionsInPlayDeck;
   #currentPlayerCardsInHandGrid;
   #currentPlayerEventsInPrepGrid;
@@ -65,7 +64,6 @@ export default class PerformEventPhase extends Phase {
     currentPlayerMainCharacterDeck,
     currentPlayerCardsInHandDeck,
     currentPlayerEventsInPrepDeck,
-    currentPlayerMinionsDeck,
     currentPlayerMinionsInPlayDeck,
     enemyEventsInPrepDeck,
     currentPlayerCardsInHandGrid,
@@ -90,7 +88,6 @@ export default class PerformEventPhase extends Phase {
     this.#currentPlayerMainCharacterDeck = currentPlayerMainCharacterDeck;
     this.#currentPlayerCardsInHandDeck = currentPlayerCardsInHandDeck;
     this.#currentPlayerEventsInPrepDeck = currentPlayerEventsInPrepDeck;
-    this.#currentPlayerMinionsDeck = currentPlayerMinionsDeck;
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
     this.#currentPlayerCardsInHandGrid = currentPlayerCardsInHandGrid;
     this.#currentPlayerEventsInPrepGrid = currentPlayerEventsInPrepGrid;
@@ -138,7 +135,6 @@ export default class PerformEventPhase extends Phase {
     let currentPlayerMainCharacterDeck;
     let currentPlayerCardsInHandDeck;
     let currentPlayerEventsInPrepDeck;
-    let currentPlayerMinionsDeck;
     let currentPlayerMinionsInPlayDeck;
     let enemyMinionsInPlayDeck;
     let enemyEventsInPrepDeck;
@@ -153,9 +149,6 @@ export default class PerformEventPhase extends Phase {
 
       currentPlayerEventsInPrepDeck =
         deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION];
-
-      currentPlayerMinionsDeck =
-        deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS];
 
       currentPlayerMinionsInPlayDeck =
         deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
@@ -177,9 +170,6 @@ export default class PerformEventPhase extends Phase {
 
       currentPlayerEventsInPrepDeck =
         deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION];
-
-      currentPlayerMinionsDeck =
-        deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
 
       currentPlayerMinionsInPlayDeck =
         deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
@@ -247,7 +237,6 @@ export default class PerformEventPhase extends Phase {
       currentPlayerMainCharacterDeck,
       currentPlayerCardsInHandDeck,
       currentPlayerEventsInPrepDeck,
-      currentPlayerMinionsDeck,
       currentPlayerMinionsInPlayDeck,
       enemyEventsInPrepDeck,
       currentPlayerCardsInHandGrid,
@@ -273,22 +262,18 @@ export default class PerformEventPhase extends Phase {
 
     switch (this._state) {
       case PerformEventState.INIT:
-        console.log("INIT");
         this.#initializePhase();
         break;
 
       case PerformEventState.SELECT_PREPARED_EVENT:
-        console.log("SELECT PREPARED EVENT");
         this.#selectPreparedEvent();
         break;
 
       case PerformEventState.EXECUTE_SELECTED_EVENT:
-        console.log("EXECUTE SELECTED EVENT");
         this.#executeSelectedEvent();
         break;
 
       case PerformEventState.END:
-        console.log("END");
         this.#updateDecksAndGrids();
         this.#stats.incrementPlayerXUsedCards(this.#player.getID());
         isPhaseFinished = true;
@@ -444,7 +429,6 @@ export default class PerformEventPhase extends Phase {
             this.#player,
             selectedCard,
             this.#stateMessages,
-            this.#currentPlayerMinionsDeck,
             this.#currentPlayerMinionsInPlayDeck
           );
           break;
