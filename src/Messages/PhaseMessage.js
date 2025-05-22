@@ -51,6 +51,16 @@ export default class PhaseMessage extends Message {
       ],
     },
 
+    performEvent: {
+      selectPreparedEvent: [
+        // ENG
+        "Select a prepared to perform event.",
+
+        // EUS
+        "Exekutatzeko prest dagoen ekitaldi bat hautatu.",
+      ],
+    },
+
     move: {
       selectCard: [
         // ENG
@@ -142,6 +152,7 @@ export default class PhaseMessage extends Message {
         "Sendatu beharreko mendeko bat hautatu.",
       ],
     },
+
     echoOfTheStratagen: {
       selectEnemyCard: [
         // ENG

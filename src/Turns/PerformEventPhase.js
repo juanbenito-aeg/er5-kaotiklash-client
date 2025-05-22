@@ -11,6 +11,10 @@ import MarchOfTheLastSighEvent from "../Events/MarchOfTheLastSighEvent.js";
 import ShieldOfBalanceEvent from "../Events/ShieldOfBalanceEvent.js";
 import HandOfTheSoulThiefEvent from "../Events/HandOfTheSoulThiefEvent.js";
 import StolenFateEvent from "../Events/StolenFateEvent.js";
+import TheCupOfTheLastBreathEvent from "../Events/TheCupOfTheLastBreathEvent.js";
+import RayOfCelestialRuinEvent from "../Events/RayOfCelestialRuinEvent.js";
+import Physics from "../Game/Physics.js";
+import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
 import globals from "../Game/globals.js";
 import {
@@ -24,9 +28,6 @@ import {
   RareEventID,
   StateMessageType,
 } from "../Game/constants.js";
-import TheCupOfTheLastBreathEvent from "../Events/TheCupOfTheLastBreathEvent.js";
-import RayOfCelestialRuinEvent from "../Events/RayOfCelestialRuinEvent.js";
-import Physics from "../Game/Physics.js";
 
 export default class PerformEventPhase extends Phase {
   #events;
@@ -307,6 +308,10 @@ export default class PerformEventPhase extends Phase {
   }
 
   #selectPreparedEvent() {
+    this._phaseMessage.setCurrentContent(
+      PhaseMessage.content.performEvent.selectPreparedEvent[globals.language]
+    );
+
     const hoveredCard =
       this.#currentPlayerEventsInPrepDeck.lookForHoveredCard();
 
