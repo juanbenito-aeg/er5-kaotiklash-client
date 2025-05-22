@@ -1231,6 +1231,17 @@ function loadAssets() {
   globals.boardImage.src = "../images/board.jpg";
   globals.assetsToLoad.push(globals.boardImage);
 
+  // LOAD CARDS IN HAND CONTAINER IMAGE
+  globals.cardsInHandContainerImage = new Image();
+  globals.cardsInHandContainerImage.addEventListener(
+    "load",
+    loadHandler,
+    false
+  );
+  globals.cardsInHandContainerImage.src =
+    "../images/cards-in-hand-container.png";
+  globals.assetsToLoad.push(globals.cardsInHandContainerImage);
+
   // LOAD CARDS REVERSE
   globals.cardsReverseImage = new Image();
   globals.cardsReverseImage.addEventListener("load", loadHandler, false);

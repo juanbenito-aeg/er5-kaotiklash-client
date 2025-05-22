@@ -1293,11 +1293,12 @@ export default class Game {
 
   #renderGame() {
     this.#renderBoard();
-    /* this.#renderGrids(); */
+    // this.#renderGrids();
     this.#renderPlayersInfo();
     this.#renderPhaseButtons();
     this.#renderActiveEventsTable();
     this.#renderPhaseMessage();
+    this.#renderCardsInHandContainers();
     this.#renderCardsReverse();
     this.#renderCards();
     this.#renderParticles();
@@ -1806,6 +1807,38 @@ export default class Game {
       messageBoxX + messageBoxWidth / 2,
       messageBoxY + messageBoxHeight / 2
     );
+  }
+
+  #renderCardsInHandContainers() {
+    const cardsInHandContainersCoordinates = [
+      {
+        xCoordinate: 661,
+        yCoordinate: -8,
+      },
+      {
+        xCoordinate: 661,
+        yCoordinate: 952,
+      },
+    ];
+
+    const CARDS_IN_HAND_CONTAINERS_WIDTH = 1058;
+    const CARDS_IN_HAND_CONTAINERS_HEIGHT = 177;
+
+    for (let i = 0; i < cardsInHandContainersCoordinates.length; i++) {
+      const currentCardsInHandContainer = cardsInHandContainersCoordinates[i];
+
+      globals.ctx.drawImage(
+        globals.cardsInHandContainerImage,
+        0,
+        0,
+        1280,
+        512,
+        currentCardsInHandContainer.xCoordinate,
+        currentCardsInHandContainer.yCoordinate,
+        CARDS_IN_HAND_CONTAINERS_WIDTH,
+        CARDS_IN_HAND_CONTAINERS_HEIGHT
+      );
+    }
   }
 
   #renderCardsReverse() {
