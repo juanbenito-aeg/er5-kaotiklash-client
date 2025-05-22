@@ -8,6 +8,7 @@ import DiscardCardPhase from "./DiscardCardPhase.js";
 import EquipWeaponOrArmorEvent from "../Events/EquipWeaponOrArmorEvent.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
+import Physics from "../Game/Physics.js";
 import globals from "../Game/globals.js";
 import {
   PlayerID,
