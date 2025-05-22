@@ -66,9 +66,9 @@ export default class SpecialSkillAngelo {
 
   renderVisibilityEffect(visiblePlayer) {
     const fieldWidth = globals.canvas.width * 0.45;
-    const fieldHeight = globals.canvas.height * 0.8;
+    const fieldHeight = globals.canvas.height * 0.73;
     const fieldX = (globals.canvas.width - fieldWidth) / 2;
-    const fieldY = globals.canvas.height * 0.1;
+    const fieldY = globals.canvas.height * 0.135;
 
     globals.ctx.save();
 
