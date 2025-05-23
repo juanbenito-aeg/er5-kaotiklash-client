@@ -34,6 +34,7 @@ import {
   ChatMessagePosition,
   ParticleState,
   ParticleID,
+  Sound,
 } from "./constants.js";
 import Physics from "./Physics.js";
 
@@ -694,6 +695,8 @@ export default class Game {
   }
 
   #update() {
+    this.#playSound();
+
     switch (globals.gameState) {
       case GameState.PLAYING:
         this.#updatePlaying();
@@ -702,6 +705,17 @@ export default class Game {
       case GameState.CHAT_PAUSE:
         this.#updateChatPause();
         break;
+    }
+  }
+
+  #playSound() {
+    if (globals.currentSound !== Sound.NO_SOUND) {
+      // PLAY THE SOUND THAT HAS BEEN INVOKED
+      globals.sounds[globals.currentSound].currentTime = 0;
+      globals.sounds[globals.currentSound].play();
+
+      // RESET "currentSound"
+      globals.currentSound = Sound.NO_SOUND;
     }
   }
 

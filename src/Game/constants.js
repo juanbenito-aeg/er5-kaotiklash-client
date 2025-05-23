@@ -63,6 +63,11 @@ const IconID = {
   EVENT_DURATION: 26,
 };
 
+const Sound = {
+  NO_SOUND: -1,
+  BULB_BREAKING: 0,
+};
+
 const CardCategory = {
   ARMOR: 0,
   MAIN_CHARACTER: 1,
@@ -362,6 +367,7 @@ export {
   PlayerID,
   TemplateID,
   IconID,
+  Sound,
   CardCategory,
   MinionTypeID,
   WeaponTypeID,

@@ -1,4 +1,4 @@
-import { GameState, Language } from "./constants.js";
+import { GameState, Language, Sound } from "./constants.js";
 
 export default {
   previousCycleMilliseconds: -1, // PREVIOUS CYCLE TIME (MILLISECONDS)
@@ -51,4 +51,6 @@ export default {
     usedCards: false,
   },
   assetsLoadProgressAsPercentage: 0,
+  sounds: [], // SOUNDS
+  currentSound: Sound.NO_SOUND, // CURRENT SOUND TO PLAY
 };

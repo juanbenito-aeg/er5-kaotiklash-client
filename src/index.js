@@ -1444,6 +1444,19 @@ function loadAssets() {
   ];
 
   createAndStoreImageObjs(balloons, globals.balloonsImages);
+
+  // LOAD SOUNDS
+
+  const bulbBreakingSound = document.getElementById("bulbBreakingSound");
+
+  globals.sounds.push(bulbBreakingSound);
+
+  for (let i = 0; i < globals.sounds.length; i++) {
+    const currentSound = globals.sounds[i];
+    currentSound.addEventListener("canplaythrough", loadHandler, false);
+    currentSound.load();
+    globals.assetsToLoad.push(currentSound);
+  }
 }
 
 // CODE BLOCK TO CALL EACH TIME AN ASSET IS LOADED
@@ -1454,6 +1467,12 @@ function loadHandler() {
     100 / (globals.assetsToLoad.length + 2);
 
   if (globals.assetsLoaded === globals.assetsToLoad.length) {
+    // REMOVE THE "canplaythrough" EVENT LISTENER FROM SOUNDS
+    for (let i = 0; i < globals.sounds.length; i++) {
+      const currentSound = globals.sounds[i];
+      currentSound.removeEventListener("canplaythrough", loadHandler, false);
+    }
+
     globals.gameState = GameState.PLAYING;
   }
 }
