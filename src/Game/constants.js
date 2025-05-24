@@ -66,6 +66,7 @@ const IconID = {
 const Sound = {
   NO_SOUND: -1,
   BULB_BREAKING: 0,
+  PUNCH: 1,
 };
 
 const CardCategory = {

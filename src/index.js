@@ -1448,8 +1448,9 @@ function loadAssets() {
   // LOAD SOUNDS
 
   const bulbBreakingSound = document.getElementById("bulbBreakingSound");
+  const punchSound = document.getElementById("punchSound");
 
-  globals.sounds.push(bulbBreakingSound);
+  globals.sounds.push(bulbBreakingSound, punchSound);
 
   for (let i = 0; i < globals.sounds.length; i++) {
     const currentSound = globals.sounds[i];

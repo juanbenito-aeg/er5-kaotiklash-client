@@ -11,6 +11,7 @@ import {
   PlayerID,
   WeaponTypeID,
   MinionTypeID,
+  Sound,
 } from "../Game/constants.js";
 import Physics from "../Game/Physics.js";
 
@@ -150,23 +151,26 @@ export default class AttackEvent extends Event {
       }
     }
 
-    if (!attackerWeapon && this.#parry === false) {
-      // ATTACK USING FISTS && ENEMY IS NOT PARRYING
-      if (fumble) {
-        damageToInflict =
-          this.#attacker.getCurrentAttack() -
-          this.#target.getCurrentDefense() / 2;
+    if (!attackerWeapon) {
+      // ATTACK USING FISTS
 
-        console.log(damageToInflict);
+      globals.currentSound = Sound.PUNCH;
+
+      if (this.#parry) {
+        // ENEMY IS PARRYING
+        damageToInflict = this.#attacker.getCurrentAttack();
       } else {
-        damageToInflict =
-          this.#attacker.getCurrentAttack() - this.#target.getCurrentDefense();
+        // ENEMY IS NOT PARRYING
+        if (fumble) {
+          damageToInflict =
+            this.#attacker.getCurrentAttack() -
+            this.#target.getCurrentDefense() / 2;
+        } else {
+          damageToInflict =
+            this.#attacker.getCurrentAttack() -
+            this.#target.getCurrentDefense();
+        }
       }
-
-      damageToInflict = Math.floor(damageToInflict);
-    } else if (!attackerWeapon && this.#parry === true) {
-      // ATTACK USING FISTS && ENEMY IS PARRYING
-      damageToInflict = this.#attacker.getCurrentAttack();
 
       damageToInflict = Math.floor(damageToInflict);
     } else if (
