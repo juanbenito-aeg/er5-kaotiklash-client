@@ -49,4 +49,5 @@ export default {
     criticalHitsPerMatch: false,
     usedCardsPerMatch: false,
   },
+  attacker: null,
 };

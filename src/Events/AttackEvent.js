@@ -120,7 +120,7 @@ export default class AttackEvent extends Event {
       // FUMBLE
       this.#stats.incrementPlayerXFumbles(this.#player.getID());
       console.log("Fumble");
-      fumble = false;
+      fumble = true;
     }
 
     if (targetHasBreastplatePrimordialColossus || fumble) {
@@ -280,6 +280,7 @@ export default class AttackEvent extends Event {
       }
     }
 
+    globals.attacker = this.#attacker;
     if (targetArmor) {
       if (
         this.#target.getArmorID() === ArmorID.ARMOR_OF_TITANIC_FURY &&
