@@ -1519,7 +1519,7 @@ export default class Game {
 
   #renderPhaseButtons() {
     globals.ctx.shadowBlur = 10;
-    globals.ctx.shadowColor = "rgb(0 0 0)";
+    globals.ctx.shadowColor = "black";
 
     const numOfExecutedPhases =
       this.#turns[this.#currentPlayer.getID()].getNumOfExecutedPhases();
@@ -1722,6 +1722,8 @@ export default class Game {
   }
 
   #renderPhaseMessage() {
+    globals.ctx.save();
+
     const messageBoxX = this.#board
       .getGrids()
       [GridType.MESSAGES].getBoxes()[0]
@@ -1740,24 +1742,33 @@ export default class Game {
       [GridType.MESSAGES].getBoxes()[0]
       .getHeight();
 
-    globals.ctx.fillStyle = "black";
-    globals.ctx.fillRect(
+    globals.ctx.shadowBlur = 10;
+    globals.ctx.shadowColor = "black";
+
+    globals.ctx.drawImage(
+      globals.phaseMsgsBoardImage,
+      0,
+      0,
+      1452,
+      706,
       messageBoxX,
       messageBoxY,
       messageBoxWidth,
       messageBoxHeight
     );
 
-    globals.ctx.fillStyle = "white";
-    globals.ctx.font = "20px MedievalSharp";
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
+    globals.ctx.font = "20px MedievalSharp";
+    globals.ctx.fillStyle = "white";
 
     globals.ctx.fillText(
       this.#phaseMessage.getCurrentContent(),
       messageBoxX + messageBoxWidth / 2,
       messageBoxY + messageBoxHeight / 2
     );
+
+    globals.ctx.restore();
   }
 
   #renderCardsInHandContainers() {

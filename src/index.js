@@ -1237,6 +1237,12 @@ function loadAssets() {
   globals.phaseButtonImage.src = "../images/phase-button.png";
   globals.assetsToLoad.push(globals.phaseButtonImage);
 
+  // LOAD PHASE MESSAGES BOARD IMAGE
+  globals.phaseMsgsBoardImage = new Image();
+  globals.phaseMsgsBoardImage.addEventListener("load", loadHandler, false);
+  globals.phaseMsgsBoardImage.src = "../images/phase-msgs-board.png";
+  globals.assetsToLoad.push(globals.phaseMsgsBoardImage);
+
   // LOAD ACTIVE EVENTS TABLE IMAGE
   globals.activeEventsTableImage = new Image();
   globals.activeEventsTableImage.addEventListener("load", loadHandler, false);

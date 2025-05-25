@@ -9,6 +9,7 @@ export default {
   ctx: {},
   boardImage: {},
   phaseButtonImage: {},
+  phaseMsgsBoardImage: {},
   activeEventsTableImage: {},
   cardsInHandContainerImage: {},
   cardsData: {},
