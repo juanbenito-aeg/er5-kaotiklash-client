@@ -8,6 +8,7 @@ export default {
   canvas: {},
   ctx: {},
   boardImage: {},
+  phaseButtonImage: {},
   cardsInHandContainerImage: {},
   cardsData: {},
   cardsReverseImage: {},

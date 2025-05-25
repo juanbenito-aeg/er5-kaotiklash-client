@@ -466,11 +466,10 @@ export default class Game {
     const buttonsHeight = 40;
 
     for (let i = 0; i < buttonNames.length; i++) {
-      const currentButtonYCoordinate =
-        this.#board
-          .getGrids()
-          [GridType.PHASE_BUTTONS].getBoxes()
-          [i].getYCoordinate() + 5;
+      const currentButtonYCoordinate = this.#board
+        .getGrids()
+        [GridType.PHASE_BUTTONS].getBoxes()
+        [i].getYCoordinate();
 
       const buttonData = [
         buttonsXCoordinate,
@@ -1519,94 +1518,37 @@ export default class Game {
   }
 
   #renderPhaseButtons() {
+    globals.ctx.shadowBlur = 10;
+    globals.ctx.shadowColor = "rgb(0 0 0)";
+
     const numOfExecutedPhases =
       this.#turns[this.#currentPlayer.getID()].getNumOfExecutedPhases();
     const TOTAL_PHASES = 5;
 
     const phaseText = `Phase: ${numOfExecutedPhases + 1}/${TOTAL_PHASES}`;
-    globals.ctx.fillStyle = "white";
-    globals.ctx.font = "24px MedievalSharp";
+
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
+    globals.ctx.font = "24px MedievalSharp";
+    globals.ctx.fillStyle = "white";
     globals.ctx.fillText(phaseText, 500, 705);
 
     for (let i = 0; i < globals.buttonDataGlobal.length; i++) {
       const currentButton = globals.buttonDataGlobal[i];
 
-      globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-      globals.ctx.shadowBlur = 10;
-      globals.ctx.shadowOffsetX = 4;
-      globals.ctx.shadowOffsetY = 4;
-
-      globals.ctx.fillStyle = "darkcyan";
-      globals.ctx.beginPath();
-      globals.ctx.moveTo(
-        currentButton[PhaseButtonData.X_COORDINATE] + 10,
-        currentButton[PhaseButtonData.Y_COORDINATE]
-      );
-      globals.ctx.lineTo(
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH] -
-          10,
-        currentButton[PhaseButtonData.Y_COORDINATE]
-      );
-      globals.ctx.quadraticCurveTo(
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH],
-        currentButton[PhaseButtonData.Y_COORDINATE],
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH],
-        currentButton[PhaseButtonData.Y_COORDINATE] + 10
-      );
-      globals.ctx.lineTo(
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH],
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT] -
-          10
-      );
-      globals.ctx.quadraticCurveTo(
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH],
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT],
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH] -
-          10,
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT]
-      );
-      globals.ctx.lineTo(
-        currentButton[PhaseButtonData.X_COORDINATE] + 10,
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT]
-      );
-      globals.ctx.quadraticCurveTo(
-        currentButton[PhaseButtonData.X_COORDINATE],
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT],
-        currentButton[PhaseButtonData.X_COORDINATE],
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT] -
-          10
-      );
-      globals.ctx.lineTo(
-        currentButton[PhaseButtonData.X_COORDINATE],
-        currentButton[PhaseButtonData.Y_COORDINATE] + 10
-      );
-      globals.ctx.quadraticCurveTo(
+      globals.ctx.drawImage(
+        globals.phaseButtonImage,
+        0,
+        0,
+        950,
+        519,
         currentButton[PhaseButtonData.X_COORDINATE],
         currentButton[PhaseButtonData.Y_COORDINATE],
-        currentButton[PhaseButtonData.X_COORDINATE] + 10,
-        currentButton[PhaseButtonData.Y_COORDINATE]
+        currentButton[PhaseButtonData.WIDTH],
+        currentButton[PhaseButtonData.HEIGHT]
       );
-      globals.ctx.closePath();
-      globals.ctx.fill();
 
-      globals.ctx.fillStyle = "white";
       globals.ctx.font = "18px MedievalSharp";
-      globals.ctx.textAlign = "center";
-      globals.ctx.textBaseline = "middle";
       globals.ctx.fillText(
         currentButton[PhaseButtonData.NAME],
         currentButton[PhaseButtonData.X_COORDINATE] +
