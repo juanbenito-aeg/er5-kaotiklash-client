@@ -32,11 +32,11 @@ export default class SpecialSkillDecrepitThrone {
       globals.canvas.width / 2,
       globals.canvas.height / 2,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    firstMinionsAttractionMsg.getPhysics().vy = 20;
-    
+    firstMinionsAttractionMsg.setVY(20);
+
     this.#stateMessages.push(firstMinionsAttractionMsg);
   }
 

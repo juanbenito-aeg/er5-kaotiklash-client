@@ -14,6 +14,7 @@ import {
   ArmorID,
 } from "../Game/constants.js";
 import Physics from "../Game/Physics.js";
+import MinionDeathParticle from "../Particles/MinionDeathParticle.js";
 
 export default class AttackPhase extends Phase {
   #enemyMovementGrid;
@@ -30,6 +31,8 @@ export default class AttackPhase extends Phase {
   #attackMenuData;
   #eventsData;
   #stats;
+  #edgeAnimation;
+  #particles;
 
   constructor(
     state,
@@ -46,7 +49,9 @@ export default class AttackPhase extends Phase {
     player,
     attackMenuData,
     eventsData,
-    stats
+    stats,
+    edgeAnimation,
+    particles
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -64,6 +69,8 @@ export default class AttackPhase extends Phase {
     this.#attackMenuData = attackMenuData;
     this.#eventsData = eventsData;
     this.#stats = stats;
+    this.#edgeAnimation = edgeAnimation;
+    this.#particles = particles;
   }
 
   static create(
@@ -77,7 +84,9 @@ export default class AttackPhase extends Phase {
     stateMessages,
     attackMenuData,
     eventsData,
-    stats
+    stats,
+    edgeAnimation,
+    particles
   ) {
     let enemyMovementGrid;
     let currentPlayerMovementGrid;
@@ -136,7 +145,9 @@ export default class AttackPhase extends Phase {
       player,
       attackMenuData,
       eventsData,
-      stats
+      stats,
+      edgeAnimation,
+      particles
     );
 
     return attackPhase;
@@ -250,6 +261,11 @@ export default class AttackPhase extends Phase {
           targetBox
         );
 
+        const attackType = attacker.getWeapon()
+          ? attacker.getMinionWeaponTypeID()
+          : null;
+        this.#selectTargetBorderColor(isTargetWithinReach, attackType);
+
         if (isTargetWithinReach) {
           if (!target.isLeftClicked()) {
             target.setState(CardState.HOVERED);
@@ -283,9 +299,10 @@ export default class AttackPhase extends Phase {
 
             if (target.getWeapon() || canArmorPowerBeUsed) {
               this.#attackMenuData.isOpen = true;
-
+              this.#resetEdgeAnimation();
               this._state = AttackPhaseState.ATTACK_MENU;
             } else {
+              this.#resetEdgeAnimation();
               this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
             }
           }
@@ -399,6 +416,28 @@ export default class AttackPhase extends Phase {
     return isTargetWithinReach;
   }
 
+  #selectTargetBorderColor(isTargetWithinReach, attackType) {
+    const targetCard = this.#enemyMovementGridDeck.lookForHoveredCard();
+
+    let highlightColor;
+
+    if (!isTargetWithinReach && attackType === null) {
+      highlightColor = "rgb(0, 0, 0)";
+    } else if (attackType === WeaponTypeID.MELEE && isTargetWithinReach) {
+      highlightColor = "rgba(255, 0, 0, 0.5)";
+    } else if (attackType === WeaponTypeID.MISSILE) {
+      highlightColor = "rgba(0, 17, 255, 0.5)";
+    } else if (attackType === WeaponTypeID.HYBRID) {
+      highlightColor = "rgba(23, 208, 41, 0.5)";
+    } else if (isTargetWithinReach && attackType === null) {
+      highlightColor = "rgba(255, 0, 234, 1)";
+    }
+
+    this.#edgeAnimation.color = highlightColor;
+    this.#edgeAnimation.targetBox = targetCard;
+    this.#edgeAnimation.active = true;
+  }
+
   #checkIfArmorPowerCanBeUsed(target) {
     let canArmorPowerBeUsed = false;
 
@@ -503,6 +542,8 @@ export default class AttackPhase extends Phase {
     );
     attackEvent.execute();
 
+    attacker.setState(CardState.PLACED);
+    target.setState(CardState.PLACED);
     this._state = AttackPhaseState.END;
   }
 
@@ -526,6 +567,8 @@ export default class AttackPhase extends Phase {
         const currentCard = currentDeck.getCards()[j];
 
         if (currentCard.getCurrentHP() === 0) {
+          MinionDeathParticle.create(this.#particles, 150, currentCard);
+
           currentDeck.removeCard(currentCard);
 
           // MAKE THE BOX THE NOW DEAD MINION WAS POSITIONED IN AVAILABLE
@@ -584,7 +627,14 @@ export default class AttackPhase extends Phase {
     }
   }
 
+  #resetEdgeAnimation() {
+    this.#edgeAnimation.targetBox = null;
+    this.#edgeAnimation.color = null;
+    this.#edgeAnimation.active = false;
+  }
+
   reset() {
+    this.#resetEdgeAnimation();
     this._state = AttackPhaseState.INIT;
   }
 }

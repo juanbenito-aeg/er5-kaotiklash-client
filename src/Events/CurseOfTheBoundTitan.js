@@ -41,10 +41,10 @@ export default class CurseOfTheBoundTitanEvent extends Event {
         1200,
         570,
         1,
-        new Physics(0, 0, 0, 0, 0, 0, 0)
+        new Physics(0, 0)
       );
 
-      debuffMessage.getPhysics().vy = 20;
+      debuffMessage.setVY(20);
 
       this.#stateMessages.push(debuffMessage);
       this.#hasShownDebuffMessage = true;
@@ -66,11 +66,11 @@ export default class CurseOfTheBoundTitanEvent extends Event {
         1200,
         570,
         1,
-        new Physics(0, 0, 0, 0, 0, 0, 0)
+        new Physics(0, 0)
       );
 
-      restoreMessage.getPhysics().vy = 20;
-      
+      restoreMessage.setVY(20);
+
       this.#stateMessages.push(restoreMessage);
     }
   }

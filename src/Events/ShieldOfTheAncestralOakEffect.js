@@ -21,7 +21,7 @@ export default class ShieldOfYheAncestralOakEffect {
         1200,
         520,
         1,
-        new Physics(0, 0, 0, 0, 0, 0, 0)
+        new Physics(0, 0)
       );
       const damageMessage = new StateMessage(
         `-${counterDamage} HP`,
@@ -32,13 +32,13 @@ export default class ShieldOfYheAncestralOakEffect {
         1200,
         570,
         1,
-        new Physics(0, 0, 0, 0, 0, 0, 0)
+        new Physics(0, 0)
       );
-      
-      message.getPhysics().vy = 20;
 
-      damageMessage.getPhysics().vy = 20;
-      
+      message.setVY(20);
+
+      damageMessage.setVY(20);
+
       stateMessages.push(message, damageMessage);
 
       isActive = true;

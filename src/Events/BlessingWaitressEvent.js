@@ -36,7 +36,6 @@ export default class BlessingWaitressEvent extends Event {
         break;
 
       case BlessingWaitressState.SELECT_MINION:
-        console.log("SELECT MINION TO HEAL");
         this.#selectMinionToHeal();
         break;
 
@@ -120,10 +119,10 @@ export default class BlessingWaitressEvent extends Event {
       restoredHPMsgXCoordinate,
       restoredHPMsgYCoordinate,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
 
-    restoredHPMsg.getPhysics().vy = 20;
+    restoredHPMsg.setVY(20);
 
     this.#stateMessages.push(restoredHPMsg);
 

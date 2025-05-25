@@ -1,6 +1,8 @@
 const GameState = {
   INVALID: -1,
-  PLAYING: 0,
+  LOADING: 0,
+  PLAYING: 1,
+  CHAT_PAUSE: 2,
 };
 
 // FPS (FRAMES PER SECOND)
@@ -162,7 +164,8 @@ const MovePhaseState = {
   SELECT_CARD: 1,
   SELECT_TARGET: 2,
   MOVE_CARD: 3,
-  END: 4,
+  ANIMATION_CARD: 4,
+  END: 5,
 };
 
 const PrepareEventState = {
@@ -323,6 +326,35 @@ const ChatMessagePhase = {
   EXIT: 2,
 };
 
+const ParticleID = {
+  MINION_DEATH: 0,
+  MAIN_CHARACTER: 1,
+};
+
+const ParticleState = {
+  OFF: -1,
+  SPAWN: 0,
+  ON: 1,
+  FADE: 2,
+};
+
+const ChartID = {
+  WIN_RATE: 0,
+  TURNS_PER_MATCH: 1,
+  JOSEPH_APPEARANCES: 2,
+  MINIONS_KILLED: 3,
+  FUMBLES_PER_MATCH: 4,
+  CRITICAL_HITS_PER_MATCH: 5,
+  USED_CARDS: 6,
+};
+
+const StateMessageType = {
+  DEER_WEAPONS_ARMOR: 0,
+  CANNOT_ATTACK: 1,
+  CANNOT_DO_ALMOST_ANYTHING: 2,
+  RAY_OF_CELESTIAL_RUIN_FAIL: 3,
+};
+
 export {
   GameState,
   FPS,
@@ -362,4 +394,8 @@ export {
   ChatMessageType,
   ChatMessagePosition,
   ChatMessagePhase,
+  ParticleID,
+  ParticleState,
+  ChartID,
+  StateMessageType,
 };

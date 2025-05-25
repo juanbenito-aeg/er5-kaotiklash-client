@@ -10,7 +10,6 @@ import {
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import Physics from "../Game/Physics.js";
 
-
 export default class EchoOfTheStratagenEvent extends Event {
   #currentPlayerPrepEventDeck;
   #enemyPrepEventDeck;
@@ -120,10 +119,10 @@ export default class EchoOfTheStratagenEvent extends Event {
             selectedCard.getXCoordinate(),
             selectedCard.getYCoordinate(),
             1,
-            new Physics(0, 0, 0, 0, 0, 0, 0)
+            new Physics(0, 0)
           );
 
-          message.getPhysics().vy = 20;
+          message.setVY(20);
 
           this.#stateMessages.push(message);
 

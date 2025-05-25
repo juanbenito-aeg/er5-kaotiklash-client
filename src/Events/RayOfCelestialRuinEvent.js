@@ -27,24 +27,22 @@ export default class RayOfCelestialRuinEvent extends Event {
         minion.getArmor().setCurrentDurability(newDurability);
 
         let msg = new StateMessage(
-            `-${newDurability}`,
-            "30px MedievalSharp",
-            "rgb(85 202 255)",
-            1,
-            2,
-            minion.getXCoordinate() +
-              globals.imagesDestinationSizes.minionsAndEventsSmallVersion
-                .width /
-                2,
-            minion.getYCoordinate() +
-              globals.imagesDestinationSizes.minionsAndEventsSmallVersion
-                .height /
-                2,
-            1,
-            new Physics(0, 0, 0, 0, 0, 0, 0)
-          )
+          `-${newDurability}`,
+          "30px MedievalSharp",
+          "rgb(85 202 255)",
+          1,
+          2,
+          minion.getXCoordinate() +
+            globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width /
+              2,
+          minion.getYCoordinate() +
+            globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height /
+              2,
+          1,
+          new Physics(0, 0)
+        );
 
-        msg.getPhysics().vy = 20;
+        msg.setVY(20);
 
         this.#stateMessages.push(msg);
       }
@@ -59,10 +57,10 @@ export default class RayOfCelestialRuinEvent extends Event {
       globals.canvas.width / 2,
       globals.canvas.height / 2,
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0),
+      new Physics(0, 0)
     );
-    
-    msg.getPhysics().vy = 20;
+
+    msg.setVY(20);
 
     this.#stateMessages.push(msg);
   }

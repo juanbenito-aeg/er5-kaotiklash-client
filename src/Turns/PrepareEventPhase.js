@@ -16,6 +16,7 @@ export default class PrepareEventPhase extends Phase {
   #decksRelevants;
   #gridsRelevants;
   #events;
+  #highlightedBoxes;
 
   constructor(
     state,
@@ -24,7 +25,8 @@ export default class PrepareEventPhase extends Phase {
     player,
     decksRelevants,
     gridRelevants,
-    events
+    events,
+    highlightedBoxes
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -32,6 +34,7 @@ export default class PrepareEventPhase extends Phase {
     this.#decksRelevants = decksRelevants;
     this.#gridsRelevants = gridRelevants;
     this.#events = events;
+    this.#highlightedBoxes = highlightedBoxes;
   }
 
   static create(
@@ -41,7 +44,14 @@ export default class PrepareEventPhase extends Phase {
     mouseInput,
     events,
     currentPlayer,
-    phaseMessage
+    phaseMessage,
+    stateMessages,
+    attackMenuData,
+    eventsData,
+    stats,
+    edgeAnimation,
+    particles,
+    highlightedBoxes
   ) {
     let decksRelevants;
     let gridRelevants;
@@ -77,7 +87,8 @@ export default class PrepareEventPhase extends Phase {
       player,
       decksRelevants,
       gridRelevants,
-      events
+      events,
+      highlightedBoxes
     );
 
     return prepareEventPhase;
@@ -88,22 +99,18 @@ export default class PrepareEventPhase extends Phase {
 
     switch (this._state) {
       case PrepareEventState.INIT:
-        console.log("init");
         this.#initializePhase();
         break;
 
       case PrepareEventState.SELECT_HAND_CARD:
-        console.log("select hand card");
         this.#selectCardFromHand();
         break;
 
       case PrepareEventState.SELECT_TARGET_GRID:
-        console.log("select target grid");
         this.#selectTargetGrid();
         break;
 
       case PrepareEventState.END:
-        console.log("end");
         this.#finalizePhase();
         isPhaseFinished = true;
         break;
@@ -139,6 +146,20 @@ export default class PrepareEventPhase extends Phase {
     }
   }
 
+  #initTargetHighlights() {
+    const allBoxes = this.#gridsRelevants[0].getBoxes();
+    const available = [];
+    for (let i = 0; i < allBoxes.length; i++) {
+      const box = allBoxes[i];
+      if (!box.getCard()) {
+        available.push(box);
+      }
+    }
+    this.#highlightedBoxes.boxes = available;
+    this.#highlightedBoxes.color = "rgb(7, 255, 3)";
+    this.#highlightedBoxes.isActive = true;
+  }
+
   #selectTargetGrid() {
     this._phaseMessage.setCurrentContent(
       PhaseMessage.content.prepareEvent.selectTargetGrid[globals.language]
@@ -151,15 +172,17 @@ export default class PrepareEventPhase extends Phase {
       selectedCard.setState(CardState.PLACED);
       this._state = PrepareEventState.SELECT_HAND_CARD;
     } else {
+      this.#initTargetHighlights();
       const hoveredBox = this.#gridsRelevants[0].lookForHoveredBox();
 
       if (hoveredBox) {
         if (!hoveredBox.isLeftClicked()) {
           hoveredBox.setState(BoxState.HOVERED);
         } else {
-          hoveredBox.setState(BoxState.SELECTED);
-
-          this._state = PrepareEventState.END;
+          if (!hoveredBox.getCard()) {
+            hoveredBox.setState(BoxState.SELECTED);
+            this._state = PrepareEventState.END;
+          }
         }
       }
     }
@@ -188,14 +211,24 @@ export default class PrepareEventPhase extends Phase {
     selectedCard.setYCoordinate(selectedBox.getYCoordinate());
 
     selectedCard.setState(CardState.PLACED);
+    selectedBox.setState(BoxState.OCCUPIED);
 
     const prepareEvent = PrepareEvent.create(this.#player, selectedCard);
     this.#events.push(prepareEvent);
 
+    this.#resetHighlightedBoxes();
+
     this._state = PrepareEventState.INIT;
   }
 
+  #resetHighlightedBoxes() {
+    this.#highlightedBoxes.boxes = null;
+    this.#highlightedBoxes.color = null;
+    this.#highlightedBoxes.isActive = false;
+  }
   reset() {
+    this.#resetHighlightedBoxes();
+    this.#initializePhase();
     this._state = PrepareEventState.INIT;
   }
 }

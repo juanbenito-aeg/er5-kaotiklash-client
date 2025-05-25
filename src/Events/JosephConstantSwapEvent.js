@@ -123,10 +123,10 @@ export default class JosephConstantSwapEvent extends Event {
           globals.canvas.width / 2,
           globals.canvas.height / 2,
           1,
-          new Physics(0, 0, 0, 0, 0, 0, 0)
+          new Physics(0, 0)
         );
 
-        josephIsGoneMsg.getPhysics().vy = 20;
+        josephIsGoneMsg.setVY(20);
 
         this.#stateMessages.push(josephIsGoneMsg);
       } else {
@@ -139,11 +139,11 @@ export default class JosephConstantSwapEvent extends Event {
           globals.canvas.width / 2,
           globals.canvas.height / 2,
           1,
-          new Physics(0, 0, 0, 0, 0, 0, 0)
+          new Physics(0, 0)
         );
 
-        josephExchangedCardsMsg.getPhysics().vy = 20;
-        
+        josephExchangedCardsMsg.setVY(20);
+
         this.#stateMessages.push(josephExchangedCardsMsg);
       }
     }

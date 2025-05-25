@@ -31,7 +31,7 @@ export default class ChatMessage extends Message {
   ) {
     super();
 
-    this.#duration = 5;
+    this.#duration = 7;
     this.#type = type;
     this.#position = position;
     this.#content = content;
@@ -55,7 +55,6 @@ export default class ChatMessage extends Message {
       "That was pathetic!",
       "Is that all you've got?",
       "My grandma fights better!",
-      "You're slower than a dial-up connection!",
       "Lag isn’t your only problem!",
       "Oops, did that hurt?",
       "Try again, noob!",

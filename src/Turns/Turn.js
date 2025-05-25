@@ -8,6 +8,7 @@ import DiscardCardPhase from "./DiscardCardPhase.js";
 import EquipWeaponOrArmorEvent from "../Events/EquipWeaponOrArmorEvent.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
+import Physics from "../Game/Physics.js";
 import globals from "../Game/globals.js";
 import {
   PlayerID,
@@ -19,10 +20,9 @@ import {
   CardCategory,
   PhaseButtonData,
   GridType,
-  BoxState,
   MinionTypeID,
+  StateMessageType,
 } from "../Game/constants.js";
-import Physics from "../Game/Physics.js";
 
 export default class Turn {
   #isCurrentPhaseCanceled;
@@ -46,6 +46,9 @@ export default class Turn {
   #lastHoveredCardId;
   #eventsData;
   #stats;
+  #edgeAnimation;
+  #particles;
+  #highlightedBoxes;
 
   constructor(
     deckContainer,
@@ -59,7 +62,10 @@ export default class Turn {
     minionTooltip,
     eventsData,
     stats,
-    remainingCardsTooltip
+    remainingCardsTooltip,
+    edgeAnimation,
+    particles,
+    highlightedBoxes
   ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
@@ -81,6 +87,9 @@ export default class Turn {
     this.#eventsData = eventsData;
     this.#stats = stats;
     this.#remainingCardsTooltip = remainingCardsTooltip;
+    this.#edgeAnimation = edgeAnimation;
+    this.#particles = particles;
+    this.#highlightedBoxes = highlightedBoxes;
   }
 
   fillPhases(currentPlayer) {
@@ -110,7 +119,10 @@ export default class Turn {
         this.#stateMessages,
         this.#attackMenuData,
         this.#eventsData,
-        this.#stats
+        this.#stats,
+        this.#edgeAnimation,
+        this.#particles,
+        this.#highlightedBoxes
       );
 
       this.#phases.push(currentPhase);
@@ -118,96 +130,12 @@ export default class Turn {
   }
 
   changeTurn(currentPlayer) {
-    /*  this.#swapTurnPosition(); */
-
     if (currentPlayer.getID() === PlayerID.PLAYER_1) {
       return PlayerID.PLAYER_2;
     } else {
       return PlayerID.PLAYER_1;
     }
   }
-
-  /*  #swapTurnPosition() {
-    /*  this.#displayDecksAndGrids(this.#deckContainer, this.#board); 
-    this.#swapGridPosition();
-  }
-
-  #swapGridPosition() {
-    const player1Grids = [
-      this.#board.getGrids()[GridType.PLAYER_1_BATTLEFIELD],
-      this.#board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND],
-      this.#board.getGrids()[GridType.PLAYER_1_MAIN_CHARACTER],
-      this.#board.getGrids()[GridType.PLAYER_1_MINIONS_DECK],
-      this.#board.getGrids()[GridType.PLAYER_1_PREPARE_EVENT],
-    ];
-
-    const player2Grids = [
-      this.#board.getGrids()[GridType.PLAYER_2_BATTLEFIELD],
-      this.#board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND],
-      this.#board.getGrids()[GridType.PLAYER_2_MAIN_CHARACTER],
-      this.#board.getGrids()[GridType.PLAYER_2_MINIONS_DECK],
-      this.#board.getGrids()[GridType.PLAYER_2_PREPARE_EVENT],
-    ];
-
-    for (let i = 0; i < player1Grids.length; i++) {
-      this.#swapGridPositions(player1Grids[i], player2Grids[i]);
-    }
-  }
-
-  #swapGridPositions(player1Grid, player2Grid) {
-    for (let i = 0; i < player1Grid.getBoxes().length; i++) {
-      for (let j = 0; j < player2Grid.getBoxes().length; j++) {
-        const player1Box = player1Grid.getBoxes()[i];
-        const player2Box = player2Grid.getBoxes()[j];
-        const tempX = player1Box.getXCoordinate();
-        const tempY = player1Box.getYCoordinate();
-
-        //PLAYER 1 BOXES
-        player1Box.setXCoordinate(player2Box.getXCoordinate());
-        player1Box.setYCoordinate(player2Box.getYCoordinate());
-
-        //PLAYER 2 BOXES
-        player2Box.setXCoordinate(tempX);
-        player2Box.setYCoordinate(tempY);
-      }
-    }
-  }
-  /*  #swapDeckPosition() {
-    const player1Decks = [
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_ACTIVE_EVENTS],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_CARDS_IN_HAND],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MAIN_CHARACTER],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY],
-    ];
-    const player2Decks = [
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_ACTIVE_EVENTS],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_CARDS_IN_HAND],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MAIN_CHARACTER],
-      this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY],
-    ];
-
-    //SWAP DECK POSITIONS FROM PLAYER 1 TO PLAYER 2 AND VICE VERSA
-    for (let i = 0; i < player1Decks.length; i++) {
-      this.#setCardsPositionsInBoxes(player1Decks[i]);
-    }
-  }
-
-  #setCardsPositionsInBoxes(deck, grid) {
-    for (let i = 0; i < deck.getCards().length; i++) {
-      for (let j = 0; j < grid.getBoxes().length; j++) {
-        const cards = deck.getCards()[i];
-        const boxes = grid.getBoxes()[j];
-
-        cards.setXCoordinate(boxes.getXCoordinate());
-        cards.setYCoordinate(boxes.getYCoordinate());
-      }
-    }
-  }
- */
 
   execute(isGameFinished) {
     if (this.#numOfExecutedPhases === 0) {
@@ -221,6 +149,7 @@ export default class Turn {
       if (!isAnyCardExpanded) {
         this.#updateMinionTooltip();
         this.#updateRemainingCardsTooltip();
+        this.#applyHoverLiftEffect();
 
         if (this.#currentPhase === PhaseType.INVALID) {
           this.#equipWeaponOrArmor();
@@ -282,6 +211,81 @@ export default class Turn {
         this.#remainingCardsTooltip.clearTooltip();
         this.#hoverTime = 0;
         this.#lastHoveredCardId = null;
+      }
+    }
+  }
+
+  #applyHoverLiftEffect() {
+    const decksToCheck = [];
+
+    if (this.#player.getID() === PlayerID.PLAYER_1) {
+      if (this.#currentPhase === PhaseType.PREPARE_EVENT) {
+        decksToCheck.push(
+          DeckType.PLAYER_1_CARDS_IN_HAND,
+          DeckType.PLAYER_1_EVENTS_IN_PREPARATION
+        );
+      } else if (this.#currentPhase === PhaseType.MOVE) {
+        decksToCheck.push(DeckType.PLAYER_1_MINIONS_IN_PLAY);
+      } else if (this.#currentPhase === PhaseType.ATTACK) {
+        decksToCheck.push(DeckType.PLAYER_1_MINIONS_IN_PLAY);
+      }
+    } else {
+      if (this.#currentPhase === PhaseType.PREPARE_EVENT) {
+        decksToCheck.push(
+          DeckType.PLAYER_2_CARDS_IN_HAND,
+          DeckType.PLAYER_2_EVENTS_IN_PREPARATION
+        );
+      } else if (this.#currentPhase === PhaseType.MOVE) {
+        decksToCheck.push(DeckType.PLAYER_2_MINIONS_IN_PLAY);
+      } else if (this.#currentPhase === PhaseType.ATTACK) {
+        decksToCheck.push(DeckType.PLAYER_2_MINIONS_IN_PLAY);
+      }
+    }
+
+    const decks = this.#deckContainer.getDecks();
+    const liftAmount = 9.5;
+
+    for (let i = 0; i < decksToCheck.length; i++) {
+      const deck = decks[decksToCheck[i]];
+      if (!deck) continue;
+
+      const cards = deck.getCards();
+      if (!cards) continue;
+
+      const selectedCard = deck.lookForSelectedCard();
+      if (selectedCard) {
+        for (let j = 0; j < cards.length; j++) {
+          const card = cards[j];
+          const y = card.getYCoordinate();
+
+          if (Math.abs(y % 1) > 0.01) {
+            card.setYCoordinate(y + liftAmount);
+          }
+        }
+        continue;
+      }
+
+      for (let j = 0; j < cards.length; j++) {
+        const card = cards[j];
+        const y = card.getYCoordinate();
+        const state = card.getState();
+        const hoveredCard = deck.lookForHoveredCard();
+
+        if (state === CardState.MOVING) {
+          continue;
+        }
+
+        const isLifted = Math.abs(y % 1) > 0.01;
+
+        if (card === hoveredCard && state !== CardState.PLACED) {
+          if (!isLifted) {
+            card.setYCoordinate(y - liftAmount);
+          }
+        } else {
+          if (isLifted) {
+            card.setYCoordinate(y + liftAmount);
+          }
+        }
       }
     }
   }
@@ -355,7 +359,7 @@ export default class Turn {
   }
 
   #updateMinionTooltip() {
-    const tooltipDelay = 1.0;
+    const tooltipDelay = 0.4;
 
     const playerXMinionsInPlayDeck =
       this.#player.getID() === PlayerID.PLAYER_1
@@ -371,7 +375,7 @@ export default class Turn {
 
       this.#hoverTime = isSameCard
         ? this.#hoverTime + globals.deltaTime * 10
-        : globals.deltaTime * 10;
+        : globals.deltaTime;
 
       const cardCenterX =
         currentHoveredMinion.getXCoordinate() +
@@ -536,8 +540,6 @@ export default class Turn {
         weaponOrArmor = playerXEventsInPreparationDeck.lookForSelectedCard();
 
         if (weaponOrArmor.isLeftClicked()) {
-          console.log("WEAPON OR ARMOR DESELECTED");
-
           // THE PREVIOUSLY SELECTED WEAPON OR ARMOR WAS DESELECTED
           this.#equipWeaponOrArmorState = EquipWeaponOrArmorState.INIT;
         } else {
@@ -559,22 +561,30 @@ export default class Turn {
             if (!minion.isLeftClicked()) {
               minion.setState(CardState.HOVERED);
             } else if (minion.getMinionTypeID() === MinionTypeID.SPECIAL) {
-              // DEER STATE MESSAGE CREATION
-              const deerWeaponsMsg = new StateMessage(
-                "DEER CANNOT EQUIP WEAPONS OR ARMOR",
-                "20px MedievalSharp",
-                "red",
-                1,
-                2,
-                nMsgXCoordinate,
-                nMsgYCoordinate,
-                1,
-                new Physics(0, 0, 0, 0, 0, 0, 0)
-              );
+              if (
+                !StateMessage.isMsgOfTypeXAlreadyCreated(
+                  this.#stateMessages,
+                  StateMessageType.DEER_WEAPONS_ARMOR
+                )
+              ) {
+                // DEER STATE MESSAGE CREATION
+                const deerWeaponsArmorMsg = new StateMessage(
+                  "DEER CANNOT EQUIP WEAPONS OR ARMOR",
+                  "20px MedievalSharp",
+                  "red",
+                  1,
+                  2,
+                  nMsgXCoordinate,
+                  nMsgYCoordinate,
+                  1,
+                  new Physics(0, 0),
+                  StateMessageType.DEER_WEAPONS_ARMOR
+                );
 
-              deerWeaponsMsg.getPhysics().vy = 20;
-              
-              this.#stateMessages.push(deerWeaponsMsg);
+                deerWeaponsArmorMsg.setVY(20);
+
+                this.#stateMessages.push(deerWeaponsArmorMsg);
+              }
             } else if (
               (weaponOrArmor.getCategory() === CardCategory.WEAPON &&
                 !minion.getWeapon()) ||
@@ -591,12 +601,13 @@ export default class Turn {
                 nMsgXCoordinate,
                 nMsgYCoordinate,
                 1,
-                new Physics(0, 0, 0, 0, 0, 0, 0)
+                new Physics(0, 0)
               );
 
-              gearedUpMsg.getPhysics().vy = 20;
+              gearedUpMsg.setVY(20);
 
               this.#stateMessages.push(gearedUpMsg);
+
               this.#stats.incrementPlayerXUsedCards(this.#player.getID());
 
               minion.setState(CardState.SELECTED);
@@ -703,42 +714,58 @@ export default class Turn {
               this.#player.getID() ===
                 this.#eventsData.judgmentAncients.affectedPlayerID
             ) {
-              const cannotAttackDueToActiveEventMsg = new StateMessage(
-                "CANNOT ATTACK DUE TO ACTIVE EVENT",
-                "20px MedievalSharp",
-                "red",
-                1,
-                2,
-                buttonXCoordinate + buttonWidth / 2,
-                buttonYCoordinate + buttonHeight / 2,
-                1,
-                new Physics(0, 0, 0, 0, 0, 0, 0)
-              );
+              if (
+                !StateMessage.isMsgOfTypeXAlreadyCreated(
+                  this.#stateMessages,
+                  StateMessageType.CANNOT_ATTACK
+                )
+              ) {
+                const cannotAttackDueToActiveEventMsg = new StateMessage(
+                  "CANNOT ATTACK DUE TO ACTIVE EVENT",
+                  "20px MedievalSharp",
+                  "red",
+                  1,
+                  2,
+                  buttonXCoordinate + buttonWidth / 2,
+                  buttonYCoordinate + buttonHeight / 2,
+                  1,
+                  new Physics(0, 0),
+                  StateMessageType.CANNOT_ATTACK
+                );
 
-              cannotAttackDueToActiveEventMsg.getPhysics().vy = 20;
+                cannotAttackDueToActiveEventMsg.setVY(20);
 
-              this.#stateMessages.push(cannotAttackDueToActiveEventMsg);
+                this.#stateMessages.push(cannotAttackDueToActiveEventMsg);
+              }
             } else if (
               this.#eventsData.decrepitThroneSkill.isActive &&
               this.#player !==
                 this.#eventsData.decrepitThroneSkill.playerWithDecrepitThrone &&
               this.#eventsData.decrepitThroneSkill.turnsSinceActivation !== 3
             ) {
-              const cannotDoAnythingDueToActiveEventMsg = new StateMessage(
-                "CANNOT DO ALMOST ANYTHING DUE TO THE CURSE OF THE THRONE",
-                "20px MedievalSharp",
-                "red",
-                1,
-                2,
-                buttonXCoordinate + buttonWidth / 2,
-                buttonYCoordinate + buttonHeight / 2,
-                1,
-                new Physics(0, 0, 0, 0, 0, 0, 0)
-              );
+              if (
+                !StateMessage.isMsgOfTypeXAlreadyCreated(
+                  this.#stateMessages,
+                  StateMessageType.CANNOT_DO_ALMOST_ANYTHING
+                )
+              ) {
+                const cannotDoAnythingDueToActiveEventMsg = new StateMessage(
+                  "CANNOT DO ALMOST ANYTHING DUE TO THE CURSE OF THE THRONE",
+                  "20px MedievalSharp",
+                  "red",
+                  1,
+                  2,
+                  buttonXCoordinate + buttonWidth / 2,
+                  buttonYCoordinate + buttonHeight / 2,
+                  1,
+                  new Physics(0, 0),
+                  StateMessageType.CANNOT_DO_ALMOST_ANYTHING
+                );
 
-              cannotDoAnythingDueToActiveEventMsg.getPhysics().vy = 20;
+                cannotDoAnythingDueToActiveEventMsg.setVY(20);
 
-              this.#stateMessages.push(cannotDoAnythingDueToActiveEventMsg);
+                this.#stateMessages.push(cannotDoAnythingDueToActiveEventMsg);
+              }
             } else if (
               this.#currentPhase === PhaseType.INVALID &&
               (!this.#eventsData.decrepitThroneSkill.isActive ||

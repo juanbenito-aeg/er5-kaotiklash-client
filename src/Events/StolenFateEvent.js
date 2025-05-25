@@ -113,10 +113,10 @@ export default class StolenFateEvent extends Event {
             globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height /
               2,
           1,
-          new Physics(0, 0, 0, 0, 0, 0, 0)
+          new Physics(0, 0)
         );
 
-        cardDrawnMsg.getPhysics().vy = 20;
+        cardDrawnMsg.setVY(20);
 
         this.#stateMessages.push(cardDrawnMsg);
 

@@ -39,10 +39,10 @@ export default class TheCupOfTheLastBreathEvent extends Event {
         1200,
         570,
         1,
-        new Physics(0, 0, 0, 0, 0, 0, 0)
+        new Physics(0, 0)
       );
 
-      denyHealingMessage.getPhysics().vy = 20;
+      denyHealingMessage.setVY(20);
 
       this.#stateMessages.push(denyHealingMessage);
       this.#hasShowMessage = true;
@@ -64,10 +64,10 @@ export default class TheCupOfTheLastBreathEvent extends Event {
         1200,
         570,
         1,
-        new Physics(0, 0, 0, 0, 0, 0, 0)
+        new Physics(0, 0)
       );
 
-      healRestoredMessage.getPhysics().vy = 20;
+      healRestoredMessage.setVY(20);
 
       this.#stateMessages.push(healRestoredMessage);
     }

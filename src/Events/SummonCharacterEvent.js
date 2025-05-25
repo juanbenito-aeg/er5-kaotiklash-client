@@ -170,11 +170,11 @@ export default class SummonCharacterEvent extends Event {
             globals.canvas.width / 2,
             globals.canvas.height / 2,
             1,
-            new Physics(0, 0, 0, 0, 0, 0, 0)
+            new Physics(0, 0)
           );
 
-          secondMinionsAttractionMsg.getPhysics().vy = 20;
-          
+          secondMinionsAttractionMsg.setVY(20);
+
           this.#stateMessages.push(secondMinionsAttractionMsg);
         }
 
@@ -190,11 +190,11 @@ export default class SummonCharacterEvent extends Event {
             globals.canvas.width / 2,
             globals.canvas.height / 2,
             1,
-            new Physics(0, 0, 0, 0, 0, 0, 0)
+            new Physics(0, 0)
           );
 
-          curseDisappearanceMsg.getPhysics().vy = 20;
-          
+          curseDisappearanceMsg.setVY(20);
+
           this.#stateMessages.push(curseDisappearanceMsg);
 
           this.#isPlayersSummonCharacterActive[

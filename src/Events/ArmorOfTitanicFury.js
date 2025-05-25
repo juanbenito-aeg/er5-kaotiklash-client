@@ -12,10 +12,9 @@ export default class ArmorOfTitanicFuryEffect {
       target.getXCoordinate() + 55,
       target.getYCoordinate(),
       1,
-      new Physics(0,0,0,0,0,0,0)
+      new Physics(0, 0)
     );
-
-    plus10AttackMsg.getPhysics().vy = 20;
+    plus10AttackMsg.setVY(20);
 
     stateMessages.push(plus10AttackMsg);
 
@@ -34,10 +33,10 @@ export default class ArmorOfTitanicFuryEffect {
       target.getXCoordinate() + 55,
       target.getYCoordinate(),
       1,
-      new Physics(0, 0, 0, 0, 0, 0, 0)
+      new Physics(0, 0)
     );
-    
-    removedAttackBoostMsg.getPhysics().vy = 20;
+
+    removedAttackBoostMsg.setVY(20);
 
     stateMessages.push(removedAttackBoostMsg);
 

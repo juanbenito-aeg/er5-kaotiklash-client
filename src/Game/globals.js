@@ -8,6 +8,7 @@ export default {
   canvas: {},
   ctx: {},
   boardImage: {},
+  cardsInHandContainerImage: {},
   cardsData: {},
   cardsReverseImage: {},
   cardsImages: {
@@ -34,9 +35,20 @@ export default {
   isScreenInitialized: {
     register: false,
     playerSessionScreen: false,
+    stats: false,
   },
   playersIDs: {
     loggedIn: -1,
     lastOpponent: -1,
   },
+  isChartCreated: {
+    winRate: false,
+    turnsPerMatch: false,
+    josephAppearances: false,
+    minionsKilled: false,
+    fumblesPerMatch: false,
+    criticalHitsPerMatch: false,
+    usedCards: false,
+  },
+  assetsLoadProgressAsPercentage: 0,
 };
