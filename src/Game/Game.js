@@ -1577,17 +1577,20 @@ export default class Game {
       [GridType.ACTIVE_EVENTS_TABLE].getBoxes()[0]
       .getHeight();
 
-    globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
     globals.ctx.shadowBlur = 10;
-    globals.ctx.shadowOffsetX = 4;
-    globals.ctx.shadowOffsetY = 4;
+    globals.ctx.shadowColor = "rgba(0 0 0)";
 
-    globals.ctx.fillStyle = "darkcyan";
-    globals.ctx.fillRect(tableX, tableY, tableWidth, tableHeight);
-
-    globals.ctx.shadowBlur = 0;
-    globals.ctx.shadowOffsetX = 0;
-    globals.ctx.shadowOffsetY = 0;
+    globals.ctx.drawImage(
+      globals.activeEventsTableImage,
+      0,
+      0,
+      916,
+      714,
+      tableX,
+      tableY,
+      tableWidth,
+      tableHeight
+    );
 
     this.#renderColumnAndRowLinesAndHeaders(
       tableY,
@@ -1600,13 +1603,13 @@ export default class Game {
   }
 
   #renderColumnAndRowLinesAndHeaders(tableY, tableX, tableWidth, tableHeight) {
-    globals.ctx.strokeStyle = "black";
+    globals.ctx.strokeStyle = "rgb(1 15 28)";
     globals.ctx.lineWidth = 2;
 
-    globals.ctx.fillStyle = "white";
-    globals.ctx.font = "18px MedievalSharp";
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
+    globals.ctx.font = "18px MedievalSharp";
+    globals.ctx.fillStyle = "white";
 
     const isJosephChaoticEventActive =
       this.#deckContainer.getDecks()[DeckType.JOSEPH].getCards().length === 1;
@@ -1619,12 +1622,14 @@ export default class Game {
 
       if (i !== this.#activeEventsTableData.rows.length - 1) {
         // COLUMN LINE
+        globals.ctx.shadowBlur = 0;
         globals.ctx.beginPath();
         globals.ctx.moveTo(currentColumn.lineXCoordinate, tableY);
         globals.ctx.lineTo(currentColumn.lineXCoordinate, tableY + tableHeight);
         globals.ctx.stroke();
 
         // COLUMN HEADER
+        globals.ctx.shadowBlur = 10;
         globals.ctx.fillText(
           currentColumn.header,
           currentColumn.lineXCoordinate - currentColumn.width / 2,
@@ -1635,22 +1640,26 @@ export default class Game {
       const currentRow = this.#activeEventsTableData.rows[i];
 
       // ROW LINE
+      globals.ctx.shadowBlur = 0;
       globals.ctx.beginPath();
       globals.ctx.moveTo(tableX, currentRow.lineYCoordinate);
       globals.ctx.lineTo(tableX + tableWidth, currentRow.lineYCoordinate);
       globals.ctx.stroke();
 
       // ROW HEADER
+      globals.ctx.shadowBlur = 10;
       globals.ctx.fillText(
         currentRow.header,
         tableX + this.#activeEventsTableData.columns[0].width / 2,
         currentRow.lineYCoordinate - currentRow.height / 2
       );
     }
+
+    globals.ctx.shadowBlur = 0;
   }
 
   #renderActiveEventsData() {
-    globals.ctx.fillStyle = "black";
+    globals.ctx.fillStyle = "white";
     globals.ctx.font = "14px MedievalSharp";
 
     const activeEventsDeck =

@@ -1237,6 +1237,12 @@ function loadAssets() {
   globals.phaseButtonImage.src = "../images/phase-button.png";
   globals.assetsToLoad.push(globals.phaseButtonImage);
 
+  // LOAD ACTIVE EVENTS TABLE IMAGE
+  globals.activeEventsTableImage = new Image();
+  globals.activeEventsTableImage.addEventListener("load", loadHandler, false);
+  globals.activeEventsTableImage.src = "../images/active-events-table.png";
+  globals.assetsToLoad.push(globals.activeEventsTableImage);
+
   // LOAD CARDS IN HAND CONTAINER IMAGE
   globals.cardsInHandContainerImage = new Image();
   globals.cardsInHandContainerImage.addEventListener(
