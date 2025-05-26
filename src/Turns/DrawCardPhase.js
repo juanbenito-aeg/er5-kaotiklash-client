@@ -2,6 +2,7 @@ import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
 import JosephConstantSwapEvent from "../Events/JosephConstantSwapEvent.js";
+import { checkIfMusicIsPlayingAndIfSoReset, setMusic } from "../index.js";
 import globals from "../Game/globals.js";
 import {
   DeckType,
@@ -12,6 +13,7 @@ import {
   RareEventID,
   MainCharacterID,
   ArmorID,
+  Music,
 } from "../Game/constants.js";
 import Physics from "../Game/Physics.js";
 
@@ -157,6 +159,9 @@ export default class DrawCardPhase extends Phase {
 
       this.#activeEventsDeck.insertCard(drawnCard);
       this.#josephDeck.insertCard(drawnCard);
+
+      checkIfMusicIsPlayingAndIfSoReset();
+      setMusic(Music.JOSEPH_MUSIC);
 
       boxToPlaceDrawnCardInto = this.#josephGrid.getBoxes()[0];
 
