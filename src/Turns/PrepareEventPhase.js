@@ -2,6 +2,7 @@ import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import PrepareEvent from "../Events/PrepareEvent.js";
 import globals from "../Game/globals.js";
+import Physics from "../Game/Physics.js";
 import {
   PrepareEventState,
   CardState,
@@ -17,6 +18,8 @@ export default class PrepareEventPhase extends Phase {
   #gridsRelevants;
   #events;
   #highlightedBoxes;
+  #physics;
+  #movingCard;
 
   constructor(
     state,
@@ -35,6 +38,8 @@ export default class PrepareEventPhase extends Phase {
     this.#gridsRelevants = gridRelevants;
     this.#events = events;
     this.#highlightedBoxes = highlightedBoxes;
+    this.#physics = null;
+    this.#movingCard = null;
   }
 
   static create(
@@ -110,6 +115,14 @@ export default class PrepareEventPhase extends Phase {
         this.#selectTargetGrid();
         break;
 
+      case PrepareEventState.MOVE_CARD:
+        this.#moveCardToBox();
+        break;
+
+      case PrepareEventState.ANIMATION_CARD:
+        this.#animateCardMovement();
+        break;
+
       case PrepareEventState.END:
         this.#finalizePhase();
         isPhaseFinished = true;
@@ -167,6 +180,8 @@ export default class PrepareEventPhase extends Phase {
 
     const selectedCard = this.#decksRelevants[0].lookForSelectedCard();
 
+    this.#movingCard = selectedCard;
+
     if (selectedCard.isLeftClicked()) {
       // THE PREVIOUSLY SELECTED CARD WAS DESELECTED
       selectedCard.setState(CardState.PLACED);
@@ -181,19 +196,65 @@ export default class PrepareEventPhase extends Phase {
         } else {
           if (!hoveredBox.getCard()) {
             hoveredBox.setState(BoxState.SELECTED);
-            this._state = PrepareEventState.END;
+            this._state = PrepareEventState.MOVE_CARD;
           }
         }
       }
     }
   }
 
-  #finalizePhase() {
+  #moveCardToBox() {
     this._phaseMessage.setCurrentContent(
       PhaseMessage.content.prepareEvent.moveCard[globals.language]
     );
+    const selectedTargetBox = this.#gridsRelevants[0].lookForSelectedBox();
 
-    const selectedCard = this.#decksRelevants[0].lookForSelectedCard();
+    this.#movingCard.setState(CardState.MOVING);
+
+    const startX = this.#movingCard.getXCoordinate();
+    const startY = this.#movingCard.getYCoordinate();
+    const endX = selectedTargetBox.getXCoordinate();
+    const endY = selectedTargetBox.getYCoordinate();
+
+    this.#physics = new Physics(20, 5, 0, 0, 0, 0, 0);
+
+    this.#physics.ax = (endX - startX) * 0.01;
+    this.#physics.ay = (endY - startY) * 0.01;
+
+    this._state = PrepareEventState.ANIMATION_CARD;
+  }
+
+  #animateCardMovement() {
+    const selectedCard = this.#movingCard;
+    const selectedTargetBox = this.#gridsRelevants[0].lookForSelectedBox();
+    if (!selectedCard || !selectedTargetBox) return;
+
+    const targetX = selectedTargetBox.getXCoordinate();
+    const targetY = selectedTargetBox.getYCoordinate();
+
+    const currentX = selectedCard.getXCoordinate();
+    const currentY = selectedCard.getYCoordinate();
+
+    const dx = targetX - currentX;
+    const dy = targetY - currentY;
+
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < 0.5) {
+      this._state = PrepareEventState.END;
+      return;
+    }
+    const speed = 10;
+    let ratio = speed / distance;
+
+    ratio = Math.min(ratio, 1);
+
+    selectedCard.setXCoordinate(currentX + dx * ratio);
+    selectedCard.setYCoordinate(currentY + dy * ratio);
+  }
+
+  #finalizePhase() {
+    const selectedCard = this.#movingCard;
 
     this.#decksRelevants[1].insertCard(selectedCard);
     this.#decksRelevants[0].removeCard(selectedCard);
@@ -212,6 +273,9 @@ export default class PrepareEventPhase extends Phase {
 
     selectedCard.setState(CardState.PLACED);
     selectedBox.setState(BoxState.OCCUPIED);
+
+    this.#movingCard = null;
+    this.#physics = null;
 
     const prepareEvent = PrepareEvent.create(this.#player, selectedCard);
     this.#events.push(prepareEvent);

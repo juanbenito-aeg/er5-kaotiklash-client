@@ -188,7 +188,9 @@ const PrepareEventState = {
   INIT: 0,
   SELECT_HAND_CARD: 1,
   SELECT_TARGET_GRID: 2,
-  END: 3,
+  MOVE_CARD: 3,
+  ANIMATION_CARD: 4,
+  END: 5,
 };
 
 const PerformEventState = {
