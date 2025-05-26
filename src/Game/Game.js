@@ -15,6 +15,7 @@ import RemainingCardsTooltip from "../Tooltips/RemainingCardsTooltip.js";
 import MainCharacterParticle from "../Particles/MainCharacterParticle.js";
 import GameStats from "./GameStats.js";
 import globals from "./globals.js";
+import { checkIfMusicIsPlayingAndIfSoReset, setMusic } from "../index.js";
 import {
   GameState,
   CardCategory,
@@ -35,6 +36,7 @@ import {
   ParticleState,
   ParticleID,
   Sound,
+  Music,
 } from "./constants.js";
 import Physics from "./Physics.js";
 
@@ -248,6 +250,9 @@ export default class Game {
     game.#fillActiveEventsTableData();
 
     game.#particlesForCurrentPlayer();
+
+    checkIfMusicIsPlayingAndIfSoReset();
+    setMusic(Music.GAME_MUSIC);
 
     return game;
   }
@@ -764,6 +769,7 @@ export default class Game {
 
     if (this.#stateMessages.length === 0 && this.#chatMessages.length > 0) {
       globals.gameState = GameState.CHAT_PAUSE;
+      globals.currentSound = Sound.TALKING_SOUND;
     } else if (this.#chatMessages.length === 0) {
       this.#mouseInput.resetIsLeftClickedOnBoxes(this.#board);
       this.#mouseInput.detectMouseOverBox(this.#board);
@@ -1202,6 +1208,9 @@ export default class Game {
           this.#winner = this.#players[1 - i];
 
           this.#isGameFinished = true;
+
+          checkIfMusicIsPlayingAndIfSoReset();
+          setMusic(Music.WINNER_MUSIC);
 
           this.#stats.postToDB(this.#winner);
           this.#stats.setStatsAlreadySentToTrue();
