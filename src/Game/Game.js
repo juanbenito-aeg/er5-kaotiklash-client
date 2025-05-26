@@ -1236,6 +1236,12 @@ export default class Game {
     if (this.#chatMessages.length === 0) {
       globals.gameState = GameState.PLAYING;
     }
+
+    if (globals.gameState === GameState.CHAT_PAUSE) {
+      globals.sounds[globals.currentMusic].volume = 0.2;
+    } else {
+      globals.sounds[globals.currentMusic].volume = 0.5;
+    }
   }
 
   #updateChatMessages() {
