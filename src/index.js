@@ -1,10 +1,11 @@
 import Game from "./Game/Game.js";
 import globals from "./Game/globals.js";
-import { GameState, FPS, Language, ChartID } from "./Game/constants.js";
+import { GameState, FPS, Language, ChartID, Music } from "./Game/constants.js";
 
 window.onload = initEssentials;
 
 async function initEssentials() {
+  loadInitialMusic();
   initInnDoor();
   initLanguageBtns();
 
@@ -27,6 +28,8 @@ async function initEssentials() {
 
 function initInnDoor() {
   const innDoor = document.getElementById("main-screen-inn-door");
+  checkIfMusicIsPlayingAndIfSoReset();
+  setMusic(Music.TAVERN_MUSIC);
   innDoor.addEventListener("click", initLoginScreen);
 }
 
@@ -204,6 +207,9 @@ function initLoginScreen() {
   showLoginScreen();
   showLanguageBtns();
 
+  checkIfMusicIsPlayingAndIfSoReset();
+  setMusic(Music.LOGIN_REGISTER_MUSIC);
+
   const loginForm = document.getElementById("login-form");
   loginForm.addEventListener("submit", checkFormDataAndLogIn);
 
@@ -267,6 +273,9 @@ function initRegisterScreen() {
 
   const registerForm = document.getElementById("register-form");
   registerForm.addEventListener("submit", checkFormDataAndRegister);
+
+  checkIfMusicIsPlayingAndIfSoReset();
+  setMusic(Music.LOGIN_REGISTER_MUSIC);
 
   const registerScreenLoginBtn = document.getElementById(
     "register-screen-login-btn"
@@ -347,6 +356,9 @@ function initPlayerSessionScreen() {
   playerEmailParagraph.innerHTML = playerEmail;
 
   showPlayerSessionScreen();
+
+  checkIfMusicIsPlayingAndIfSoReset();
+  setMusic(Music.PLAYER_SESSION_MUSIC);
 
   globals.playersIDs.loggedIn = localStorage.getItem("playerID");
 
@@ -1149,6 +1161,37 @@ function setUpGameTips() {
   document.getElementById("game-tip").textContent = randomTip;
 }
 
+function loadInitialMusic() {
+  const taverMusic = document.getElementById("taverMusic");
+  const loginAndRegisterSound = document.getElementById("login-register-music");
+  const playerSessionMusic = document.getElementById("player-session-music");
+
+  globals.sounds.push(taverMusic, loginAndRegisterSound, playerSessionMusic);
+
+  let initialLoaded = 0;
+  const totalInitial = globals.sounds.length;
+
+  for (let i = 0; i < totalInitial.length; i++) {
+    const sound = globals.sounds[i];
+    sound.addEventListener("timeupdate", updateMusic, false);
+    sound.addEventListener("canplaythrough", initialLoadHandler, false);
+    sound.load();
+  }
+
+  function initialLoadHandler() {
+    initialLoaded++;
+    if (initialLoaded >= totalInitial) {
+      for (let i = 0; i < totalInitial.length; i++) {
+        globals.sounds[i].removeEventListener(
+          "canplaythrough",
+          initialLoadHandler,
+          false
+        );
+      }
+    }
+  }
+}
+
 function hidePlayerSessionAndInitGameScreen() {
   hidePlayerSessionScreen();
 
@@ -1448,8 +1491,21 @@ function loadAssets() {
   // LOAD SOUNDS
 
   const bulbBreakingSound = document.getElementById("bulbBreakingSound");
+  const talkingSound = document.getElementById("talkingSound");
+  const gameMusic = document.getElementById("gameMusic");
+  gameMusic.addEventListener("timeupdate", updateMusic, false);
+  const josephMusic = document.getElementById("joseph-music");
+  josephMusic.addEventListener("timeupdate", updateMusic, false);
+  const winnerMusic = document.getElementById("winner-music");
+  winnerMusic.addEventListener("timeupdate", updateMusic, false);
 
-  globals.sounds.push(bulbBreakingSound);
+  globals.sounds.push(
+    bulbBreakingSound,
+    talkingSound,
+    gameMusic,
+    josephMusic,
+    winnerMusic
+  );
 
   for (let i = 0; i < globals.sounds.length; i++) {
     const currentSound = globals.sounds[i];
@@ -1503,6 +1559,32 @@ function getPlayersNames() {
     opponentSelect.options[opponentSelect.selectedIndex].label;
 
   return playersNames;
+}
+
+function updateMusic() {
+  if (globals.currentMusic !== Music.NO_MUSIC) {
+    const buffer = 0.28;
+    const music = globals.sounds[globals.currentMusic];
+
+    if (music.currentTime > music.duration - buffer) {
+      music.currentTime = 0;
+      music.play();
+    }
+  }
+}
+
+export function checkIfMusicIsPlayingAndIfSoReset() {
+  if (globals.currentMusic !== Music.NO_MUSIC) {
+    const music = globals.sounds[globals.currentMusic];
+    music.pause();
+    music.currentTime = 0;
+  }
+}
+
+export function setMusic(music) {
+  globals.currentMusic = music;
+  globals.sounds[globals.currentMusic].play();
+  globals.sounds[globals.currentMusic].volume = 0.5;
 }
 
 function executeGameLoop(timeStamp) {
