@@ -9,6 +9,8 @@ import EquipWeaponOrArmorEvent from "../Events/EquipWeaponOrArmorEvent.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
 import Physics from "../Game/Physics.js";
+import CardMovement from "../Decks/CardMovement.js";
+import Box from "../Board/Box.js";
 import globals from "../Game/globals.js";
 import {
   PlayerID,
@@ -43,7 +45,7 @@ export default class Turn {
   #minionTooltip;
   #remainingCardsTooltip;
   #hoverTime;
-  #lastHoveredCardId;
+  #lastHoveredElement;
   #eventsData;
   #stats;
   #edgeAnimation;
@@ -83,7 +85,6 @@ export default class Turn {
     this.#equipWeaponOrArmorState = EquipWeaponOrArmorState.INIT;
     this.#minionTooltip = minionTooltip;
     this.#hoverTime = 0;
-    this.#lastHoveredCardId = null;
     this.#eventsData = eventsData;
     this.#stats = stats;
     this.#remainingCardsTooltip = remainingCardsTooltip;
@@ -210,7 +211,6 @@ export default class Turn {
         this.#minionTooltip.clearTooltip();
         this.#remainingCardsTooltip.clearTooltip();
         this.#hoverTime = 0;
-        this.#lastHoveredCardId = null;
       }
     }
   }
@@ -359,7 +359,7 @@ export default class Turn {
   }
 
   #updateMinionTooltip() {
-    const tooltipDelay = 0.4;
+    const tooltipAppearanceDelay = 0.4;
 
     const playerXMinionsInPlayDeck =
       this.#player.getID() === PlayerID.PLAYER_1
@@ -369,84 +369,91 @@ export default class Turn {
     const currentHoveredMinion = playerXMinionsInPlayDeck.lookForHoveredCard();
 
     if (currentHoveredMinion) {
-      const currentCardId = currentHoveredMinion.getID();
-      const isSameCard = this.#lastHoveredCardId === currentCardId;
-      this.#lastHoveredCardId = currentCardId;
+      const currentCardID = currentHoveredMinion.getID();
 
-      this.#hoverTime = isSameCard
-        ? this.#hoverTime + globals.deltaTime * 10
-        : globals.deltaTime;
+      if (this.#lastHoveredElement instanceof CardMovement) {
+        const isSameCard = this.#lastHoveredElement.getID() === currentCardID;
 
-      const cardCenterX =
+        this.#hoverTime = isSameCard ? this.#hoverTime + globals.deltaTime : 0;
+      }
+
+      this.#lastHoveredElement = currentHoveredMinion;
+
+      const cardCenterXCoordinate =
         currentHoveredMinion.getXCoordinate() +
         globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width / 2;
-      const cardCenterY =
+      const cardCenterYCoordinate =
         currentHoveredMinion.getYCoordinate() +
         globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2;
 
-      if (this.#hoverTime >= tooltipDelay) {
+      if (this.#hoverTime >= tooltipAppearanceDelay) {
         const content = this.#minionTooltip.getContent(currentHoveredMinion);
-        this.#minionTooltip.showTooltip(content, cardCenterX, cardCenterY);
+
+        this.#minionTooltip.showTooltip(
+          content,
+          cardCenterXCoordinate,
+          cardCenterYCoordinate
+        );
       }
-    } else {
+    } else if (this.#lastHoveredElement instanceof CardMovement) {
       this.#minionTooltip.clearTooltip();
       this.#hoverTime = 0;
-      this.#lastHoveredCardId = null;
     }
   }
 
   #updateRemainingCardsTooltip() {
-    const tooltipDelay = 0.2;
-    const minionsGrid = [
-      this.#board.getGrids()[GridType.PLAYER_1_MINIONS_DECK],
-      this.#board.getGrids()[GridType.PLAYER_2_MINIONS_DECK],
-    ];
+    const tooltipAppearanceDelay = 0.4;
 
     const player1MinionsDeck =
       this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS];
     const player2MinionsDeck =
       this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
 
-    const hoveredBoxPlayer1 = minionsGrid[0].lookForHoveredBox();
-    const hoveredBoxPlayer2 = minionsGrid[1].lookForHoveredBox();
+    const minionsDecksBoxes = [
+      this.#board.getGrids()[GridType.PLAYER_1_MINIONS_DECK].getBoxes()[0],
+      this.#board.getGrids()[GridType.PLAYER_2_MINIONS_DECK].getBoxes()[0],
+    ];
 
-    if (hoveredBoxPlayer1) {
-      this.#hoverTime = hoveredBoxPlayer1
-        ? this.#hoverTime + globals.deltaTime * 10
-        : this.#hoverTime;
+    let hoveredMinionsDeck, hoveredMinionsDeckBox;
+    for (let i = 0; i < minionsDecksBoxes.length; i++) {
+      const currentBox = minionsDecksBoxes[i];
 
-      const boxCenterX = hoveredBoxPlayer1.getXCoordinate() + 100;
-      const boxCenterY = hoveredBoxPlayer1.getYCoordinate() + 140;
+      if (currentBox.isMouseOver()) {
+        if (i === 0) {
+          hoveredMinionsDeck =
+            globals.firstActivePlayerID === PlayerID.PLAYER_1
+              ? player1MinionsDeck
+              : player2MinionsDeck;
+        } else {
+          hoveredMinionsDeck =
+            globals.firstActivePlayerID === PlayerID.PLAYER_1
+              ? player2MinionsDeck
+              : player1MinionsDeck;
+        }
 
-      if (this.#hoverTime >= tooltipDelay) {
-        const content =
-          this.#remainingCardsTooltip.getContent(player1MinionsDeck);
-        return this.#remainingCardsTooltip.showTooltip(
-          content,
-          boxCenterX,
-          boxCenterY
-        );
-      }
-    } else if (hoveredBoxPlayer2) {
-      this.#hoverTime = hoveredBoxPlayer2
-        ? this.#hoverTime + globals.deltaTime * 10
-        : this.#hoverTime;
-
-      const boxCenterX = hoveredBoxPlayer2.getXCoordinate() + 100;
-      const boxCenterY = hoveredBoxPlayer2.getYCoordinate() + 140;
-
-      if (this.#hoverTime >= tooltipDelay) {
-        const content =
-          this.#remainingCardsTooltip.getContent(player2MinionsDeck);
-        return this.#remainingCardsTooltip.showTooltip(
-          content,
-          boxCenterX,
-          boxCenterY
-        );
+        hoveredMinionsDeckBox = currentBox;
       }
     }
 
-    if (!hoveredBoxPlayer1 || !hoveredBoxPlayer2) {
+    if (hoveredMinionsDeck) {
+      this.#lastHoveredElement = hoveredMinionsDeckBox;
+
+      this.#hoverTime += globals.deltaTime;
+
+      const boxCenterXCoordinate = hoveredMinionsDeckBox.getXCoordinate() + 100;
+      const boxCenterYCoordinate = hoveredMinionsDeckBox.getYCoordinate() + 140;
+
+      if (this.#hoverTime >= tooltipAppearanceDelay) {
+        const content =
+          this.#remainingCardsTooltip.getContent(hoveredMinionsDeck);
+
+        return this.#remainingCardsTooltip.showTooltip(
+          content,
+          boxCenterXCoordinate,
+          boxCenterYCoordinate
+        );
+      }
+    } else if (this.#lastHoveredElement instanceof Box) {
       this.#remainingCardsTooltip.clearTooltip();
       this.#hoverTime = 0;
     }
