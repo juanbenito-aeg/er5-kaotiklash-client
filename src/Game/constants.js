@@ -65,7 +65,18 @@ const IconID = {
 
 const Sound = {
   NO_SOUND: -1,
-  BULB_BREAKING: 0,
+  BULB_BREAKING: 3,
+  TALKING_SOUND: 4,
+};
+
+const Music = {
+  NO_MUSIC: -1,
+  TAVERN_MUSIC: 0,
+  LOGIN_REGISTER_MUSIC: 1,
+  PLAYER_SESSION_MUSIC: 2,
+  GAME_MUSIC: 5,
+  JOSEPH_MUSIC: 6,
+  WINNER_MUSIC: 7,
 };
 
 const CardCategory = {
@@ -368,6 +379,7 @@ export {
   TemplateID,
   IconID,
   Sound,
+  Music,
   CardCategory,
   MinionTypeID,
   WeaponTypeID,
