@@ -148,6 +148,7 @@ const CardState = {
   INACTIVE_SELECTED: 5,
   SELECTED: 6,
   EXPANDED: 7,
+  REVEALING_AND_MOVING: 8,
 };
 
 const BoxState = {
