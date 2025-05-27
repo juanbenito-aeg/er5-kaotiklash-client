@@ -234,7 +234,10 @@ export default class Turn {
         decksToCheck.push(DeckType.PLAYER_1_MINIONS_IN_PLAY);
       }
     } else {
-      if (this.#currentPhase === PhaseType.PREPARE_EVENT) {
+      if (
+        this.#currentPhase === PhaseType.PREPARE_EVENT ||
+        this.#currentPhase === PhaseType.PERFORM_EVENT
+      ) {
         decksToCheck.push(
           DeckType.PLAYER_2_CARDS_IN_HAND,
           DeckType.PLAYER_2_EVENTS_IN_PREPARATION

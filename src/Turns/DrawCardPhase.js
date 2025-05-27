@@ -14,6 +14,7 @@ import {
   MainCharacterID,
   ArmorID,
   Music,
+  CardState,
 } from "../Game/constants.js";
 import Physics from "../Game/Physics.js";
 
@@ -31,6 +32,8 @@ export default class DrawCardPhase extends Phase {
   #deckContainer;
   #board;
   #stats;
+  #animationCards;
+  #eventsGrid;
 
   constructor(
     state,
@@ -45,9 +48,11 @@ export default class DrawCardPhase extends Phase {
     josephGrid,
     currentPlayerCardsInHandDeck,
     currentPlayerCardsInHandGrid,
+    eventsGrid,
     deckContainer,
     board,
-    stats
+    stats,
+    animationCards
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -64,6 +69,8 @@ export default class DrawCardPhase extends Phase {
     this.#deckContainer = deckContainer;
     this.#board = board;
     this.#stats = stats;
+    this.#animationCards = animationCards;
+    this.#eventsGrid = eventsGrid;
   }
 
   static create(
@@ -77,7 +84,11 @@ export default class DrawCardPhase extends Phase {
     stateMessages,
     attackMenuData,
     eventsData,
-    stats
+    stats,
+    edgeAnimation,
+    particles,
+    highlightedBoxes,
+    animationCards
   ) {
     // DECKS VARIABLES
     const eventsDeck = deckContainer.getDecks()[DeckType.EVENTS];
@@ -95,6 +106,8 @@ export default class DrawCardPhase extends Phase {
         ? board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND]
         : board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND];
 
+    let eventsGrid = board.getGrids()[GridType.EVENTS_DECK];
+
     const drawCardPhase = new DrawCardPhase(
       0,
       mouseInput,
@@ -108,9 +121,11 @@ export default class DrawCardPhase extends Phase {
       josephGrid,
       currentPlayerCardsInHandDeck,
       currentPlayerCardsInHandGrid,
+      eventsGrid,
       deckContainer,
       board,
-      stats
+      stats,
+      animationCards
     );
 
     return drawCardPhase;
@@ -183,13 +198,22 @@ export default class DrawCardPhase extends Phase {
         }
       }
     }
+    this.#animationCards.card = drawnCard;
+    this.#animationCards.animationTime = 0;
+    this.#animationCards.targetBox = boxToPlaceDrawnCardInto;
+    this.#animationCards.phase = 0;
+    this.#animationCards.flipProgress = 0;
 
-    drawnCard.setXCoordinate(boxToPlaceDrawnCardInto.getXCoordinate());
-    drawnCard.setYCoordinate(boxToPlaceDrawnCardInto.getYCoordinate());
+    const eventBox = this.#eventsGrid.getBoxes()[0];
+    const startX = eventBox.getXCoordinate();
+    const startY = eventBox.getYCoordinate();
 
-    boxToPlaceDrawnCardInto.setCard(drawnCard);
+    drawnCard.setXCoordinate(startX);
+    drawnCard.setYCoordinate(startY);
+    drawnCard.setState(CardState.REVEALING_AND_MOVING);
 
     this.#eventsDeck.removeCard(drawnCard);
+    eventBox.resetCard();
   }
 
   // (!) REMOVE WHEN CARDS TESTING FINISHES
