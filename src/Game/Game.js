@@ -37,6 +37,7 @@ import {
   ParticleID,
   Sound,
   Music,
+  BoxState,
 } from "./constants.js";
 import Physics from "./Physics.js";
 
@@ -64,6 +65,7 @@ export default class Game {
   #particles;
   #borderTimer;
   #highlightedBoxes;
+  #animationCards;
 
   static async create(playersNames) {
     // "game" OBJECT CREATION
@@ -204,6 +206,16 @@ export default class Game {
       isActive: false,
     };
 
+    game.#animationCards = {
+      card: null,
+      animationTime: 0,
+      targetBox: null,
+      phase: 0,
+      flipProgress: 0,
+      time: 0,
+      size: 150,
+    };
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
@@ -220,7 +232,8 @@ export default class Game {
       game.#remainingCardsTooltip,
       game.#edgeAnimation,
       game.#particles,
-      game.#highlightedBoxes
+      game.#highlightedBoxes,
+      game.#animationCards
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -238,7 +251,8 @@ export default class Game {
       game.#remainingCardsTooltip,
       game.#edgeAnimation,
       game.#particles,
-      game.#highlightedBoxes
+      game.#highlightedBoxes,
+      game.#animationCards
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -1328,6 +1342,7 @@ export default class Game {
     this.#renderPhaseMessage();
     this.#renderCardsInHandContainers();
     this.#renderCardsReverse();
+    this.#renderAnimatedCard();
     this.#renderCards();
     this.#renderParticles();
 
@@ -1544,6 +1559,114 @@ export default class Game {
     );
 
     globals.ctx.restore();
+  }
+
+  #renderAnimatedCard() {
+    if (
+      !this.#animationCards ||
+      !this.#animationCards.card ||
+      !this.#animationCards.targetBox
+    )
+      return;
+
+    const card = this.#animationCards.card;
+    const centerX = globals.canvas.width / 2 - 70;
+    const centerY = globals.canvas.height / 2 - 50;
+
+    const speedToCenter = 0.08;
+    const flipDuration = 250;
+    const moveSpeed = 0.3;
+
+    if (this.#animationCards.phase === 0) {
+      const dx = centerX - card.getXCoordinate();
+      const dy = centerY - card.getYCoordinate();
+
+      card.setXCoordinate(card.getXCoordinate() + dx * speedToCenter);
+      card.setYCoordinate(card.getYCoordinate() + dy * speedToCenter);
+
+      this.#renderCardReverse(
+        card.getXCoordinate(),
+        card.getYCoordinate(),
+        this.#animationCards.size,
+        this.#animationCards.size
+      );
+
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) {
+        card.setXCoordinate(centerX);
+        card.setYCoordinate(centerY);
+        this.#animationCards.phase = 1;
+        this.#animationCards.flipProgress = 0;
+      }
+    } else if (this.#animationCards.phase === 1) {
+      this.#animationCards.flipProgress += globals.deltaTime * 1000;
+      const progress = Math.min(
+        this.#animationCards.flipProgress / flipDuration,
+        1
+      );
+      const scaleX = progress < 0.5 ? 1 - progress * 2 : (progress - 0.5) * 2;
+      this.#animationCards.size = 150 - 40 * progress;
+
+      globals.ctx.save();
+      globals.ctx.translate(
+        centerX + this.#animationCards.size / 2,
+        centerY + this.#animationCards.size / 2
+      );
+      globals.ctx.scale(scaleX, 1);
+      globals.ctx.translate(
+        -(centerX + this.#animationCards.size / 2),
+        -(centerY + this.#animationCards.size / 2)
+      );
+
+      if (progress < 0.5) {
+        this.#renderCardReverse(
+          centerX,
+          centerY,
+          this.#animationCards.size,
+          this.#animationCards.size
+        );
+      } else if (scaleX > 0.01) {
+        this.#renderCard(
+          card,
+          centerX,
+          centerY,
+          this.#animationCards.size,
+          this.#animationCards.size
+        );
+      }
+
+      globals.ctx.restore();
+
+      if (progress >= 1) {
+        this.#animationCards.phase = 2;
+      }
+    } else if (this.#animationCards.phase === 2) {
+      const targetBox = this.#animationCards.targetBox;
+      const tx = targetBox.getXCoordinate();
+      const ty = targetBox.getYCoordinate();
+
+      const dx = tx - card.getXCoordinate();
+      const dy = ty - card.getYCoordinate();
+
+      card.setXCoordinate(card.getXCoordinate() + dx * moveSpeed);
+      card.setYCoordinate(card.getYCoordinate() + dy * moveSpeed);
+
+      this.#renderCard(card);
+
+      if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
+        card.setXCoordinate(tx);
+        card.setYCoordinate(ty);
+        card.setState(CardState.PLACED);
+        targetBox.setCard(card);
+
+        this.#animationCards.card = null;
+        this.#animationCards.animationTime = 0;
+        this.#animationCards.targetBox = null;
+        this.#animationCards.phase = 0;
+        this.#animationCards.flipProgress = 0;
+        this.#animationCards.originDeck = null;
+        this.#animationCards.destinyDeck = null;
+      }
+    }
   }
 
   #renderPhaseButtons() {
@@ -1913,6 +2036,10 @@ export default class Game {
       ) {
         for (let j = 0; j < currentDeck.getCards().length; j++) {
           const currentCard = currentDeck.getCards()[j];
+
+          if (currentCard.getState() === CardState.REVEALING_AND_MOVING) {
+            continue;
+          }
 
           if (currentCard.getState() === CardState.MOVING) {
             movingCard = currentCard;
