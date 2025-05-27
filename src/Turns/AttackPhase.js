@@ -1,6 +1,7 @@
 import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import AttackEvent from "../Events/AttackEvent.js";
+import MinionDeathParticle from "../Particles/MinionDeathParticle.js";
 import globals from "../Game/globals.js";
 import {
   PlayerID,
@@ -12,9 +13,8 @@ import {
   AttackMenuBtn,
   MinionTypeID,
   ArmorID,
+  Sound,
 } from "../Game/constants.js";
-import Physics from "../Game/Physics.js";
-import MinionDeathParticle from "../Particles/MinionDeathParticle.js";
 
 export default class AttackPhase extends Phase {
   #enemyMovementGrid;
@@ -568,6 +568,8 @@ export default class AttackPhase extends Phase {
 
         if (currentCard.getCurrentHP() === 0) {
           MinionDeathParticle.create(this.#particles, 150, currentCard);
+
+          globals.currentSound = Sound.DEATH;
 
           currentDeck.removeCard(currentCard);
 

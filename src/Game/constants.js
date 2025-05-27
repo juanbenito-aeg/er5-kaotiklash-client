@@ -68,6 +68,7 @@ const Sound = {
   BULB_BREAKING: 0,
   PUNCH: 1,
   EQUIPMENT: 2,
+  DEATH: 3,
 };
 
 const CardCategory = {
