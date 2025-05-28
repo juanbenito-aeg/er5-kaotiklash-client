@@ -1,7 +1,8 @@
 const GameState = {
   INVALID: -1,
-  PLAYING: 0,
-  CHAT_PAUSE: 1,
+  LOADING: 0,
+  PLAYING: 1,
+  CHAT_PAUSE: 2,
 };
 
 // FPS (FRAMES PER SECOND)
@@ -60,6 +61,22 @@ const IconID = {
   EVENT_PREP_TIME: 24,
   EVENT_EFFECT: 25,
   EVENT_DURATION: 26,
+};
+
+const Sound = {
+  NO_SOUND: -1,
+  BULB_BREAKING: 3,
+  TALKING_SOUND: 4,
+};
+
+const Music = {
+  NO_MUSIC: -1,
+  TAVERN_MUSIC: 0,
+  LOGIN_REGISTER_MUSIC: 1,
+  PLAYER_SESSION_MUSIC: 2,
+  GAME_MUSIC: 5,
+  JOSEPH_MUSIC: 6,
+  WINNER_MUSIC: 7,
 };
 
 const CardCategory = {
@@ -131,6 +148,7 @@ const CardState = {
   INACTIVE_SELECTED: 5,
   SELECTED: 6,
   EXPANDED: 7,
+  REVEALING_AND_MOVING: 8,
 };
 
 const BoxState = {
@@ -171,7 +189,9 @@ const PrepareEventState = {
   INIT: 0,
   SELECT_HAND_CARD: 1,
   SELECT_TARGET_GRID: 2,
-  END: 3,
+  MOVE_CARD: 3,
+  ANIMATION_CARD: 4,
+  END: 5,
 };
 
 const PerformEventState = {
@@ -327,12 +347,14 @@ const ChatMessagePhase = {
 
 const ParticleID = {
   MINION_DEATH: 0,
+  MAIN_CHARACTER: 1,
 };
 
 const ParticleState = {
-  ON: 0,
-  FADE: 1,
   OFF: -1,
+  SPAWN: 0,
+  ON: 1,
+  FADE: 2,
 };
 
 const ChartID = {
@@ -342,7 +364,14 @@ const ChartID = {
   MINIONS_KILLED: 3,
   FUMBLES_PER_MATCH: 4,
   CRITICAL_HITS_PER_MATCH: 5,
-  USED_CARDS_PER_MATCH: 6,
+  USED_CARDS: 6,
+};
+
+const StateMessageType = {
+  DEER_WEAPONS_ARMOR: 0,
+  CANNOT_ATTACK: 1,
+  CANNOT_DO_ALMOST_ANYTHING: 2,
+  RAY_OF_CELESTIAL_RUIN_FAIL: 3,
 };
 
 export {
@@ -352,6 +381,8 @@ export {
   PlayerID,
   TemplateID,
   IconID,
+  Sound,
+  Music,
   CardCategory,
   MinionTypeID,
   WeaponTypeID,
@@ -387,4 +418,5 @@ export {
   ParticleID,
   ParticleState,
   ChartID,
+  StateMessageType,
 };

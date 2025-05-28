@@ -165,7 +165,7 @@
           </button>
 
           <button type="button" class="chart-selector-chart-btn">
-            Minions Killed per Match
+            Minions Killed
           </button>
 
           <button type="button" class="chart-selector-chart-btn">
@@ -177,7 +177,7 @@
           </button>
 
           <button type="button" class="chart-selector-chart-btn">
-            Used Cards per Match
+            Used Cards
           </button>
         </div>
       </div>
@@ -196,7 +196,7 @@
           <canvas id="minions-killed"></canvas>
           <canvas id="fumbles-per-match"></canvas>
           <canvas id="critical-hits-per-match"></canvas>
-          <canvas id="used-cards-per-match"></canvas>
+          <canvas id="used-cards"></canvas>
         </div>
       </div>
     </div>
@@ -204,6 +204,18 @@
     <!-- GAME SCREEN -->
     <canvas id="game-screen" width="2380" height="1120"></canvas>
 
+    <!-- SOUNDS -->
+    <audio id="bulbBreakingSound" src="./sounds/bulb-breaking.mp3"></audio>
+    <audio id="talkingSound" src="./sounds/talking-sound.mp3"></audio>
+    <!-- MUSIC -->
+    <audio id="taverMusic" src="./sounds/Tavern-Entrance.mp3"></audio>
+    <audio id="login-register-music" src="./sounds/Login-Register.mp3"></audio>
+    <audio id="player-session-music" src="./sounds/PlayerSession.mp3"></audio>
+    <audio id="gameMusic" src="./sounds/GameMusic.mp3"></audio>
+    <audio id="joseph-music" src="./sounds/Joseph.mp3"></audio>
+    <audio id="winner-music" src="./sounds/WinnerMusic.mp3"></audio>
+
+    <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
     <script type="module" src="./src/index.js"></script>
   </body>

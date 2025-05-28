@@ -12,8 +12,10 @@ import StateMessage from "../Messages/StateMessage.js";
 import ChatMessage from "../Messages/ChatMessage.js";
 import MinionTooltip from "../Tooltips/MinionTooltip.js";
 import RemainingCardsTooltip from "../Tooltips/RemainingCardsTooltip.js";
+import MainCharacterParticle from "../Particles/MainCharacterParticle.js";
 import GameStats from "./GameStats.js";
 import globals from "./globals.js";
+import { checkIfMusicIsPlayingAndIfSoReset, setMusic } from "../index.js";
 import {
   GameState,
   CardCategory,
@@ -32,6 +34,10 @@ import {
   ChatMessageType,
   ChatMessagePosition,
   ParticleState,
+  ParticleID,
+  Sound,
+  Music,
+  BoxState,
 } from "./constants.js";
 import Physics from "./Physics.js";
 
@@ -57,6 +63,9 @@ export default class Game {
   #edgeAnimation;
   #alphaState;
   #particles;
+  #borderTimer;
+  #highlightedBoxes;
+  #animationCards;
 
   static async create(playersNames) {
     // "game" OBJECT CREATION
@@ -77,6 +86,8 @@ export default class Game {
     const url = "./src/mainDeck.json";
     const response = await fetch(url);
     const mainDeckConfig = await response.json();
+    globals.assetsLoadProgressAsPercentage +=
+      100 / (globals.assetsToLoad.length + 2);
 
     // DECKS CREATION
     const deckCreator = new DeckCreator(mainDeckConfig);
@@ -185,7 +196,25 @@ export default class Game {
       direction: 1,
     };
 
+    game.#borderTimer = 0;
+
     game.#particles = [];
+
+    game.#highlightedBoxes = {
+      boxes: null,
+      color: null,
+      isActive: false,
+    };
+
+    game.#animationCards = {
+      card: null,
+      animationTime: 0,
+      targetBox: null,
+      phase: 0,
+      flipProgress: 0,
+      time: 0,
+      size: 150,
+    };
 
     // TURNS CREATION
     const turnPlayer1 = new Turn(
@@ -202,7 +231,9 @@ export default class Game {
       game.#stats,
       game.#remainingCardsTooltip,
       game.#edgeAnimation,
-      game.#particles
+      game.#particles,
+      game.#highlightedBoxes,
+      game.#animationCards
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -219,7 +250,9 @@ export default class Game {
       game.#stats,
       game.#remainingCardsTooltip,
       game.#edgeAnimation,
-      game.#particles
+      game.#particles,
+      game.#highlightedBoxes,
+      game.#animationCards
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -229,6 +262,11 @@ export default class Game {
     game.#setInitialCardsCoordinates();
 
     game.#fillActiveEventsTableData();
+
+    game.#particlesForCurrentPlayer();
+
+    checkIfMusicIsPlayingAndIfSoReset();
+    setMusic(Music.GAME_MUSIC);
 
     return game;
   }
@@ -448,11 +486,10 @@ export default class Game {
     const buttonsHeight = 40;
 
     for (let i = 0; i < buttonNames.length; i++) {
-      const currentButtonYCoordinate =
-        this.#board
-          .getGrids()
-          [GridType.PHASE_BUTTONS].getBoxes()
-          [i].getYCoordinate() + 5;
+      const currentButtonYCoordinate = this.#board
+        .getGrids()
+        [GridType.PHASE_BUTTONS].getBoxes()
+        [i].getYCoordinate();
 
       const buttonData = [
         buttonsXCoordinate,
@@ -676,6 +713,8 @@ export default class Game {
   }
 
   #update() {
+    this.#playSound();
+
     switch (globals.gameState) {
       case GameState.PLAYING:
         this.#updatePlaying();
@@ -684,6 +723,17 @@ export default class Game {
       case GameState.CHAT_PAUSE:
         this.#updateChatPause();
         break;
+    }
+  }
+
+  #playSound() {
+    if (globals.currentSound !== Sound.NO_SOUND) {
+      // PLAY THE SOUND THAT HAS BEEN INVOKED
+      globals.sounds[globals.currentSound].currentTime = 0;
+      globals.sounds[globals.currentSound].play();
+
+      // RESET "currentSound"
+      globals.currentSound = Sound.NO_SOUND;
     }
   }
 
@@ -722,14 +772,17 @@ export default class Game {
         1,
         new Physics(0, 0)
       );
+      currentPlayerTurnMsg.setVY(20);
       this.#stateMessages.push(currentPlayerTurnMsg);
 
       // FILL THE CHAT MESSAGES ARRAY
       this.#fillChatMessages();
+      this.#particlesForCurrentPlayer();
     }
 
     if (this.#stateMessages.length === 0 && this.#chatMessages.length > 0) {
       globals.gameState = GameState.CHAT_PAUSE;
+      globals.currentSound = Sound.TALKING_SOUND;
     } else if (this.#chatMessages.length === 0) {
       this.#mouseInput.resetIsLeftClickedOnBoxes(this.#board);
       this.#mouseInput.detectMouseOverBox(this.#board);
@@ -757,6 +810,31 @@ export default class Game {
     }
 
     this.#updateStateMessages();
+  }
+
+  #particlesForCurrentPlayer() {
+    for (let i = this.#particles.length - 1; i >= 0; i--) {
+      if (this.#particles[i].getID() === ParticleID.MAIN_CHARACTER) {
+        this.#particles.splice(i, 1);
+      }
+    }
+
+    let mainCharacterGrid;
+
+    if (this.#currentPlayer.getID() === globals.firstActivePlayerID) {
+      mainCharacterGrid =
+        this.#board.getGrids()[GridType.PLAYER_1_MAIN_CHARACTER];
+    } else {
+      mainCharacterGrid =
+        this.#board.getGrids()[GridType.PLAYER_2_MAIN_CHARACTER];
+    }
+    const mainCharacterBox = mainCharacterGrid.getBoxes()[0];
+    MainCharacterParticle.create(
+      this.#particles,
+      40,
+      mainCharacterBox,
+      this.#currentPlayer.getID()
+    );
   }
 
   #healHarmedMinions() {
@@ -817,6 +895,7 @@ export default class Game {
             1,
             new Physics(0, 0)
           );
+          healMessage.setVY(20);
           this.#stateMessages.push(healMessage);
         } else {
           currentCard.setCurrentHP(currentCard.getInitialHP());
@@ -832,6 +911,7 @@ export default class Game {
             1,
             new Physics(0, 0)
           );
+          healMessage.setVY(20);
           this.#stateMessages.push(healMessage);
         }
       }
@@ -864,6 +944,7 @@ export default class Game {
             1,
             new Physics(0, 0)
           );
+          healMessage.setVY(20);
           this.#stateMessages.push(healMessage);
         } else {
           currentCard.setCurrentHP(currentCard.getInitialHP());
@@ -879,6 +960,7 @@ export default class Game {
             1,
             new Physics(0, 0)
           );
+          healMessage.setVY(20);
           this.#stateMessages.push(healMessage);
         }
       }
@@ -908,6 +990,7 @@ export default class Game {
           1,
           new Physics(0, 0)
         );
+        message.setVY(20);
         this.#stateMessages.push(message);
       }
     }
@@ -928,6 +1011,7 @@ export default class Game {
           1,
           new Physics(0, 0)
         );
+        message.setVY(20);
         this.#stateMessages.push(message);
       }
     }
@@ -1077,7 +1161,7 @@ export default class Game {
     for (let i = 0; i < this.#particles.length; i++) {
       const currentParticle = this.#particles[i];
 
-      currentParticle.update();
+      currentParticle.update(this.#currentPlayer.getID());
 
       if (currentParticle.getState() === ParticleState.OFF) {
         this.#particles.splice(i, 1);
@@ -1138,6 +1222,9 @@ export default class Game {
 
           this.#isGameFinished = true;
 
+          checkIfMusicIsPlayingAndIfSoReset();
+          setMusic(Music.WINNER_MUSIC);
+
           this.#stats.postToDB(this.#winner);
           this.#stats.setStatsAlreadySentToTrue();
         }
@@ -1163,6 +1250,12 @@ export default class Game {
     if (this.#chatMessages.length === 0) {
       globals.gameState = GameState.PLAYING;
     }
+
+    if (globals.gameState === GameState.CHAT_PAUSE) {
+      globals.sounds[globals.currentMusic].volume = 0.2;
+    } else {
+      globals.sounds[globals.currentMusic].volume = 0.5;
+    }
   }
 
   #updateChatMessages() {
@@ -1181,23 +1274,75 @@ export default class Game {
     // CLEAR SCREEN
     globals.ctx.clearRect(0, 0, globals.canvas.width, globals.canvas.height);
 
-    this.#renderGame();
+    if (globals.gameState === GameState.LOADING) {
+      this.#renderLoadingScreen();
+    } else {
+      this.#renderGame();
 
-    switch (globals.gameState) {
-      case GameState.CHAT_PAUSE:
+      if (globals.gameState === GameState.CHAT_PAUSE) {
         this.#renderChatMessages();
-        break;
+      }
     }
+  }
+
+  #renderLoadingScreen() {
+    globals.ctx.fillStyle = "black";
+    globals.ctx.fillRect(0, 0, globals.canvas.width, globals.canvas.height);
+
+    this.#renderLoadingScreenTxt();
+    this.#renderLoadingScreenBar();
+  }
+
+  #renderLoadingScreenTxt() {
+    const canvasWidthDividedBy2 = globals.canvas.width / 2;
+    globals.ctx.textAlign = "center";
+
+    globals.ctx.font = "60px MedievalSharp";
+    globals.ctx.fillStyle = "rgb(240 240 240)";
+
+    globals.ctx.fillText("LOADING...", canvasWidthDividedBy2, 510);
+  }
+
+  #renderLoadingScreenBar() {
+    const assetsLoadProgressBarMaxWidth = 500;
+    const assetsLoadProgressBarCurrentWidth =
+      (globals.assetsLoadProgressAsPercentage / 100) *
+      assetsLoadProgressBarMaxWidth;
+    const assetsLoadProgressBarHeight = 80;
+
+    const assetsLoadProgressBarXCoordinate =
+      globals.canvas.width / 2 - assetsLoadProgressBarMaxWidth / 2;
+    const assetsLoadProgressBarYCoordinate = globals.canvas.height / 2;
+
+    globals.ctx.fillStyle = "rgb(240 240 240)";
+    globals.ctx.fillRect(
+      assetsLoadProgressBarXCoordinate,
+      assetsLoadProgressBarYCoordinate,
+      assetsLoadProgressBarCurrentWidth,
+      assetsLoadProgressBarHeight
+    );
+
+    globals.ctx.lineJoin = "bevel";
+    globals.ctx.lineWidth = 10;
+    globals.ctx.strokeStyle = "rgb(120 120 120)";
+    globals.ctx.strokeRect(
+      assetsLoadProgressBarXCoordinate,
+      assetsLoadProgressBarYCoordinate,
+      assetsLoadProgressBarMaxWidth,
+      assetsLoadProgressBarHeight
+    );
   }
 
   #renderGame() {
     this.#renderBoard();
-    this.#renderGrids();
+    // this.#renderGrids();
     this.#renderPlayersInfo();
     this.#renderPhaseButtons();
     this.#renderActiveEventsTable();
     this.#renderPhaseMessage();
+    this.#renderCardsInHandContainers();
     this.#renderCardsReverse();
+    this.#renderAnimatedCard();
     this.#renderCards();
     this.#renderParticles();
 
@@ -1213,6 +1358,13 @@ export default class Game {
       this.#renderEdge(
         this.#edgeAnimation.targetBox,
         this.#edgeAnimation.color
+      );
+    }
+
+    if (this.#highlightedBoxes.isActive) {
+      this.#renderHighlightedBoxes(
+        this.#highlightedBoxes.boxes,
+        this.#highlightedBoxes.color
       );
     }
 
@@ -1249,6 +1401,40 @@ export default class Game {
       globals.canvas.width,
       globals.canvas.height
     );
+  }
+
+  #renderHighlightedBoxes(boxes, color) {
+    this.#borderTimer += globals.deltaTime;
+
+    const pulseSpeed = 3;
+    const baseWidth = 3;
+    const ampWidth = 4;
+    const baseAlpha = 0.4;
+    const ampAlpha = 0.6;
+
+    const t = this.#borderTimer * pulseSpeed;
+    const sine = (Math.sin(t) + 1) / 2;
+    const lineWidth = baseWidth + ampWidth * sine;
+    const alpha = baseAlpha + ampAlpha * sine;
+
+    globals.ctx.save();
+    globals.ctx.globalAlpha = alpha;
+    globals.ctx.strokeStyle = color;
+    globals.ctx.lineWidth = lineWidth;
+    globals.ctx.shadowColor = color;
+    globals.ctx.shadowBlur = 10 + 10 * sine;
+
+    for (let i = 0; i < boxes.length; i++) {
+      const box = boxes[i];
+      const x = box.getXCoordinate();
+      const y = box.getYCoordinate();
+      const width = box.getWidth();
+      const height = box.getHeight();
+
+      globals.ctx.strokeRect(x, y, width, height);
+    }
+
+    globals.ctx.restore();
   }
 
   #renderGrids() {
@@ -1379,95 +1565,146 @@ export default class Game {
     globals.ctx.restore();
   }
 
+  #renderAnimatedCard() {
+    if (
+      !this.#animationCards ||
+      !this.#animationCards.card ||
+      !this.#animationCards.targetBox
+    )
+      return;
+
+    const card = this.#animationCards.card;
+    const centerX = globals.canvas.width / 2 - 70;
+    const centerY = globals.canvas.height / 2 - 50;
+
+    const speedToCenter = 0.08;
+    const flipDuration = 250;
+    const moveSpeed = 0.3;
+
+    if (this.#animationCards.phase === 0) {
+      const dx = centerX - card.getXCoordinate();
+      const dy = centerY - card.getYCoordinate();
+
+      card.setXCoordinate(card.getXCoordinate() + dx * speedToCenter);
+      card.setYCoordinate(card.getYCoordinate() + dy * speedToCenter);
+
+      this.#renderCardReverse(
+        card.getXCoordinate(),
+        card.getYCoordinate(),
+        this.#animationCards.size,
+        this.#animationCards.size
+      );
+
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) {
+        card.setXCoordinate(centerX);
+        card.setYCoordinate(centerY);
+        this.#animationCards.phase = 1;
+        this.#animationCards.flipProgress = 0;
+      }
+    } else if (this.#animationCards.phase === 1) {
+      this.#animationCards.flipProgress += globals.deltaTime * 1000;
+      const progress = Math.min(
+        this.#animationCards.flipProgress / flipDuration,
+        1
+      );
+      const scaleX = progress < 0.5 ? 1 - progress * 2 : (progress - 0.5) * 2;
+      this.#animationCards.size = 150 - 40 * progress;
+
+      globals.ctx.save();
+      globals.ctx.translate(
+        centerX + this.#animationCards.size / 2,
+        centerY + this.#animationCards.size / 2
+      );
+      globals.ctx.scale(scaleX, 1);
+      globals.ctx.translate(
+        -(centerX + this.#animationCards.size / 2),
+        -(centerY + this.#animationCards.size / 2)
+      );
+
+      if (progress < 0.5) {
+        this.#renderCardReverse(
+          centerX,
+          centerY,
+          this.#animationCards.size,
+          this.#animationCards.size
+        );
+      } else if (scaleX > 0.01) {
+        this.#renderCard(
+          card,
+          centerX,
+          centerY,
+          this.#animationCards.size,
+          this.#animationCards.size
+        );
+      }
+
+      globals.ctx.restore();
+
+      if (progress >= 1) {
+        this.#animationCards.phase = 2;
+      }
+    } else if (this.#animationCards.phase === 2) {
+      const targetBox = this.#animationCards.targetBox;
+      const tx = targetBox.getXCoordinate();
+      const ty = targetBox.getYCoordinate();
+
+      const dx = tx - card.getXCoordinate();
+      const dy = ty - card.getYCoordinate();
+
+      card.setXCoordinate(card.getXCoordinate() + dx * moveSpeed);
+      card.setYCoordinate(card.getYCoordinate() + dy * moveSpeed);
+
+      this.#renderCard(card);
+
+      if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
+        card.setXCoordinate(tx);
+        card.setYCoordinate(ty);
+        card.setState(CardState.PLACED);
+        targetBox.setCard(card);
+
+        this.#animationCards.card = null;
+        this.#animationCards.animationTime = 0;
+        this.#animationCards.targetBox = null;
+        this.#animationCards.phase = 0;
+        this.#animationCards.flipProgress = 0;
+        this.#animationCards.originDeck = null;
+        this.#animationCards.destinyDeck = null;
+      }
+    }
+  }
+
   #renderPhaseButtons() {
+    globals.ctx.shadowBlur = 10;
+    globals.ctx.shadowColor = "black";
+
     const numOfExecutedPhases =
       this.#turns[this.#currentPlayer.getID()].getNumOfExecutedPhases();
     const TOTAL_PHASES = 5;
 
     const phaseText = `Phase: ${numOfExecutedPhases + 1}/${TOTAL_PHASES}`;
-    globals.ctx.fillStyle = "white";
-    globals.ctx.font = "24px MedievalSharp";
+
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
+    globals.ctx.font = "24px MedievalSharp";
+    globals.ctx.fillStyle = "white";
     globals.ctx.fillText(phaseText, 500, 705);
 
     for (let i = 0; i < globals.buttonDataGlobal.length; i++) {
       const currentButton = globals.buttonDataGlobal[i];
 
-      globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-      globals.ctx.shadowBlur = 10;
-      globals.ctx.shadowOffsetX = 4;
-      globals.ctx.shadowOffsetY = 4;
-
-      globals.ctx.fillStyle = "darkcyan";
-      globals.ctx.beginPath();
-      globals.ctx.moveTo(
-        currentButton[PhaseButtonData.X_COORDINATE] + 10,
-        currentButton[PhaseButtonData.Y_COORDINATE]
-      );
-      globals.ctx.lineTo(
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH] -
-          10,
-        currentButton[PhaseButtonData.Y_COORDINATE]
-      );
-      globals.ctx.quadraticCurveTo(
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH],
-        currentButton[PhaseButtonData.Y_COORDINATE],
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH],
-        currentButton[PhaseButtonData.Y_COORDINATE] + 10
-      );
-      globals.ctx.lineTo(
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH],
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT] -
-          10
-      );
-      globals.ctx.quadraticCurveTo(
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH],
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT],
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH] -
-          10,
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT]
-      );
-      globals.ctx.lineTo(
-        currentButton[PhaseButtonData.X_COORDINATE] + 10,
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT]
-      );
-      globals.ctx.quadraticCurveTo(
-        currentButton[PhaseButtonData.X_COORDINATE],
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT],
-        currentButton[PhaseButtonData.X_COORDINATE],
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT] -
-          10
-      );
-      globals.ctx.lineTo(
-        currentButton[PhaseButtonData.X_COORDINATE],
-        currentButton[PhaseButtonData.Y_COORDINATE] + 10
-      );
-      globals.ctx.quadraticCurveTo(
+      globals.ctx.drawImage(
+        globals.phaseButtonImage,
+        0,
+        0,
+        950,
+        519,
         currentButton[PhaseButtonData.X_COORDINATE],
         currentButton[PhaseButtonData.Y_COORDINATE],
-        currentButton[PhaseButtonData.X_COORDINATE] + 10,
-        currentButton[PhaseButtonData.Y_COORDINATE]
+        currentButton[PhaseButtonData.WIDTH],
+        currentButton[PhaseButtonData.HEIGHT]
       );
-      globals.ctx.closePath();
-      globals.ctx.fill();
 
-      globals.ctx.fillStyle = "white";
       globals.ctx.font = "18px MedievalSharp";
-      globals.ctx.textAlign = "center";
-      globals.ctx.textBaseline = "middle";
       globals.ctx.fillText(
         currentButton[PhaseButtonData.NAME],
         currentButton[PhaseButtonData.X_COORDINATE] +
@@ -1496,17 +1733,20 @@ export default class Game {
       [GridType.ACTIVE_EVENTS_TABLE].getBoxes()[0]
       .getHeight();
 
-    globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
     globals.ctx.shadowBlur = 10;
-    globals.ctx.shadowOffsetX = 4;
-    globals.ctx.shadowOffsetY = 4;
+    globals.ctx.shadowColor = "rgba(0 0 0)";
 
-    globals.ctx.fillStyle = "darkcyan";
-    globals.ctx.fillRect(tableX, tableY, tableWidth, tableHeight);
-
-    globals.ctx.shadowBlur = 0;
-    globals.ctx.shadowOffsetX = 0;
-    globals.ctx.shadowOffsetY = 0;
+    globals.ctx.drawImage(
+      globals.activeEventsTableImage,
+      0,
+      0,
+      916,
+      714,
+      tableX,
+      tableY,
+      tableWidth,
+      tableHeight
+    );
 
     this.#renderColumnAndRowLinesAndHeaders(
       tableY,
@@ -1519,13 +1759,13 @@ export default class Game {
   }
 
   #renderColumnAndRowLinesAndHeaders(tableY, tableX, tableWidth, tableHeight) {
-    globals.ctx.strokeStyle = "black";
+    globals.ctx.strokeStyle = "rgb(1 15 28)";
     globals.ctx.lineWidth = 2;
 
-    globals.ctx.fillStyle = "white";
-    globals.ctx.font = "18px MedievalSharp";
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
+    globals.ctx.font = "18px MedievalSharp";
+    globals.ctx.fillStyle = "white";
 
     const isJosephChaoticEventActive =
       this.#deckContainer.getDecks()[DeckType.JOSEPH].getCards().length === 1;
@@ -1538,12 +1778,14 @@ export default class Game {
 
       if (i !== this.#activeEventsTableData.rows.length - 1) {
         // COLUMN LINE
+        globals.ctx.shadowBlur = 0;
         globals.ctx.beginPath();
         globals.ctx.moveTo(currentColumn.lineXCoordinate, tableY);
         globals.ctx.lineTo(currentColumn.lineXCoordinate, tableY + tableHeight);
         globals.ctx.stroke();
 
         // COLUMN HEADER
+        globals.ctx.shadowBlur = 10;
         globals.ctx.fillText(
           currentColumn.header,
           currentColumn.lineXCoordinate - currentColumn.width / 2,
@@ -1554,22 +1796,26 @@ export default class Game {
       const currentRow = this.#activeEventsTableData.rows[i];
 
       // ROW LINE
+      globals.ctx.shadowBlur = 0;
       globals.ctx.beginPath();
       globals.ctx.moveTo(tableX, currentRow.lineYCoordinate);
       globals.ctx.lineTo(tableX + tableWidth, currentRow.lineYCoordinate);
       globals.ctx.stroke();
 
       // ROW HEADER
+      globals.ctx.shadowBlur = 10;
       globals.ctx.fillText(
         currentRow.header,
         tableX + this.#activeEventsTableData.columns[0].width / 2,
         currentRow.lineYCoordinate - currentRow.height / 2
       );
     }
+
+    globals.ctx.shadowBlur = 0;
   }
 
   #renderActiveEventsData() {
-    globals.ctx.fillStyle = "black";
+    globals.ctx.fillStyle = "white";
     globals.ctx.font = "14px MedievalSharp";
 
     const activeEventsDeck =
@@ -1632,6 +1878,8 @@ export default class Game {
   }
 
   #renderPhaseMessage() {
+    globals.ctx.save();
+
     const messageBoxX = this.#board
       .getGrids()
       [GridType.MESSAGES].getBoxes()[0]
@@ -1650,24 +1898,65 @@ export default class Game {
       [GridType.MESSAGES].getBoxes()[0]
       .getHeight();
 
-    globals.ctx.fillStyle = "black";
-    globals.ctx.fillRect(
+    globals.ctx.shadowBlur = 10;
+    globals.ctx.shadowColor = "black";
+
+    globals.ctx.drawImage(
+      globals.phaseMsgsBoardImage,
+      0,
+      0,
+      1452,
+      706,
       messageBoxX,
       messageBoxY,
       messageBoxWidth,
       messageBoxHeight
     );
 
-    globals.ctx.fillStyle = "white";
-    globals.ctx.font = "20px MedievalSharp";
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
+    globals.ctx.font = "20px MedievalSharp";
+    globals.ctx.fillStyle = "white";
 
     globals.ctx.fillText(
       this.#phaseMessage.getCurrentContent(),
       messageBoxX + messageBoxWidth / 2,
       messageBoxY + messageBoxHeight / 2
     );
+
+    globals.ctx.restore();
+  }
+
+  #renderCardsInHandContainers() {
+    const cardsInHandContainersCoordinates = [
+      {
+        xCoordinate: 661,
+        yCoordinate: -8,
+      },
+      {
+        xCoordinate: 661,
+        yCoordinate: 952,
+      },
+    ];
+
+    const CARDS_IN_HAND_CONTAINERS_WIDTH = 1058;
+    const CARDS_IN_HAND_CONTAINERS_HEIGHT = 177;
+
+    for (let i = 0; i < cardsInHandContainersCoordinates.length; i++) {
+      const currentCardsInHandContainer = cardsInHandContainersCoordinates[i];
+
+      globals.ctx.drawImage(
+        globals.cardsInHandContainerImage,
+        0,
+        0,
+        1280,
+        512,
+        currentCardsInHandContainer.xCoordinate,
+        currentCardsInHandContainer.yCoordinate,
+        CARDS_IN_HAND_CONTAINERS_WIDTH,
+        CARDS_IN_HAND_CONTAINERS_HEIGHT
+      );
+    }
   }
 
   #renderCardsReverse() {
@@ -1719,8 +2008,8 @@ export default class Game {
       globals.cardsReverseImage,
       0,
       0,
-      625,
-      801,
+      848,
+      928,
       xCoordinate,
       yCoordinate,
       width,
@@ -1752,9 +2041,22 @@ export default class Game {
         for (let j = 0; j < currentDeck.getCards().length; j++) {
           const currentCard = currentDeck.getCards()[j];
 
+          if (currentCard.getState() === CardState.REVEALING_AND_MOVING) {
+            continue;
+          }
+
           if (currentCard.getState() === CardState.MOVING) {
             movingCard = currentCard;
             continue;
+          }
+
+          if (
+            currentCard.getState() === CardState.SELECTED &&
+            !isDeckCardsInHandOfInactivePlayer
+          ) {
+            if (currentCard !== movingCard) {
+              this.#renderSelectedCardEffect(currentCard);
+            }
           }
 
           if (isDeckCardsInHandOfInactivePlayer) {
@@ -1782,6 +2084,63 @@ export default class Game {
     if (expandedCard) {
       this.#renderExpandedCard(expandedCard);
     }
+  }
+
+  #renderSelectedCardEffect(card) {
+    this.#borderTimer += globals.deltaTime;
+
+    const x = card.getXCoordinate();
+    const y = card.getYCoordinate();
+    const w = globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width;
+    const h =
+      globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height;
+
+    const P = 2 * (w + h);
+    const num = 24;
+    const margin = 6;
+
+    const categoryColors = {
+      [CardCategory.ARMOR]: { h: 120, s: 90, l: 65 },
+      [CardCategory.MINION]: { h: 200, s: 80, l: 60 },
+      [CardCategory.RARE]: { h: 280, s: 90, l: 70 },
+      [CardCategory.SPECIAL]: { h: 50, s: 100, l: 65 },
+      [CardCategory.WEAPON]: { h: 0, s: 85, l: 60 },
+    };
+    const col = categoryColors[card.getCategory()] || { h: 0, s: 0, l: 50 };
+    const fill = `hsl(${col.h}, ${col.s}%, ${Math.min(100, col.l + 10)}%)`;
+    const shadow = fill;
+
+    globals.ctx.save();
+    globals.ctx.globalAlpha = 1.0;
+    globals.ctx.fillStyle = fill;
+    globals.ctx.shadowColor = shadow;
+    globals.ctx.shadowBlur = 4;
+
+    for (let i = 0; i < num; i++) {
+      const t = (i / num) * P;
+      let px, py;
+      if (t < w) {
+        px = x + t;
+        py = y - margin;
+      } else if (t < w + h) {
+        px = x + w + margin;
+        py = y + (t - w);
+      } else if (t < 2 * w + h) {
+        px = x + (2 * w + h - t);
+        py = y + h + margin;
+      } else {
+        px = x - margin;
+        py = y + (P - t);
+      }
+
+      const size = 3 + 1.2 * Math.sin(this.#borderTimer * 3 + i);
+
+      globals.ctx.beginPath();
+      globals.ctx.arc(px, py, size, 0, Math.PI * 2);
+      globals.ctx.fill();
+    }
+
+    globals.ctx.restore();
   }
 
   #renderCard(card) {
@@ -2225,16 +2584,16 @@ export default class Game {
     globals.ctx.font = "14px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText("SE", xCoordinate, yCoordinate + 62);
+    globals.ctx.fillText("SE", xCoordinate, yCoordinate + 59);
     globals.ctx.fillText(
       card.getCurrentPrepTimeInRounds(),
       xCoordinate + 55,
-      yCoordinate + 114
+      yCoordinate + 111
     );
     globals.ctx.fillText(
       card.getCurrentDurability(),
       xCoordinate + 110,
-      yCoordinate + 62
+      yCoordinate + 59
     );
   }
 
@@ -2294,16 +2653,16 @@ export default class Game {
     globals.ctx.font = "14px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText("EF", xCoordinate, yCoordinate + 62);
+    globals.ctx.fillText("EF", xCoordinate, yCoordinate + 60);
     globals.ctx.fillText(
       card.getCurrentPrepTimeInRounds(),
       xCoordinate + 55,
-      yCoordinate + 114
+      yCoordinate + 111
     );
     globals.ctx.fillText(
       card.getCurrentDurationInRounds(),
       xCoordinate + 110,
-      yCoordinate + 62
+      yCoordinate + 59
     );
   }
 
@@ -2363,12 +2722,12 @@ export default class Game {
     globals.ctx.font = "14px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText("EF", xCoordinate, yCoordinate + 62);
-    globals.ctx.fillText(0, xCoordinate + 55, yCoordinate + 114);
+    globals.ctx.fillText("EF", xCoordinate, yCoordinate + 60);
+    globals.ctx.fillText(0, xCoordinate + 55, yCoordinate + 111);
     globals.ctx.fillText(
       card.getCurrentDurationInRounds(),
       xCoordinate + 110,
-      yCoordinate + 62
+      yCoordinate + 59
     );
   }
 
@@ -2460,7 +2819,7 @@ export default class Game {
 
     globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 311);
 
-    globals.ctx.font = "18px MedievalSharp";
+    globals.ctx.font = "16px MedievalSharp";
 
     card.renderDescription();
     card.renderChaoticEventDescription();
@@ -2479,7 +2838,7 @@ export default class Game {
 
     globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 308);
 
-    globals.ctx.font = "18px MedievalSharp";
+    globals.ctx.font = "16px MedievalSharp";
 
     card.renderDescription();
     card.renderSpecialSkill();
@@ -2537,11 +2896,14 @@ export default class Game {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
 
     globals.ctx.textAlign = "center";
-    globals.ctx.font = "18px MedievalSharp";
+    globals.ctx.font = "16px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 19, 292);
     card.renderDescription();
+
+    globals.ctx.font = "18px MedievalSharp";
+
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 19, 292);
     globals.ctx.fillText(card.getInitialHP(), 1070, 852);
     globals.ctx.fillText(card.getInitialMadness(), 1151, 852);
     globals.ctx.fillText(card.getInitialAttack(), 1231, 852);
@@ -2604,10 +2966,10 @@ export default class Game {
     globals.ctx.fillStyle = "black";
 
     globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 16, 281);
+    card.renderDescription();
 
     globals.ctx.font = "18px MedievalSharp";
 
-    card.renderDescription();
     globals.ctx.fillText(card.getInitialDamage(), 1104, 843);
     globals.ctx.fillText(card.getInitialDurability(), 1219, 843);
     globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1335, 843);
@@ -2716,12 +3078,15 @@ export default class Game {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
 
     globals.ctx.textAlign = "center";
-    globals.ctx.font = "18px MedievalSharp";
+    globals.ctx.font = "16px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 17, 290);
     card.renderDescription();
     card.renderEffect();
+
+    globals.ctx.font = "18px MedievalSharp";
+
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 17, 290);
     globals.ctx.fillText(card.getInitialPrepTimeInRounds(), 1148, 848);
     globals.ctx.fillText(card.getInitialDurationInRounds(), 1280, 848);
   }
@@ -2771,12 +3136,15 @@ export default class Game {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
 
     globals.ctx.textAlign = "center";
-    globals.ctx.font = "18px MedievalSharp";
+    globals.ctx.font = "16px MedievalSharp";
     globals.ctx.fillStyle = "black";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 18, 291);
     card.renderDescription();
     card.renderEffect();
+
+    globals.ctx.font = "18px MedievalSharp";
+
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2 + 18, 291);
     globals.ctx.fillText(0, 1148, 848);
     globals.ctx.fillText(card.getInitialDurationInRounds(), 1280, 848);
   }

@@ -3,8 +3,9 @@ import PrepareEvent from "./PrepareEvent.js";
 import Card from "../Decks/Card.js";
 import StateMessage from "../Messages/StateMessage.js";
 import globals from "../Game/globals.js";
-import { DeckType, GridType, PlayerID } from "../Game/constants.js";
+import { DeckType, GridType, Music, PlayerID } from "../Game/constants.js";
 import Physics from "../Game/Physics.js";
+import { checkIfMusicIsPlayingAndIfSoReset, setMusic } from "../index.js";
 
 export default class JosephConstantSwapEvent extends Event {
   #events;
@@ -127,6 +128,9 @@ export default class JosephConstantSwapEvent extends Event {
         );
 
         josephIsGoneMsg.setVY(20);
+
+        checkIfMusicIsPlayingAndIfSoReset();
+        setMusic(Music.GAME_MUSIC);
 
         this.#stateMessages.push(josephIsGoneMsg);
       } else {

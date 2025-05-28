@@ -40,7 +40,7 @@ export default class SpecialSkillXG {
       }
 
       let message = new StateMessage(
-        "MINIONS GOT CRAZY!!",
+        "MINIONS GOT CRAZY!",
         "50px MedievalSharp",
         "blue",
         1,

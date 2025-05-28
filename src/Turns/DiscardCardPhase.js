@@ -108,8 +108,6 @@ export default class DiscardCardPhase extends Phase {
   }
 
   #cardDiscard() {
-    console.log("select card to discard phase");
-
     const hoveredCard = this.#decksRelevants[0].lookForHoveredCard();
 
     if (hoveredCard) {
@@ -135,8 +133,6 @@ export default class DiscardCardPhase extends Phase {
   }
 
   #finalizePhase() {
-    console.log("finish phase");
-
     this._state = DiscardCardState.INIT;
   }
 }

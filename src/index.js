@@ -1,10 +1,11 @@
 import Game from "./Game/Game.js";
 import globals from "./Game/globals.js";
-import { GameState, FPS, Language, ChartID } from "./Game/constants.js";
+import { GameState, FPS, Language, ChartID, Music } from "./Game/constants.js";
 
 window.onload = initEssentials;
 
 async function initEssentials() {
+  loadInitialMusic();
   initInnDoor();
   initLanguageBtns();
 
@@ -27,6 +28,8 @@ async function initEssentials() {
 
 function initInnDoor() {
   const innDoor = document.getElementById("main-screen-inn-door");
+  checkIfMusicIsPlayingAndIfSoReset();
+  setMusic(Music.TAVERN_MUSIC);
   innDoor.addEventListener("click", initLoginScreen);
 }
 
@@ -204,6 +207,9 @@ function initLoginScreen() {
   showLoginScreen();
   showLanguageBtns();
 
+  checkIfMusicIsPlayingAndIfSoReset();
+  setMusic(Music.LOGIN_REGISTER_MUSIC);
+
   const loginForm = document.getElementById("login-form");
   loginForm.addEventListener("submit", checkFormDataAndLogIn);
 
@@ -267,6 +273,9 @@ function initRegisterScreen() {
 
   const registerForm = document.getElementById("register-form");
   registerForm.addEventListener("submit", checkFormDataAndRegister);
+
+  checkIfMusicIsPlayingAndIfSoReset();
+  setMusic(Music.LOGIN_REGISTER_MUSIC);
 
   const registerScreenLoginBtn = document.getElementById(
     "register-screen-login-btn"
@@ -347,6 +356,9 @@ function initPlayerSessionScreen() {
   playerEmailParagraph.innerHTML = playerEmail;
 
   showPlayerSessionScreen();
+
+  checkIfMusicIsPlayingAndIfSoReset();
+  setMusic(Music.PLAYER_SESSION_MUSIC);
 
   globals.playersIDs.loggedIn = localStorage.getItem("playerID");
 
@@ -523,6 +535,7 @@ async function createOrDisplayChart(chartID) {
       chartDisplayHeadingString = "MINIONS KILLED";
       if (!globals.isChartCreated.minionsKilled) {
         const response = await getMinionsKilled(globals.playersIDs.loggedIn);
+
         if (response) {
           const total = {
             total_killed: response.total_minions_killed,
@@ -536,10 +549,10 @@ async function createOrDisplayChart(chartID) {
     case ChartID.FUMBLES_PER_MATCH:
       chartDisplayHeadingString = "FUMBLES PER MATCH";
       if (!globals.isChartCreated.fumblesPerMatch) {
-        const fumblesPerMatch = await getFumblesPerMatch();
+        const fumblesData = await getFumblesData();
 
-        if (fumblesPerMatch) {
-          createFumblesPerMatchChart(fumblesPerMatch);
+        if (fumblesData) {
+          createFumblesPerMatchChart(fumblesData);
         }
       }
       break;
@@ -547,17 +560,17 @@ async function createOrDisplayChart(chartID) {
     case ChartID.CRITICAL_HITS_PER_MATCH:
       chartDisplayHeadingString = "CRITICAL HITS PER MATCH";
       if (!globals.isChartCreated.criticalHitsPerMatch) {
-        const criticalHitsPerMatch = await getCriticalHitsPerMatch();
+        const criticalHitsData = await getCriticalHitsData();
 
-        if (criticalHitsPerMatch) {
-          createCriticalHitsPerMatchChart(criticalHitsPerMatch);
+        if (criticalHitsData) {
+          createCriticalHitsPerMatchChart(criticalHitsData);
         }
       }
       break;
 
-    case ChartID.USED_CARDS_PER_MATCH:
-      chartDisplayHeadingString = "USED CARDS PER MATCH";
-      if (!globals.isChartCreated.usedCardsPerMatch) {
+    case ChartID.USED_CARDS:
+      chartDisplayHeadingString = "USED CARDS";
+      if (!globals.isChartCreated.usedCards) {
         const usedCardsData = await getUsedCards(globals.playersIDs.loggedIn);
 
         if (usedCardsData) {
@@ -589,22 +602,39 @@ function createWinRateChart(winRate) {
   };
 
   new Chart(document.getElementById("win-rate"), config);
-
   globals.isChartCreated.winRate = true;
 }
 
-function createTurnsPerMatchChart(playedTurnsData) {
-  const labels = [];
-  for (let i = 0; i < playedTurnsData.played_turns.length; i++) {
-    labels.push(`Match ${i + 1}`);
+function getGameStartAndEndDates(gameData) {
+  const gameStartAndEndDates = [
+    gameData.start_timestamp_in_ms,
+    gameData.end_timestamp_in_ms,
+  ];
+
+  for (let i = 0; i < gameStartAndEndDates.length; i++) {
+    const startOrEndString = i === 0 ? "Start: " : "End: ";
+
+    const currentDateString = new Date(
+      gameStartAndEndDates[i]
+    ).toLocaleString();
+
+    gameStartAndEndDates[i] = startOrEndString + currentDateString;
   }
 
+  return gameStartAndEndDates;
+}
+
+function createTurnsPerMatchChart(playedTurnsData) {
   const data = {
-    labels: labels,
+    labels: playedTurnsData.played_turns.map(
+      (currentDataItem, index) => `Match ${index + 1}`
+    ),
     datasets: [
       {
-        label: "Turns per Match",
-        data: playedTurnsData.played_turns,
+        label: "Number of Turns",
+        data: playedTurnsData.played_turns.map(
+          (currentDataItem) => currentDataItem.num_of_turns
+        ),
         fill: false,
         borderColor: "rgb(75, 192, 192)",
         tension: 0.1,
@@ -615,10 +645,43 @@ function createTurnsPerMatchChart(playedTurnsData) {
   const config = {
     type: "line",
     data: data,
+    options: {
+      scales: {
+        y: {
+          ticks: {
+            precision: 0,
+          },
+        },
+      },
+      pointRadius: 7,
+      pointHoverRadius: 8,
+      plugins: {
+        tooltip: {
+          callbacks: {
+            beforeBody: function (context) {
+              const gameData =
+                playedTurnsData.played_turns[context[0].dataIndex];
+
+              const gameStartAndEndDates = getGameStartAndEndDates(gameData);
+
+              return gameStartAndEndDates;
+            },
+          },
+        },
+      },
+    },
   };
 
   new Chart(document.getElementById("turns-per-match"), config);
   globals.isChartCreated.turnsPerMatch = true;
+}
+
+function tooltipLabelCallback(ctx) {
+  const value = ctx.raw;
+  const data = ctx.chart.data.datasets[0].data;
+  const total = data.reduce((a, b) => a + b, 0);
+  const percentage = Math.round((value / total) * 100);
+  return `Total percentage (${percentage}%)`;
 }
 
 function createJosephAppearancesChart(data) {
@@ -633,7 +696,7 @@ function createJosephAppearancesChart(data) {
         backgroundColor: ["rgba(54, 235, 162, 0.6)", "rgba(235, 54, 54, 0.6)"],
         borderColor: ["rgb(54, 235, 162)", "rgb(235, 54, 54)"],
         borderWidth: 1,
-        barThickness: 110,
+        barThickness: 100,
       },
     ],
   };
@@ -642,8 +705,23 @@ function createJosephAppearancesChart(data) {
     type: "bar",
     data: chartData,
     options: {
+      plugins: {
+        tooltip: {
+          enabled: true,
+          callbacks: {
+            label: tooltipLabelCallback,
+          },
+        },
+      },
       scales: {
-        y: { beginAtZero: true },
+        y: {
+          beginAtZero: true,
+          ticks: { precision: 0 },
+          title: {
+            display: true,
+            text: "Games",
+          },
+        },
       },
     },
   };
@@ -717,15 +795,17 @@ function createMinionsKilledChart(minionsKilledPerMatch) {
   globals.isChartCreated.minionsKilled = true;
 }
 
-function createFumblesPerMatchChart(fumblesPerMatch) {
+function createFumblesPerMatchChart(fumblesData) {
   const ctx = document.getElementById("fumbles-per-match");
 
   const data = {
-    labels: fumblesPerMatch.map((numOfFumbles, index) => `Match ${index + 1}`),
+    labels: fumblesData.map((currentDataItem, index) => `Match ${index + 1}`),
     datasets: [
       {
         label: "Number of Fumbles",
-        data: fumblesPerMatch.map((numOfFumbles) => numOfFumbles),
+        data: fumblesData.map(
+          (currentDataItem) => currentDataItem.num_of_fumbles
+        ),
       },
     ],
   };
@@ -741,26 +821,40 @@ function createFumblesPerMatchChart(fumblesPerMatch) {
           },
         },
       },
+      pointRadius: 7,
+      pointHoverRadius: 8,
+      plugins: {
+        tooltip: {
+          callbacks: {
+            beforeBody: function (context) {
+              const gameData = fumblesData[context[0].dataIndex];
+
+              const gameStartAndEndDates = getGameStartAndEndDates(gameData);
+
+              return gameStartAndEndDates;
+            },
+          },
+        },
+      },
     },
   };
 
   new Chart(ctx, config);
-
   globals.isChartCreated.fumblesPerMatch = true;
 }
 
-function createCriticalHitsPerMatchChart(criticalHitsPerMatch) {
+function createCriticalHitsPerMatchChart(criticalHitsData) {
   const ctx = document.getElementById("critical-hits-per-match");
 
   const data = {
-    labels: criticalHitsPerMatch.map(
-      (numOfCriticalHits, index) => `Match ${index + 1}`
+    labels: criticalHitsData.map(
+      (currentDataItem, index) => `Match ${index + 1}`
     ),
     datasets: [
       {
         label: "Number of Critical Hits",
-        data: criticalHitsPerMatch.map(
-          (numOfCriticalHits) => numOfCriticalHits
+        data: criticalHitsData.map(
+          (currentDataItem) => currentDataItem.num_of_critical_hits
         ),
       },
     ],
@@ -783,18 +877,34 @@ function createCriticalHitsPerMatchChart(criticalHitsPerMatch) {
       pointBackgroundColor: "rgb(0, 0, 0)",
       pointRadius: 7,
       pointHoverRadius: 8,
+      plugins: {
+        tooltip: {
+          callbacks: {
+            beforeBody: function (context) {
+              const gameData = criticalHitsData[context[0].dataIndex];
+
+              const gameStartAndEndDates = getGameStartAndEndDates(gameData);
+
+              return gameStartAndEndDates;
+            },
+          },
+        },
+      },
     },
   };
 
   new Chart(ctx, config);
-
   globals.isChartCreated.criticalHitsPerMatch = true;
 }
 
 function createUsedCardsChart(dataFromServer) {
-  const ctx = document.getElementById("used-cards-per-match");
+  const ctx = document.getElementById("used-cards");
 
-  const labels = ["Total Used Cards", "Used Cards", "Average Used Cards"];
+  const labels = [
+    "Total Used Cards",
+    "Used Cards (Last Match)",
+    "Average Used Cards",
+  ];
 
   const total = dataFromServer.total_used_cards;
   const avg = dataFromServer.average_used_cards;
@@ -802,6 +912,7 @@ function createUsedCardsChart(dataFromServer) {
   const used =
     dataFromServer.used_cards && dataFromServer.used_cards.length > 0
       ? dataFromServer.used_cards[dataFromServer.used_cards.length - 1]
+          .num_of_used_cards
       : 0;
   const data = [total, used, avg];
 
@@ -823,14 +934,13 @@ function createUsedCardsChart(dataFromServer) {
     type: "polarArea",
     data: chartData,
     options: {
-      responsive: true,
       plugins: {
         legend: {
           labels: { color: "#fff" },
         },
         title: {
           display: true,
-          text: "Used Cards Per Match",
+          text: "Used Cards",
           color: "#fff",
         },
       },
@@ -845,11 +955,27 @@ function createUsedCardsChart(dataFromServer) {
           },
         },
       },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            beforeBody: function (context) {
+              if (context[0].dataIndex === 1) {
+                const gameData =
+                  dataFromServer.used_cards[context[0].dataIndex];
+
+                const gameStartAndEndDates = getGameStartAndEndDates(gameData);
+
+                return gameStartAndEndDates;
+              }
+            },
+          },
+        },
+      },
     },
   };
 
   new Chart(ctx, config);
-  globals.isChartCreated.usedCardsPerMatch = true;
+  globals.isChartCreated.usedCards = true;
 }
 
 function displayChart(chartID) {
@@ -878,7 +1004,12 @@ async function getWinRate() {
 
   if (response.ok) {
     const data = await response.json();
-    return data;
+
+    setNoDataFoundParaContent(data.message || "");
+
+    if (!data.message) {
+      return data;
+    }
   } else {
     alert(`Communication error: ${response.statusText}`);
   }
@@ -905,12 +1036,22 @@ async function getJosephAppearances(loggedInPlayerID) {
   const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${loggedInPlayerID}/joseph-appeared`;
   const response = await fetch(url);
 
-  const josephAppeared = await response.json();
+  if (response.ok) {
+    const josephAppearedData = await response.json();
 
-  if (josephAppeared === true) {
-    return { appeared: 1, notAppeared: 0 };
+    setNoDataFoundParaContent(josephAppearedData.message || "");
+
+    if (!josephAppearedData.message) {
+      return {
+        appeared: josephAppearedData.total_joseph_appeared,
+        notAppeared: josephAppearedData.total_joseph_not_appeared,
+        percentageAppeared: josephAppearedData.percentage_joseph_appeared,
+        percentageNotAppeared:
+          josephAppearedData.percentage_joseph_not_appeared,
+      };
+    }
   } else {
-    return { appeared: 0, notAppeared: 1 };
+    alert(`Communication error: ${response.statusText}`);
   }
 }
 
@@ -931,7 +1072,7 @@ async function getMinionsKilled(loggedInPlayerID) {
   }
 }
 
-async function getFumblesPerMatch() {
+async function getFumblesData() {
   const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${globals.playersIDs.loggedIn}/total-fumbles`;
 
   const response = await fetch(url);
@@ -949,7 +1090,7 @@ async function getFumblesPerMatch() {
   }
 }
 
-async function getCriticalHitsPerMatch() {
+async function getCriticalHitsData() {
   const url = `https://er5-kaotiklash-server.onrender.com/api/player_stats/${globals.playersIDs.loggedIn}/total-critical-hits`;
 
   const response = await fetch(url);
@@ -1020,6 +1161,37 @@ function setUpGameTips() {
   document.getElementById("game-tip").textContent = randomTip;
 }
 
+function loadInitialMusic() {
+  const taverMusic = document.getElementById("taverMusic");
+  const loginAndRegisterSound = document.getElementById("login-register-music");
+  const playerSessionMusic = document.getElementById("player-session-music");
+
+  globals.sounds.push(taverMusic, loginAndRegisterSound, playerSessionMusic);
+
+  let initialLoaded = 0;
+  const totalInitial = globals.sounds.length;
+
+  for (let i = 0; i < totalInitial.length; i++) {
+    const sound = globals.sounds[i];
+    sound.addEventListener("timeupdate", updateMusic, false);
+    sound.addEventListener("canplaythrough", initialLoadHandler, false);
+    sound.load();
+  }
+
+  function initialLoadHandler() {
+    initialLoaded++;
+    if (initialLoaded >= totalInitial) {
+      for (let i = 0; i < totalInitial.length; i++) {
+        globals.sounds[i].removeEventListener(
+          "canplaythrough",
+          initialLoadHandler,
+          false
+        );
+      }
+    }
+  }
+}
+
 function hidePlayerSessionAndInitGameScreen() {
   hidePlayerSessionScreen();
 
@@ -1037,7 +1209,14 @@ async function initGameScreen() {
   globals.ctx = globals.canvas.getContext("2d");
 
   // LOAD DB CARDS DATA AND ASSETS
-  loadDBCardsDataAndAssets();
+  await loadDBCardsDataAndAssets();
+
+  // CREATE THE "Game" CLASS INSTANCE USED THROUGHOUT
+  const playersNames = getPlayersNames();
+  globals.game = await Game.create(playersNames);
+
+  // FIRST FRAME REQUEST
+  window.requestAnimationFrame(executeGameLoop);
 }
 
 function initVars() {
@@ -1048,6 +1227,9 @@ function initVars() {
   globals.previousCycleMilliseconds = 0;
   globals.deltaTime = 0;
   globals.frameTimeObj = 1 / FPS;
+
+  // INITIALIZE GAME STATE
+  globals.gameState = GameState.LOADING;
 
   globals.imagesDestinationSizes = {
     allCardsBigVersion: {
@@ -1075,11 +1257,14 @@ async function loadDBCardsDataAndAssets() {
     const cardsData = await response.json();
 
     globals.cardsData = cardsData;
+
+    loadAssets();
+
+    globals.assetsLoadProgressAsPercentage =
+      100 / (globals.assetsToLoad.length + 2);
   } else {
     alert(`Communication error: ${response.statusText}`);
   }
-
-  loadAssets();
 }
 
 function loadAssets() {
@@ -1088,6 +1273,35 @@ function loadAssets() {
   globals.boardImage.addEventListener("load", loadHandler, false);
   globals.boardImage.src = "../images/board.jpg";
   globals.assetsToLoad.push(globals.boardImage);
+
+  // LOAD PHASE BUTTON IMAGE
+  globals.phaseButtonImage = new Image();
+  globals.phaseButtonImage.addEventListener("load", loadHandler, false);
+  globals.phaseButtonImage.src = "../images/phase-button.png";
+  globals.assetsToLoad.push(globals.phaseButtonImage);
+
+  // LOAD PHASE MESSAGES BOARD IMAGE
+  globals.phaseMsgsBoardImage = new Image();
+  globals.phaseMsgsBoardImage.addEventListener("load", loadHandler, false);
+  globals.phaseMsgsBoardImage.src = "../images/phase-msgs-board.png";
+  globals.assetsToLoad.push(globals.phaseMsgsBoardImage);
+
+  // LOAD ACTIVE EVENTS TABLE IMAGE
+  globals.activeEventsTableImage = new Image();
+  globals.activeEventsTableImage.addEventListener("load", loadHandler, false);
+  globals.activeEventsTableImage.src = "../images/active-events-table.png";
+  globals.assetsToLoad.push(globals.activeEventsTableImage);
+
+  // LOAD CARDS IN HAND CONTAINER IMAGE
+  globals.cardsInHandContainerImage = new Image();
+  globals.cardsInHandContainerImage.addEventListener(
+    "load",
+    loadHandler,
+    false
+  );
+  globals.cardsInHandContainerImage.src =
+    "../images/cards-in-hand-container.png";
+  globals.assetsToLoad.push(globals.cardsInHandContainerImage);
 
   // LOAD CARDS REVERSE
   globals.cardsReverseImage = new Image();
@@ -1291,19 +1505,62 @@ function loadAssets() {
   ];
 
   createAndStoreImageObjs(balloons, globals.balloonsImages);
+
+  // LOAD SOUNDS
+
+  const bulbBreakingSound = document.getElementById("bulbBreakingSound");
+  const talkingSound = document.getElementById("talkingSound");
+  const gameMusic = document.getElementById("gameMusic");
+  gameMusic.addEventListener("timeupdate", updateMusic, false);
+  const josephMusic = document.getElementById("joseph-music");
+  josephMusic.addEventListener("timeupdate", updateMusic, false);
+  const winnerMusic = document.getElementById("winner-music");
+  winnerMusic.addEventListener("timeupdate", updateMusic, false);
+
+  globals.sounds.push(
+    bulbBreakingSound,
+    talkingSound,
+    gameMusic,
+    josephMusic,
+    winnerMusic
+  );
+
+  for (let i = 0; i < globals.sounds.length; i++) {
+    const currentSound = globals.sounds[i];
+    currentSound.addEventListener("canplaythrough", loadHandler, false);
+    currentSound.load();
+    globals.assetsToLoad.push(currentSound);
+  }
 }
 
 // CODE BLOCK TO CALL EACH TIME AN ASSET IS LOADED
-async function loadHandler() {
+function loadHandler() {
   globals.assetsLoaded++;
+
+  globals.assetsLoadProgressAsPercentage +=
+    100 / (globals.assetsToLoad.length + 2);
+
   if (globals.assetsLoaded === globals.assetsToLoad.length) {
+    // REMOVE THE "canplaythrough" EVENT LISTENER FROM SOUNDS
+    for (let i = 0; i < globals.sounds.length; i++) {
+      const currentSound = globals.sounds[i];
+      currentSound.removeEventListener("canplaythrough", loadHandler, false);
+    }
+
     globals.gameState = GameState.PLAYING;
+  }
+}
 
-    const playersNames = getPlayersNames();
-    globals.game = await Game.create(playersNames);
+function createAndStoreImageObjs(arrayOfSameTypeObjs, arrayToPutImageObjsInto) {
+  for (let i = 0; i < arrayOfSameTypeObjs.length; i++) {
+    const currentObj = arrayOfSameTypeObjs[i];
 
-    // FIRST FRAME REQUEST
-    window.requestAnimationFrame(executeGameLoop);
+    const currentObjImage = new Image();
+    currentObjImage.addEventListener("load", loadHandler, false);
+    currentObjImage.src = currentObj.image_src;
+    globals.assetsToLoad.push(currentObjImage);
+
+    arrayToPutImageObjsInto.push(currentObjImage);
   }
 }
 
@@ -1322,17 +1579,30 @@ function getPlayersNames() {
   return playersNames;
 }
 
-function createAndStoreImageObjs(arrayOfSameTypeObjs, arrayToPutImageObjsInto) {
-  for (let i = 0; i < arrayOfSameTypeObjs.length; i++) {
-    const currentObj = arrayOfSameTypeObjs[i];
+function updateMusic() {
+  if (globals.currentMusic !== Music.NO_MUSIC) {
+    const buffer = 0.28;
+    const music = globals.sounds[globals.currentMusic];
 
-    const currentObjImage = new Image();
-    currentObjImage.addEventListener("load", loadHandler, false);
-    currentObjImage.src = currentObj.image_src;
-    globals.assetsToLoad.push(currentObjImage);
-
-    arrayToPutImageObjsInto.push(currentObjImage);
+    if (music.currentTime > music.duration - buffer) {
+      music.currentTime = 0;
+      music.play();
+    }
   }
+}
+
+export function checkIfMusicIsPlayingAndIfSoReset() {
+  if (globals.currentMusic !== Music.NO_MUSIC) {
+    const music = globals.sounds[globals.currentMusic];
+    music.pause();
+    music.currentTime = 0;
+  }
+}
+
+export function setMusic(music) {
+  globals.currentMusic = music;
+  globals.sounds[globals.currentMusic].play();
+  globals.sounds[globals.currentMusic].volume = 0.5;
 }
 
 function executeGameLoop(timeStamp) {

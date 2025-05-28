@@ -8,6 +8,9 @@ import DiscardCardPhase from "./DiscardCardPhase.js";
 import EquipWeaponOrArmorEvent from "../Events/EquipWeaponOrArmorEvent.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
+import Physics from "../Game/Physics.js";
+import CardMovement from "../Decks/CardMovement.js";
+import Box from "../Board/Box.js";
 import globals from "../Game/globals.js";
 import {
   PlayerID,
@@ -20,8 +23,8 @@ import {
   PhaseButtonData,
   GridType,
   MinionTypeID,
+  StateMessageType,
 } from "../Game/constants.js";
-import Physics from "../Game/Physics.js";
 
 export default class Turn {
   #isCurrentPhaseCanceled;
@@ -42,11 +45,13 @@ export default class Turn {
   #minionTooltip;
   #remainingCardsTooltip;
   #hoverTime;
-  #lastHoveredCardId;
+  #lastHoveredElement;
   #eventsData;
   #stats;
   #edgeAnimation;
   #particles;
+  #highlightedBoxes;
+  #animationCards;
 
   constructor(
     deckContainer,
@@ -62,7 +67,9 @@ export default class Turn {
     stats,
     remainingCardsTooltip,
     edgeAnimation,
-    particles
+    particles,
+    highlightedBoxes,
+    animationCards
   ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
@@ -80,12 +87,13 @@ export default class Turn {
     this.#equipWeaponOrArmorState = EquipWeaponOrArmorState.INIT;
     this.#minionTooltip = minionTooltip;
     this.#hoverTime = 0;
-    this.#lastHoveredCardId = null;
     this.#eventsData = eventsData;
     this.#stats = stats;
     this.#remainingCardsTooltip = remainingCardsTooltip;
     this.#edgeAnimation = edgeAnimation;
     this.#particles = particles;
+    this.#highlightedBoxes = highlightedBoxes;
+    this.#animationCards = animationCards;
   }
 
   fillPhases(currentPlayer) {
@@ -117,7 +125,9 @@ export default class Turn {
         this.#eventsData,
         this.#stats,
         this.#edgeAnimation,
-        this.#particles
+        this.#particles,
+        this.#highlightedBoxes,
+        this.#animationCards
       );
 
       this.#phases.push(currentPhase);
@@ -144,6 +154,7 @@ export default class Turn {
       if (!isAnyCardExpanded) {
         this.#updateMinionTooltip();
         this.#updateRemainingCardsTooltip();
+        this.#applyHoverLiftEffect();
 
         if (this.#currentPhase === PhaseType.INVALID) {
           this.#equipWeaponOrArmor();
@@ -204,7 +215,84 @@ export default class Turn {
         this.#minionTooltip.clearTooltip();
         this.#remainingCardsTooltip.clearTooltip();
         this.#hoverTime = 0;
-        this.#lastHoveredCardId = null;
+      }
+    }
+  }
+
+  #applyHoverLiftEffect() {
+    const decksToCheck = [];
+
+    if (this.#player.getID() === PlayerID.PLAYER_1) {
+      if (this.#currentPhase === PhaseType.PREPARE_EVENT) {
+        decksToCheck.push(
+          DeckType.PLAYER_1_CARDS_IN_HAND,
+          DeckType.PLAYER_1_EVENTS_IN_PREPARATION
+        );
+      } else if (this.#currentPhase === PhaseType.MOVE) {
+        decksToCheck.push(DeckType.PLAYER_1_MINIONS_IN_PLAY);
+      } else if (this.#currentPhase === PhaseType.ATTACK) {
+        decksToCheck.push(DeckType.PLAYER_1_MINIONS_IN_PLAY);
+      }
+    } else {
+      if (
+        this.#currentPhase === PhaseType.PREPARE_EVENT ||
+        this.#currentPhase === PhaseType.PERFORM_EVENT
+      ) {
+        decksToCheck.push(
+          DeckType.PLAYER_2_CARDS_IN_HAND,
+          DeckType.PLAYER_2_EVENTS_IN_PREPARATION
+        );
+      } else if (this.#currentPhase === PhaseType.MOVE) {
+        decksToCheck.push(DeckType.PLAYER_2_MINIONS_IN_PLAY);
+      } else if (this.#currentPhase === PhaseType.ATTACK) {
+        decksToCheck.push(DeckType.PLAYER_2_MINIONS_IN_PLAY);
+      }
+    }
+
+    const decks = this.#deckContainer.getDecks();
+    const liftAmount = 9.5;
+
+    for (let i = 0; i < decksToCheck.length; i++) {
+      const deck = decks[decksToCheck[i]];
+      if (!deck) continue;
+
+      const cards = deck.getCards();
+      if (!cards) continue;
+
+      const selectedCard = deck.lookForSelectedCard();
+      if (selectedCard) {
+        for (let j = 0; j < cards.length; j++) {
+          const card = cards[j];
+          const y = card.getYCoordinate();
+
+          if (Math.abs(y % 1) > 0.01) {
+            card.setYCoordinate(y + liftAmount);
+          }
+        }
+        continue;
+      }
+
+      for (let j = 0; j < cards.length; j++) {
+        const card = cards[j];
+        const y = card.getYCoordinate();
+        const state = card.getState();
+        const hoveredCard = deck.lookForHoveredCard();
+
+        if (state === CardState.MOVING) {
+          continue;
+        }
+
+        const isLifted = Math.abs(y % 1) > 0.01;
+
+        if (card === hoveredCard && state !== CardState.PLACED) {
+          if (!isLifted) {
+            card.setYCoordinate(y - liftAmount);
+          }
+        } else {
+          if (isLifted) {
+            card.setYCoordinate(y + liftAmount);
+          }
+        }
       }
     }
   }
@@ -278,7 +366,7 @@ export default class Turn {
   }
 
   #updateMinionTooltip() {
-    const tooltipDelay = 0.4;
+    const tooltipAppearanceDelay = 0.4;
 
     const playerXMinionsInPlayDeck =
       this.#player.getID() === PlayerID.PLAYER_1
@@ -288,84 +376,91 @@ export default class Turn {
     const currentHoveredMinion = playerXMinionsInPlayDeck.lookForHoveredCard();
 
     if (currentHoveredMinion) {
-      const currentCardId = currentHoveredMinion.getID();
-      const isSameCard = this.#lastHoveredCardId === currentCardId;
-      this.#lastHoveredCardId = currentCardId;
+      const currentCardID = currentHoveredMinion.getID();
 
-      this.#hoverTime = isSameCard
-        ? this.#hoverTime + globals.deltaTime * 10
-        : globals.deltaTime;
+      if (this.#lastHoveredElement instanceof CardMovement) {
+        const isSameCard = this.#lastHoveredElement.getID() === currentCardID;
 
-      const cardCenterX =
+        this.#hoverTime = isSameCard ? this.#hoverTime + globals.deltaTime : 0;
+      }
+
+      this.#lastHoveredElement = currentHoveredMinion;
+
+      const cardCenterXCoordinate =
         currentHoveredMinion.getXCoordinate() +
         globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width / 2;
-      const cardCenterY =
+      const cardCenterYCoordinate =
         currentHoveredMinion.getYCoordinate() +
         globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2;
 
-      if (this.#hoverTime >= tooltipDelay) {
+      if (this.#hoverTime >= tooltipAppearanceDelay) {
         const content = this.#minionTooltip.getContent(currentHoveredMinion);
-        this.#minionTooltip.showTooltip(content, cardCenterX, cardCenterY);
+
+        this.#minionTooltip.showTooltip(
+          content,
+          cardCenterXCoordinate,
+          cardCenterYCoordinate
+        );
       }
-    } else {
+    } else if (this.#lastHoveredElement instanceof CardMovement) {
       this.#minionTooltip.clearTooltip();
       this.#hoverTime = 0;
-      this.#lastHoveredCardId = null;
     }
   }
 
   #updateRemainingCardsTooltip() {
-    const tooltipDelay = 0.2;
-    const minionsGrid = [
-      this.#board.getGrids()[GridType.PLAYER_1_MINIONS_DECK],
-      this.#board.getGrids()[GridType.PLAYER_2_MINIONS_DECK],
-    ];
+    const tooltipAppearanceDelay = 0.4;
 
     const player1MinionsDeck =
       this.#deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS];
     const player2MinionsDeck =
       this.#deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
 
-    const hoveredBoxPlayer1 = minionsGrid[0].lookForHoveredBox();
-    const hoveredBoxPlayer2 = minionsGrid[1].lookForHoveredBox();
+    const minionsDecksBoxes = [
+      this.#board.getGrids()[GridType.PLAYER_1_MINIONS_DECK].getBoxes()[0],
+      this.#board.getGrids()[GridType.PLAYER_2_MINIONS_DECK].getBoxes()[0],
+    ];
 
-    if (hoveredBoxPlayer1) {
-      this.#hoverTime = hoveredBoxPlayer1
-        ? this.#hoverTime + globals.deltaTime * 10
-        : this.#hoverTime;
+    let hoveredMinionsDeck, hoveredMinionsDeckBox;
+    for (let i = 0; i < minionsDecksBoxes.length; i++) {
+      const currentBox = minionsDecksBoxes[i];
 
-      const boxCenterX = hoveredBoxPlayer1.getXCoordinate() + 100;
-      const boxCenterY = hoveredBoxPlayer1.getYCoordinate() + 140;
+      if (currentBox.isMouseOver()) {
+        if (i === 0) {
+          hoveredMinionsDeck =
+            globals.firstActivePlayerID === PlayerID.PLAYER_1
+              ? player1MinionsDeck
+              : player2MinionsDeck;
+        } else {
+          hoveredMinionsDeck =
+            globals.firstActivePlayerID === PlayerID.PLAYER_1
+              ? player2MinionsDeck
+              : player1MinionsDeck;
+        }
 
-      if (this.#hoverTime >= tooltipDelay) {
-        const content =
-          this.#remainingCardsTooltip.getContent(player1MinionsDeck);
-        return this.#remainingCardsTooltip.showTooltip(
-          content,
-          boxCenterX,
-          boxCenterY
-        );
-      }
-    } else if (hoveredBoxPlayer2) {
-      this.#hoverTime = hoveredBoxPlayer2
-        ? this.#hoverTime + globals.deltaTime * 10
-        : this.#hoverTime;
-
-      const boxCenterX = hoveredBoxPlayer2.getXCoordinate() + 100;
-      const boxCenterY = hoveredBoxPlayer2.getYCoordinate() + 140;
-
-      if (this.#hoverTime >= tooltipDelay) {
-        const content =
-          this.#remainingCardsTooltip.getContent(player2MinionsDeck);
-        return this.#remainingCardsTooltip.showTooltip(
-          content,
-          boxCenterX,
-          boxCenterY
-        );
+        hoveredMinionsDeckBox = currentBox;
       }
     }
 
-    if (!hoveredBoxPlayer1 || !hoveredBoxPlayer2) {
+    if (hoveredMinionsDeck) {
+      this.#lastHoveredElement = hoveredMinionsDeckBox;
+
+      this.#hoverTime += globals.deltaTime;
+
+      const boxCenterXCoordinate = hoveredMinionsDeckBox.getXCoordinate() + 100;
+      const boxCenterYCoordinate = hoveredMinionsDeckBox.getYCoordinate() + 140;
+
+      if (this.#hoverTime >= tooltipAppearanceDelay) {
+        const content =
+          this.#remainingCardsTooltip.getContent(hoveredMinionsDeck);
+
+        return this.#remainingCardsTooltip.showTooltip(
+          content,
+          boxCenterXCoordinate,
+          boxCenterYCoordinate
+        );
+      }
+    } else if (this.#lastHoveredElement instanceof Box) {
       this.#remainingCardsTooltip.clearTooltip();
       this.#hoverTime = 0;
     }
@@ -459,8 +554,6 @@ export default class Turn {
         weaponOrArmor = playerXEventsInPreparationDeck.lookForSelectedCard();
 
         if (weaponOrArmor.isLeftClicked()) {
-          console.log("WEAPON OR ARMOR DESELECTED");
-
           // THE PREVIOUSLY SELECTED WEAPON OR ARMOR WAS DESELECTED
           this.#equipWeaponOrArmorState = EquipWeaponOrArmorState.INIT;
         } else {
@@ -482,22 +575,30 @@ export default class Turn {
             if (!minion.isLeftClicked()) {
               minion.setState(CardState.HOVERED);
             } else if (minion.getMinionTypeID() === MinionTypeID.SPECIAL) {
-              // DEER STATE MESSAGE CREATION
-              const deerWeaponsMsg = new StateMessage(
-                "DEER CANNOT EQUIP WEAPONS OR ARMOR",
-                "20px MedievalSharp",
-                "red",
-                1,
-                2,
-                nMsgXCoordinate,
-                nMsgYCoordinate,
-                1,
-                new Physics(0, 0)
-              );
+              if (
+                !StateMessage.isMsgOfTypeXAlreadyCreated(
+                  this.#stateMessages,
+                  StateMessageType.DEER_WEAPONS_ARMOR
+                )
+              ) {
+                // DEER STATE MESSAGE CREATION
+                const deerWeaponsArmorMsg = new StateMessage(
+                  "DEER CANNOT EQUIP WEAPONS OR ARMOR",
+                  "20px MedievalSharp",
+                  "red",
+                  1,
+                  2,
+                  nMsgXCoordinate,
+                  nMsgYCoordinate,
+                  1,
+                  new Physics(0, 0),
+                  StateMessageType.DEER_WEAPONS_ARMOR
+                );
 
-              deerWeaponsMsg.setVY(20);
+                deerWeaponsArmorMsg.setVY(20);
 
-              this.#stateMessages.push(deerWeaponsMsg);
+                this.#stateMessages.push(deerWeaponsArmorMsg);
+              }
             } else if (
               (weaponOrArmor.getCategory() === CardCategory.WEAPON &&
                 !minion.getWeapon()) ||
@@ -520,6 +621,7 @@ export default class Turn {
               gearedUpMsg.setVY(20);
 
               this.#stateMessages.push(gearedUpMsg);
+
               this.#stats.incrementPlayerXUsedCards(this.#player.getID());
 
               minion.setState(CardState.SELECTED);
@@ -626,42 +728,58 @@ export default class Turn {
               this.#player.getID() ===
                 this.#eventsData.judgmentAncients.affectedPlayerID
             ) {
-              const cannotAttackDueToActiveEventMsg = new StateMessage(
-                "CANNOT ATTACK DUE TO ACTIVE EVENT",
-                "20px MedievalSharp",
-                "red",
-                1,
-                2,
-                buttonXCoordinate + buttonWidth / 2,
-                buttonYCoordinate + buttonHeight / 2,
-                1,
-                new Physics(0, 0)
-              );
+              if (
+                !StateMessage.isMsgOfTypeXAlreadyCreated(
+                  this.#stateMessages,
+                  StateMessageType.CANNOT_ATTACK
+                )
+              ) {
+                const cannotAttackDueToActiveEventMsg = new StateMessage(
+                  "CANNOT ATTACK DUE TO ACTIVE EVENT",
+                  "20px MedievalSharp",
+                  "red",
+                  1,
+                  2,
+                  buttonXCoordinate + buttonWidth / 2,
+                  buttonYCoordinate + buttonHeight / 2,
+                  1,
+                  new Physics(0, 0),
+                  StateMessageType.CANNOT_ATTACK
+                );
 
-              cannotAttackDueToActiveEventMsg.setVY(20);
+                cannotAttackDueToActiveEventMsg.setVY(20);
 
-              this.#stateMessages.push(cannotAttackDueToActiveEventMsg);
+                this.#stateMessages.push(cannotAttackDueToActiveEventMsg);
+              }
             } else if (
               this.#eventsData.decrepitThroneSkill.isActive &&
               this.#player !==
                 this.#eventsData.decrepitThroneSkill.playerWithDecrepitThrone &&
               this.#eventsData.decrepitThroneSkill.turnsSinceActivation !== 3
             ) {
-              const cannotDoAnythingDueToActiveEventMsg = new StateMessage(
-                "CANNOT DO ALMOST ANYTHING DUE TO THE CURSE OF THE THRONE",
-                "20px MedievalSharp",
-                "red",
-                1,
-                2,
-                buttonXCoordinate + buttonWidth / 2,
-                buttonYCoordinate + buttonHeight / 2,
-                1,
-                new Physics(0, 0)
-              );
+              if (
+                !StateMessage.isMsgOfTypeXAlreadyCreated(
+                  this.#stateMessages,
+                  StateMessageType.CANNOT_DO_ALMOST_ANYTHING
+                )
+              ) {
+                const cannotDoAnythingDueToActiveEventMsg = new StateMessage(
+                  "CANNOT DO ALMOST ANYTHING DUE TO THE CURSE OF THE THRONE",
+                  "20px MedievalSharp",
+                  "red",
+                  1,
+                  2,
+                  buttonXCoordinate + buttonWidth / 2,
+                  buttonYCoordinate + buttonHeight / 2,
+                  1,
+                  new Physics(0, 0),
+                  StateMessageType.CANNOT_DO_ALMOST_ANYTHING
+                );
 
-              cannotDoAnythingDueToActiveEventMsg.setVY(20);
+                cannotDoAnythingDueToActiveEventMsg.setVY(20);
 
-              this.#stateMessages.push(cannotDoAnythingDueToActiveEventMsg);
+                this.#stateMessages.push(cannotDoAnythingDueToActiveEventMsg);
+              }
             } else if (
               this.#currentPhase === PhaseType.INVALID &&
               (!this.#eventsData.decrepitThroneSkill.isActive ||
