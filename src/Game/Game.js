@@ -2829,10 +2829,10 @@ export default class Game {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
 
     globals.ctx.textAlign = "center";
-    globals.ctx.fillStyle = "white";
+    globals.ctx.fillStyle = "rgb(255, 228, 171)";
     globals.ctx.font = "24px MedievalSharp";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 308);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 291);
 
     globals.ctx.font = "16px MedievalSharp";
 

@@ -29,15 +29,15 @@ export default class CardFactory {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
     rawCardDescription = Text.create(
       rawCardDescription,
-      46,
+      50,
       canvasWidthDividedBy2,
-      703
+      602
     );
     rawCardSpecialSkill = Text.create(
       rawCardSpecialSkill,
-      46,
+      50,
       canvasWidthDividedBy2,
-      802
+      730
     );
 
     const processedCard = new MainCharacter(
