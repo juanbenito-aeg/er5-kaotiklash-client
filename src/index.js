@@ -1349,7 +1349,7 @@ function loadAssets() {
       image_src: "../images/minions/special/templates/version_big.png",
     },
     {
-      name: "JosephBig",
+      name: "josephBig",
       image_src: "../images/main_characters/templates/version_big_joseph.png",
     },
     {
@@ -1367,6 +1367,10 @@ function loadAssets() {
     {
       name: "weaponBig",
       image_src: "../images/weapons/templates/version_big.png",
+    },
+    {
+      name: "josephSmall",
+      image_src: "../images/main_characters/templates/version_small_joseph.png",
     },
   ];
 

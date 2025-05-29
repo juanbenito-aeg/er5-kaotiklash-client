@@ -304,13 +304,16 @@ export default class Game {
         if (currentCard.getCategory() === CardCategory.MAIN_CHARACTER) {
           cardImage = globals.cardsImages.main_characters[currentCard.getID()];
 
-          smallVersionTemplateImage =
-            globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_SMALL];
-
           if (currentCard.getID() === MainCharacterID.JOSEPH) {
+            smallVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.JOSEPH_SMALL];
+
             bigVersionTemplateImage =
               globals.cardsTemplatesImages[TemplateID.JOSEPH_BIG];
           } else {
+            smallVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_SMALL];
+
             bigVersionTemplateImage =
               globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_BIG];
           }
@@ -2814,12 +2817,13 @@ export default class Game {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
 
     globals.ctx.textAlign = "center";
-    globals.ctx.fillStyle = "black";
+    globals.ctx.fillStyle = "rgb(248, 231, 199)";
     globals.ctx.font = "28px MedievalSharp";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 311);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 303);
 
-    globals.ctx.font = "16px MedievalSharp";
+    globals.ctx.fillStyle = "rgb(189, 243, 231)";
+    globals.ctx.font = "14px MedievalSharp";
 
     card.renderDescription();
     card.renderChaoticEventDescription();
@@ -2833,10 +2837,10 @@ export default class Game {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
 
     globals.ctx.textAlign = "center";
-    globals.ctx.fillStyle = "white";
+    globals.ctx.fillStyle = "rgb(255, 228, 171)";
     globals.ctx.font = "24px MedievalSharp";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 308);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 291);
 
     globals.ctx.font = "16px MedievalSharp";
 
