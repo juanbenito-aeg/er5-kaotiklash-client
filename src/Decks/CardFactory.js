@@ -60,7 +60,7 @@ export default class CardFactory {
     // (!) UNCOMMENT IF WE END UP PROGRAMMING MORE THAN ONE CHAOTIC EVENT
     // const chaoticEventID = Math.floor(Math.random() * 4);
 
-    const chaoticEventID = 0;
+    const chaoticEventID = 3;
     const gottenChaoticEvent =
       globals.cardsData.main_characters[MainCharacterID.JOSEPH].chaotic_events[
         chaoticEventID
@@ -78,15 +78,15 @@ export default class CardFactory {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
     rawCardDescription = Text.create(
       rawCardDescription,
-      40,
+      52,
       canvasWidthDividedBy2,
-      700
+      663
     );
     chaoticEventDescription = Text.create(
       chaoticEventDescription,
-      47,
+      54,
       canvasWidthDividedBy2,
-      802
+      784
     );
 
     // DETERMINE HOW MANY ROUNDS WILL JOSEPH'S CHAOTIC EVENT LAST WHEN HIS CARD IS DRAWN FROM THE EVENTS DECK

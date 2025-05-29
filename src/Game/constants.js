@@ -31,6 +31,7 @@ const TemplateID = {
   ARMOR_MEDIUM_BIG: 9,
   ARMOR_LIGHT_HEAVY_BIG: 10,
   WEAPONS_BIG: 11,
+  JOSEPH_SMALL: 12,
 };
 
 const IconID = {
