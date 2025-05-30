@@ -1388,7 +1388,7 @@ export default class Game {
     }
 
     if (globals.attacker) {
-        this.#renderAttack()
+      this.#renderAttack();
     }
   }
 
@@ -1670,8 +1670,6 @@ export default class Game {
         this.#animationCards.targetBox = null;
         this.#animationCards.phase = 0;
         this.#animationCards.flipProgress = 0;
-        this.#animationCards.originDeck = null;
-        this.#animationCards.destinyDeck = null;
       }
     }
   }
@@ -3364,40 +3362,37 @@ export default class Game {
       this.attackOriginalY = globals.attacker.getYCoordinate();
 
       if (this.attackOriginalY < 570) {
-        this.attackDirection = 1; 
+        this.attackDirection = 1;
       } else {
-        this.attackDirection = -1; 
+        this.attackDirection = -1;
       }
-      
+
       this.chargeDuration = this.attackDuration * 0.6;
       this.attackPhaseDuration = this.attackDuration * 0.4;
-  
+
       this.chargeOffset = 10;
       this.attackOffset = 30;
     }
-  
+
     this.attackStartTime += globals.deltaTime;
-  
+
     let newYOffset = 0;
-  
+
     if (this.attackStartTime < this.attackDuration) {
       if (this.attackStartTime <= this.chargeDuration) {
         const progress = this.attackStartTime / this.chargeDuration;
         const slowStart = progress * progress;
 
         newYOffset = -this.attackDirection * this.chargeOffset * slowStart;
-
       } else {
         const elapsed = this.attackStartTime - this.chargeDuration;
         const progress = elapsed / this.attackPhaseDuration;
         const fastFinish = 1 - (1 - progress) * (1 - progress);
 
         newYOffset = this.attackDirection * this.attackOffset * fastFinish;
-
       }
 
       globals.attacker.setYCoordinate(this.attackOriginalY + newYOffset);
-      
     } else {
       globals.attacker.setYCoordinate(this.attackOriginalY);
       this.attackStartTime = null;
@@ -3406,5 +3401,4 @@ export default class Game {
       globals.attacker = null;
     }
   }
-  
 }

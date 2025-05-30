@@ -689,6 +689,10 @@ export default class Turn {
     const mouseX = this.#mouseInput.getMouseXCoordinate();
     const mouseY = this.#mouseInput.getMouseYCoordinate();
 
+    if (this.#animationCards && this.#animationCards.card !== null) {
+      return;
+    }
+
     if (this.#mouseInput.isLeftButtonPressed()) {
       for (let i = 0; i < globals.buttonDataGlobal.length; i++) {
         const buttonData = globals.buttonDataGlobal[i];
