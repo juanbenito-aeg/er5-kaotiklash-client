@@ -1451,12 +1451,14 @@ function loadAssets() {
   const punchSound = document.getElementById("punchSound");
   const equipmentSound = document.getElementById("equipmentSound");
   const deathSound = document.getElementById("deathSound");
+  const moveSound = document.getElementById("moveSound");
 
   globals.sounds.push(
     bulbBreakingSound,
     punchSound,
     equipmentSound,
-    deathSound
+    deathSound,
+    moveSound
   );
 
   for (let i = 0; i < globals.sounds.length; i++) {

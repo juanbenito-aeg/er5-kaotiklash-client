@@ -69,6 +69,7 @@ const Sound = {
   PUNCH: 1,
   EQUIPMENT: 2,
   DEATH: 3,
+  MOVE: 4,
 };
 
 const CardCategory = {

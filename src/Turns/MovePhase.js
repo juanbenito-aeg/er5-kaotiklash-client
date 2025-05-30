@@ -8,6 +8,7 @@ import {
   PlayerID,
   DeckType,
   GridType,
+  Sound,
 } from "../Game/constants.js";
 import Physics from "../Game/Physics.js";
 
@@ -247,6 +248,7 @@ export default class MovePhase extends Phase {
       PhaseMessage.content.move.moveCard[globals.language]
     );
 
+    globals.currentSound = Sound.MOVE;
     const selectedCard = this.#decksRelevants.lookForSelectedCard();
     const selectedTargetBox = this.#gridsRelevants.lookForSelectedBox();
 
