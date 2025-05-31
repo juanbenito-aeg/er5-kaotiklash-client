@@ -52,6 +52,7 @@ export default class Turn {
   #particles;
   #highlightedBoxes;
   #animationCards;
+  #blinkingAnimation;
 
   constructor(
     deckContainer,
@@ -69,7 +70,8 @@ export default class Turn {
     edgeAnimation,
     particles,
     highlightedBoxes,
-    animationCards
+    animationCards,
+    blinkingAnimation
   ) {
     this.#isCurrentPhaseCanceled = false;
     this.#isCurrentPhaseFinished = false;
@@ -94,6 +96,7 @@ export default class Turn {
     this.#particles = particles;
     this.#highlightedBoxes = highlightedBoxes;
     this.#animationCards = animationCards;
+    this.#blinkingAnimation = blinkingAnimation;
   }
 
   fillPhases(currentPlayer) {
@@ -127,7 +130,8 @@ export default class Turn {
         this.#edgeAnimation,
         this.#particles,
         this.#highlightedBoxes,
-        this.#animationCards
+        this.#animationCards,
+        this.#blinkingAnimation
       );
 
       this.#phases.push(currentPhase);

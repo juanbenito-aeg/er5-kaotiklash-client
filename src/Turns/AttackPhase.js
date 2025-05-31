@@ -35,6 +35,7 @@ export default class AttackPhase extends Phase {
   #particles;
   #animationCards;
   #enemyMinionsGrid;
+  #blinkingAnimation;
 
   constructor(
     state,
@@ -55,7 +56,8 @@ export default class AttackPhase extends Phase {
     stats,
     edgeAnimation,
     particles,
-    animationCards
+    animationCards,
+    blinkingAnimation
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -77,6 +79,7 @@ export default class AttackPhase extends Phase {
     this.#particles = particles;
     this.#animationCards = animationCards;
     this.#enemyMinionsGrid = enemyMinionsGrid;
+    this.#blinkingAnimation = blinkingAnimation;
   }
 
   static create(
@@ -94,7 +97,8 @@ export default class AttackPhase extends Phase {
     edgeAnimation,
     particles,
     highlightedBoxes,
-    animationCards
+    animationCards,
+    blinkingAnimation
   ) {
     let enemyMovementGrid;
     let currentPlayerMovementGrid;
@@ -161,7 +165,8 @@ export default class AttackPhase extends Phase {
       stats,
       edgeAnimation,
       particles,
-      animationCards
+      animationCards,
+      blinkingAnimation
     );
 
     return attackPhase;
@@ -556,6 +561,8 @@ export default class AttackPhase extends Phase {
     );
     attackEvent.execute();
 
+    this.#blinkingAnimation.card = target;
+    this.#blinkingAnimation.time = 0;
     attacker.setState(CardState.PLACED);
     target.setState(CardState.PLACED);
     this._state = AttackPhaseState.END;

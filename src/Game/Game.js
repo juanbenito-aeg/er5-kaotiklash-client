@@ -66,6 +66,7 @@ export default class Game {
   #borderTimer;
   #highlightedBoxes;
   #animationCards;
+  #blinkingAnimation;
 
   static async create(playersNames) {
     // "game" OBJECT CREATION
@@ -216,6 +217,11 @@ export default class Game {
       size: 150,
     };
 
+    game.#blinkingAnimation = {
+      card: null,
+      time: 0,
+    };
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
@@ -233,7 +239,8 @@ export default class Game {
       game.#edgeAnimation,
       game.#particles,
       game.#highlightedBoxes,
-      game.#animationCards
+      game.#animationCards,
+      game.#blinkingAnimation
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -252,7 +259,8 @@ export default class Game {
       game.#edgeAnimation,
       game.#particles,
       game.#highlightedBoxes,
-      game.#animationCards
+      game.#animationCards,
+      game.#blinkingAnimation
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -1345,8 +1353,8 @@ export default class Game {
     this.#renderPhaseMessage();
     this.#renderCardsInHandContainers();
     this.#renderCardsReverse();
-    this.#renderAnimatedCard();
     this.#renderCards();
+    this.#renderAnimatedCard();
     this.#renderParticles();
 
     if (this.#eventsData.activeVisibilitySkill) {
@@ -2060,15 +2068,34 @@ export default class Game {
             }
           }
 
-          if (isDeckCardsInHandOfInactivePlayer) {
-            this.#renderCardReverse(
-              currentCard.getXCoordinate(),
-              currentCard.getYCoordinate(),
-              110,
-              110
-            );
-          } else {
-            this.#renderCard(currentCard);
+          let shouldRenderCard = true;
+          if (
+            this.#blinkingAnimation.card &&
+            currentCard === this.#blinkingAnimation.card
+          ) {
+            this.#blinkingAnimation.time += globals.deltaTime * 1000;
+
+            if (this.#blinkingAnimation.time >= 1000) {
+              this.#blinkingAnimation.card = null;
+              this.#blinkingAnimation.time = 0;
+            } else {
+              const blinkOn =
+                Math.floor(this.#blinkingAnimation.time / 200) % 2 === 0;
+              shouldRenderCard = blinkOn;
+            }
+          }
+
+          if (shouldRenderCard) {
+            if (isDeckCardsInHandOfInactivePlayer) {
+              this.#renderCardReverse(
+                currentCard.getXCoordinate(),
+                currentCard.getYCoordinate(),
+                110,
+                110
+              );
+            } else {
+              this.#renderCard(currentCard);
+            }
           }
 
           if (currentCard.getState() === CardState.EXPANDED) {
