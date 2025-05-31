@@ -152,16 +152,10 @@ export default class DrawCardPhase extends Phase {
   #drawCard() {
     this.#eventsDeck.shuffle();
 
-    // (!) UNCOMMENT WHEN CARDS TESTING FINISHES
-    // const drawnCard = this.#eventsDeck.getCards()[0];
-
-    // (!) REMOVE WHEN CARDS TESTING FINISHES
-    const drawnCard = this.#getSpecifiedCard(
-      CardCategory.SPECIAL,
-      SpecialEventID.BROOM_FURY
-    );
+    // (!) TWEAK AFTER PRESENTATION
+    let drawnCard = this.#getSpecificCard();
     if (!drawnCard) {
-      return;
+      drawnCard = this.#eventsDeck.getCards()[0];
     }
 
     let boxToPlaceDrawnCardInto;
@@ -216,12 +210,17 @@ export default class DrawCardPhase extends Phase {
     eventBox.resetCard();
   }
 
-  // (!) REMOVE WHEN CARDS TESTING FINISHES
-  #getSpecifiedCard(cardCategory, cardID) {
+  // (!) REMOVE AFTER PRESENTATION
+  #getSpecificCard() {
     for (let i = 0; i < this.#eventsDeck.getCards().length; i++) {
       const card = this.#eventsDeck.getCards()[i];
 
-      if (card.getCategory() === cardCategory && card.getID() === cardID) {
+      if (
+        (card.getCategory() === CardCategory.MAIN_CHARACTER &&
+          card.getID() === MainCharacterID.JOSEPH) ||
+        (card.getCategory() === CardCategory.RARE &&
+          card.getID() === RareEventID.STOLEN_FATE)
+      ) {
         return card;
       }
     }
