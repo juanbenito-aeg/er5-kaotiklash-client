@@ -557,12 +557,11 @@ export default class AttackPhase extends Phase {
       this.#stateMessages,
       this.#player,
       this.#eventsData,
-      this.#stats
+      this.#stats,
+      this.#blinkingAnimation
     );
     attackEvent.execute();
 
-    this.#blinkingAnimation.card = target;
-    this.#blinkingAnimation.time = 0;
     attacker.setState(CardState.PLACED);
     target.setState(CardState.PLACED);
     this._state = AttackPhaseState.END;

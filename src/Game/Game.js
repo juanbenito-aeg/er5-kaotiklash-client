@@ -1394,10 +1394,6 @@ export default class Game {
     if (this.#winner) {
       this.#renderGameWinner();
     }
-
-    if (globals.attacker) {
-      this.#renderAttack();
-    }
   }
 
   #renderBoard() {
@@ -3379,53 +3375,6 @@ export default class Game {
       globals.ctx.restore();
 
       currentChatMessage.renderContent();
-    }
-  }
-
-  #renderAttack() {
-    if (!this.attackStartTime) {
-      this.attackStartTime = 0;
-      this.attackDuration = 0.5;
-      this.attackOriginalY = globals.attacker.getYCoordinate();
-
-      if (this.attackOriginalY < 570) {
-        this.attackDirection = 1;
-      } else {
-        this.attackDirection = -1;
-      }
-
-      this.chargeDuration = this.attackDuration * 0.6;
-      this.attackPhaseDuration = this.attackDuration * 0.4;
-
-      this.chargeOffset = 10;
-      this.attackOffset = 30;
-    }
-
-    this.attackStartTime += globals.deltaTime;
-
-    let newYOffset = 0;
-
-    if (this.attackStartTime < this.attackDuration) {
-      if (this.attackStartTime <= this.chargeDuration) {
-        const progress = this.attackStartTime / this.chargeDuration;
-        const slowStart = progress * progress;
-
-        newYOffset = -this.attackDirection * this.chargeOffset * slowStart;
-      } else {
-        const elapsed = this.attackStartTime - this.chargeDuration;
-        const progress = elapsed / this.attackPhaseDuration;
-        const fastFinish = 1 - (1 - progress) * (1 - progress);
-
-        newYOffset = this.attackDirection * this.attackOffset * fastFinish;
-      }
-
-      globals.attacker.setYCoordinate(this.attackOriginalY + newYOffset);
-    } else {
-      globals.attacker.setYCoordinate(this.attackOriginalY);
-      this.attackStartTime = null;
-      this.attackOriginalY = null;
-      this.attackDirection = null;
-      globals.attacker = null;
     }
   }
 }
