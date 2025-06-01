@@ -693,7 +693,10 @@ export default class Turn {
     const mouseX = this.#mouseInput.getMouseXCoordinate();
     const mouseY = this.#mouseInput.getMouseYCoordinate();
 
-    if (this.#animationCards && this.#animationCards.card !== null) {
+    if (
+      (this.#animationCards && this.#animationCards.card !== null) ||
+      this.#highlightedBoxes.isActive
+    ) {
       return;
     }
 
