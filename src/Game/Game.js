@@ -1353,9 +1353,9 @@ export default class Game {
     this.#renderPhaseMessage();
     this.#renderCardsInHandContainers();
     this.#renderCardsReverse();
+    this.#renderParticles();
     this.#renderCards();
     this.#renderAnimatedCard();
-    this.#renderParticles();
 
     if (this.#eventsData.activeVisibilitySkill) {
       this.#eventsData.activeVisibilitySkill.renderVisibilityEffect(
