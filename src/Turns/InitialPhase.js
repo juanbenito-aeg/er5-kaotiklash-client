@@ -69,24 +69,16 @@ export default class InitialPhase {
     const eventsDeck = this.#deckContainer.getDecks()[DeckType.EVENTS];
     eventsDeck.shuffle();
 
+    const NUM_OF_CARDS_TO_DEAL = 10;
+
     const eventCardsToDealToPlayers = new Deck(-1, []);
 
-    for (let i = 0; i < eventsDeck.getCards().length; i++) {
+    for (let i = 0; i < NUM_OF_CARDS_TO_DEAL; i++) {
       const currentCard = eventsDeck.getCards()[i];
 
-      // (!) UNCOMMENT TO TEST OTHER TYPES OF EVENT CARDS IN ADDITION TO WEAPONS
-      if (
-        /* currentCard.getCategory() !== CardCategory.ARMOR */ currentCard.getCategory() ===
-        CardCategory.WEAPON
-      ) {
-        eventCardsToDealToPlayers.insertCard(currentCard);
+      eventCardsToDealToPlayers.insertCard(currentCard);
 
-        eventsDeck.removeCard(currentCard);
-
-        if (eventCardsToDealToPlayers.getCards().length === 10) {
-          break;
-        }
-      }
+      eventsDeck.removeCard(currentCard);
     }
 
     const playersCardsInHand = [
