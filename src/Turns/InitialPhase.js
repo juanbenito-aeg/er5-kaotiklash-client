@@ -1,6 +1,11 @@
 import CardMovement from "../Decks/CardMovement.js";
 import Deck from "../Decks/Deck.js";
-import { CardCategory, CardState, DeckType } from "../Game/constants.js";
+import {
+  CardCategory,
+  CardState,
+  DeckType,
+  MainCharacterID,
+} from "../Game/constants.js";
 
 export default class InitialPhase {
   #deckContainer;
@@ -69,16 +74,24 @@ export default class InitialPhase {
     const eventsDeck = this.#deckContainer.getDecks()[DeckType.EVENTS];
     eventsDeck.shuffle();
 
-    const NUM_OF_CARDS_TO_DEAL = 10;
-
     const eventCardsToDealToPlayers = new Deck(-1, []);
 
-    for (let i = 0; i < NUM_OF_CARDS_TO_DEAL; i++) {
+    const NUM_OF_CARDS_TO_DEAL = 10;
+
+    for (let i = 0; i < eventsDeck.getCards().length; i++) {
       const currentCard = eventsDeck.getCards()[i];
 
-      eventCardsToDealToPlayers.insertCard(currentCard);
+      if (currentCard.getCategory() !== CardCategory.MAIN_CHARACTER) {
+        eventCardsToDealToPlayers.insertCard(currentCard);
 
-      eventsDeck.removeCard(currentCard);
+        eventsDeck.removeCard(currentCard);
+
+        if (
+          eventCardsToDealToPlayers.getCards().length === NUM_OF_CARDS_TO_DEAL
+        ) {
+          break;
+        }
+      }
     }
 
     const playersCardsInHand = [

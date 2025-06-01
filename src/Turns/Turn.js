@@ -227,7 +227,10 @@ export default class Turn {
     const decksToCheck = [];
 
     if (this.#player.getID() === PlayerID.PLAYER_1) {
-      if (this.#currentPhase === PhaseType.PREPARE_EVENT) {
+      if (
+        this.#currentPhase === PhaseType.PREPARE_EVENT ||
+        this.#currentPhase === PhaseType.PERFORM_EVENT
+      ) {
         decksToCheck.push(
           DeckType.PLAYER_1_CARDS_IN_HAND,
           DeckType.PLAYER_1_EVENTS_IN_PREPARATION
