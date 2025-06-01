@@ -26,6 +26,7 @@ export default class AttackEvent extends Event {
   #player;
   #eventsData;
   #stats;
+  #blinkingAnimation;
 
   constructor(
     attacker,
@@ -38,7 +39,8 @@ export default class AttackEvent extends Event {
     stateMessages,
     player,
     eventsData,
-    stats
+    stats,
+    blinkingAnimation
   ) {
     super();
 
@@ -53,6 +55,7 @@ export default class AttackEvent extends Event {
     this.#player = player;
     this.#eventsData = eventsData;
     this.#stats = stats;
+    this.#blinkingAnimation = blinkingAnimation;
   }
 
   execute() {
@@ -123,6 +126,13 @@ export default class AttackEvent extends Event {
       fumble = true;
     }
 
+    if (fumble) {
+      this.#blinkingAnimation.card = this.#attacker;
+      this.#blinkingAnimation.time = 0;
+    } else {
+      this.#blinkingAnimation.card = this.#target;
+      this.#blinkingAnimation.time = 0;
+    }
     if (targetHasBreastplatePrimordialColossus || fumble) {
       this.#target = this.#attacker;
     }
@@ -280,7 +290,6 @@ export default class AttackEvent extends Event {
       }
     }
 
-    globals.attacker = this.#attacker;
     if (targetArmor) {
       if (
         this.#target.getArmorID() === ArmorID.ARMOR_OF_TITANIC_FURY &&

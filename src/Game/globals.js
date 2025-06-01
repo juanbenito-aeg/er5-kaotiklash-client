@@ -53,7 +53,6 @@ export default {
     criticalHitsPerMatch: false,
     usedCards: false,
   },
-  attacker: null,
   assetsLoadProgressAsPercentage: 0,
   sounds: [], // SOUNDS
   currentSound: Sound.NO_SOUND, // CURRENT SOUND TO PLAY
