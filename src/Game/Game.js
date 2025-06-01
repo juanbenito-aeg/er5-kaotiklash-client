@@ -57,6 +57,7 @@ export default class Game {
   #stats;
   #eventsData;
   #isQuickHelpActive;
+  #QuickHelpScreenNum;
   #edgeAnimation;
   #alphaState;
   #particles;
@@ -181,6 +182,7 @@ export default class Game {
     };
 
     game.#isQuickHelpActive = false;
+    game.#QuickHelpScreenNum = 0
     // EDGE ANIMATION
     game.#edgeAnimation = {
       color: null,
@@ -708,6 +710,14 @@ export default class Game {
   }
 
   #updatePlaying() {
+
+    this.#updateQuickHelpBtn();
+
+    if(this.#isQuickHelpActive) {
+      this.#updateQuickHelpExitBtn()
+      this.#updateQuickHelpPassTipBtn()
+    }
+
     if (globals.isCurrentTurnFinished) {
       globals.isCurrentTurnFinished = false;
 
@@ -776,8 +786,6 @@ export default class Game {
       this.#updateParticles();
 
       this.#checkIfGameOver();
-
-      this.#updateQuickHelpBtn();
     }
 
     this.#updateStateMessages();
@@ -990,26 +998,62 @@ export default class Game {
   }
 
   #updateQuickHelpBtn() {
-    let isMouseOverQuickHelpBtn = false;
     const mouseX = this.#mouseInput.getMouseXCoordinate();
     const mouseY = this.#mouseInput.getMouseYCoordinate();
     const btnX = 50;
     const btnY = globals.canvas.height - 50;
     const btnRadius = 50;
+    const distance = Math.sqrt((mouseX - btnX) ** 2 + (mouseY - btnY) ** 2);
+    if ((distance < btnRadius) && this.#mouseInput.isLeftButtonPressed()) {
+      this.#isQuickHelpActive = true;
+    }
+
+  }
+
+  #updateQuickHelpExitBtn() {
+    const mouseX = this.#mouseInput.getMouseXCoordinate();
+    const mouseY = this.#mouseInput.getMouseYCoordinate();
+    const btnX = globals.canvas.width - 50;
+    const btnY = 50;
+    const btnRadius = 50;
 
     const distance = Math.sqrt((mouseX - btnX) ** 2 + (mouseY - btnY) ** 2);
-
+    
     if ((distance < btnRadius) && this.#mouseInput.isLeftButtonPressed()) {
-      // isMouseOverQuickHelpBtn = true;
-      console.log("Quick Help Button Clicked");
-    }
-
-    if(isMouseOverQuickHelpBtn) {
-      this.#isQuickHelpActive = true;
-
-
+      this.#isQuickHelpActive = false;
+      this.#QuickHelpScreenNum = 0; 
     }
   }
+
+  #updateQuickHelpPassTipBtn() {
+    const mouseX = this.#mouseInput.getMouseXCoordinate();
+    const mouseY = this.#mouseInput.getMouseYCoordinate();
+  
+    const btnLX = 50;
+    const btnLY = globals.canvas.height / 2;
+    const btnRX = globals.canvas.width - 50;
+    const btnRY = globals.canvas.height / 2;
+    const btnRadius = 50;
+  
+    const distanceL = Math.sqrt((mouseX - btnLX) ** 2 + (mouseY - btnLY) ** 2);
+    const distanceR = Math.sqrt((mouseX - btnRX) ** 2 + (mouseY - btnRY) ** 2);
+  
+    if (this.#mouseInput.isLeftButtonPressed()) {
+      if (distanceR < btnRadius) {
+        this.#QuickHelpScreenNum++;
+        if (this.#QuickHelpScreenNum > 8) {
+          this.#QuickHelpScreenNum = 0;
+        }
+      } else if (distanceL < btnRadius) {
+        this.#QuickHelpScreenNum--;
+        if (this.#QuickHelpScreenNum < 0) {
+          this.#QuickHelpScreenNum = 8;
+        }
+      }
+    }
+  }
+  
+  
 
   #fillChatMessages() {
     // DETERMINE THE TYPE OF THE CHAT MESSAGE(S) TO DISPLAY
@@ -1328,8 +1372,10 @@ export default class Game {
     this.#renderCardsInHandContainers();
     this.#renderCardsReverse();
     this.#renderCards();
-    this.#renderQuickHelpBtn();
     this.#renderParticles();
+    if(!this.#isQuickHelpActive) {
+      this.#renderQuickHelpBtn();
+    }
 
     if (this.#eventsData.activeVisibilitySkill) {
       this.#eventsData.activeVisibilitySkill.renderVisibilityEffect(
@@ -1367,6 +1413,10 @@ export default class Game {
 
     if (this.#winner) {
       this.#renderGameWinner();
+    }
+
+    if(this.#isQuickHelpActive) {
+      this.#renderQuickHelp();
     }
   }
 
@@ -3225,6 +3275,126 @@ export default class Game {
     }
   }
 
+  #renderQuickHelp() {
+    this.#renderQuickHelpScreens();
+    this.#renderExitBtn();
+    this.#renderPassTipBtn();
+    
+    globals.ctx.globalAlpha = 0.35;
+    globals.ctx.fillStyle = "black";
+    globals.ctx.fillRect(0, 0, globals.canvas.width, globals.canvas.height);
+    globals.ctx.globalAlpha = 1;
+
+    globals.ctx.textAlign = "center";
+
+    globals.ctx.shadowBlur = 20;
+    globals.ctx.shadowColor = "black";
+    globals.ctx.fillStyle = "white";
+  }
+
+  #renderQuickHelpScreens() {
+    let quickHelpScreen = new Image();
+    quickHelpScreen.src = `../images/quick_tip/${this.#QuickHelpScreenNum}.png`;
+  
+    globals.ctx.drawImage(
+      quickHelpScreen,
+      0,
+      0,
+      globals.canvas.width,
+      globals.canvas.height,
+      0,
+      0,
+      3180,
+      1490
+    );
+  
+const totalDots = 9;
+const dotRadius = 10;
+const spacing = 30;
+const startX = (globals.canvas.width / 2) - ((totalDots - 1) * spacing) / 2;
+const posY = globals.canvas.height - 30;
+
+for (let i = 0; i < totalDots; i++) {
+  const x = startX + i * spacing;
+
+  globals.ctx.beginPath();
+  globals.ctx.arc(x, posY, dotRadius, 0, Math.PI * 2);
+
+  if (i === this.#QuickHelpScreenNum) {
+    globals.ctx.fillStyle = "yellow";
+  } else {
+    globals.ctx.fillStyle = "gray";
+  }
+  
+  globals.ctx.fill();
+
+  globals.ctx.strokeStyle = "black";
+  globals.ctx.lineWidth = 2;
+  globals.ctx.stroke();
+
+  globals.ctx.closePath();
+}
+
+  }
+  
+
+  #renderExitBtn() {
+    const mouseX = this.#mouseInput.getMouseXCoordinate();
+    const mouseY = this.#mouseInput.getMouseYCoordinate();
+    const btnX = globals.canvas.width - 50;
+    const btnY = 50;
+    const btnRadius = 50;
+
+    const distance = Math.sqrt((mouseX - btnX) ** 2 + (mouseY - btnY) ** 2);
+
+    if (distance < btnRadius) {
+      globals.ctx.shadowBlur = 20;
+      globals.ctx.shadowColor = "yellow";
+    } else {
+      globals.ctx.shadowBlur = 0;
+    }
+
+    globals.ctx.fillStyle = "white";
+    globals.ctx.font = "100px MedievalSharp";
+    globals.ctx.fillText("x", btnX, btnY);
+    globals.ctx.shadowBlur = 0;
+  }
+
+  #renderPassTipBtn() {
+    const mouseX = this.#mouseInput.getMouseXCoordinate();
+    const mouseY = this.#mouseInput.getMouseYCoordinate();
+  
+    const btnLX = 50;
+    const btnLY = globals.canvas.height / 2;
+    const btnRX = globals.canvas.width - 50;
+    const btnRY = globals.canvas.height / 2;
+    const btnRadius = 50;
+  
+    const distanceL = Math.sqrt((mouseX - btnLX) ** 2 + (mouseY - btnLY) ** 2);
+    const distanceR = Math.sqrt((mouseX - btnRX) ** 2 + (mouseY - btnRY) ** 2);
+  
+    if (distanceL < btnRadius) {
+      globals.ctx.shadowBlur = 20;
+      globals.ctx.shadowColor = "yellow";
+    } else {
+      globals.ctx.shadowBlur = 0;
+    }
+    globals.ctx.fillStyle = "white";
+    globals.ctx.font = "100px MedievalSharp";
+    globals.ctx.fillText("<", btnLX, btnLY);
+  
+    if (distanceR < btnRadius) {
+      globals.ctx.shadowBlur = 20;
+      globals.ctx.shadowColor = "yellow";
+    } else {
+      globals.ctx.shadowBlur = 0;
+    }
+    globals.ctx.fillText(">", btnRX, btnRY);
+  
+    globals.ctx.shadowBlur = 0;
+  }
+  
+
   #renderQuickHelpBtn() {
     const mouseX = this.#mouseInput.getMouseXCoordinate();
     const mouseY = this.#mouseInput.getMouseYCoordinate();
@@ -3233,7 +3403,6 @@ export default class Game {
     const btnRadius = 50;
 
     const distance = Math.sqrt((mouseX - btnX) ** 2 + (mouseY - btnY) ** 2);
-
     if (distance < btnRadius) {
       globals.ctx.shadowBlur = 20;
       globals.ctx.shadowColor = "yellow";
