@@ -1,6 +1,7 @@
-import globals from "../Game/globals.js";
 import StateMessage from "../Messages/StateMessage.js";
 import Physics from "../Game/Physics.js";
+import globals from "../Game/globals.js";
+import { Sound } from "../Game/constants.js";
 
 export default class SpecialSkillAngelo {
   #enemyBattlefieldGrid;
@@ -42,6 +43,9 @@ export default class SpecialSkillAngelo {
     message.setVY(20);
 
     this.#stateMessages.push(message);
+
+    globals.currentSound = Sound.BULB_BREAKING;
+
     this.#eventsData.activeVisibilitySkill = this;
   }
 

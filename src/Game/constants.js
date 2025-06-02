@@ -31,6 +31,7 @@ const TemplateID = {
   ARMOR_MEDIUM_BIG: 9,
   ARMOR_LIGHT_HEAVY_BIG: 10,
   WEAPONS_BIG: 11,
+  JOSEPH_SMALL: 12,
 };
 
 const IconID = {
@@ -61,6 +62,22 @@ const IconID = {
   EVENT_PREP_TIME: 24,
   EVENT_EFFECT: 25,
   EVENT_DURATION: 26,
+};
+
+const Sound = {
+  NO_SOUND: -1,
+  BULB_BREAKING: 3,
+  TALKING_SOUND: 4,
+};
+
+const Music = {
+  NO_MUSIC: -1,
+  TAVERN_MUSIC: 0,
+  LOGIN_REGISTER_MUSIC: 1,
+  PLAYER_SESSION_MUSIC: 2,
+  GAME_MUSIC: 5,
+  JOSEPH_MUSIC: 6,
+  WINNER_MUSIC: 7,
 };
 
 const CardCategory = {
@@ -132,6 +149,7 @@ const CardState = {
   INACTIVE_SELECTED: 5,
   SELECTED: 6,
   EXPANDED: 7,
+  REVEALING_AND_MOVING: 8,
 };
 
 const BoxState = {
@@ -172,7 +190,9 @@ const PrepareEventState = {
   INIT: 0,
   SELECT_HAND_CARD: 1,
   SELECT_TARGET_GRID: 2,
-  END: 3,
+  MOVE_CARD: 3,
+  ANIMATION_CARD: 4,
+  END: 5,
 };
 
 const PerformEventState = {
@@ -362,6 +382,8 @@ export {
   PlayerID,
   TemplateID,
   IconID,
+  Sound,
+  Music,
   CardCategory,
   MinionTypeID,
   WeaponTypeID,
