@@ -1271,25 +1271,25 @@ function loadAssets() {
   // LOAD BOARD IMAGE
   globals.boardImage = new Image();
   globals.boardImage.addEventListener("load", loadHandler, false);
-  globals.boardImage.src = "../images/board.jpg";
+  globals.boardImage.src = "../images/board.webp";
   globals.assetsToLoad.push(globals.boardImage);
 
   // LOAD PHASE BUTTON IMAGE
   globals.phaseButtonImage = new Image();
   globals.phaseButtonImage.addEventListener("load", loadHandler, false);
-  globals.phaseButtonImage.src = "../images/phase-button.png";
+  globals.phaseButtonImage.src = "../images/phase-button.webp";
   globals.assetsToLoad.push(globals.phaseButtonImage);
 
   // LOAD PHASE MESSAGES BOARD IMAGE
   globals.phaseMsgsBoardImage = new Image();
   globals.phaseMsgsBoardImage.addEventListener("load", loadHandler, false);
-  globals.phaseMsgsBoardImage.src = "../images/phase-msgs-board.png";
+  globals.phaseMsgsBoardImage.src = "../images/phase-msgs-board.webp";
   globals.assetsToLoad.push(globals.phaseMsgsBoardImage);
 
   // LOAD ACTIVE EVENTS TABLE IMAGE
   globals.activeEventsTableImage = new Image();
   globals.activeEventsTableImage.addEventListener("load", loadHandler, false);
-  globals.activeEventsTableImage.src = "../images/active-events-table.png";
+  globals.activeEventsTableImage.src = "../images/active-events-table.webp";
   globals.assetsToLoad.push(globals.activeEventsTableImage);
 
   // LOAD CARDS IN HAND CONTAINER IMAGE
@@ -1300,13 +1300,13 @@ function loadAssets() {
     false
   );
   globals.cardsInHandContainerImage.src =
-    "../images/cards-in-hand-container.png";
+    "../images/cards-in-hand-container.webp";
   globals.assetsToLoad.push(globals.cardsInHandContainerImage);
 
   // LOAD CARDS REVERSE
   globals.cardsReverseImage = new Image();
   globals.cardsReverseImage.addEventListener("load", loadHandler, false);
-  globals.cardsReverseImage.src = "../images/reverse.png";
+  globals.cardsReverseImage.src = "../images/reverse.webp";
   globals.assetsToLoad.push(globals.cardsReverseImage);
 
   // LOAD CARDS IMAGES
@@ -1322,7 +1322,7 @@ function loadAssets() {
   const templates = [
     {
       name: "mainCharactersSmall",
-      image_src: "../images/main_characters/templates/version_small.png",
+      image_src: "../images/main_characters/templates/version_small.webp",
     },
     {
       name: "minions&EventsSmall",
@@ -1350,11 +1350,11 @@ function loadAssets() {
     },
     {
       name: "josephBig",
-      image_src: "../images/main_characters/templates/version_big_joseph.png",
+      image_src: "../images/main_characters/templates/version_big_joseph.webp",
     },
     {
       name: "mainCharacterBig",
-      image_src: "../images/main_characters/templates/version_big.png",
+      image_src: "../images/main_characters/templates/version_big.webp",
     },
     {
       name: "armorMediumBig",
@@ -1370,7 +1370,7 @@ function loadAssets() {
     },
     {
       name: "josephSmall",
-      image_src: "../images/main_characters/templates/version_small_joseph.png",
+      image_src: "../images/main_characters/templates/version_small_joseph.webp",
     },
   ];
 
