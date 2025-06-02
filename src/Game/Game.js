@@ -70,6 +70,7 @@ export default class Game {
   #highlightedBoxes;
   #animationCards;
   #blinkingAnimation;
+  #cameraShake;
 
   static async create(playersNames) {
     // "game" OBJECT CREATION
@@ -235,6 +236,12 @@ export default class Game {
       time: 0,
     };
 
+    game.#cameraShake = {
+      shakeTimeLeft: 0,
+      shakeIntensity: 4,
+      isShaking: false,
+    };
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
@@ -253,7 +260,8 @@ export default class Game {
       game.#particles,
       game.#highlightedBoxes,
       game.#animationCards,
-      game.#blinkingAnimation
+      game.#blinkingAnimation,
+      game.#cameraShake
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -273,7 +281,8 @@ export default class Game {
       game.#particles,
       game.#highlightedBoxes,
       game.#animationCards,
-      game.#blinkingAnimation
+      game.#blinkingAnimation,
+      game.#cameraShake
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -1425,6 +1434,7 @@ export default class Game {
   }
 
   #renderGame() {
+    this.#applyCameraShake();
     this.#renderBoard();
     // this.#renderGrids();
     this.#renderPlayersInfo();
@@ -1657,6 +1667,20 @@ export default class Game {
     );
 
     globals.ctx.restore();
+  }
+
+  #applyCameraShake() {
+    if (this.#cameraShake.shakeTimeLeft > 0) {
+      const dx = (Math.random() - 0.5) * this.#cameraShake.shakeIntensity;
+      const dy = (Math.random() - 0.5) * this.#cameraShake.shakeIntensity;
+      globals.ctx.save();
+      globals.ctx.translate(dx, dy);
+      this.#cameraShake.shakeTimeLeft -= globals.deltaTime;
+      this.#cameraShake.isShaking = true;
+    } else if (this.#cameraShake.isShaking) {
+      globals.ctx.restore();
+      this.#cameraShake.isShaking = false;
+    }
   }
 
   #renderAnimatedCard() {

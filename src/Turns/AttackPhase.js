@@ -36,6 +36,7 @@ export default class AttackPhase extends Phase {
   #animationCards;
   #enemyMinionsGrid;
   #blinkingAnimation;
+  #cameraShake;
 
   constructor(
     state,
@@ -57,7 +58,8 @@ export default class AttackPhase extends Phase {
     edgeAnimation,
     particles,
     animationCards,
-    blinkingAnimation
+    blinkingAnimation,
+    cameraShake
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -80,6 +82,7 @@ export default class AttackPhase extends Phase {
     this.#animationCards = animationCards;
     this.#enemyMinionsGrid = enemyMinionsGrid;
     this.#blinkingAnimation = blinkingAnimation;
+    this.#cameraShake = cameraShake;
   }
 
   static create(
@@ -98,7 +101,8 @@ export default class AttackPhase extends Phase {
     particles,
     highlightedBoxes,
     animationCards,
-    blinkingAnimation
+    blinkingAnimation,
+    cameraShake
   ) {
     let enemyMovementGrid;
     let currentPlayerMovementGrid;
@@ -166,7 +170,8 @@ export default class AttackPhase extends Phase {
       edgeAnimation,
       particles,
       animationCards,
-      blinkingAnimation
+      blinkingAnimation,
+      cameraShake
     );
 
     return attackPhase;
@@ -560,6 +565,9 @@ export default class AttackPhase extends Phase {
       this.#stats,
       this.#blinkingAnimation
     );
+
+    this.#cameraShake.shakeTimeLeft = 0.15;
+
     attackEvent.execute();
 
     attacker.setState(CardState.PLACED);
