@@ -57,7 +57,8 @@ export default class Game {
   #stats;
   #eventsData;
   #isQuickHelpActive;
-  #QuickHelpScreenNum;
+  #quickHelpScreenNum;
+  #quickHelpImages = [];
   #edgeAnimation;
   #alphaState;
   #particles;
@@ -182,7 +183,15 @@ export default class Game {
     };
 
     game.#isQuickHelpActive = false;
-    game.#QuickHelpScreenNum = 0
+    game.#quickHelpScreenNum = 0
+
+    game.#quickHelpImages = [];
+    for (let i = 0; i < 9; i++) {
+      const img = new Image();
+      img.src = `../images/quick_tip/${i}.png`;
+      game.#quickHelpImages[i] = img;
+    }
+    
     // EDGE ANIMATION
     game.#edgeAnimation = {
       color: null,
@@ -1021,7 +1030,7 @@ export default class Game {
     
     if ((distance < btnRadius) && this.#mouseInput.isLeftButtonPressed()) {
       this.#isQuickHelpActive = false;
-      this.#QuickHelpScreenNum = 0; 
+      this.#quickHelpScreenNum = 0; 
     }
   }
 
@@ -1040,14 +1049,14 @@ export default class Game {
   
     if (this.#mouseInput.isLeftButtonPressed()) {
       if (distanceR < btnRadius) {
-        this.#QuickHelpScreenNum++;
-        if (this.#QuickHelpScreenNum > 8) {
-          this.#QuickHelpScreenNum = 0;
+        this.#quickHelpScreenNum++;
+        if (this.#quickHelpScreenNum > 8) {
+          this.#quickHelpScreenNum = 0;
         }
       } else if (distanceL < btnRadius) {
-        this.#QuickHelpScreenNum--;
-        if (this.#QuickHelpScreenNum < 0) {
-          this.#QuickHelpScreenNum = 8;
+        this.#quickHelpScreenNum--;
+        if (this.#quickHelpScreenNum < 0) {
+          this.#quickHelpScreenNum = 8;
         }
       }
     }
@@ -3293,50 +3302,51 @@ export default class Game {
   }
 
   #renderQuickHelpScreens() {
-    let quickHelpScreen = new Image();
-    quickHelpScreen.src = `../images/quick_tip/${this.#QuickHelpScreenNum}.png`;
+    const img = this.#quickHelpImages[this.#quickHelpScreenNum];
   
-    globals.ctx.drawImage(
-      quickHelpScreen,
-      0,
-      0,
-      globals.canvas.width,
-      globals.canvas.height,
-      0,
-      0,
-      3180,
-      1490
-    );
+    if (img.complete) {
+      globals.ctx.drawImage(
+        img,
+        0,
+        0,
+        globals.canvas.width,
+        globals.canvas.height,
+        0,
+        0,
+        3180,
+        1490
+      );
+    }
+    
+    const totalDots = 9;
+    const dotRadius = 10;
+    const spacing = 30;
+    const startX = (globals.canvas.width / 2) - ((totalDots - 1) * spacing) / 2;
+    const posY = globals.canvas.height - 30;
   
-const totalDots = 9;
-const dotRadius = 10;
-const spacing = 30;
-const startX = (globals.canvas.width / 2) - ((totalDots - 1) * spacing) / 2;
-const posY = globals.canvas.height - 30;
-
-for (let i = 0; i < totalDots; i++) {
-  const x = startX + i * spacing;
-
-  globals.ctx.beginPath();
-  globals.ctx.arc(x, posY, dotRadius, 0, Math.PI * 2);
-
-  if (i === this.#QuickHelpScreenNum) {
+    for (let i = 0; i < totalDots; i++) {
+      const x = startX + i * spacing;
+  
+      globals.ctx.beginPath();
+      globals.ctx.arc(x, posY, dotRadius, 0, Math.PI * 2);
+  
+  if (i === this.#quickHelpScreenNum) {
     globals.ctx.fillStyle = "yellow";
   } else {
     globals.ctx.fillStyle = "gray";
   }
   
-  globals.ctx.fill();
-
-  globals.ctx.strokeStyle = "black";
-  globals.ctx.lineWidth = 2;
-  globals.ctx.stroke();
-
-  globals.ctx.closePath();
-}
+      globals.ctx.fill();
+  
+      globals.ctx.strokeStyle = "black";
+      globals.ctx.lineWidth = 2;
+      globals.ctx.stroke();
+  
+      globals.ctx.closePath();
+    }
 
   }
-  
+
 
   #renderExitBtn() {
     const mouseX = this.#mouseInput.getMouseXCoordinate();
