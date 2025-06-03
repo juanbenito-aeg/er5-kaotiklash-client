@@ -193,11 +193,28 @@ export default class Game {
     game.#quickHelpScreenNum = 0;
 
     game.#quickHelpImages = [];
-    for (let i = 0; i < 9; i++) {
-      const img = new Image();
-      img.src = `../images/quick_tip/${i}.png`;
-      game.#quickHelpImages[i] = img;
-    }
+
+    const extendedCard = new Image();
+    extendedCard.src = `../images/quick_tip/0ExtendedCard.png`;
+    const phases = new Image();
+    phases.src = `../images/quick_tip/1Phases.png`;
+    const decks = new Image();
+    decks.src = `../images/quick_tip/2Decks.png`;
+    const hand = new Image();
+    hand.src = `../images/quick_tip/3Hand.png`;
+    const battlefield = new Image();
+    battlefield.src = `../images/quick_tip/4Battlefield.png`;
+    const prepareEvent = new Image();
+    prepareEvent.src = `../images/quick_tip/5PrepareEvent.png`;
+    const preformEvent = new Image();
+    preformEvent.src = `../images/quick_tip/6PerformEvent.png`;
+    const mainCharacters = new Image();
+    mainCharacters.src = `../images/quick_tip/7MainCharacters.png`;
+    const joseph = new Image();
+    joseph.src = `../images/quick_tip/8Joseph.png`;
+
+    game.#quickHelpImages.push(extendedCard, phases, decks, hand, battlefield, prepareEvent, preformEvent, mainCharacters, joseph);
+
 
     // EDGE ANIMATION
     game.#edgeAnimation = {
