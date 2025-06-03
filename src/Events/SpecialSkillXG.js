@@ -1,4 +1,5 @@
 import StateMessage from "../Messages/StateMessage.js";
+import Physics from "../Game/Physics.js";
 
 export default class SpecialSkillXG {
   #currentPlayerMinionsInPlayDeck;
@@ -39,13 +40,18 @@ export default class SpecialSkillXG {
       }
 
       let message = new StateMessage(
-        "MINIONS GOT CRAZY!!",
+        "MINIONS GOT CRAZY!",
         "50px MedievalSharp",
         "blue",
+        1,
         2,
         1200,
-        520
+        520,
+        1,
+        new Physics(0, 0)
       );
+
+      message.setVY(20);
 
       this.#stateMessages.push(message);
 
@@ -53,10 +59,15 @@ export default class SpecialSkillXG {
         "ATTACK ↑",
         "40px MedievalSharp",
         "green",
+        1,
         2,
         1200,
-        570
+        570,
+        1,
+        new Physics(0, 0)
       );
+
+      attackMessage.setVY(20);
 
       this.#stateMessages.push(attackMessage);
 
@@ -64,10 +75,15 @@ export default class SpecialSkillXG {
         "DEFENSE ↓",
         "40px MedievalSharp",
         "red",
+        1,
         2,
         1200,
-        630
+        630,
+        1,
+        new Physics(0, 0)
       );
+
+      DefenseMessage.setVY(20);
 
       this.#stateMessages.push(DefenseMessage);
 
@@ -93,5 +109,21 @@ export default class SpecialSkillXG {
       minion.setCurrentAttack(attack);
       minion.setCurrentDefense(defense);
     }
+
+    let restoreMessage = new StateMessage(
+      "MINIONS CALM DOWN...",
+      "50px MedievalSharp",
+      "purple",
+      1,
+      2,
+      1200,
+      570,
+      1,
+      new Physics(0, 0)
+    );
+
+    restoreMessage.setVY(20);
+
+    this.#stateMessages.push(restoreMessage);
   }
 }

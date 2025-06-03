@@ -1,7 +1,7 @@
 import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
-import StateMessage from "../Messages/StateMessage.js";
 import AttackEvent from "../Events/AttackEvent.js";
+import MinionDeathParticle from "../Particles/MinionDeathParticle.js";
 import globals from "../Game/globals.js";
 import {
   PlayerID,
@@ -13,6 +13,7 @@ import {
   AttackMenuBtn,
   MinionTypeID,
   ArmorID,
+  Sound,
 } from "../Game/constants.js";
 
 export default class AttackPhase extends Phase {
@@ -29,6 +30,13 @@ export default class AttackPhase extends Phase {
   #player;
   #attackMenuData;
   #eventsData;
+  #stats;
+  #edgeAnimation;
+  #particles;
+  #animationCards;
+  #enemyMinionsGrid;
+  #blinkingAnimation;
+  #cameraShake;
 
   constructor(
     state,
@@ -37,6 +45,7 @@ export default class AttackPhase extends Phase {
     enemyMovementGrid,
     currentPlayerMovementGrid,
     enemyMovementGridDeck,
+    enemyMinionsGrid,
     enemyMinionsDeck,
     currentPlayerMovementGridDeck,
     currentPlayerMinionsDeck,
@@ -44,7 +53,13 @@ export default class AttackPhase extends Phase {
     stateMessages,
     player,
     attackMenuData,
-    eventsData
+    eventsData,
+    stats,
+    edgeAnimation,
+    particles,
+    animationCards,
+    blinkingAnimation,
+    cameraShake
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -61,6 +76,13 @@ export default class AttackPhase extends Phase {
     this.#player = player;
     this.#attackMenuData = attackMenuData;
     this.#eventsData = eventsData;
+    this.#stats = stats;
+    this.#edgeAnimation = edgeAnimation;
+    this.#particles = particles;
+    this.#animationCards = animationCards;
+    this.#enemyMinionsGrid = enemyMinionsGrid;
+    this.#blinkingAnimation = blinkingAnimation;
+    this.#cameraShake = cameraShake;
   }
 
   static create(
@@ -73,21 +95,32 @@ export default class AttackPhase extends Phase {
     phaseMessage,
     stateMessages,
     attackMenuData,
-    eventsData
+    eventsData,
+    stats,
+    edgeAnimation,
+    particles,
+    highlightedBoxes,
+    animationCards,
+    blinkingAnimation,
+    cameraShake
   ) {
     let enemyMovementGrid;
     let currentPlayerMovementGrid;
+    let enemyMinionsGrid;
 
     if (player === currentPlayer) {
       currentPlayerMovementGrid =
         board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
 
       enemyMovementGrid = board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
+
+      enemyMinionsGrid = board.getGrids()[GridType.PLAYER_2_MINIONS_DECK];
     } else {
       currentPlayerMovementGrid =
         board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
 
       enemyMovementGrid = board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
+      enemyMinionsGrid = board.getGrids()[GridType.PLAYER_1_MINIONS_DECK];
     }
 
     let enemyMovementGridDeck;
@@ -124,6 +157,7 @@ export default class AttackPhase extends Phase {
       enemyMovementGrid,
       currentPlayerMovementGrid,
       enemyMovementGridDeck,
+      enemyMinionsGrid,
       enemyMinionsDeck,
       currentPlayerMovementGridDeck,
       currentPlayerMinionsDeck,
@@ -131,7 +165,13 @@ export default class AttackPhase extends Phase {
       stateMessages,
       player,
       attackMenuData,
-      eventsData
+      eventsData,
+      stats,
+      edgeAnimation,
+      particles,
+      animationCards,
+      blinkingAnimation,
+      cameraShake
     );
 
     return attackPhase;
@@ -204,38 +244,6 @@ export default class AttackPhase extends Phase {
     const attacker = this.#currentPlayerMovementGridDeck.lookForHoveredCard();
 
     if (attacker) {
-      if (
-        this.#player.getID() === PlayerID.PLAYER_1 &&
-        this.#eventsData.curseOfTheBoundTitan.isPlayer1Affected
-      ) {
-        console.log("CURSE OF THE BOUND TITAN EVENT DATA PLAYER 1 AFFECTED");
-
-        const debuffMessage = new StateMessage(
-          "Minion Debuffed",
-          "20px MedievalSharp",
-          "red",
-          0.01,
-          attacker.getXCoordinate() + 55,
-          attacker.getYCoordinate() + 10
-        );
-        this.#stateMessages.push(debuffMessage);
-      }
-
-      if (
-        this.#player.getID() === PlayerID.PLAYER_2 &&
-        this.#eventsData.curseOfTheBoundTitan.isPlayer2Affected
-      ) {
-        const debuffMessage = new StateMessage(
-          "Minion Debuffed",
-          "20px MedievalSharp",
-          "red",
-          0.01,
-          attacker.getXCoordinate() + 55,
-          attacker.getYCoordinate() + 10
-        );
-        this.#stateMessages.push(debuffMessage);
-      }
-
       if (!attacker.isLeftClicked()) {
         attacker.setState(CardState.HOVERED);
       } else {
@@ -277,6 +285,11 @@ export default class AttackPhase extends Phase {
           targetBox
         );
 
+        const attackType = attacker.getWeapon()
+          ? attacker.getMinionWeaponTypeID()
+          : null;
+        this.#selectTargetBorderColor(isTargetWithinReach, attackType);
+
         if (isTargetWithinReach) {
           if (!target.isLeftClicked()) {
             target.setState(CardState.HOVERED);
@@ -310,22 +323,17 @@ export default class AttackPhase extends Phase {
 
             if (target.getWeapon() || canArmorPowerBeUsed) {
               this.#attackMenuData.isOpen = true;
-
+              this.#resetEdgeAnimation();
               this._state = AttackPhaseState.ATTACK_MENU;
             } else {
+              this.#resetEdgeAnimation();
               this._state = AttackPhaseState.CALC_AND_APPLY_DMG;
             }
           }
         } else {
-          const errorMessage = new StateMessage(
-            "Target not within reach",
-            "20px MedievalSharp",
-            "red",
-            0.01,
-            target.getXCoordinate() + 55,
-            target.getYCoordinate() + 10
+          this._phaseMessage.setCurrentContent(
+            PhaseMessage.content.attack.targetOutOfLimit[globals.language]
           );
-          this.#stateMessages.push(errorMessage);
         }
       }
     }
@@ -374,14 +382,12 @@ export default class AttackPhase extends Phase {
       !attacker.getWeapon() ||
       attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE
     ) {
-      console.log("MISSILE WEAPON");
       let isYCoordinateLimitExceeded = false;
       let isXCoordinateLimitExceeded = false;
       if (
         this.#currentPlayerMovementGrid.getGridType() ===
         GridType.PLAYER_1_BATTLEFIELD
       ) {
-        console.log("PLAYER 1 BATTLEFIELD");
         const targetMinYCoordinate =
           attackerBox.getYCoordinate() - 135 - attackerBox.getHeight();
 
@@ -420,10 +426,8 @@ export default class AttackPhase extends Phase {
       }
 
       if (isXCoordinateLimitExceeded && isYCoordinateLimitExceeded) {
-        console.log("TARGET NOT WITHIN REACH");
         isTargetWithinReach = false;
       } else {
-        console.log("TARGET WITHIN REACH");
         isTargetWithinReach = true;
       }
     } else if (
@@ -434,6 +438,28 @@ export default class AttackPhase extends Phase {
     }
 
     return isTargetWithinReach;
+  }
+
+  #selectTargetBorderColor(isTargetWithinReach, attackType) {
+    const targetCard = this.#enemyMovementGridDeck.lookForHoveredCard();
+
+    let highlightColor;
+
+    if (!isTargetWithinReach && attackType === null) {
+      highlightColor = "rgb(0, 0, 0)";
+    } else if (attackType === WeaponTypeID.MELEE && isTargetWithinReach) {
+      highlightColor = "rgba(255, 0, 0, 0.5)";
+    } else if (attackType === WeaponTypeID.MISSILE) {
+      highlightColor = "rgba(0, 17, 255, 0.5)";
+    } else if (attackType === WeaponTypeID.HYBRID) {
+      highlightColor = "rgba(23, 208, 41, 0.5)";
+    } else if (isTargetWithinReach && attackType === null) {
+      highlightColor = "rgba(255, 0, 234, 1)";
+    }
+
+    this.#edgeAnimation.color = highlightColor;
+    this.#edgeAnimation.targetBox = targetCard;
+    this.#edgeAnimation.active = true;
   }
 
   #checkIfArmorPowerCanBeUsed(target) {
@@ -535,10 +561,17 @@ export default class AttackPhase extends Phase {
       this.#eventDeck,
       this.#stateMessages,
       this.#player,
-      this.#eventsData
+      this.#eventsData,
+      this.#stats,
+      this.#blinkingAnimation
     );
+
+    this.#cameraShake.shakeTimeLeft = 0.15;
+
     attackEvent.execute();
 
+    attacker.setState(CardState.PLACED);
+    target.setState(CardState.PLACED);
     this._state = AttackPhaseState.END;
   }
 
@@ -562,6 +595,10 @@ export default class AttackPhase extends Phase {
         const currentCard = currentDeck.getCards()[j];
 
         if (currentCard.getCurrentHP() === 0) {
+          MinionDeathParticle.create(this.#particles, 150, currentCard);
+
+          globals.currentSound = Sound.DEATH;
+
           currentDeck.removeCard(currentCard);
 
           // MAKE THE BOX THE NOW DEAD MINION WAS POSITIONED IN AVAILABLE
@@ -585,6 +622,12 @@ export default class AttackPhase extends Phase {
             gridWhereToLookForBox,
             currentCard
           );
+
+          const minionGridOrigin = this.#enemyMinionsGrid.getBoxes()[0];
+
+          const startX = minionGridOrigin.getXCoordinate();
+          const startY = minionGridOrigin.getYCoordinate();
+
           currentCardBox.resetCard();
 
           // REPLACE THE DEAD MINION BY A NEW ONE DRAWN FROM THE CORRESPONDING PLAYER'S MINIONS DECK
@@ -594,31 +637,52 @@ export default class AttackPhase extends Phase {
           if (newMinion) {
             movementGridDeckToInsertCardInto.insertCard(newMinion);
 
+            this.#stats.incrementPlayerXUsedCards(1 - this.#player.getID());
+
             minionsDeckToDrawCardFrom.removeCard(newMinion);
 
-            this.#positionNewMinion(newMinion, gridWhereToLookForBox);
+            this.#positionNewMinion(
+              newMinion,
+              gridWhereToLookForBox,
+              startX,
+              startY
+            );
           }
         }
       }
     }
   }
 
-  #positionNewMinion(newMinion, gridToPositionNewMinionIn) {
+  #positionNewMinion(newMinion, gridToPositionNewMinionIn, startX, startY) {
     for (let i = 0; i < gridToPositionNewMinionIn.getBoxes().length; i++) {
       const currentBox = gridToPositionNewMinionIn.getBoxes()[i];
 
       if (!currentBox.isOccupied()) {
+        this.#animationCards.card = newMinion;
+        this.#animationCards.animationTime = 0;
+        this.#animationCards.targetBox = currentBox;
+        this.#animationCards.phase = 0;
+        this.#animationCards.flipProgress = 0;
+        newMinion.setState(CardState.REVEALING_AND_MOVING);
+
         currentBox.setCard(newMinion);
 
-        newMinion.setXCoordinate(currentBox.getXCoordinate());
-        newMinion.setYCoordinate(currentBox.getYCoordinate());
+        newMinion.setXCoordinate(startX);
+        newMinion.setYCoordinate(startY);
 
         break;
       }
     }
   }
 
+  #resetEdgeAnimation() {
+    this.#edgeAnimation.targetBox = null;
+    this.#edgeAnimation.color = null;
+    this.#edgeAnimation.active = false;
+  }
+
   reset() {
+    this.#resetEdgeAnimation();
     this._state = AttackPhaseState.INIT;
   }
 }

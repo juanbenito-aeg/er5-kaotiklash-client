@@ -2,6 +2,7 @@ import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import PrepareEvent from "../Events/PrepareEvent.js";
 import globals from "../Game/globals.js";
+import Physics from "../Game/Physics.js";
 import {
   PrepareEventState,
   CardState,
@@ -16,6 +17,9 @@ export default class PrepareEventPhase extends Phase {
   #decksRelevants;
   #gridsRelevants;
   #events;
+  #highlightedBoxes;
+  #physics;
+  #movingCard;
 
   constructor(
     state,
@@ -24,7 +28,8 @@ export default class PrepareEventPhase extends Phase {
     player,
     decksRelevants,
     gridRelevants,
-    events
+    events,
+    highlightedBoxes
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -32,6 +37,9 @@ export default class PrepareEventPhase extends Phase {
     this.#decksRelevants = decksRelevants;
     this.#gridsRelevants = gridRelevants;
     this.#events = events;
+    this.#highlightedBoxes = highlightedBoxes;
+    this.#physics = null;
+    this.#movingCard = null;
   }
 
   static create(
@@ -41,7 +49,14 @@ export default class PrepareEventPhase extends Phase {
     mouseInput,
     events,
     currentPlayer,
-    phaseMessage
+    phaseMessage,
+    stateMessages,
+    attackMenuData,
+    eventsData,
+    stats,
+    edgeAnimation,
+    particles,
+    highlightedBoxes
   ) {
     let decksRelevants;
     let gridRelevants;
@@ -77,7 +92,8 @@ export default class PrepareEventPhase extends Phase {
       player,
       decksRelevants,
       gridRelevants,
-      events
+      events,
+      highlightedBoxes
     );
 
     return prepareEventPhase;
@@ -88,22 +104,26 @@ export default class PrepareEventPhase extends Phase {
 
     switch (this._state) {
       case PrepareEventState.INIT:
-        console.log("init");
         this.#initializePhase();
         break;
 
       case PrepareEventState.SELECT_HAND_CARD:
-        console.log("select hand card");
         this.#selectCardFromHand();
         break;
 
       case PrepareEventState.SELECT_TARGET_GRID:
-        console.log("select target grid");
         this.#selectTargetGrid();
         break;
 
+      case PrepareEventState.MOVE_CARD:
+        this.#moveCardToBox();
+        break;
+
+      case PrepareEventState.ANIMATION_CARD:
+        this.#animateCardMovement();
+        break;
+
       case PrepareEventState.END:
-        console.log("end");
         this.#finalizePhase();
         isPhaseFinished = true;
         break;
@@ -139,6 +159,20 @@ export default class PrepareEventPhase extends Phase {
     }
   }
 
+  #initTargetHighlights() {
+    const allBoxes = this.#gridsRelevants[0].getBoxes();
+    const available = [];
+    for (let i = 0; i < allBoxes.length; i++) {
+      const box = allBoxes[i];
+      if (!box.getCard()) {
+        available.push(box);
+      }
+    }
+    this.#highlightedBoxes.boxes = available;
+    this.#highlightedBoxes.color = "rgb(7, 255, 3)";
+    this.#highlightedBoxes.isActive = true;
+  }
+
   #selectTargetGrid() {
     this._phaseMessage.setCurrentContent(
       PhaseMessage.content.prepareEvent.selectTargetGrid[globals.language]
@@ -146,31 +180,81 @@ export default class PrepareEventPhase extends Phase {
 
     const selectedCard = this.#decksRelevants[0].lookForSelectedCard();
 
+    this.#movingCard = selectedCard;
+
     if (selectedCard.isLeftClicked()) {
       // THE PREVIOUSLY SELECTED CARD WAS DESELECTED
       selectedCard.setState(CardState.PLACED);
       this._state = PrepareEventState.SELECT_HAND_CARD;
     } else {
+      this.#initTargetHighlights();
       const hoveredBox = this.#gridsRelevants[0].lookForHoveredBox();
 
       if (hoveredBox) {
         if (!hoveredBox.isLeftClicked()) {
           hoveredBox.setState(BoxState.HOVERED);
         } else {
-          hoveredBox.setState(BoxState.SELECTED);
-
-          this._state = PrepareEventState.END;
+          if (!hoveredBox.getCard()) {
+            hoveredBox.setState(BoxState.SELECTED);
+            this._state = PrepareEventState.MOVE_CARD;
+          }
         }
       }
     }
   }
 
-  #finalizePhase() {
+  #moveCardToBox() {
     this._phaseMessage.setCurrentContent(
       PhaseMessage.content.prepareEvent.moveCard[globals.language]
     );
+    const selectedTargetBox = this.#gridsRelevants[0].lookForSelectedBox();
 
-    const selectedCard = this.#decksRelevants[0].lookForSelectedCard();
+    this.#movingCard.setState(CardState.MOVING);
+
+    const startX = this.#movingCard.getXCoordinate();
+    const startY = this.#movingCard.getYCoordinate();
+    const endX = selectedTargetBox.getXCoordinate();
+    const endY = selectedTargetBox.getYCoordinate();
+
+    this.#physics = new Physics(20, 5, 0, 0, 0, 0, 0);
+
+    this.#physics.ax = (endX - startX) * 0.01;
+    this.#physics.ay = (endY - startY) * 0.01;
+
+    this._state = PrepareEventState.ANIMATION_CARD;
+  }
+
+  #animateCardMovement() {
+    const selectedCard = this.#movingCard;
+    const selectedTargetBox = this.#gridsRelevants[0].lookForSelectedBox();
+    if (!selectedCard || !selectedTargetBox) return;
+
+    const targetX = selectedTargetBox.getXCoordinate();
+    const targetY = selectedTargetBox.getYCoordinate();
+
+    const currentX = selectedCard.getXCoordinate();
+    const currentY = selectedCard.getYCoordinate();
+
+    const dx = targetX - currentX;
+    const dy = targetY - currentY;
+
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < 0.5) {
+      this._state = PrepareEventState.END;
+      return;
+    }
+    const speed = 10;
+    let ratio = speed / distance;
+
+    ratio = Math.min(ratio, 1);
+
+    selectedCard.setXCoordinate(currentX + dx * ratio);
+    selectedCard.setYCoordinate(currentY + dy * ratio);
+  }
+
+  #finalizePhase() {
+    const selectedCard = this.#movingCard;
 
     this.#decksRelevants[1].insertCard(selectedCard);
     this.#decksRelevants[0].removeCard(selectedCard);
@@ -188,14 +272,27 @@ export default class PrepareEventPhase extends Phase {
     selectedCard.setYCoordinate(selectedBox.getYCoordinate());
 
     selectedCard.setState(CardState.PLACED);
+    selectedBox.setState(BoxState.OCCUPIED);
+
+    this.#movingCard = null;
+    this.#physics = null;
 
     const prepareEvent = PrepareEvent.create(this.#player, selectedCard);
     this.#events.push(prepareEvent);
 
+    this.#resetHighlightedBoxes();
+
     this._state = PrepareEventState.INIT;
   }
 
+  #resetHighlightedBoxes() {
+    this.#highlightedBoxes.boxes = null;
+    this.#highlightedBoxes.color = null;
+    this.#highlightedBoxes.isActive = false;
+  }
   reset() {
+    this.#resetHighlightedBoxes();
+    this.#initializePhase();
     this._state = PrepareEventState.INIT;
   }
 }

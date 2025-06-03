@@ -11,7 +11,9 @@ import {
   PlayerID,
   WeaponTypeID,
   MinionTypeID,
+  Sound,
 } from "../Game/constants.js";
+import Physics from "../Game/Physics.js";
 
 export default class AttackEvent extends Event {
   #attacker;
@@ -24,6 +26,8 @@ export default class AttackEvent extends Event {
   #stateMessages;
   #player;
   #eventsData;
+  #stats;
+  #blinkingAnimation;
 
   constructor(
     attacker,
@@ -35,7 +39,9 @@ export default class AttackEvent extends Event {
     eventDeck,
     stateMessages,
     player,
-    eventsData
+    eventsData,
+    stats,
+    blinkingAnimation
   ) {
     super();
 
@@ -49,6 +55,8 @@ export default class AttackEvent extends Event {
     this.#stateMessages = stateMessages;
     this.#player = player;
     this.#eventsData = eventsData;
+    this.#stats = stats;
+    this.#blinkingAnimation = blinkingAnimation;
   }
 
   execute() {
@@ -73,12 +81,19 @@ export default class AttackEvent extends Event {
         "ATTACK NULLIFIED BY SHIELD OF BALANCE!",
         "50px MedievalSharp",
         "red",
+        1,
         2,
         targetBox.getCard().getXCoordinate() +
           globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width / 2,
         targetBox.getCard().getYCoordinate() +
-          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2
+          globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height /
+            2,
+        1,
+        new Physics(0, 0)
       );
+
+      nullifiedMessage.setVY(20);
+
       this.#stateMessages.push(nullifiedMessage);
 
       return;
@@ -107,10 +122,18 @@ export default class AttackEvent extends Event {
       roll <= chances
     ) {
       // FUMBLE
+      this.#stats.incrementPlayerXFumbles(this.#player.getID());
       console.log("Fumble");
       fumble = true;
     }
 
+    if (fumble) {
+      this.#blinkingAnimation.card = this.#attacker;
+      this.#blinkingAnimation.time = 0;
+    } else {
+      this.#blinkingAnimation.card = this.#target;
+      this.#blinkingAnimation.time = 0;
+    }
     if (targetHasBreastplatePrimordialColossus || fumble) {
       this.#target = this.#attacker;
     }
@@ -122,9 +145,6 @@ export default class AttackEvent extends Event {
     let isPlayer1Debuffed = false;
     let isPlayer2Debuffed = false;
     let debuff = 10;
-
-    let armorOfTitanicFuryBoostAttacker;
-    let armorOfTitanicFuryBoostTarget;
 
     if (this.#eventsData.curseOfTheBoundTitan.isActive === true) {
       if (
@@ -141,29 +161,33 @@ export default class AttackEvent extends Event {
       }
     }
 
-    if (!attackerWeapon && this.#parry === false) {
-      // ATTACK USING FISTS && ENEMY IS NOT PARRYING
-      if (fumble) {
-        damageToInflict =
-          this.#attacker.getCurrentAttack() -
-          this.#target.getCurrentDefense() / 2;
+    if (!attackerWeapon) {
+      // ATTACK USING FISTS
 
-        console.log(damageToInflict);
+      globals.currentSound = Sound.PUNCH;
+
+      if (this.#parry) {
+        // ENEMY IS PARRYING
+        damageToInflict = this.#attacker.getCurrentAttack();
       } else {
-        damageToInflict =
-          this.#attacker.getCurrentAttack() - this.#target.getCurrentDefense();
+        // ENEMY IS NOT PARRYING
+        if (fumble) {
+          damageToInflict =
+            this.#attacker.getCurrentAttack() -
+            this.#target.getCurrentDefense() / 2;
+        } else {
+          damageToInflict =
+            this.#attacker.getCurrentAttack() -
+            this.#target.getCurrentDefense();
+        }
       }
-
-      damageToInflict = Math.floor(damageToInflict);
-    } else if (!attackerWeapon && this.#parry === true) {
-      // ATTACK USING FISTS && ENEMY IS PARRYING
-      damageToInflict = this.#attacker.getCurrentAttack();
 
       damageToInflict = Math.floor(damageToInflict);
     } else if (
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MELEE &&
       this.#parry === false
     ) {
+      globals.currentSound = Sound.MELEE;
       // ATTACK USING A MELEE WEAPON && ENEMY IS NOT PARRYING
       if (fumble) {
         damageToInflict =
@@ -182,6 +206,7 @@ export default class AttackEvent extends Event {
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MELEE &&
       this.#parry === true
     ) {
+      globals.currentSound = Sound.MELEE;
       // ATTACK USING A MELEE WEAPON && ENEMY IS PARRYING
       if (fumble) {
         damageToInflict =
@@ -198,6 +223,7 @@ export default class AttackEvent extends Event {
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE &&
       this.#parry === false
     ) {
+      globals.currentSound = Sound.MISSILE_HYBRID;
       // ATTACK USING A MISSILE WEAPON && ENEMY IS NOT PARRYING
       if (fumble) {
         damageToInflict =
@@ -211,12 +237,14 @@ export default class AttackEvent extends Event {
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage() -
           this.#target.getCurrentDefense();
-        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict));
+        damageToInflict = Math.floor(this.calculateDistance(damageToInflict));
       }
     } else if (
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE &&
       this.#parry === true
     ) {
+      globals.currentSound = Sound.MISSILE_HYBRID;
+
       // ATTACK USING A MISSILE WEAPON && ENEMY IS PARRYING
       if (fumble) {
         damageToInflict =
@@ -229,12 +257,13 @@ export default class AttackEvent extends Event {
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage();
 
-        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict));
+        damageToInflict = Math.floor(this.calculateDistance(damageToInflict));
       }
     } else if (
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID &&
       this.#parry === false
     ) {
+      globals.currentSound = Sound.MISSILE_HYBRID;
       // ATTACK USING A HYBRID WEAPON && ENEMY IS NOT PARRYING
       if (fumble) {
         damageToInflict =
@@ -249,12 +278,13 @@ export default class AttackEvent extends Event {
           this.#attacker.getWeaponCurrentDamage() -
           this.#target.getCurrentDefense();
 
-        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict));
+        damageToInflict = Math.floor(this.calculateDistance(damageToInflict));
       }
     } else if (
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID &&
       this.#parry === true
     ) {
+      globals.currentSound = Sound.MISSILE_HYBRID;
       // ATTACK USING A HYBRID WEAPON && ENEMY IS PARRYING
       if (fumble) {
         damageToInflict =
@@ -267,12 +297,15 @@ export default class AttackEvent extends Event {
           this.#attacker.getCurrentAttack() +
           this.#attacker.getWeaponCurrentDamage();
 
-        damageToInflict = Math.floor(this.caltulateDistance(damageToInflict));
+        damageToInflict = Math.floor(this.calculateDistance(damageToInflict));
       }
     }
 
     if (targetArmor) {
-      if (this.#target.getArmorID() === ArmorID.ARMOR_OF_TITANIC_FURY) {
+      if (
+        this.#target.getArmorID() === ArmorID.ARMOR_OF_TITANIC_FURY &&
+        this.#target.getMinionTypeID() === MinionTypeID.WARRIOR
+      ) {
         ArmorOfTitanicFuryEffect.activeBoost(this.#target, this.#stateMessages);
       }
     }
@@ -357,6 +390,7 @@ export default class AttackEvent extends Event {
     let crit = false;
     if (roll <= critProb) {
       // CRITICAL HIT
+      this.#stats.incrementPlayerXCriticalHits(this.#player.getID());
       crit = true;
       console.log("Critical Hit");
       let baseDamage = damageToInflict;
@@ -379,19 +413,11 @@ export default class AttackEvent extends Event {
 
     if (this.#parry === true && !fumble && this.#target.getWeapon()) {
       // PARRY
-
       if (
-        this.#attacker.getArmor() &&
-        this.#attacker.getArmor().getID() ===
-          ArmorID.SHIELD_OF_THE_ANCESTRAL_OAK
-      ) {
-        ShieldOfTheAncestralOakEffect.applyCounterAttack(
-          this.#target,
-          this.#stateMessages
-        );
-      } else if (
         this.#target.getArmor() &&
-        this.#target.getArmor().getID() === ArmorID.SHIELD_OF_THE_ANCESTRAL_OAK
+        this.#target.getArmor().getID() ===
+          ArmorID.SHIELD_OF_THE_ANCESTRAL_OAK &&
+        this.#target.getMinionTypeID() === MinionTypeID.WARRIOR
       ) {
         ShieldOfTheAncestralOakEffect.applyCounterAttack(
           this.#attacker,
@@ -401,11 +427,12 @@ export default class AttackEvent extends Event {
 
       if (
         this.#attacker.getArmor() &&
-        this.#attacker.getArmor().getID() === ArmorID.BRACERS_OF_THE_WAR_LION
+        this.#attacker.getArmor().getID() === ArmorID.BRACERS_OF_THE_WAR_LION &&
+        this.#attacker.getMinionTypeID() === MinionTypeID.WIZARD
       ) {
         damageToInflict = BracersOfTheWarLionSpecialEffect.activeBoost(
           damageToInflict,
-          this.#attacker,
+          this.#target,
           this.#stateMessages
         );
       }
@@ -442,12 +469,6 @@ export default class AttackEvent extends Event {
         } else {
           let NewDurability =
             targetWeapon.getCurrentDurability() - damageToInflict;
-          console.log(
-            "currentDurability: " + targetWeapon.getCurrentDurability()
-          );
-          console.log("damageToInflict: " + damageToInflict);
-          console.log("NewDurability: " + NewDurability);
-          console.log(targetWeapon.getCurrentDurability() - NewDurability);
 
           this.parryMessage(
             targetWeapon.getCurrentDurability() - NewDurability,
@@ -513,6 +534,7 @@ export default class AttackEvent extends Event {
       if (targetNewCurrentHP < 0) {
         targetNewCurrentHP = 0;
         this.deathMessage(this.#target);
+        this.#stats.incrementPlayerXMinionsKilled(this.#player.getID());
       }
 
       this.#target.setCurrentHP(targetNewCurrentHP);
@@ -522,6 +544,7 @@ export default class AttackEvent extends Event {
     if (targetNewCurrentHPStored < 0) {
       targetNewCurrentHPStored = 0;
       this.deathMessage(this.#target);
+      this.#stats.incrementPlayerXMinionsKilled(this.#player.getID());
     }
     this.#target.setCurrentHP(targetNewCurrentHPStored);
 
@@ -533,8 +556,9 @@ export default class AttackEvent extends Event {
     }
 
     if (!attackerWeapon) {
-      //RESET TITANIC FURY BOOST AFTER THE ATTACK IS FINISHED
-      ArmorOfTitanicFuryEffect.resetBoost(this.#attacker);
+      // RESET TITANIC FURY BOOST AFTER THE ATTACK IS FINISHED
+      // TO FIX: IT ALLWAYS TRIGGERS
+      //ArmorOfTitanicFuryEffect.resetBoost(this.#attacker, this.#stateMessages);
     }
 
     if (damageToInflict > 0) {
@@ -552,7 +576,7 @@ export default class AttackEvent extends Event {
     }
   }
 
-  caltulateDistance(damageToInflict) {
+  calculateDistance(damageToInflict) {
     // Calculate the distance between the attacker and target
     let x1 = this.#attacker.getXCoordinate();
     let y1 = this.#attacker.getYCoordinate();
@@ -561,6 +585,8 @@ export default class AttackEvent extends Event {
     let xDiff = Math.abs(x2 - x1) / 135;
     let yDiff = Math.abs(y2 - y1) / 135;
     let distance = xDiff + yDiff;
+
+    distance = Math.max(1, distance);
 
     let newdamageToInflict = damageToInflict / distance;
 
@@ -572,10 +598,16 @@ export default class AttackEvent extends Event {
       `WEAPON DURABILITY!: -${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
+      1,
       2,
       targetBox.getCard().getXCoordinate() + 55,
-      targetBox.getCard().getYCoordinate() - 55
+      targetBox.getCard().getYCoordinate() - 55,
+      1,
+      new Physics(0, 0)
     );
+
+    parryMessage.setVY(20);
+
     this.#stateMessages.push(parryMessage);
   }
 
@@ -584,10 +616,16 @@ export default class AttackEvent extends Event {
       `PARRY FAILED!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
+      1,
       2,
       targetBox.getCard().getXCoordinate() + 55,
-      targetBox.getCard().getYCoordinate() - 55
+      targetBox.getCard().getYCoordinate() - 55,
+      1,
+      new Physics(0, 0)
     );
+
+    parryMessage.setVY(20);
+
     this.#stateMessages.push(parryMessage);
   }
 
@@ -596,10 +634,16 @@ export default class AttackEvent extends Event {
       `PARRY HALF FUMBLE!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
+      1,
       2,
       targetBox.getCard().getXCoordinate() + 55,
-      targetBox.getCard().getYCoordinate() - 55
+      targetBox.getCard().getYCoordinate() - 55,
+      1,
+      new Physics(0, 0)
     );
+
+    parryMessage.setVY(20);
+
     this.#stateMessages.push(parryMessage);
   }
 
@@ -608,10 +652,16 @@ export default class AttackEvent extends Event {
       `PARRY CRIT!: ${damageToInflict}`,
       "60px MedievalSharp",
       "lightblue",
+      1,
       2,
       targetBox.getCard().getXCoordinate() + 55,
-      targetBox.getCard().getYCoordinate() - 55
+      targetBox.getCard().getYCoordinate() - 55,
+      1,
+      new Physics(0, 0)
     );
+
+    parryMessage.setVY(20);
+
     this.#stateMessages.push(parryMessage);
   }
 
@@ -620,10 +670,16 @@ export default class AttackEvent extends Event {
       damageToInflict,
       "20px MedievalSharp",
       color,
+      1,
       2,
       targetBox.getCard().getXCoordinate() + 55,
-      targetBox.getCard().getYCoordinate() + 55
+      targetBox.getCard().getYCoordinate() + 55,
+      1,
+      new Physics(0, 0)
     );
+
+    damageMessage.setVY(20);
+
     this.#stateMessages.push(damageMessage);
   }
 
@@ -635,12 +691,18 @@ export default class AttackEvent extends Event {
       "THE DAMAGE WAS REFLECTED BACK ONTO THE ATTACKER!";
     dmgReflectedBackOntoAttackerMsg = new StateMessage(
       dmgReflectedBackOntoAttackerMsg,
-      "20px MedievalSharp",
+      "30px MedievalSharp",
       "aqua",
-      4,
-      globals.canvas.width / 2 - dmgReflectedBackOntoAttackerMsg.length / 2,
-      globals.canvas.height / 2
+      1,
+      2,
+      globals.canvas.width / 2,
+      globals.canvas.height / 2,
+      1,
+      new Physics(0, 0)
     );
+
+    dmgReflectedBackOntoAttackerMsg.setVY(20);
+
     this.#stateMessages.push(dmgReflectedBackOntoAttackerMsg);
 
     // CREATE AND STORE THE "ARMOR BROKE!" STATE MESSAGE
@@ -662,10 +724,16 @@ export default class AttackEvent extends Event {
       "CRITICAL HIT!",
       "60px MedievalSharp",
       "gold",
+      1,
       2,
       targetBox.getCard().getXCoordinate() + 55,
-      targetBox.getCard().getYCoordinate() - 55
+      targetBox.getCard().getYCoordinate() - 55,
+      1,
+      new Physics(0, 0)
     );
+
+    critMessage.setVY(20);
+
     this.#stateMessages.push(critMessage);
   }
 
@@ -674,46 +742,75 @@ export default class AttackEvent extends Event {
       "FUMBLE!",
       "60px MedievalSharp",
       "red",
+      1,
       2,
       targetBox.getCard().getXCoordinate() + 55,
-      targetBox.getCard().getYCoordinate() - 55
+      targetBox.getCard().getYCoordinate() - 55,
+      1,
+      new Physics(0, 0)
     );
+
+    fumbleMessage.setVY(20);
+
     this.#stateMessages.push(fumbleMessage);
   }
 
   weaponMessage(targetBox) {
     const weaponMessage = new StateMessage(
       "WEAPON BROKE!",
-      "20px MedievalSharp",
-      "gray",
-      4,
-      targetBox.getCard().getXCoordinate() - 100,
-      targetBox.getCard().getYCoordinate() + 10
+      "30px MedievalSharp",
+      "red",
+      1,
+      2,
+      targetBox.getCard().getXCoordinate() - 135,
+      targetBox.getCard().getYCoordinate() +
+        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2,
+      1,
+      new Physics(0, 0)
     );
+
+    weaponMessage.setVY(20);
+
     this.#stateMessages.push(weaponMessage);
   }
 
   deathMessage(target) {
     const deathMessage = new StateMessage(
       "MINION DIED!",
-      "20px MedievalSharp",
+      "30px MedievalSharp",
       "red",
+      1,
       2,
-      target.getXCoordinate() + 55,
-      target.getYCoordinate() + 110
+      target.getXCoordinate() +
+        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width / 2,
+      target.getYCoordinate() +
+        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height +
+        15,
+      1,
+      new Physics(0, 0)
     );
+
+    deathMessage.setVY(20);
+
     this.#stateMessages.push(deathMessage);
   }
 
   #createAndStoreArmorBrokeMsg(armorOwnerBox) {
     const armorBrokeMsg = new StateMessage(
       "ARMOR BROKE!",
-      "20px MedievalSharp",
-      "gray",
-      4,
-      armorOwnerBox.getCard().getXCoordinate() + 208,
-      armorOwnerBox.getCard().getYCoordinate() + 10
+      "30px MedievalSharp",
+      "red",
+      1,
+      2,
+      armorOwnerBox.getCard().getXCoordinate() + 240,
+      armorOwnerBox.getCard().getYCoordinate() +
+        globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2,
+      1,
+      new Physics(0, 0)
     );
+
+    armorBrokeMsg.setVY(20);
+
     this.#stateMessages.push(armorBrokeMsg);
   }
 
@@ -735,19 +832,37 @@ export default class AttackEvent extends Event {
     );
 
     if (canDodge) {
+      // CREATE AND STORE THE ARMOR'S POWER STATE MESSAGE
       const dodgeMessage = new StateMessage(
-        "WIZARD DODGED THE ATTACK USING CLOAK OF ETERNAL SHADOW!",
-        "45px MedievalSharp",
+        "THE WIZARD DODGED THE ATTACK USING THE CLOAK OF ETERNAL SHADOW!",
+        "30px MedievalSharp",
         "aqua",
-        3,
-        this.#target.getXCoordinate(),
-        this.#target.getYCoordinate() - 30
+        1,
+        2,
+        globals.canvas.width / 2,
+        globals.canvas.height / 2,
+        1,
+        new Physics(0, 0)
       );
+
+      dodgeMessage.setVY(20);
+
       this.#stateMessages.push(dodgeMessage);
+
+      // CREATE AND STORE THE "ARMOR BROKE!" STATE MESSAGE
+      const cloakEternalShadowOwnerBox = this.#target.getBoxIsPositionedIn(
+        this.#enemyMovementGrid,
+        this.#target
+      );
+      this.#createAndStoreArmorBrokeMsg(cloakEternalShadowOwnerBox);
+
       this.#isArmorPowerChosen = false;
+
+      // RESET THE ARMOR'S ATTRIBUTES, INSERT IT INTO THE EVENTS DECK & REMOVE IT FROM ITS OWNER
       this.#target.resetArmorAttributes();
       this.#eventDeck.insertCard(this.#target.getArmor());
       this.#target.removeArmor();
+
       return;
     }
   }

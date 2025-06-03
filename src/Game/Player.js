@@ -12,6 +12,10 @@ export default class Player {
     return this.#id;
   }
 
+  setID(newID) {
+    this.#id = newID;
+  }
+
   getName() {
     return this.#name;
   }

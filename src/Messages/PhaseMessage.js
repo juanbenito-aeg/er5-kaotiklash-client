@@ -51,6 +51,16 @@ export default class PhaseMessage extends Message {
       ],
     },
 
+    performEvent: {
+      selectPreparedEvent: [
+        // ENG
+        "Select a prepared to perform event.",
+
+        // EUS
+        "Exekutatzeko prest dagoen ekitaldi bat hautatu.",
+      ],
+    },
+
     move: {
       selectCard: [
         // ENG
@@ -90,6 +100,13 @@ export default class PhaseMessage extends Message {
         // EUS
         "Itua aukeratu.",
       ],
+      targetOutOfLimit: [
+        // ENG:
+        "Target not within reach",
+
+        // EUS
+        "Jomuga ez dago eskura",
+      ],
     },
 
     discardCard: {
@@ -98,7 +115,7 @@ export default class PhaseMessage extends Message {
         "Select a card to discard to leave a box free.",
 
         // EUS
-        "Karta bat hautatu, baztertzeko eta lauki bat libre uzteko.",
+        "Karta bat hautatu baztertzeko, lauki bat libra dadin.",
       ],
       optionalDiscard: [
         // ENG
@@ -135,13 +152,14 @@ export default class PhaseMessage extends Message {
         "Sendatu beharreko mendeko bat hautatu.",
       ],
     },
+
     echoOfTheStratagen: {
       selectEnemyCard: [
-        //ENG
+        // ENG
         "Select an enemy event to steal.",
 
         // EUS
-        "Lapurtu beharreko etsaiaren gertaera-karta bat hautatu.",
+        "Lapurtu beharreko etsaiaren gertaera-karta hautatu.",
       ],
     },
 
@@ -168,7 +186,7 @@ export default class PhaseMessage extends Message {
         "Discard cards in hand to leave 2 boxes free.",
 
         // EUS
-        "Baztertu behar adina karta zure eskutik, 2 lauki libre uzteko.",
+        "Baztertu kartak zure eskutik, 2 lauki libre uzteko.",
       ],
     },
   };

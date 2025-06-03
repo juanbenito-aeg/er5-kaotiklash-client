@@ -1,6 +1,11 @@
 import CardMovement from "../Decks/CardMovement.js";
 import Deck from "../Decks/Deck.js";
-import { CardCategory, CardState, DeckType } from "../Game/constants.js";
+import {
+  CardCategory,
+  CardState,
+  DeckType,
+  MainCharacterID,
+} from "../Game/constants.js";
 
 export default class InitialPhase {
   #deckContainer;
@@ -71,19 +76,19 @@ export default class InitialPhase {
 
     const eventCardsToDealToPlayers = new Deck(-1, []);
 
+    const NUM_OF_CARDS_TO_DEAL = 10;
+
     for (let i = 0; i < eventsDeck.getCards().length; i++) {
       const currentCard = eventsDeck.getCards()[i];
 
-      // (!) UNCOMMENT TO TEST OTHER TYPES OF EVENT CARDS IN ADDITION TO WEAPONS
-      if (
-        /* currentCard.getCategory() !== CardCategory.ARMOR */ currentCard.getCategory() ===
-        CardCategory.WEAPON
-      ) {
+      if (currentCard.getCategory() !== CardCategory.MAIN_CHARACTER) {
         eventCardsToDealToPlayers.insertCard(currentCard);
 
         eventsDeck.removeCard(currentCard);
 
-        if (eventCardsToDealToPlayers.getCards().length === 10) {
+        if (
+          eventCardsToDealToPlayers.getCards().length === NUM_OF_CARDS_TO_DEAL
+        ) {
           break;
         }
       }

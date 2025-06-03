@@ -3,6 +3,7 @@ import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
 import globals from "../Game/globals.js";
 import { CardState, StolenFateState } from "../Game/constants.js";
+import Physics from "../Game/Physics.js";
 
 export default class StolenFateEvent extends Event {
   #state;
@@ -103,14 +104,20 @@ export default class StolenFateEvent extends Event {
           "CARD DRAWN!",
           "17px MedievalSharp",
           "yellow",
-          4,
+          1,
+          2,
           eventCard.getXCoordinate() +
             globals.imagesDestinationSizes.minionsAndEventsSmallVersion.width /
               2,
           eventCard.getYCoordinate() +
             globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height /
-              2
+              2,
+          1,
+          new Physics(0, 0)
         );
+
+        cardDrawnMsg.setVY(20);
+
         this.#stateMessages.push(cardDrawnMsg);
 
         cardsDrawn++;

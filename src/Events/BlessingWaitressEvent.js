@@ -3,6 +3,7 @@ import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
 import globals from "../Game/globals.js";
 import { BlessingWaitressState, CardState } from "../Game/constants.js";
+import Physics from "../Game/Physics.js";
 
 export default class BlessingWaitressEvent extends Event {
   #state;
@@ -35,7 +36,6 @@ export default class BlessingWaitressEvent extends Event {
         break;
 
       case BlessingWaitressState.SELECT_MINION:
-        console.log("SELECT MINION TO HEAL");
         this.#selectMinionToHeal();
         break;
 
@@ -114,10 +114,15 @@ export default class BlessingWaitressEvent extends Event {
       `+${hpToRestore} HP`,
       "20px MedievalSharp",
       "rgb(250 233 183)",
-      4,
+      1,
+      2,
       restoredHPMsgXCoordinate,
-      restoredHPMsgYCoordinate
+      restoredHPMsgYCoordinate,
+      1,
+      new Physics(0, 0)
     );
+
+    restoredHPMsg.setVY(20);
 
     this.#stateMessages.push(restoredHPMsg);
 

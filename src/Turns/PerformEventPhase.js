@@ -11,6 +11,10 @@ import MarchOfTheLastSighEvent from "../Events/MarchOfTheLastSighEvent.js";
 import ShieldOfBalanceEvent from "../Events/ShieldOfBalanceEvent.js";
 import HandOfTheSoulThiefEvent from "../Events/HandOfTheSoulThiefEvent.js";
 import StolenFateEvent from "../Events/StolenFateEvent.js";
+import TheCupOfTheLastBreathEvent from "../Events/TheCupOfTheLastBreathEvent.js";
+import RayOfCelestialRuinEvent from "../Events/RayOfCelestialRuinEvent.js";
+import Physics from "../Game/Physics.js";
+import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
 import globals from "../Game/globals.js";
 import {
@@ -22,9 +26,8 @@ import {
   GridType,
   SpecialEventID,
   RareEventID,
+  StateMessageType,
 } from "../Game/constants.js";
-import TheCupOfTheLastBreathEvent from "../Events/TheCupOfTheLastBreathEvent.js";
-import RayOfCelestialRuinEvent from "../Events/RayOfCelestialRuinEvent.js";
 
 export default class PerformEventPhase extends Phase {
   #events;
@@ -33,7 +36,6 @@ export default class PerformEventPhase extends Phase {
   #currentPlayerMainCharacterDeck;
   #currentPlayerCardsInHandDeck;
   #currentPlayerEventsInPrepDeck;
-  #currentPlayerMinionsDeck;
   #currentPlayerMinionsInPlayDeck;
   #currentPlayerCardsInHandGrid;
   #currentPlayerEventsInPrepGrid;
@@ -50,6 +52,7 @@ export default class PerformEventPhase extends Phase {
   #player;
   #isPlayersSummonCharacterActive;
   #eventsData;
+  #stats;
 
   constructor(
     state,
@@ -61,7 +64,6 @@ export default class PerformEventPhase extends Phase {
     currentPlayerMainCharacterDeck,
     currentPlayerCardsInHandDeck,
     currentPlayerEventsInPrepDeck,
-    currentPlayerMinionsDeck,
     currentPlayerMinionsInPlayDeck,
     enemyEventsInPrepDeck,
     currentPlayerCardsInHandGrid,
@@ -75,7 +77,8 @@ export default class PerformEventPhase extends Phase {
     lucretiaDeers,
     player,
     stateMessages,
-    eventsData
+    eventsData,
+    stats
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -85,7 +88,6 @@ export default class PerformEventPhase extends Phase {
     this.#currentPlayerMainCharacterDeck = currentPlayerMainCharacterDeck;
     this.#currentPlayerCardsInHandDeck = currentPlayerCardsInHandDeck;
     this.#currentPlayerEventsInPrepDeck = currentPlayerEventsInPrepDeck;
-    this.#currentPlayerMinionsDeck = currentPlayerMinionsDeck;
     this.#currentPlayerMinionsInPlayDeck = currentPlayerMinionsInPlayDeck;
     this.#currentPlayerCardsInHandGrid = currentPlayerCardsInHandGrid;
     this.#currentPlayerEventsInPrepGrid = currentPlayerEventsInPrepGrid;
@@ -100,6 +102,7 @@ export default class PerformEventPhase extends Phase {
     this.#lucretiaDeers = lucretiaDeers;
     this.#player = player;
     this.#eventsData = eventsData;
+    this.#stats = stats;
     this.#eventWithoutDurationData = {
       isActive: false,
       instance: {},
@@ -123,7 +126,8 @@ export default class PerformEventPhase extends Phase {
     phaseMessage,
     stateMessages,
     attackMenuData,
-    eventsData
+    eventsData,
+    stats
   ) {
     const eventsDeck = deckContainer.getDecks()[DeckType.EVENTS];
     const activeEventsDeck = deckContainer.getDecks()[DeckType.ACTIVE_EVENTS];
@@ -131,7 +135,6 @@ export default class PerformEventPhase extends Phase {
     let currentPlayerMainCharacterDeck;
     let currentPlayerCardsInHandDeck;
     let currentPlayerEventsInPrepDeck;
-    let currentPlayerMinionsDeck;
     let currentPlayerMinionsInPlayDeck;
     let enemyMinionsInPlayDeck;
     let enemyEventsInPrepDeck;
@@ -146,9 +149,6 @@ export default class PerformEventPhase extends Phase {
 
       currentPlayerEventsInPrepDeck =
         deckContainer.getDecks()[DeckType.PLAYER_1_EVENTS_IN_PREPARATION];
-
-      currentPlayerMinionsDeck =
-        deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS];
 
       currentPlayerMinionsInPlayDeck =
         deckContainer.getDecks()[DeckType.PLAYER_1_MINIONS_IN_PLAY];
@@ -170,9 +170,6 @@ export default class PerformEventPhase extends Phase {
 
       currentPlayerEventsInPrepDeck =
         deckContainer.getDecks()[DeckType.PLAYER_2_EVENTS_IN_PREPARATION];
-
-      currentPlayerMinionsDeck =
-        deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS];
 
       currentPlayerMinionsInPlayDeck =
         deckContainer.getDecks()[DeckType.PLAYER_2_MINIONS_IN_PLAY];
@@ -240,7 +237,6 @@ export default class PerformEventPhase extends Phase {
       currentPlayerMainCharacterDeck,
       currentPlayerCardsInHandDeck,
       currentPlayerEventsInPrepDeck,
-      currentPlayerMinionsDeck,
       currentPlayerMinionsInPlayDeck,
       enemyEventsInPrepDeck,
       currentPlayerCardsInHandGrid,
@@ -254,7 +250,8 @@ export default class PerformEventPhase extends Phase {
       lucretiaDeers,
       player,
       stateMessages,
-      eventsData
+      eventsData,
+      stats
     );
 
     return performEventPhase;
@@ -265,23 +262,20 @@ export default class PerformEventPhase extends Phase {
 
     switch (this._state) {
       case PerformEventState.INIT:
-        console.log("INIT");
         this.#initializePhase();
         break;
 
       case PerformEventState.SELECT_PREPARED_EVENT:
-        console.log("SELECT PREPARED EVENT");
         this.#selectPreparedEvent();
         break;
 
       case PerformEventState.EXECUTE_SELECTED_EVENT:
-        console.log("EXECUTE SELECTED EVENT");
         this.#executeSelectedEvent();
         break;
 
       case PerformEventState.END:
-        console.log("END");
         this.#updateDecksAndGrids();
+        this.#stats.incrementPlayerXUsedCards(this.#player.getID());
         isPhaseFinished = true;
         break;
     }
@@ -299,6 +293,10 @@ export default class PerformEventPhase extends Phase {
   }
 
   #selectPreparedEvent() {
+    this._phaseMessage.setCurrentContent(
+      PhaseMessage.content.performEvent.selectPreparedEvent[globals.language]
+    );
+
     const hoveredCard =
       this.#currentPlayerEventsInPrepDeck.lookForHoveredCard();
 
@@ -313,12 +311,18 @@ export default class PerformEventPhase extends Phase {
         hoveredCard.getCategory() === CardCategory.SPECIAL
       ) {
         if (!this.#enemyHasArmor()) {
-          this.#stateMessages.push(
-            new StateMessage(
+          if (
+            !StateMessage.isMsgOfTypeXAlreadyCreated(
+              this.#stateMessages,
+              StateMessageType.RAY_OF_CELESTIAL_RUIN_FAIL
+            )
+          ) {
+            let message = new StateMessage(
               "REQUIRES THE ENEMY TO HAVE ARMOR",
               "30px MedievalSharp",
               "red",
-              0.1,
+              1,
+              2,
               hoveredCard.getXCoordinate() +
                 globals.imagesDestinationSizes.minionsAndEventsSmallVersion
                   .width /
@@ -326,12 +330,21 @@ export default class PerformEventPhase extends Phase {
               hoveredCard.getYCoordinate() +
                 globals.imagesDestinationSizes.minionsAndEventsSmallVersion
                   .height /
-                  2
-            )
-          );
+                  2,
+              1,
+              new Physics(0, 0),
+              StateMessageType.RAY_OF_CELESTIAL_RUIN_FAIL
+            );
+
+            message.setVY(20);
+
+            this.#stateMessages.push(message);
+          }
+
           return;
         }
       }
+
       // MAKE IT IMPOSSIBLE FOR THE PLAYER TO USE THE "Summon Character" EVENT IF ONE IS ALREADY ACTIVE
       if (
         hoveredCard.getCategory() === CardCategory.SPECIAL &&
@@ -416,7 +429,6 @@ export default class PerformEventPhase extends Phase {
             this.#player,
             selectedCard,
             this.#stateMessages,
-            this.#currentPlayerMinionsDeck,
             this.#currentPlayerMinionsInPlayDeck
           );
           break;
@@ -457,7 +469,8 @@ export default class PerformEventPhase extends Phase {
           selectedEventInstance = new CurseOfTheBoundTitanEvent(
             this.#player,
             selectedCard,
-            this.#eventsData
+            this.#eventsData,
+            this.#stateMessages
           );
           break;
 
@@ -476,7 +489,8 @@ export default class PerformEventPhase extends Phase {
           selectedEventInstance = new TheCupOfTheLastBreathEvent(
             this.#player,
             selectedCard,
-            this.#eventsData
+            this.#eventsData,
+            this.#stateMessages
           );
           break;
 

@@ -1,4 +1,6 @@
 import Card from "./Card.js";
+import globals from "../Game/globals.js";
+import { Language } from "../Game/constants.js";
 
 export default class Special extends Card {
   #effect;
@@ -27,6 +29,14 @@ export default class Special extends Card {
 
   getEffect() {
     return this.#effect;
+  }
+
+  renderEffect() {
+    const effectString =
+      globals.language === Language.ENGLISH ? "Effect:" : "Efektua:";
+    globals.ctx.fillText(effectString, globals.canvas.width / 2, 765);
+
+    this.#effect.render();
   }
 
   getInitialDurationInRounds() {

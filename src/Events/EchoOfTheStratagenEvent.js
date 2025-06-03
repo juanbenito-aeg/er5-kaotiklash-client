@@ -8,6 +8,7 @@ import {
   CardState,
 } from "../Game/constants.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
+import Physics from "../Game/Physics.js";
 
 export default class EchoOfTheStratagenEvent extends Event {
   #currentPlayerPrepEventDeck;
@@ -113,10 +114,16 @@ export default class EchoOfTheStratagenEvent extends Event {
             "YOU HAVE STOLEN THE EVENT CORRECTLY",
             "30px MedievalSharp",
             "red",
-            3,
+            1,
+            2,
             selectedCard.getXCoordinate(),
-            selectedCard.getYCoordinate()
+            selectedCard.getYCoordinate(),
+            1,
+            new Physics(0, 0)
           );
+
+          message.setVY(20);
+
           this.#stateMessages.push(message);
 
           break;

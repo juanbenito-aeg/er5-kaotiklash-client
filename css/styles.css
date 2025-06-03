@@ -137,7 +137,8 @@ button {
 
 #login-screen,
 #register-screen,
-#player-session-screen {
+#player-session-screen,
+#stats-screen {
   display: none;
   justify-content: center;
   align-items: center;
@@ -209,14 +210,15 @@ button {
   color: rgb(103 129 180 / 0.7);
 }
 
-/* PLAYER SESSION SCREEN */
-
-#player-session-screen {
+#player-session-screen,
+#stats-screen {
   background-image: url("../images/player_session_background.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
+
+/* PLAYER SESSION SCREEN */
 
 #player-session-container {
   width: 900px;
@@ -277,6 +279,13 @@ button {
   border-radius: 12px;
 }
 
+#start-game-btn {
+  grid-area: start;
+  font-size: 1.45rem;
+  padding: 0.75em 1.5em;
+  border-radius: 12px;
+}
+
 #tips-section {
   grid-area: tips;
   font-size: 2rem;
@@ -303,11 +312,112 @@ button {
   }
 }
 
-#start-game-btn {
-  grid-area: start;
-  font-size: 1.45rem;
-  padding: 0.75em 1.5em;
-  border-radius: 12px;
+/* STATS SCREEN */
+
+#chart-selector,
+#chart-display {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: center;
+  gap: 2.5em;
+  width: 90vw;
+  height: 90vh;
+  padding: 2.5em;
+  border-radius: 1rem;
+  color: black;
+  background-color: rgba(9, 9, 9, 0.8);
+  animation: fadeInUp 0.6s ease-out;
+  transition: all 0.3s ease-in-out;
+}
+
+#chart-selector-heading,
+#chart-display-heading {
+  grid-area: heading;
+  justify-self: start;
+  margin-bottom: 0;
+  font-size: max(2.5vw, 2.25rem);
+  color: white;
+}
+
+#chart-selector-exit-btn,
+#chart-display-return-btn {
+  justify-self: end;
+  font-size: max(1vw, 1rem);
+  padding: 0.75em 1.75em;
+  border-radius: 1rem;
+}
+
+#chart-selector {
+  grid-template-areas:
+    "heading        exit-btn"
+    "chart-selector chart-selector";
+}
+
+#chart-selector-exit-btn {
+  grid-area: exit-btn;
+}
+
+#chart-selector-chart-btns {
+  place-self: stretch;
+  grid-area: chart-selector;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  gap: 4em;
+}
+
+.chart-selector-chart-btn {
+  width: 14vw;
+  height: 14vw;
+  font-size: max(1.15vw, 0.75rem);
+  padding: 1.5em;
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  border-left: 6px solid #fbfbfb;
+  box-shadow: 0 0 10px rgba(246, 246, 246, 0.934);
+  font-weight: normal;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  border: none;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.chart-selector-chart-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+.chart-selector-chart-btn:active {
+  transform: scale(0.95);
+}
+
+#chart-display {
+  display: none;
+  grid-template-areas:
+    "heading          return-btn"
+    "chart-container  chart-container";
+}
+
+#chart-display-return-btn {
+  grid-area: return-btn;
+}
+
+#chart-container {
+  grid-area: chart-container;
+  place-self: stretch;
+  max-height: 99%;
+}
+
+#no-data-found {
+  color: white;
+  text-align: center;
+  font-size: max(2vw, 1.75rem);
 }
 
 /* GAME SCREEN */

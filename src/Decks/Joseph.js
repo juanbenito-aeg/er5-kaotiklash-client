@@ -1,4 +1,6 @@
 import Card from "./Card.js";
+import globals from "../Game/globals.js";
+import { Language } from "../Game/constants.js";
 
 export default class Joseph extends Card {
   #chaoticEventID;
@@ -30,6 +32,20 @@ export default class Joseph extends Card {
 
   getChaoticEventDescription() {
     return this.#chaoticEventDescription;
+  }
+
+  renderChaoticEventDescription() {
+    const chaoticEventString =
+      globals.language === Language.ENGLISH
+        ? "Chaotic Event: "
+        : "Gertaera Kaotikoa: ";
+    globals.ctx.fillText(
+      chaoticEventString + this.#chaoticEventName,
+      globals.canvas.width / 2,
+      765
+    );
+
+    this.#chaoticEventDescription.render();
   }
 
   getCurrentDurationInRounds() {

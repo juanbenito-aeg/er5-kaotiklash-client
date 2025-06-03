@@ -1,13 +1,24 @@
+import globals from "../Game/globals.js";
+import StateMessage from "../Messages/StateMessage.js";
+import Physics from "../Game/Physics.js";
+
 export default class LucretiaSpecialSkill {
   #lucretiaDeers;
   #enemyMinionsInPlayDeck;
   #enemyMinionsInPlayGrid;
+  #stateMessages;
   #minionsBeforeTransformation;
 
-  constructor(lucretiaDeers, enemyMinionsInPlayDeck, enemyMinionsInPlayGrid) {
+  constructor(
+    lucretiaDeers,
+    enemyMinionsInPlayDeck,
+    enemyMinionsInPlayGrid,
+    stateMessages
+  ) {
     this.#lucretiaDeers = lucretiaDeers;
     this.#enemyMinionsInPlayDeck = enemyMinionsInPlayDeck;
     this.#enemyMinionsInPlayGrid = enemyMinionsInPlayGrid;
+    this.#stateMessages = stateMessages;
     this.#minionsBeforeTransformation = [];
   }
 
@@ -40,6 +51,22 @@ export default class LucretiaSpecialSkill {
         currentDeer
       );
     }
+
+    const transformationMsg = new StateMessage(
+      "ENEMY MINIONS TURNED INTO DEER!",
+      "30px MedievalSharp",
+      "rgb(250 233 183)",
+      1,
+      2,
+      globals.canvas.width / 2,
+      globals.canvas.height / 2,
+      1,
+      new Physics(0, 0)
+    );
+
+    transformationMsg.setVY(20);
+
+    this.#stateMessages.push(transformationMsg);
   }
 
   undoTransformation() {
@@ -70,6 +97,22 @@ export default class LucretiaSpecialSkill {
         );
       }
     }
+
+    const backToOriginalFormMsg = new StateMessage(
+      "ENEMY MINIONS RETURNED TO THEIR ORIGINAL FORM!",
+      "30px MedievalSharp",
+      "rgb(250 233 183)",
+      1,
+      2,
+      globals.canvas.width / 2,
+      globals.canvas.height / 2,
+      1,
+      new Physics(0, 0)
+    );
+
+    backToOriginalFormMsg.setVY(20);
+
+    this.#stateMessages.push(backToOriginalFormMsg);
 
     this.#resetDeerAttributes();
   }

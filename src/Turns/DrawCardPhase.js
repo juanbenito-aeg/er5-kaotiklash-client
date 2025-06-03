@@ -1,6 +1,8 @@
 import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
+import StateMessage from "../Messages/StateMessage.js";
 import JosephConstantSwapEvent from "../Events/JosephConstantSwapEvent.js";
+import { checkIfMusicIsPlayingAndIfSoReset, setMusic } from "../index.js";
 import globals from "../Game/globals.js";
 import {
   DeckType,
@@ -11,10 +13,15 @@ import {
   RareEventID,
   MainCharacterID,
   ArmorID,
+  Music,
+  CardState,
+  WeaponID,
 } from "../Game/constants.js";
+import Physics from "../Game/Physics.js";
 
 export default class DrawCardPhase extends Phase {
   #isFirstTurn;
+  #stateMessages;
   #player;
   #events;
   #eventsDeck;
@@ -25,11 +32,15 @@ export default class DrawCardPhase extends Phase {
   #currentPlayerCardsInHandGrid;
   #deckContainer;
   #board;
+  #stats;
+  #animationCards;
+  #eventsGrid;
 
   constructor(
     state,
     mouseInput,
     phaseMessage,
+    stateMessages,
     player,
     events,
     eventsDeck,
@@ -38,12 +49,16 @@ export default class DrawCardPhase extends Phase {
     josephGrid,
     currentPlayerCardsInHandDeck,
     currentPlayerCardsInHandGrid,
+    eventsGrid,
     deckContainer,
-    board
+    board,
+    stats,
+    animationCards
   ) {
     super(state, mouseInput, phaseMessage);
 
     this.#isFirstTurn = true;
+    this.#stateMessages = stateMessages;
     this.#player = player;
     this.#events = events;
     this.#eventsDeck = eventsDeck;
@@ -54,6 +69,9 @@ export default class DrawCardPhase extends Phase {
     this.#currentPlayerCardsInHandGrid = currentPlayerCardsInHandGrid;
     this.#deckContainer = deckContainer;
     this.#board = board;
+    this.#stats = stats;
+    this.#animationCards = animationCards;
+    this.#eventsGrid = eventsGrid;
   }
 
   static create(
@@ -63,7 +81,15 @@ export default class DrawCardPhase extends Phase {
     mouseInput,
     events,
     currentPlayer,
-    phaseMessage
+    phaseMessage,
+    stateMessages,
+    attackMenuData,
+    eventsData,
+    stats,
+    edgeAnimation,
+    particles,
+    highlightedBoxes,
+    animationCards
   ) {
     // DECKS VARIABLES
     const eventsDeck = deckContainer.getDecks()[DeckType.EVENTS];
@@ -81,10 +107,13 @@ export default class DrawCardPhase extends Phase {
         ? board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND]
         : board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND];
 
+    let eventsGrid = board.getGrids()[GridType.EVENTS_DECK];
+
     const drawCardPhase = new DrawCardPhase(
       0,
       mouseInput,
       phaseMessage,
+      stateMessages,
       player,
       events,
       eventsDeck,
@@ -93,8 +122,11 @@ export default class DrawCardPhase extends Phase {
       josephGrid,
       currentPlayerCardsInHandDeck,
       currentPlayerCardsInHandGrid,
+      eventsGrid,
       deckContainer,
-      board
+      board,
+      stats,
+      animationCards
     );
 
     return drawCardPhase;
@@ -121,10 +153,10 @@ export default class DrawCardPhase extends Phase {
   #drawCard() {
     this.#eventsDeck.shuffle();
 
-    const drawnCard = this.#eventsDeck.getCards()[0];
-
+    // (!) TWEAK AFTER PRESENTATION
+    let drawnCard = this.#getSpecificCard();
     if (!drawnCard) {
-      return;
+      drawnCard = this.#eventsDeck.getCards()[0];
     }
 
     let boxToPlaceDrawnCardInto;
@@ -133,8 +165,13 @@ export default class DrawCardPhase extends Phase {
       drawnCard.getCategory() === CardCategory.MAIN_CHARACTER &&
       drawnCard.getID() === MainCharacterID.JOSEPH
     ) {
+      this.#stats.setJosephAppearedToTrue();
+
       this.#activeEventsDeck.insertCard(drawnCard);
       this.#josephDeck.insertCard(drawnCard);
+
+      checkIfMusicIsPlayingAndIfSoReset();
+      setMusic(Music.JOSEPH_MUSIC);
 
       boxToPlaceDrawnCardInto = this.#josephGrid.getBoxes()[0];
 
@@ -156,21 +193,45 @@ export default class DrawCardPhase extends Phase {
         }
       }
     }
+    this.#animationCards.card = drawnCard;
+    this.#animationCards.animationTime = 0;
+    this.#animationCards.targetBox = boxToPlaceDrawnCardInto;
+    this.#animationCards.phase = 0;
+    this.#animationCards.flipProgress = 0;
 
-    drawnCard.setXCoordinate(boxToPlaceDrawnCardInto.getXCoordinate());
-    drawnCard.setYCoordinate(boxToPlaceDrawnCardInto.getYCoordinate());
+    const eventBox = this.#eventsGrid.getBoxes()[0];
+    const startX = eventBox.getXCoordinate();
+    const startY = eventBox.getYCoordinate();
 
-    boxToPlaceDrawnCardInto.setCard(drawnCard);
+    drawnCard.setXCoordinate(startX);
+    drawnCard.setYCoordinate(startY);
+    drawnCard.setState(CardState.REVEALING_AND_MOVING);
 
     this.#eventsDeck.removeCard(drawnCard);
+    eventBox.resetCard();
   }
 
-  // (!) REMOVE WHEN CARDS TESTING FINISHES
-  #getSpecifiedCard(cardCategory, cardID) {
+  // (!) REMOVE AFTER PRESENTATION
+  #getSpecificCard() {
     for (let i = 0; i < this.#eventsDeck.getCards().length; i++) {
       const card = this.#eventsDeck.getCards()[i];
 
-      if (card.getCategory() === cardCategory && card.getID() === cardID) {
+      if (
+        (card.getCategory() === CardCategory.MAIN_CHARACTER &&
+          card.getID() === MainCharacterID.JOSEPH) ||
+        (card.getCategory() === CardCategory.WEAPON &&
+          (card.getID() === WeaponID.THE_CURSED_SPOON ||
+            card.getID() === WeaponID.CROSSBOW_OF_SILENT_DEATH)) ||
+        (card.getCategory() === CardCategory.ARMOR &&
+          (card.getID() === ArmorID.CLOAK_ETERNAL_SHADOW ||
+            card.getID() === ArmorID.BREASTPLATE_PRIMORDIAL_COLOSSUS)) ||
+        (card.getCategory() === CardCategory.SPECIAL &&
+          card.getID() === SpecialEventID.SUMMON_CHARACTER) ||
+        (card.getCategory() === CardCategory.RARE &&
+          (card.getID() === RareEventID.STOLEN_FATE ||
+            card.getID() === RareEventID.ECHO_OF_THE_STRATAGEN ||
+            card.getID() === RareEventID.THE_CUP_OF_THE_LAST_BREATH))
+      ) {
         return card;
       }
     }
@@ -182,9 +243,26 @@ export default class DrawCardPhase extends Phase {
       this.#josephDeck,
       this.#deckContainer,
       this.#board,
-      this.#events
+      this.#events,
+      this.#stateMessages
     );
 
     this.#events.push(josephConstantSwapEvent);
+
+    const josephIsHereMsg = new StateMessage(
+      "THE FEARSOME JOSEPH IS HERE!",
+      "60px MedievalSharp",
+      "rgb(225 213 231)",
+      1,
+      2,
+      globals.canvas.width / 2,
+      globals.canvas.height / 2,
+      1,
+      new Physics(0, 0)
+    );
+
+    josephIsHereMsg.setVY(20);
+
+    this.#stateMessages.push(josephIsHereMsg);
   }
 }

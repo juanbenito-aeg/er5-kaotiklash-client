@@ -1,4 +1,6 @@
 import Card from "./Card.js";
+import globals from "../Game/globals.js";
+import { ArmorTypeID, Language } from "../Game/constants.js";
 
 export default class Armor extends Card {
   #armorTypeID;
@@ -40,6 +42,28 @@ export default class Armor extends Card {
 
   getSpecialEffect() {
     return this.#specialEffect;
+  }
+
+  renderSpecialEffect() {
+    if (this.#armorTypeID !== ArmorTypeID.MEDIUM) {
+      let specialEffectUsableBy;
+
+      if (this.#armorTypeID === ArmorTypeID.HEAVY) {
+        specialEffectUsableBy =
+          globals.language === Language.ENGLISH ? "Warriors" : "Gudariek";
+      } else {
+        specialEffectUsableBy =
+          globals.language === Language.ENGLISH ? "Wizards" : "Magoek";
+      }
+
+      const specialEffectString =
+        globals.language === Language.ENGLISH
+          ? `Special Effect Usable by ${specialEffectUsableBy}:`
+          : `${specialEffectUsableBy} Erabil Dezaketen Efektu Berezia:`;
+      globals.ctx.fillText(specialEffectString, globals.canvas.width / 2, 745);
+
+      this.#specialEffect.render();
+    }
   }
 
   getInitialDurability() {
