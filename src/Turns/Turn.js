@@ -232,28 +232,20 @@ export default class Turn {
     const decksToCheck = [];
 
     if (this.#player.getID() === PlayerID.PLAYER_1) {
-      if (
-        this.#currentPhase === PhaseType.PREPARE_EVENT ||
-        this.#currentPhase === PhaseType.PERFORM_EVENT
-      ) {
-        decksToCheck.push(
-          DeckType.PLAYER_1_CARDS_IN_HAND,
-          DeckType.PLAYER_1_EVENTS_IN_PREPARATION
-        );
+      if (this.#currentPhase === PhaseType.PREPARE_EVENT) {
+        decksToCheck.push(DeckType.PLAYER_1_CARDS_IN_HAND);
+      } else if (this.#currentPhase === PhaseType.PERFORM_EVENT) {
+        decksToCheck.push(DeckType.PLAYER_1_EVENTS_IN_PREPARATION);
       } else if (this.#currentPhase === PhaseType.MOVE) {
         decksToCheck.push(DeckType.PLAYER_1_MINIONS_IN_PLAY);
       } else if (this.#currentPhase === PhaseType.ATTACK) {
         decksToCheck.push(DeckType.PLAYER_1_MINIONS_IN_PLAY);
       }
     } else {
-      if (
-        this.#currentPhase === PhaseType.PREPARE_EVENT ||
-        this.#currentPhase === PhaseType.PERFORM_EVENT
-      ) {
-        decksToCheck.push(
-          DeckType.PLAYER_2_CARDS_IN_HAND,
-          DeckType.PLAYER_2_EVENTS_IN_PREPARATION
-        );
+      if (this.#currentPhase === PhaseType.PREPARE_EVENT) {
+        decksToCheck.push(DeckType.PLAYER_2_CARDS_IN_HAND);
+      } else if (this.#currentPhase === PhaseType.PERFORM_EVENT) {
+        decksToCheck.push(DeckType.PLAYER_2_EVENTS_IN_PREPARATION);
       } else if (this.#currentPhase === PhaseType.MOVE) {
         decksToCheck.push(DeckType.PLAYER_2_MINIONS_IN_PLAY);
       } else if (this.#currentPhase === PhaseType.ATTACK) {
@@ -700,17 +692,10 @@ export default class Turn {
   }
 
   #checkButtonClick() {
-    const mouseX = this.#mouseInput.getMouseXCoordinate();
-    const mouseY = this.#mouseInput.getMouseYCoordinate();
+    if (!this.#isAnyCardMoving() && this.#mouseInput.isLeftButtonPressed()) {
+      const mouseX = this.#mouseInput.getMouseXCoordinate();
+      const mouseY = this.#mouseInput.getMouseYCoordinate();
 
-    if (
-      (this.#animationCards && this.#animationCards.card !== null) ||
-      this.#highlightedBoxes.isActive
-    ) {
-      return;
-    }
-
-    if (this.#mouseInput.isLeftButtonPressed()) {
       for (let i = 0; i < globals.buttonDataGlobal.length; i++) {
         const buttonData = globals.buttonDataGlobal[i];
 
@@ -826,6 +811,33 @@ export default class Turn {
             }
           }
         }
+      }
+    }
+  }
+
+  #isAnyCardMoving() {
+    const idsOfDecksToCheck = [];
+
+    if (this.#player.getID() === PlayerID.PLAYER_1) {
+      idsOfDecksToCheck.push(
+        DeckType.PLAYER_1_CARDS_IN_HAND,
+        DeckType.PLAYER_1_MINIONS_IN_PLAY
+      );
+    } else {
+      idsOfDecksToCheck.push(
+        DeckType.PLAYER_2_CARDS_IN_HAND,
+        DeckType.PLAYER_2_MINIONS_IN_PLAY
+      );
+    }
+
+    idsOfDecksToCheck.push(DeckType.EVENTS, DeckType.JOSEPH);
+
+    for (let i = 0; i < idsOfDecksToCheck.length; i++) {
+      const idOfDeckToCheck = idsOfDecksToCheck[i];
+      const deckToCheck = this.#deckContainer.getDecks()[idOfDeckToCheck];
+
+      if (deckToCheck.checkIfAnyCardIsMoving()) {
+        return true;
       }
     }
   }

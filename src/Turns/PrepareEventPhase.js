@@ -184,6 +184,7 @@ export default class PrepareEventPhase extends Phase {
 
     if (selectedCard.isLeftClicked()) {
       // THE PREVIOUSLY SELECTED CARD WAS DESELECTED
+      this.#resetHighlightedBoxes();
       selectedCard.setState(CardState.PLACED);
       this._state = PrepareEventState.SELECT_HAND_CARD;
     } else {

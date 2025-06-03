@@ -106,6 +106,19 @@ export default class Deck {
     }
   }
 
+  checkIfAnyCardIsMoving() {
+    for (let i = 0; i < this.getCards().length; i++) {
+      const currentCard = this.getCards()[i];
+
+      if (
+        currentCard.getState() === CardState.MOVING ||
+        currentCard.getState() === CardState.REVEALING_AND_MOVING
+      ) {
+        return true;
+      }
+    }
+  }
+
   shuffle() {
     for (let i = 0; i < this.getCards().length; i++) {
       let randomIndex = Math.floor(Math.random() * this.getCards().length);

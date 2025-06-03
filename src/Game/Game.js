@@ -213,8 +213,17 @@ export default class Game {
     const joseph = new Image();
     joseph.src = `../images/quick_tip/8Joseph.png`;
 
-    game.#quickHelpImages.push(extendedCard, phases, decks, hand, battlefield, prepareEvent, preformEvent, mainCharacters, joseph);
-
+    game.#quickHelpImages.push(
+      extendedCard,
+      phases,
+      decks,
+      hand,
+      battlefield,
+      prepareEvent,
+      preformEvent,
+      mainCharacters,
+      joseph
+    );
 
     // EDGE ANIMATION
     game.#edgeAnimation = {
@@ -2872,7 +2881,11 @@ export default class Game {
     globals.ctx.fillStyle = "black";
 
     globals.ctx.fillText("EF", xCoordinate, yCoordinate + 60);
-    globals.ctx.fillText(0, xCoordinate + 55, yCoordinate + 111);
+    globals.ctx.fillText(
+      card.getCurrentPrepTimeInRounds(),
+      xCoordinate + 55,
+      yCoordinate + 111
+    );
     globals.ctx.fillText(
       card.getCurrentDurationInRounds(),
       xCoordinate + 110,
