@@ -15,6 +15,7 @@ import {
   ArmorID,
   Music,
   CardState,
+  WeaponID,
 } from "../Game/constants.js";
 import Physics from "../Game/Physics.js";
 
@@ -218,8 +219,16 @@ export default class DrawCardPhase extends Phase {
       if (
         (card.getCategory() === CardCategory.MAIN_CHARACTER &&
           card.getID() === MainCharacterID.JOSEPH) ||
+        (card.getCategory() === CardCategory.WEAPON &&
+          card.getID() === WeaponID.THE_CURSED_SPOON) ||
+        (card.getCategory() === CardCategory.ARMOR &&
+          card.getID() === ArmorID.CLOAK_ETERNAL_SHADOW) ||
+        (card.getCategory() === CardCategory.SPECIAL &&
+          card.getID() === SpecialEventID.BARTENDERS_POWER) ||
         (card.getCategory() === CardCategory.RARE &&
-          card.getID() === RareEventID.STOLEN_FATE)
+          (card.getID() === RareEventID.STOLEN_FATE ||
+            card.getID() === RareEventID.ECHO_OF_THE_STRATAGEN ||
+            card.getID() === RareEventID.THE_CUP_OF_THE_LAST_BREATH))
       ) {
         return card;
       }
