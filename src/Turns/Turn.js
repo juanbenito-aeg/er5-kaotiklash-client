@@ -232,28 +232,20 @@ export default class Turn {
     const decksToCheck = [];
 
     if (this.#player.getID() === PlayerID.PLAYER_1) {
-      if (
-        this.#currentPhase === PhaseType.PREPARE_EVENT ||
-        this.#currentPhase === PhaseType.PERFORM_EVENT
-      ) {
-        decksToCheck.push(
-          DeckType.PLAYER_1_CARDS_IN_HAND,
-          DeckType.PLAYER_1_EVENTS_IN_PREPARATION
-        );
+      if (this.#currentPhase === PhaseType.PREPARE_EVENT) {
+        decksToCheck.push(DeckType.PLAYER_1_CARDS_IN_HAND);
+      } else if (this.#currentPhase === PhaseType.PERFORM_EVENT) {
+        decksToCheck.push(DeckType.PLAYER_1_EVENTS_IN_PREPARATION);
       } else if (this.#currentPhase === PhaseType.MOVE) {
         decksToCheck.push(DeckType.PLAYER_1_MINIONS_IN_PLAY);
       } else if (this.#currentPhase === PhaseType.ATTACK) {
         decksToCheck.push(DeckType.PLAYER_1_MINIONS_IN_PLAY);
       }
     } else {
-      if (
-        this.#currentPhase === PhaseType.PREPARE_EVENT ||
-        this.#currentPhase === PhaseType.PERFORM_EVENT
-      ) {
-        decksToCheck.push(
-          DeckType.PLAYER_2_CARDS_IN_HAND,
-          DeckType.PLAYER_2_EVENTS_IN_PREPARATION
-        );
+      if (this.#currentPhase === PhaseType.PREPARE_EVENT) {
+        decksToCheck.push(DeckType.PLAYER_2_CARDS_IN_HAND);
+      } else if (this.#currentPhase === PhaseType.PERFORM_EVENT) {
+        decksToCheck.push(DeckType.PLAYER_2_EVENTS_IN_PREPARATION);
       } else if (this.#currentPhase === PhaseType.MOVE) {
         decksToCheck.push(DeckType.PLAYER_2_MINIONS_IN_PLAY);
       } else if (this.#currentPhase === PhaseType.ATTACK) {
