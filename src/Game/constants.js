@@ -326,7 +326,6 @@ const AttackMenuBtn = {
 
 // (!) REMOVE AFTER PRESENTATION
 const WeaponID = {
-  CROSSBOW_OF_SILENT_DEATH: 2,
   THE_CURSED_SPOON: 3,
 };
 

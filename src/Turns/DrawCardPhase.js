@@ -220,11 +220,9 @@ export default class DrawCardPhase extends Phase {
         (card.getCategory() === CardCategory.MAIN_CHARACTER &&
           card.getID() === MainCharacterID.JOSEPH) ||
         (card.getCategory() === CardCategory.WEAPON &&
-          (card.getID() === WeaponID.THE_CURSED_SPOON ||
-            card.getID() === WeaponID.CROSSBOW_OF_SILENT_DEATH)) ||
+          card.getID() === WeaponID.THE_CURSED_SPOON) ||
         (card.getCategory() === CardCategory.ARMOR &&
-          (card.getID() === ArmorID.CLOAK_ETERNAL_SHADOW ||
-            card.getID() === ArmorID.BREASTPLATE_PRIMORDIAL_COLOSSUS)) ||
+          card.getID() === ArmorID.CLOAK_ETERNAL_SHADOW) ||
         (card.getCategory() === CardCategory.SPECIAL &&
           card.getID() === SpecialEventID.SUMMON_CHARACTER) ||
         (card.getCategory() === CardCategory.RARE &&
