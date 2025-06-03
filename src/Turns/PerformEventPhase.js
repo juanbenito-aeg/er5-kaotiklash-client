@@ -604,5 +604,10 @@ export default class PerformEventPhase extends Phase {
 
   reset() {
     this._state = PerformEventState.INIT;
+
+    this.#eventWithoutDurationData = {
+      isActive: false,
+      instance: {},
+    };
   }
 }
