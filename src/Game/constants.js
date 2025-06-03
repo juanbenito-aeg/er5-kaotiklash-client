@@ -70,6 +70,8 @@ const Sound = {
   EQUIPMENT: 2,
   DEATH: 3,
   MOVE: 4,
+  MELEE: 5,
+  MISSILE_HYBRID: 6,
 };
 
 const CardCategory = {

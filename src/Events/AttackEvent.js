@@ -177,6 +177,7 @@ export default class AttackEvent extends Event {
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MELEE &&
       this.#parry === false
     ) {
+      globals.currentSound = Sound.MELEE;
       // ATTACK USING A MELEE WEAPON && ENEMY IS NOT PARRYING
       if (fumble) {
         damageToInflict =
@@ -195,6 +196,7 @@ export default class AttackEvent extends Event {
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MELEE &&
       this.#parry === true
     ) {
+      globals.currentSound = Sound.MELEE;
       // ATTACK USING A MELEE WEAPON && ENEMY IS PARRYING
       if (fumble) {
         damageToInflict =
@@ -211,6 +213,7 @@ export default class AttackEvent extends Event {
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE &&
       this.#parry === false
     ) {
+      globals.currentSound = Sound.MISSILE_HYBRID;
       // ATTACK USING A MISSILE WEAPON && ENEMY IS NOT PARRYING
       if (fumble) {
         damageToInflict =
@@ -230,6 +233,8 @@ export default class AttackEvent extends Event {
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.MISSILE &&
       this.#parry === true
     ) {
+      globals.currentSound = Sound.MISSILE_HYBRID;
+
       // ATTACK USING A MISSILE WEAPON && ENEMY IS PARRYING
       if (fumble) {
         damageToInflict =
@@ -248,6 +253,7 @@ export default class AttackEvent extends Event {
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID &&
       this.#parry === false
     ) {
+      globals.currentSound = Sound.MISSILE_HYBRID;
       // ATTACK USING A HYBRID WEAPON && ENEMY IS NOT PARRYING
       if (fumble) {
         damageToInflict =
@@ -268,6 +274,7 @@ export default class AttackEvent extends Event {
       this.#attacker.getMinionWeaponTypeID() === WeaponTypeID.HYBRID &&
       this.#parry === true
     ) {
+      globals.currentSound = Sound.MISSILE_HYBRID;
       // ATTACK USING A HYBRID WEAPON && ENEMY IS PARRYING
       if (fumble) {
         damageToInflict =

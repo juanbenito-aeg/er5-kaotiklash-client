@@ -1452,13 +1452,17 @@ function loadAssets() {
   const equipmentSound = document.getElementById("equipmentSound");
   const deathSound = document.getElementById("deathSound");
   const moveSound = document.getElementById("moveSound");
+  const meleeSound = document.getElementById("meleeSound");
+  const missileHybridSound = document.getElementById("missile-hybridSound");
 
   globals.sounds.push(
     bulbBreakingSound,
     punchSound,
     equipmentSound,
     deathSound,
-    moveSound
+    moveSound,
+    meleeSound,
+    missileHybridSound
   );
 
   for (let i = 0; i < globals.sounds.length; i++) {
