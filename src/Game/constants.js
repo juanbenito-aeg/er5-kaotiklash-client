@@ -67,7 +67,13 @@ const IconID = {
 const Sound = {
   NO_SOUND: -1,
   BULB_BREAKING: 3,
-  TALKING_SOUND: 4,
+  PUNCH: 4,
+  EQUIPMENT: 5,
+  DEATH: 6,
+  MOVE: 7,
+  TALKING_SOUND: 8,
+  MELEE: 12,
+  MISSILE_HYBRID: 13,
 };
 
 const Music = {
@@ -75,9 +81,9 @@ const Music = {
   TAVERN_MUSIC: 0,
   LOGIN_REGISTER_MUSIC: 1,
   PLAYER_SESSION_MUSIC: 2,
-  GAME_MUSIC: 5,
-  JOSEPH_MUSIC: 6,
-  WINNER_MUSIC: 7,
+  GAME_MUSIC: 9,
+  JOSEPH_MUSIC: 10,
+  WINNER_MUSIC: 11,
 };
 
 const CardCategory = {

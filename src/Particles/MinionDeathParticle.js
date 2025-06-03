@@ -37,11 +37,11 @@ export default class MinionDeathParticle extends Particle {
       globals.imagesDestinationSizes.minionsAndEventsSmallVersion.height / 2;
 
     const alpha = 1.0;
-    const timeToFade = 1.5;
+    const timeToFade = 1.25;
 
     for (let i = 0; i < numOfParticlesToCreate; i++) {
-      const velocity = Math.random() * 25 + 10;
-      const physics = new Physics(velocity, 60);
+      const velocity = Math.random() * 30 + 15;
+      const physics = new Physics(velocity, 150);
 
       const particle = new MinionDeathParticle(
         ParticleID.MINION_DEATH,

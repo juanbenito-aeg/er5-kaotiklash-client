@@ -1513,6 +1513,10 @@ function loadAssets() {
   // LOAD SOUNDS
 
   const bulbBreakingSound = document.getElementById("bulbBreakingSound");
+  const punchSound = document.getElementById("punchSound");
+  const equipmentSound = document.getElementById("equipmentSound");
+  const deathSound = document.getElementById("deathSound");
+  const moveSound = document.getElementById("moveSound");
   const talkingSound = document.getElementById("talkingSound");
   const gameMusic = document.getElementById("gameMusic");
   gameMusic.addEventListener("timeupdate", updateMusic, false);
@@ -1520,13 +1524,21 @@ function loadAssets() {
   josephMusic.addEventListener("timeupdate", updateMusic, false);
   const winnerMusic = document.getElementById("winner-music");
   winnerMusic.addEventListener("timeupdate", updateMusic, false);
+  const meleeSound = document.getElementById("meleeSound");
+  const missileHybridSound = document.getElementById("missile-hybridSound");
 
   globals.sounds.push(
     bulbBreakingSound,
+    punchSound,
+    equipmentSound,
+    deathSound,
+    moveSound,
     talkingSound,
     gameMusic,
     josephMusic,
-    winnerMusic
+    winnerMusic,
+    meleeSound,
+    missileHybridSound
   );
 
   for (let i = 0; i < globals.sounds.length; i++) {

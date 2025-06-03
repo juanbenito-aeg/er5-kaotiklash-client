@@ -24,6 +24,7 @@ import {
   GridType,
   MinionTypeID,
   StateMessageType,
+  Sound,
 } from "../Game/constants.js";
 
 export default class Turn {
@@ -659,6 +660,8 @@ export default class Turn {
           minion
         );
         equipWeaponOrArmorEvent.execute();
+
+        globals.currentSound = Sound.EQUIPMENT;
 
         this.#equipWeaponOrArmorState = EquipWeaponOrArmorState.END;
 
