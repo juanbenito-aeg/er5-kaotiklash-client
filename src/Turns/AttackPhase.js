@@ -33,6 +33,10 @@ export default class AttackPhase extends Phase {
   #stats;
   #edgeAnimation;
   #particles;
+  #animationCards;
+  #enemyMinionsGrid;
+  #blinkingAnimation;
+  #cameraShake;
 
   constructor(
     state,
@@ -41,6 +45,7 @@ export default class AttackPhase extends Phase {
     enemyMovementGrid,
     currentPlayerMovementGrid,
     enemyMovementGridDeck,
+    enemyMinionsGrid,
     enemyMinionsDeck,
     currentPlayerMovementGridDeck,
     currentPlayerMinionsDeck,
@@ -51,7 +56,10 @@ export default class AttackPhase extends Phase {
     eventsData,
     stats,
     edgeAnimation,
-    particles
+    particles,
+    animationCards,
+    blinkingAnimation,
+    cameraShake
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -71,6 +79,10 @@ export default class AttackPhase extends Phase {
     this.#stats = stats;
     this.#edgeAnimation = edgeAnimation;
     this.#particles = particles;
+    this.#animationCards = animationCards;
+    this.#enemyMinionsGrid = enemyMinionsGrid;
+    this.#blinkingAnimation = blinkingAnimation;
+    this.#cameraShake = cameraShake;
   }
 
   static create(
@@ -86,21 +98,29 @@ export default class AttackPhase extends Phase {
     eventsData,
     stats,
     edgeAnimation,
-    particles
+    particles,
+    highlightedBoxes,
+    animationCards,
+    blinkingAnimation,
+    cameraShake
   ) {
     let enemyMovementGrid;
     let currentPlayerMovementGrid;
+    let enemyMinionsGrid;
 
     if (player === currentPlayer) {
       currentPlayerMovementGrid =
         board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
 
       enemyMovementGrid = board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
+
+      enemyMinionsGrid = board.getGrids()[GridType.PLAYER_2_MINIONS_DECK];
     } else {
       currentPlayerMovementGrid =
         board.getGrids()[GridType.PLAYER_2_BATTLEFIELD];
 
       enemyMovementGrid = board.getGrids()[GridType.PLAYER_1_BATTLEFIELD];
+      enemyMinionsGrid = board.getGrids()[GridType.PLAYER_1_MINIONS_DECK];
     }
 
     let enemyMovementGridDeck;
@@ -137,6 +157,7 @@ export default class AttackPhase extends Phase {
       enemyMovementGrid,
       currentPlayerMovementGrid,
       enemyMovementGridDeck,
+      enemyMinionsGrid,
       enemyMinionsDeck,
       currentPlayerMovementGridDeck,
       currentPlayerMinionsDeck,
@@ -147,7 +168,10 @@ export default class AttackPhase extends Phase {
       eventsData,
       stats,
       edgeAnimation,
-      particles
+      particles,
+      animationCards,
+      blinkingAnimation,
+      cameraShake
     );
 
     return attackPhase;
@@ -538,8 +562,12 @@ export default class AttackPhase extends Phase {
       this.#stateMessages,
       this.#player,
       this.#eventsData,
-      this.#stats
+      this.#stats,
+      this.#blinkingAnimation
     );
+
+    this.#cameraShake.shakeTimeLeft = 0.15;
+
     attackEvent.execute();
 
     attacker.setState(CardState.PLACED);
@@ -594,6 +622,12 @@ export default class AttackPhase extends Phase {
             gridWhereToLookForBox,
             currentCard
           );
+
+          const minionGridOrigin = this.#enemyMinionsGrid.getBoxes()[0];
+
+          const startX = minionGridOrigin.getXCoordinate();
+          const startY = minionGridOrigin.getYCoordinate();
+
           currentCardBox.resetCard();
 
           // REPLACE THE DEAD MINION BY A NEW ONE DRAWN FROM THE CORRESPONDING PLAYER'S MINIONS DECK
@@ -607,22 +641,34 @@ export default class AttackPhase extends Phase {
 
             minionsDeckToDrawCardFrom.removeCard(newMinion);
 
-            this.#positionNewMinion(newMinion, gridWhereToLookForBox);
+            this.#positionNewMinion(
+              newMinion,
+              gridWhereToLookForBox,
+              startX,
+              startY
+            );
           }
         }
       }
     }
   }
 
-  #positionNewMinion(newMinion, gridToPositionNewMinionIn) {
+  #positionNewMinion(newMinion, gridToPositionNewMinionIn, startX, startY) {
     for (let i = 0; i < gridToPositionNewMinionIn.getBoxes().length; i++) {
       const currentBox = gridToPositionNewMinionIn.getBoxes()[i];
 
       if (!currentBox.isOccupied()) {
+        this.#animationCards.card = newMinion;
+        this.#animationCards.animationTime = 0;
+        this.#animationCards.targetBox = currentBox;
+        this.#animationCards.phase = 0;
+        this.#animationCards.flipProgress = 0;
+        newMinion.setState(CardState.REVEALING_AND_MOVING);
+
         currentBox.setCard(newMinion);
 
-        newMinion.setXCoordinate(currentBox.getXCoordinate());
-        newMinion.setYCoordinate(currentBox.getYCoordinate());
+        newMinion.setXCoordinate(startX);
+        newMinion.setYCoordinate(startY);
 
         break;
       }

@@ -37,7 +37,7 @@ export default class GridCreator {
 
     // PHASE BUTTONS GRID
     const phaseButtonsBoxes = [];
-    let phaseButtonBoxYCoordinate = 728;
+    let phaseButtonBoxYCoordinate = 726;
     for (let i = 0; i < 5; i++) {
       const currentPhaseButtonsBox = new Box(
         400,
@@ -52,7 +52,7 @@ export default class GridCreator {
 
       phaseButtonsBoxes.push(currentPhaseButtonsBox);
 
-      phaseButtonBoxYCoordinate += 50;
+      phaseButtonBoxYCoordinate += 52;
     }
     const phaseButtonsGrid = new Grid(
       GridType.PHASE_BUTTONS,

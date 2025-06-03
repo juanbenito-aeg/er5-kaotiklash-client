@@ -2,6 +2,7 @@ import Phase from "./Phase.js";
 import PhaseMessage from "../Messages/PhaseMessage.js";
 import StateMessage from "../Messages/StateMessage.js";
 import JosephConstantSwapEvent from "../Events/JosephConstantSwapEvent.js";
+import { checkIfMusicIsPlayingAndIfSoReset, setMusic } from "../index.js";
 import globals from "../Game/globals.js";
 import {
   DeckType,
@@ -12,6 +13,8 @@ import {
   RareEventID,
   MainCharacterID,
   ArmorID,
+  Music,
+  CardState,
 } from "../Game/constants.js";
 import Physics from "../Game/Physics.js";
 
@@ -29,6 +32,8 @@ export default class DrawCardPhase extends Phase {
   #deckContainer;
   #board;
   #stats;
+  #animationCards;
+  #eventsGrid;
 
   constructor(
     state,
@@ -43,9 +48,11 @@ export default class DrawCardPhase extends Phase {
     josephGrid,
     currentPlayerCardsInHandDeck,
     currentPlayerCardsInHandGrid,
+    eventsGrid,
     deckContainer,
     board,
-    stats
+    stats,
+    animationCards
   ) {
     super(state, mouseInput, phaseMessage);
 
@@ -62,6 +69,8 @@ export default class DrawCardPhase extends Phase {
     this.#deckContainer = deckContainer;
     this.#board = board;
     this.#stats = stats;
+    this.#animationCards = animationCards;
+    this.#eventsGrid = eventsGrid;
   }
 
   static create(
@@ -75,7 +84,11 @@ export default class DrawCardPhase extends Phase {
     stateMessages,
     attackMenuData,
     eventsData,
-    stats
+    stats,
+    edgeAnimation,
+    particles,
+    highlightedBoxes,
+    animationCards
   ) {
     // DECKS VARIABLES
     const eventsDeck = deckContainer.getDecks()[DeckType.EVENTS];
@@ -93,6 +106,8 @@ export default class DrawCardPhase extends Phase {
         ? board.getGrids()[GridType.PLAYER_1_CARDS_IN_HAND]
         : board.getGrids()[GridType.PLAYER_2_CARDS_IN_HAND];
 
+    let eventsGrid = board.getGrids()[GridType.EVENTS_DECK];
+
     const drawCardPhase = new DrawCardPhase(
       0,
       mouseInput,
@@ -106,9 +121,11 @@ export default class DrawCardPhase extends Phase {
       josephGrid,
       currentPlayerCardsInHandDeck,
       currentPlayerCardsInHandGrid,
+      eventsGrid,
       deckContainer,
       board,
-      stats
+      stats,
+      animationCards
     );
 
     return drawCardPhase;
@@ -135,16 +152,10 @@ export default class DrawCardPhase extends Phase {
   #drawCard() {
     this.#eventsDeck.shuffle();
 
-    // (!) UNCOMMENT WHEN CARDS TESTING FINISHES
-    // const drawnCard = this.#eventsDeck.getCards()[0];
-
-    // (!) REMOVE WHEN CARDS TESTING FINISHES
-    const drawnCard = this.#getSpecifiedCard(
-      CardCategory.SPECIAL,
-      SpecialEventID.BROOM_FURY
-    );
+    // (!) TWEAK AFTER PRESENTATION
+    let drawnCard = this.#getSpecificCard();
     if (!drawnCard) {
-      return;
+      drawnCard = this.#eventsDeck.getCards()[0];
     }
 
     let boxToPlaceDrawnCardInto;
@@ -157,6 +168,9 @@ export default class DrawCardPhase extends Phase {
 
       this.#activeEventsDeck.insertCard(drawnCard);
       this.#josephDeck.insertCard(drawnCard);
+
+      checkIfMusicIsPlayingAndIfSoReset();
+      setMusic(Music.JOSEPH_MUSIC);
 
       boxToPlaceDrawnCardInto = this.#josephGrid.getBoxes()[0];
 
@@ -178,21 +192,35 @@ export default class DrawCardPhase extends Phase {
         }
       }
     }
+    this.#animationCards.card = drawnCard;
+    this.#animationCards.animationTime = 0;
+    this.#animationCards.targetBox = boxToPlaceDrawnCardInto;
+    this.#animationCards.phase = 0;
+    this.#animationCards.flipProgress = 0;
 
-    drawnCard.setXCoordinate(boxToPlaceDrawnCardInto.getXCoordinate());
-    drawnCard.setYCoordinate(boxToPlaceDrawnCardInto.getYCoordinate());
+    const eventBox = this.#eventsGrid.getBoxes()[0];
+    const startX = eventBox.getXCoordinate();
+    const startY = eventBox.getYCoordinate();
 
-    boxToPlaceDrawnCardInto.setCard(drawnCard);
+    drawnCard.setXCoordinate(startX);
+    drawnCard.setYCoordinate(startY);
+    drawnCard.setState(CardState.REVEALING_AND_MOVING);
 
     this.#eventsDeck.removeCard(drawnCard);
+    eventBox.resetCard();
   }
 
-  // (!) REMOVE WHEN CARDS TESTING FINISHES
-  #getSpecifiedCard(cardCategory, cardID) {
+  // (!) REMOVE AFTER PRESENTATION
+  #getSpecificCard() {
     for (let i = 0; i < this.#eventsDeck.getCards().length; i++) {
       const card = this.#eventsDeck.getCards()[i];
 
-      if (card.getCategory() === cardCategory && card.getID() === cardID) {
+      if (
+        (card.getCategory() === CardCategory.MAIN_CHARACTER &&
+          card.getID() === MainCharacterID.JOSEPH) ||
+        (card.getCategory() === CardCategory.RARE &&
+          card.getID() === RareEventID.STOLEN_FATE)
+      ) {
         return card;
       }
     }

@@ -15,6 +15,7 @@ import RemainingCardsTooltip from "../Tooltips/RemainingCardsTooltip.js";
 import MainCharacterParticle from "../Particles/MainCharacterParticle.js";
 import GameStats from "./GameStats.js";
 import globals from "./globals.js";
+import { checkIfMusicIsPlayingAndIfSoReset, setMusic } from "../index.js";
 import {
   GameState,
   CardCategory,
@@ -35,6 +36,8 @@ import {
   ParticleState,
   ParticleID,
   Sound,
+  Music,
+  BoxState,
 } from "./constants.js";
 import Physics from "./Physics.js";
 
@@ -57,11 +60,17 @@ export default class Game {
   #remainingCardsTooltip;
   #stats;
   #eventsData;
+  #isQuickHelpActive;
+  #quickHelpScreenNum;
+  #quickHelpImages = [];
   #edgeAnimation;
   #alphaState;
   #particles;
   #borderTimer;
   #highlightedBoxes;
+  #animationCards;
+  #blinkingAnimation;
+  #cameraShake;
 
   static async create(playersNames) {
     // "game" OBJECT CREATION
@@ -180,6 +189,16 @@ export default class Game {
       shieldOfBalanceOwner: null,
     };
 
+    game.#isQuickHelpActive = false;
+    game.#quickHelpScreenNum = 0;
+
+    game.#quickHelpImages = [];
+    for (let i = 0; i < 9; i++) {
+      const img = new Image();
+      img.src = `../images/quick_tip/${i}.png`;
+      game.#quickHelpImages[i] = img;
+    }
+
     // EDGE ANIMATION
     game.#edgeAnimation = {
       color: null,
@@ -202,6 +221,27 @@ export default class Game {
       isActive: false,
     };
 
+    game.#animationCards = {
+      card: null,
+      animationTime: 0,
+      targetBox: null,
+      phase: 0,
+      flipProgress: 0,
+      time: 0,
+      size: 150,
+    };
+
+    game.#blinkingAnimation = {
+      card: null,
+      time: 0,
+    };
+
+    game.#cameraShake = {
+      shakeTimeLeft: 0,
+      shakeIntensity: 4,
+      isShaking: false,
+    };
+
     // TURNS CREATION
     const turnPlayer1 = new Turn(
       game.#deckContainer,
@@ -218,7 +258,10 @@ export default class Game {
       game.#remainingCardsTooltip,
       game.#edgeAnimation,
       game.#particles,
-      game.#highlightedBoxes
+      game.#highlightedBoxes,
+      game.#animationCards,
+      game.#blinkingAnimation,
+      game.#cameraShake
     );
     turnPlayer1.fillPhases(game.#currentPlayer);
     const turnPlayer2 = new Turn(
@@ -236,7 +279,10 @@ export default class Game {
       game.#remainingCardsTooltip,
       game.#edgeAnimation,
       game.#particles,
-      game.#highlightedBoxes
+      game.#highlightedBoxes,
+      game.#animationCards,
+      game.#blinkingAnimation,
+      game.#cameraShake
     );
     turnPlayer2.fillPhases(game.#currentPlayer);
     game.#turns = [turnPlayer1, turnPlayer2];
@@ -248,6 +294,9 @@ export default class Game {
     game.#fillActiveEventsTableData();
 
     game.#particlesForCurrentPlayer();
+
+    checkIfMusicIsPlayingAndIfSoReset();
+    setMusic(Music.GAME_MUSIC);
 
     return game;
   }
@@ -285,13 +334,16 @@ export default class Game {
         if (currentCard.getCategory() === CardCategory.MAIN_CHARACTER) {
           cardImage = globals.cardsImages.main_characters[currentCard.getID()];
 
-          smallVersionTemplateImage =
-            globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_SMALL];
-
           if (currentCard.getID() === MainCharacterID.JOSEPH) {
+            smallVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.JOSEPH_SMALL];
+
             bigVersionTemplateImage =
               globals.cardsTemplatesImages[TemplateID.JOSEPH_BIG];
           } else {
+            smallVersionTemplateImage =
+              globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_SMALL];
+
             bigVersionTemplateImage =
               globals.cardsTemplatesImages[TemplateID.MAIN_CHARACTERS_BIG];
           }
@@ -467,11 +519,10 @@ export default class Game {
     const buttonsHeight = 40;
 
     for (let i = 0; i < buttonNames.length; i++) {
-      const currentButtonYCoordinate =
-        this.#board
-          .getGrids()
-          [GridType.PHASE_BUTTONS].getBoxes()
-          [i].getYCoordinate() + 5;
+      const currentButtonYCoordinate = this.#board
+        .getGrids()
+        [GridType.PHASE_BUTTONS].getBoxes()
+        [i].getYCoordinate();
 
       const buttonData = [
         buttonsXCoordinate,
@@ -720,6 +771,13 @@ export default class Game {
   }
 
   #updatePlaying() {
+    this.#updateQuickHelpBtn();
+
+    if (this.#isQuickHelpActive) {
+      this.#updateQuickHelpExitBtn();
+      this.#updateQuickHelpPassTipBtn();
+    }
+
     if (globals.isCurrentTurnFinished) {
       globals.isCurrentTurnFinished = false;
 
@@ -764,6 +822,7 @@ export default class Game {
 
     if (this.#stateMessages.length === 0 && this.#chatMessages.length > 0) {
       globals.gameState = GameState.CHAT_PAUSE;
+      globals.currentSound = Sound.TALKING_SOUND;
     } else if (this.#chatMessages.length === 0) {
       this.#mouseInput.resetIsLeftClickedOnBoxes(this.#board);
       this.#mouseInput.detectMouseOverBox(this.#board);
@@ -998,6 +1057,61 @@ export default class Game {
     }
   }
 
+  #updateQuickHelpBtn() {
+    const mouseX = this.#mouseInput.getMouseXCoordinate();
+    const mouseY = this.#mouseInput.getMouseYCoordinate();
+    const btnX = 50;
+    const btnY = globals.canvas.height - 50;
+    const btnRadius = 50;
+    const distance = Math.sqrt((mouseX - btnX) ** 2 + (mouseY - btnY) ** 2);
+    if (distance < btnRadius && this.#mouseInput.isLeftButtonPressed()) {
+      this.#isQuickHelpActive = true;
+    }
+  }
+
+  #updateQuickHelpExitBtn() {
+    const mouseX = this.#mouseInput.getMouseXCoordinate();
+    const mouseY = this.#mouseInput.getMouseYCoordinate();
+    const btnX = globals.canvas.width - 50;
+    const btnY = 50;
+    const btnRadius = 50;
+
+    const distance = Math.sqrt((mouseX - btnX) ** 2 + (mouseY - btnY) ** 2);
+
+    if (distance < btnRadius && this.#mouseInput.isLeftButtonPressed()) {
+      this.#isQuickHelpActive = false;
+      this.#quickHelpScreenNum = 0;
+    }
+  }
+
+  #updateQuickHelpPassTipBtn() {
+    const mouseX = this.#mouseInput.getMouseXCoordinate();
+    const mouseY = this.#mouseInput.getMouseYCoordinate();
+
+    const btnLX = 50;
+    const btnLY = globals.canvas.height / 2;
+    const btnRX = globals.canvas.width - 50;
+    const btnRY = globals.canvas.height / 2;
+    const btnRadius = 50;
+
+    const distanceL = Math.sqrt((mouseX - btnLX) ** 2 + (mouseY - btnLY) ** 2);
+    const distanceR = Math.sqrt((mouseX - btnRX) ** 2 + (mouseY - btnRY) ** 2);
+
+    if (this.#mouseInput.isLeftButtonPressed()) {
+      if (distanceR < btnRadius) {
+        this.#quickHelpScreenNum++;
+        if (this.#quickHelpScreenNum > 8) {
+          this.#quickHelpScreenNum = 0;
+        }
+      } else if (distanceL < btnRadius) {
+        this.#quickHelpScreenNum--;
+        if (this.#quickHelpScreenNum < 0) {
+          this.#quickHelpScreenNum = 8;
+        }
+      }
+    }
+  }
+
   #fillChatMessages() {
     // DETERMINE THE TYPE OF THE CHAT MESSAGE(S) TO DISPLAY
 
@@ -1203,6 +1317,9 @@ export default class Game {
 
           this.#isGameFinished = true;
 
+          checkIfMusicIsPlayingAndIfSoReset();
+          setMusic(Music.WINNER_MUSIC);
+
           this.#stats.postToDB(this.#winner);
           this.#stats.setStatsAlreadySentToTrue();
         }
@@ -1227,6 +1344,12 @@ export default class Game {
 
     if (this.#chatMessages.length === 0) {
       globals.gameState = GameState.PLAYING;
+    }
+
+    if (globals.gameState === GameState.CHAT_PAUSE) {
+      globals.sounds[globals.currentMusic].volume = 0.2;
+    } else {
+      globals.sounds[globals.currentMusic].volume = 0.5;
     }
   }
 
@@ -1306,6 +1429,7 @@ export default class Game {
   }
 
   #renderGame() {
+    this.#applyCameraShake();
     this.#renderBoard();
     // this.#renderGrids();
     this.#renderPlayersInfo();
@@ -1314,8 +1438,12 @@ export default class Game {
     this.#renderPhaseMessage();
     this.#renderCardsInHandContainers();
     this.#renderCardsReverse();
-    this.#renderCards();
     this.#renderParticles();
+    if (!this.#isQuickHelpActive) {
+      this.#renderQuickHelpBtn();
+    }
+    this.#renderCards();
+    this.#renderAnimatedCard();
 
     if (this.#eventsData.activeVisibilitySkill) {
       this.#eventsData.activeVisibilitySkill.renderVisibilityEffect(
@@ -1354,6 +1482,12 @@ export default class Game {
     if (this.#winner) {
       this.#renderGameWinner();
     }
+
+    if (this.#isQuickHelpActive) {
+      this.#renderQuickHelp();
+    }
+
+    globals.ctx.restore();
   }
 
   #renderBoard() {
@@ -1532,95 +1666,158 @@ export default class Game {
     globals.ctx.restore();
   }
 
+  #applyCameraShake() {
+    if (this.#cameraShake.shakeTimeLeft > 0) {
+      const dx = (Math.random() - 0.5) * this.#cameraShake.shakeIntensity;
+      const dy = (Math.random() - 0.5) * this.#cameraShake.shakeIntensity;
+      globals.ctx.save();
+      globals.ctx.translate(dx, dy);
+      this.#cameraShake.shakeTimeLeft -= globals.deltaTime;
+      this.#cameraShake.isShaking = true;
+    } else if (this.#cameraShake.isShaking) {
+      globals.ctx.restore();
+      this.#cameraShake.isShaking = false;
+    }
+  }
+
+  #renderAnimatedCard() {
+    if (
+      !this.#animationCards ||
+      !this.#animationCards.card ||
+      !this.#animationCards.targetBox
+    )
+      return;
+
+    const card = this.#animationCards.card;
+    const centerX = globals.canvas.width / 2 - 70;
+    const centerY = globals.canvas.height / 2 - 50;
+
+    const speedToCenter = 0.08;
+    const flipDuration = 250;
+    const moveSpeed = 0.3;
+
+    if (this.#animationCards.phase === 0) {
+      const dx = centerX - card.getXCoordinate();
+      const dy = centerY - card.getYCoordinate();
+
+      card.setXCoordinate(card.getXCoordinate() + dx * speedToCenter);
+      card.setYCoordinate(card.getYCoordinate() + dy * speedToCenter);
+
+      this.#renderCardReverse(
+        card.getXCoordinate(),
+        card.getYCoordinate(),
+        this.#animationCards.size,
+        this.#animationCards.size
+      );
+
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) {
+        card.setXCoordinate(centerX);
+        card.setYCoordinate(centerY);
+        this.#animationCards.phase = 1;
+        this.#animationCards.flipProgress = 0;
+      }
+    } else if (this.#animationCards.phase === 1) {
+      this.#animationCards.flipProgress += globals.deltaTime * 1000;
+      const progress = Math.min(
+        this.#animationCards.flipProgress / flipDuration,
+        1
+      );
+      const scaleX = progress < 0.5 ? 1 - progress * 2 : (progress - 0.5) * 2;
+      this.#animationCards.size = 150 - 40 * progress;
+
+      globals.ctx.save();
+      globals.ctx.translate(
+        centerX + this.#animationCards.size / 2,
+        centerY + this.#animationCards.size / 2
+      );
+      globals.ctx.scale(scaleX, 1);
+      globals.ctx.translate(
+        -(centerX + this.#animationCards.size / 2),
+        -(centerY + this.#animationCards.size / 2)
+      );
+
+      if (progress < 0.5) {
+        this.#renderCardReverse(
+          centerX,
+          centerY,
+          this.#animationCards.size,
+          this.#animationCards.size
+        );
+      } else if (scaleX > 0.01) {
+        this.#renderCard(
+          card,
+          centerX,
+          centerY,
+          this.#animationCards.size,
+          this.#animationCards.size
+        );
+      }
+
+      globals.ctx.restore();
+
+      if (progress >= 1) {
+        this.#animationCards.phase = 2;
+      }
+    } else if (this.#animationCards.phase === 2) {
+      const targetBox = this.#animationCards.targetBox;
+      const tx = targetBox.getXCoordinate();
+      const ty = targetBox.getYCoordinate();
+
+      const dx = tx - card.getXCoordinate();
+      const dy = ty - card.getYCoordinate();
+
+      card.setXCoordinate(card.getXCoordinate() + dx * moveSpeed);
+      card.setYCoordinate(card.getYCoordinate() + dy * moveSpeed);
+
+      this.#renderCard(card);
+
+      if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
+        card.setXCoordinate(tx);
+        card.setYCoordinate(ty);
+        card.setState(CardState.PLACED);
+        targetBox.setCard(card);
+
+        this.#animationCards.card = null;
+        this.#animationCards.animationTime = 0;
+        this.#animationCards.targetBox = null;
+        this.#animationCards.phase = 0;
+        this.#animationCards.flipProgress = 0;
+      }
+    }
+  }
+
   #renderPhaseButtons() {
+    globals.ctx.shadowBlur = 10;
+    globals.ctx.shadowColor = "black";
+
     const numOfExecutedPhases =
       this.#turns[this.#currentPlayer.getID()].getNumOfExecutedPhases();
     const TOTAL_PHASES = 5;
 
     const phaseText = `Phase: ${numOfExecutedPhases + 1}/${TOTAL_PHASES}`;
-    globals.ctx.fillStyle = "white";
-    globals.ctx.font = "24px MedievalSharp";
+
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
+    globals.ctx.font = "24px MedievalSharp";
+    globals.ctx.fillStyle = "white";
     globals.ctx.fillText(phaseText, 500, 705);
 
     for (let i = 0; i < globals.buttonDataGlobal.length; i++) {
       const currentButton = globals.buttonDataGlobal[i];
 
-      globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-      globals.ctx.shadowBlur = 10;
-      globals.ctx.shadowOffsetX = 4;
-      globals.ctx.shadowOffsetY = 4;
-
-      globals.ctx.fillStyle = "darkcyan";
-      globals.ctx.beginPath();
-      globals.ctx.moveTo(
-        currentButton[PhaseButtonData.X_COORDINATE] + 10,
-        currentButton[PhaseButtonData.Y_COORDINATE]
-      );
-      globals.ctx.lineTo(
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH] -
-          10,
-        currentButton[PhaseButtonData.Y_COORDINATE]
-      );
-      globals.ctx.quadraticCurveTo(
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH],
-        currentButton[PhaseButtonData.Y_COORDINATE],
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH],
-        currentButton[PhaseButtonData.Y_COORDINATE] + 10
-      );
-      globals.ctx.lineTo(
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH],
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT] -
-          10
-      );
-      globals.ctx.quadraticCurveTo(
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH],
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT],
-        currentButton[PhaseButtonData.X_COORDINATE] +
-          currentButton[PhaseButtonData.WIDTH] -
-          10,
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT]
-      );
-      globals.ctx.lineTo(
-        currentButton[PhaseButtonData.X_COORDINATE] + 10,
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT]
-      );
-      globals.ctx.quadraticCurveTo(
-        currentButton[PhaseButtonData.X_COORDINATE],
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT],
-        currentButton[PhaseButtonData.X_COORDINATE],
-        currentButton[PhaseButtonData.Y_COORDINATE] +
-          currentButton[PhaseButtonData.HEIGHT] -
-          10
-      );
-      globals.ctx.lineTo(
-        currentButton[PhaseButtonData.X_COORDINATE],
-        currentButton[PhaseButtonData.Y_COORDINATE] + 10
-      );
-      globals.ctx.quadraticCurveTo(
+      globals.ctx.drawImage(
+        globals.phaseButtonImage,
+        0,
+        0,
+        950,
+        519,
         currentButton[PhaseButtonData.X_COORDINATE],
         currentButton[PhaseButtonData.Y_COORDINATE],
-        currentButton[PhaseButtonData.X_COORDINATE] + 10,
-        currentButton[PhaseButtonData.Y_COORDINATE]
+        currentButton[PhaseButtonData.WIDTH],
+        currentButton[PhaseButtonData.HEIGHT]
       );
-      globals.ctx.closePath();
-      globals.ctx.fill();
 
-      globals.ctx.fillStyle = "white";
       globals.ctx.font = "18px MedievalSharp";
-      globals.ctx.textAlign = "center";
-      globals.ctx.textBaseline = "middle";
       globals.ctx.fillText(
         currentButton[PhaseButtonData.NAME],
         currentButton[PhaseButtonData.X_COORDINATE] +
@@ -1649,17 +1846,20 @@ export default class Game {
       [GridType.ACTIVE_EVENTS_TABLE].getBoxes()[0]
       .getHeight();
 
-    globals.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
     globals.ctx.shadowBlur = 10;
-    globals.ctx.shadowOffsetX = 4;
-    globals.ctx.shadowOffsetY = 4;
+    globals.ctx.shadowColor = "rgba(0 0 0)";
 
-    globals.ctx.fillStyle = "darkcyan";
-    globals.ctx.fillRect(tableX, tableY, tableWidth, tableHeight);
-
-    globals.ctx.shadowBlur = 0;
-    globals.ctx.shadowOffsetX = 0;
-    globals.ctx.shadowOffsetY = 0;
+    globals.ctx.drawImage(
+      globals.activeEventsTableImage,
+      0,
+      0,
+      916,
+      714,
+      tableX,
+      tableY,
+      tableWidth,
+      tableHeight
+    );
 
     this.#renderColumnAndRowLinesAndHeaders(
       tableY,
@@ -1672,13 +1872,13 @@ export default class Game {
   }
 
   #renderColumnAndRowLinesAndHeaders(tableY, tableX, tableWidth, tableHeight) {
-    globals.ctx.strokeStyle = "black";
+    globals.ctx.strokeStyle = "rgb(1 15 28)";
     globals.ctx.lineWidth = 2;
 
-    globals.ctx.fillStyle = "white";
-    globals.ctx.font = "18px MedievalSharp";
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
+    globals.ctx.font = "18px MedievalSharp";
+    globals.ctx.fillStyle = "white";
 
     const isJosephChaoticEventActive =
       this.#deckContainer.getDecks()[DeckType.JOSEPH].getCards().length === 1;
@@ -1691,12 +1891,14 @@ export default class Game {
 
       if (i !== this.#activeEventsTableData.rows.length - 1) {
         // COLUMN LINE
+        globals.ctx.shadowBlur = 0;
         globals.ctx.beginPath();
         globals.ctx.moveTo(currentColumn.lineXCoordinate, tableY);
         globals.ctx.lineTo(currentColumn.lineXCoordinate, tableY + tableHeight);
         globals.ctx.stroke();
 
         // COLUMN HEADER
+        globals.ctx.shadowBlur = 10;
         globals.ctx.fillText(
           currentColumn.header,
           currentColumn.lineXCoordinate - currentColumn.width / 2,
@@ -1707,22 +1909,26 @@ export default class Game {
       const currentRow = this.#activeEventsTableData.rows[i];
 
       // ROW LINE
+      globals.ctx.shadowBlur = 0;
       globals.ctx.beginPath();
       globals.ctx.moveTo(tableX, currentRow.lineYCoordinate);
       globals.ctx.lineTo(tableX + tableWidth, currentRow.lineYCoordinate);
       globals.ctx.stroke();
 
       // ROW HEADER
+      globals.ctx.shadowBlur = 10;
       globals.ctx.fillText(
         currentRow.header,
         tableX + this.#activeEventsTableData.columns[0].width / 2,
         currentRow.lineYCoordinate - currentRow.height / 2
       );
     }
+
+    globals.ctx.shadowBlur = 0;
   }
 
   #renderActiveEventsData() {
-    globals.ctx.fillStyle = "black";
+    globals.ctx.fillStyle = "white";
     globals.ctx.font = "14px MedievalSharp";
 
     const activeEventsDeck =
@@ -1785,6 +1991,8 @@ export default class Game {
   }
 
   #renderPhaseMessage() {
+    globals.ctx.save();
+
     const messageBoxX = this.#board
       .getGrids()
       [GridType.MESSAGES].getBoxes()[0]
@@ -1803,24 +2011,33 @@ export default class Game {
       [GridType.MESSAGES].getBoxes()[0]
       .getHeight();
 
-    globals.ctx.fillStyle = "black";
-    globals.ctx.fillRect(
+    globals.ctx.shadowBlur = 10;
+    globals.ctx.shadowColor = "black";
+
+    globals.ctx.drawImage(
+      globals.phaseMsgsBoardImage,
+      0,
+      0,
+      1452,
+      706,
       messageBoxX,
       messageBoxY,
       messageBoxWidth,
       messageBoxHeight
     );
 
-    globals.ctx.fillStyle = "white";
-    globals.ctx.font = "20px MedievalSharp";
     globals.ctx.textAlign = "center";
     globals.ctx.textBaseline = "middle";
+    globals.ctx.font = "20px MedievalSharp";
+    globals.ctx.fillStyle = "white";
 
     globals.ctx.fillText(
       this.#phaseMessage.getCurrentContent(),
       messageBoxX + messageBoxWidth / 2,
       messageBoxY + messageBoxHeight / 2
     );
+
+    globals.ctx.restore();
   }
 
   #renderCardsInHandContainers() {
@@ -1904,8 +2121,8 @@ export default class Game {
       globals.cardsReverseImage,
       0,
       0,
-      625,
-      801,
+      848,
+      928,
       xCoordinate,
       yCoordinate,
       width,
@@ -1937,6 +2154,10 @@ export default class Game {
         for (let j = 0; j < currentDeck.getCards().length; j++) {
           const currentCard = currentDeck.getCards()[j];
 
+          if (currentCard.getState() === CardState.REVEALING_AND_MOVING) {
+            continue;
+          }
+
           if (currentCard.getState() === CardState.MOVING) {
             movingCard = currentCard;
             continue;
@@ -1951,15 +2172,34 @@ export default class Game {
             }
           }
 
-          if (isDeckCardsInHandOfInactivePlayer) {
-            this.#renderCardReverse(
-              currentCard.getXCoordinate(),
-              currentCard.getYCoordinate(),
-              110,
-              110
-            );
-          } else {
-            this.#renderCard(currentCard);
+          let shouldRenderCard = true;
+          if (
+            this.#blinkingAnimation.card &&
+            currentCard === this.#blinkingAnimation.card
+          ) {
+            this.#blinkingAnimation.time += globals.deltaTime * 1000;
+
+            if (this.#blinkingAnimation.time >= 1000) {
+              this.#blinkingAnimation.card = null;
+              this.#blinkingAnimation.time = 0;
+            } else {
+              const blinkOn =
+                Math.floor(this.#blinkingAnimation.time / 200) % 2 === 0;
+              shouldRenderCard = blinkOn;
+            }
+          }
+
+          if (shouldRenderCard) {
+            if (isDeckCardsInHandOfInactivePlayer) {
+              this.#renderCardReverse(
+                currentCard.getXCoordinate(),
+                currentCard.getYCoordinate(),
+                110,
+                110
+              );
+            } else {
+              this.#renderCard(currentCard);
+            }
           }
 
           if (currentCard.getState() === CardState.EXPANDED) {
@@ -2706,12 +2946,13 @@ export default class Game {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
 
     globals.ctx.textAlign = "center";
-    globals.ctx.fillStyle = "black";
+    globals.ctx.fillStyle = "rgb(248, 231, 199)";
     globals.ctx.font = "28px MedievalSharp";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 311);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 303);
 
-    globals.ctx.font = "16px MedievalSharp";
+    globals.ctx.fillStyle = "rgb(189, 243, 231)";
+    globals.ctx.font = "14px MedievalSharp";
 
     card.renderDescription();
     card.renderChaoticEventDescription();
@@ -2725,10 +2966,10 @@ export default class Game {
     const canvasWidthDividedBy2 = globals.canvas.width / 2;
 
     globals.ctx.textAlign = "center";
-    globals.ctx.fillStyle = "white";
+    globals.ctx.fillStyle = "rgb(255, 228, 171)";
     globals.ctx.font = "24px MedievalSharp";
 
-    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 308);
+    globals.ctx.fillText(card.getName(), canvasWidthDividedBy2, 291);
 
     globals.ctx.font = "16px MedievalSharp";
 
@@ -3208,6 +3449,145 @@ export default class Game {
         canvasHeightDividedBy2 + 100
       );
     }
+  }
+
+  #renderQuickHelp() {
+    this.#renderQuickHelpScreens();
+    this.#renderExitBtn();
+    this.#renderPassTipBtn();
+
+    globals.ctx.globalAlpha = 0.35;
+    globals.ctx.fillStyle = "black";
+    globals.ctx.fillRect(0, 0, globals.canvas.width, globals.canvas.height);
+    globals.ctx.globalAlpha = 1;
+
+    globals.ctx.textAlign = "center";
+
+    globals.ctx.shadowBlur = 20;
+    globals.ctx.shadowColor = "black";
+    globals.ctx.fillStyle = "white";
+  }
+
+  #renderQuickHelpScreens() {
+    const img = this.#quickHelpImages[this.#quickHelpScreenNum];
+
+    if (img.complete) {
+      globals.ctx.drawImage(
+        img,
+        0,
+        0,
+        globals.canvas.width,
+        globals.canvas.height,
+        0,
+        0,
+        3180,
+        1490
+      );
+    }
+
+    const totalDots = 9;
+    const dotRadius = 10;
+    const spacing = 30;
+    const startX = globals.canvas.width / 2 - ((totalDots - 1) * spacing) / 2;
+    const posY = globals.canvas.height - 30;
+
+    for (let i = 0; i < totalDots; i++) {
+      const x = startX + i * spacing;
+
+      globals.ctx.beginPath();
+      globals.ctx.arc(x, posY, dotRadius, 0, Math.PI * 2);
+
+      if (i === this.#quickHelpScreenNum) {
+        globals.ctx.fillStyle = "yellow";
+      } else {
+        globals.ctx.fillStyle = "gray";
+      }
+
+      globals.ctx.fill();
+
+      globals.ctx.strokeStyle = "black";
+      globals.ctx.lineWidth = 2;
+      globals.ctx.stroke();
+
+      globals.ctx.closePath();
+    }
+  }
+
+  #renderExitBtn() {
+    const mouseX = this.#mouseInput.getMouseXCoordinate();
+    const mouseY = this.#mouseInput.getMouseYCoordinate();
+    const btnX = globals.canvas.width - 50;
+    const btnY = 50;
+    const btnRadius = 50;
+
+    const distance = Math.sqrt((mouseX - btnX) ** 2 + (mouseY - btnY) ** 2);
+
+    if (distance < btnRadius) {
+      globals.ctx.shadowBlur = 20;
+      globals.ctx.shadowColor = "yellow";
+    } else {
+      globals.ctx.shadowBlur = 0;
+    }
+
+    globals.ctx.fillStyle = "white";
+    globals.ctx.font = "100px MedievalSharp";
+    globals.ctx.fillText("x", btnX, btnY);
+    globals.ctx.shadowBlur = 0;
+  }
+
+  #renderPassTipBtn() {
+    const mouseX = this.#mouseInput.getMouseXCoordinate();
+    const mouseY = this.#mouseInput.getMouseYCoordinate();
+
+    const btnLX = 50;
+    const btnLY = globals.canvas.height / 2;
+    const btnRX = globals.canvas.width - 50;
+    const btnRY = globals.canvas.height / 2;
+    const btnRadius = 50;
+
+    const distanceL = Math.sqrt((mouseX - btnLX) ** 2 + (mouseY - btnLY) ** 2);
+    const distanceR = Math.sqrt((mouseX - btnRX) ** 2 + (mouseY - btnRY) ** 2);
+
+    if (distanceL < btnRadius) {
+      globals.ctx.shadowBlur = 20;
+      globals.ctx.shadowColor = "yellow";
+    } else {
+      globals.ctx.shadowBlur = 0;
+    }
+    globals.ctx.fillStyle = "white";
+    globals.ctx.font = "100px MedievalSharp";
+    globals.ctx.fillText("<", btnLX, btnLY);
+
+    if (distanceR < btnRadius) {
+      globals.ctx.shadowBlur = 20;
+      globals.ctx.shadowColor = "yellow";
+    } else {
+      globals.ctx.shadowBlur = 0;
+    }
+    globals.ctx.fillText(">", btnRX, btnRY);
+
+    globals.ctx.shadowBlur = 0;
+  }
+
+  #renderQuickHelpBtn() {
+    const mouseX = this.#mouseInput.getMouseXCoordinate();
+    const mouseY = this.#mouseInput.getMouseYCoordinate();
+    const btnX = 50;
+    const btnY = globals.canvas.height - 50;
+    const btnRadius = 50;
+
+    const distance = Math.sqrt((mouseX - btnX) ** 2 + (mouseY - btnY) ** 2);
+    if (distance < btnRadius) {
+      globals.ctx.shadowBlur = 20;
+      globals.ctx.shadowColor = "yellow";
+    } else {
+      globals.ctx.shadowBlur = 0;
+    }
+
+    globals.ctx.fillStyle = "white";
+    globals.ctx.font = "100px MedievalSharp";
+    globals.ctx.fillText("?", btnX, btnY);
+    globals.ctx.shadowBlur = 0;
   }
 
   #renderChatMessages() {

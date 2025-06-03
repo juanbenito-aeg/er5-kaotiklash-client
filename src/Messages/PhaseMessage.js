@@ -115,7 +115,7 @@ export default class PhaseMessage extends Message {
         "Select a card to discard to leave a box free.",
 
         // EUS
-        "Karta bat hautatu, baztertzeko eta lauki bat libre uzteko.",
+        "Karta bat hautatu baztertzeko, lauki bat libra dadin.",
       ],
       optionalDiscard: [
         // ENG
@@ -159,7 +159,7 @@ export default class PhaseMessage extends Message {
         "Select an enemy event to steal.",
 
         // EUS
-        "Lapurtu beharreko etsaiaren gertaera-karta bat hautatu.",
+        "Lapurtu beharreko etsaiaren gertaera-karta hautatu.",
       ],
     },
 
@@ -186,7 +186,7 @@ export default class PhaseMessage extends Message {
         "Discard cards in hand to leave 2 boxes free.",
 
         // EUS
-        "Baztertu behar adina karta zure eskutik, 2 lauki libre uzteko.",
+        "Baztertu kartak zure eskutik, 2 lauki libre uzteko.",
       ],
     },
   };

@@ -42,7 +42,7 @@ export default class Joseph extends Card {
     globals.ctx.fillText(
       chaoticEventString + this.#chaoticEventName,
       globals.canvas.width / 2,
-      787
+      765
     );
 
     this.#chaoticEventDescription.render();

@@ -1,4 +1,4 @@
-import { GameState, Language, Sound } from "./constants.js";
+import { GameState, Language, Music, Sound } from "./constants.js";
 
 export default {
   previousCycleMilliseconds: -1, // PREVIOUS CYCLE TIME (MILLISECONDS)
@@ -8,6 +8,9 @@ export default {
   canvas: {},
   ctx: {},
   boardImage: {},
+  phaseButtonImage: {},
+  phaseMsgsBoardImage: {},
+  activeEventsTableImage: {},
   cardsInHandContainerImage: {},
   cardsData: {},
   cardsReverseImage: {},
@@ -53,4 +56,5 @@ export default {
   assetsLoadProgressAsPercentage: 0,
   sounds: [], // SOUNDS
   currentSound: Sound.NO_SOUND, // CURRENT SOUND TO PLAY
+  currentMusic: Music.NO_MUSIC, // CURRENT MUSIC TO PLAY
 };
