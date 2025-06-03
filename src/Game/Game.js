@@ -190,7 +190,7 @@ export default class Game {
     };
 
     game.#isQuickHelpActive = false;
-    game.#quickHelpScreenNum = 0
+    game.#quickHelpScreenNum = 0;
 
     game.#quickHelpImages = [];
     for (let i = 0; i < 9; i++) {
@@ -198,7 +198,7 @@ export default class Game {
       img.src = `../images/quick_tip/${i}.png`;
       game.#quickHelpImages[i] = img;
     }
-    
+
     // EDGE ANIMATION
     game.#edgeAnimation = {
       color: null,
@@ -771,12 +771,11 @@ export default class Game {
   }
 
   #updatePlaying() {
-
     this.#updateQuickHelpBtn();
 
-    if(this.#isQuickHelpActive) {
-      this.#updateQuickHelpExitBtn()
-      this.#updateQuickHelpPassTipBtn()
+    if (this.#isQuickHelpActive) {
+      this.#updateQuickHelpExitBtn();
+      this.#updateQuickHelpPassTipBtn();
     }
 
     if (globals.isCurrentTurnFinished) {
@@ -1056,7 +1055,6 @@ export default class Game {
         this.#stateMessages.push(message);
       }
     }
-
   }
 
   #updateQuickHelpBtn() {
@@ -1066,10 +1064,9 @@ export default class Game {
     const btnY = globals.canvas.height - 50;
     const btnRadius = 50;
     const distance = Math.sqrt((mouseX - btnX) ** 2 + (mouseY - btnY) ** 2);
-    if ((distance < btnRadius) && this.#mouseInput.isLeftButtonPressed()) {
+    if (distance < btnRadius && this.#mouseInput.isLeftButtonPressed()) {
       this.#isQuickHelpActive = true;
     }
-
   }
 
   #updateQuickHelpExitBtn() {
@@ -1080,26 +1077,26 @@ export default class Game {
     const btnRadius = 50;
 
     const distance = Math.sqrt((mouseX - btnX) ** 2 + (mouseY - btnY) ** 2);
-    
-    if ((distance < btnRadius) && this.#mouseInput.isLeftButtonPressed()) {
+
+    if (distance < btnRadius && this.#mouseInput.isLeftButtonPressed()) {
       this.#isQuickHelpActive = false;
-      this.#quickHelpScreenNum = 0; 
+      this.#quickHelpScreenNum = 0;
     }
   }
 
   #updateQuickHelpPassTipBtn() {
     const mouseX = this.#mouseInput.getMouseXCoordinate();
     const mouseY = this.#mouseInput.getMouseYCoordinate();
-  
+
     const btnLX = 50;
     const btnLY = globals.canvas.height / 2;
     const btnRX = globals.canvas.width - 50;
     const btnRY = globals.canvas.height / 2;
     const btnRadius = 50;
-  
+
     const distanceL = Math.sqrt((mouseX - btnLX) ** 2 + (mouseY - btnLY) ** 2);
     const distanceR = Math.sqrt((mouseX - btnRX) ** 2 + (mouseY - btnRY) ** 2);
-  
+
     if (this.#mouseInput.isLeftButtonPressed()) {
       if (distanceR < btnRadius) {
         this.#quickHelpScreenNum++;
@@ -1114,8 +1111,6 @@ export default class Game {
       }
     }
   }
-  
-  
 
   #fillChatMessages() {
     // DETERMINE THE TYPE OF THE CHAT MESSAGE(S) TO DISPLAY
@@ -1444,7 +1439,7 @@ export default class Game {
     this.#renderCardsInHandContainers();
     this.#renderCardsReverse();
     this.#renderParticles();
-    if(!this.#isQuickHelpActive) {
+    if (!this.#isQuickHelpActive) {
       this.#renderQuickHelpBtn();
     }
     this.#renderCards();
@@ -1488,9 +1483,11 @@ export default class Game {
       this.#renderGameWinner();
     }
 
-    if(this.#isQuickHelpActive) {
+    if (this.#isQuickHelpActive) {
       this.#renderQuickHelp();
     }
+
+    globals.ctx.restore();
   }
 
   #renderBoard() {
@@ -3305,7 +3302,6 @@ export default class Game {
       globals.ctx.fillStyle = currentMessage.getColor();
       globals.ctx.globalAlpha = currentMessage.getAlpha();
 
-
       for (let i = 0; i < 15; i++) {
         globals.ctx.fillText(
           currentMessage.getContent(),
@@ -3459,7 +3455,7 @@ export default class Game {
     this.#renderQuickHelpScreens();
     this.#renderExitBtn();
     this.#renderPassTipBtn();
-    
+
     globals.ctx.globalAlpha = 0.35;
     globals.ctx.fillStyle = "black";
     globals.ctx.fillRect(0, 0, globals.canvas.width, globals.canvas.height);
@@ -3474,7 +3470,7 @@ export default class Game {
 
   #renderQuickHelpScreens() {
     const img = this.#quickHelpImages[this.#quickHelpScreenNum];
-  
+
     if (img.complete) {
       globals.ctx.drawImage(
         img,
@@ -3488,36 +3484,34 @@ export default class Game {
         1490
       );
     }
-    
+
     const totalDots = 9;
     const dotRadius = 10;
     const spacing = 30;
-    const startX = (globals.canvas.width / 2) - ((totalDots - 1) * spacing) / 2;
+    const startX = globals.canvas.width / 2 - ((totalDots - 1) * spacing) / 2;
     const posY = globals.canvas.height - 30;
-  
+
     for (let i = 0; i < totalDots; i++) {
       const x = startX + i * spacing;
-  
+
       globals.ctx.beginPath();
       globals.ctx.arc(x, posY, dotRadius, 0, Math.PI * 2);
-  
-  if (i === this.#quickHelpScreenNum) {
-    globals.ctx.fillStyle = "yellow";
-  } else {
-    globals.ctx.fillStyle = "gray";
-  }
-  
+
+      if (i === this.#quickHelpScreenNum) {
+        globals.ctx.fillStyle = "yellow";
+      } else {
+        globals.ctx.fillStyle = "gray";
+      }
+
       globals.ctx.fill();
-  
+
       globals.ctx.strokeStyle = "black";
       globals.ctx.lineWidth = 2;
       globals.ctx.stroke();
-  
+
       globals.ctx.closePath();
     }
-
   }
-
 
   #renderExitBtn() {
     const mouseX = this.#mouseInput.getMouseXCoordinate();
@@ -3544,16 +3538,16 @@ export default class Game {
   #renderPassTipBtn() {
     const mouseX = this.#mouseInput.getMouseXCoordinate();
     const mouseY = this.#mouseInput.getMouseYCoordinate();
-  
+
     const btnLX = 50;
     const btnLY = globals.canvas.height / 2;
     const btnRX = globals.canvas.width - 50;
     const btnRY = globals.canvas.height / 2;
     const btnRadius = 50;
-  
+
     const distanceL = Math.sqrt((mouseX - btnLX) ** 2 + (mouseY - btnLY) ** 2);
     const distanceR = Math.sqrt((mouseX - btnRX) ** 2 + (mouseY - btnRY) ** 2);
-  
+
     if (distanceL < btnRadius) {
       globals.ctx.shadowBlur = 20;
       globals.ctx.shadowColor = "yellow";
@@ -3563,7 +3557,7 @@ export default class Game {
     globals.ctx.fillStyle = "white";
     globals.ctx.font = "100px MedievalSharp";
     globals.ctx.fillText("<", btnLX, btnLY);
-  
+
     if (distanceR < btnRadius) {
       globals.ctx.shadowBlur = 20;
       globals.ctx.shadowColor = "yellow";
@@ -3571,10 +3565,9 @@ export default class Game {
       globals.ctx.shadowBlur = 0;
     }
     globals.ctx.fillText(">", btnRX, btnRY);
-  
+
     globals.ctx.shadowBlur = 0;
   }
-  
 
   #renderQuickHelpBtn() {
     const mouseX = this.#mouseInput.getMouseXCoordinate();
