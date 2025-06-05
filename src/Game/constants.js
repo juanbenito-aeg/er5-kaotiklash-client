@@ -324,11 +324,6 @@ const AttackMenuBtn = {
   PASS: 2,
 };
 
-// (!) REMOVE AFTER PRESENTATION
-const WeaponID = {
-  THE_CURSED_SPOON: 3,
-};
-
 const ArmorID = {
   BREASTPLATE_PRIMORDIAL_COLOSSUS: 0,
   CLOAK_ETERNAL_SHADOW: 1,
@@ -423,7 +418,6 @@ export {
   HandOfTheSoulThiefState,
   StolenFateState,
   AttackMenuBtn,
-  WeaponID,
   ArmorID,
   ChatMessageType,
   ChatMessagePosition,

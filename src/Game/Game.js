@@ -84,7 +84,7 @@ export default class Game {
     // RANDOMLY ASSIGN PLAYER THAT STARTS PLAYING
     game.#currentPlayer = game.#players[Math.floor(Math.random() * 2)];
 
-    // (!!!!!) DELETE AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
+    // (!) DELETE AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
     globals.firstActivePlayerID = game.#currentPlayer.getID();
 
     // MAIN DECK CONFIGURATION FILE LOAD
@@ -1621,7 +1621,7 @@ export default class Game {
 
     let player1X, player1Y, player2X, player2Y;
 
-    // (!!!!!) MODIFY AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
+    // (!) MODIFY AFTER IMPLEMENTING CHANGE OF PLAYERS PERSPECTIVE
     if (
       /* this.#currentPlayer.getID() */ globals.firstActivePlayerID ===
       PlayerID.PLAYER_1
