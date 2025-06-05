@@ -15,7 +15,6 @@ import {
   ArmorID,
   Music,
   CardState,
-  WeaponID,
 } from "../Game/constants.js";
 import Physics from "../Game/Physics.js";
 
@@ -153,11 +152,7 @@ export default class DrawCardPhase extends Phase {
   #drawCard() {
     this.#eventsDeck.shuffle();
 
-    // (!) TWEAK AFTER PRESENTATION
-    let drawnCard = this.#getSpecificCard();
-    if (!drawnCard) {
-      drawnCard = this.#eventsDeck.getCards()[0];
-    }
+    const drawnCard = this.#eventsDeck.getCards()[0];
 
     let boxToPlaceDrawnCardInto;
 
@@ -209,30 +204,6 @@ export default class DrawCardPhase extends Phase {
 
     this.#eventsDeck.removeCard(drawnCard);
     eventBox.resetCard();
-  }
-
-  // (!) REMOVE AFTER PRESENTATION
-  #getSpecificCard() {
-    for (let i = 0; i < this.#eventsDeck.getCards().length; i++) {
-      const card = this.#eventsDeck.getCards()[i];
-
-      if (
-        (card.getCategory() === CardCategory.MAIN_CHARACTER &&
-          card.getID() === MainCharacterID.JOSEPH) ||
-        (card.getCategory() === CardCategory.WEAPON &&
-          card.getID() === WeaponID.THE_CURSED_SPOON) ||
-        (card.getCategory() === CardCategory.ARMOR &&
-          card.getID() === ArmorID.CLOAK_ETERNAL_SHADOW) ||
-        (card.getCategory() === CardCategory.SPECIAL &&
-          card.getID() === SpecialEventID.SUMMON_CHARACTER) ||
-        (card.getCategory() === CardCategory.RARE &&
-          (card.getID() === RareEventID.STOLEN_FATE ||
-            card.getID() === RareEventID.ECHO_OF_THE_STRATAGEN ||
-            card.getID() === RareEventID.THE_CUP_OF_THE_LAST_BREATH))
-      ) {
-        return card;
-      }
-    }
   }
 
   #createAndStoreJosephEvent() {
